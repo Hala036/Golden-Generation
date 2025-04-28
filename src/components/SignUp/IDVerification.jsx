@@ -138,16 +138,12 @@ const IDVerification = ({ onComplete }) => {
       console.log('Name not detected');
       toast.error('Name could not be detected. Please fill manually.');
     }
-
-    // Generic ID number detection
+    // Generic ID number detection (updated for 9-digit IDs)
     const idPatterns = [
-      // Pakistani CNIC pattern (e.g., 38303-3933740-7)
-      /(\d{5}[-]?\d{7}[-]?\d{1})/,
-      // General numeric ID patterns
-      /(?:ID|Number|No|№|Identity)\s*[:.]?\s*(\d[\d-]{5,})/i,
-      /(\d{5,}[-]?\d{5,}[-]?\d{1,})/,
-      // Fallback for any sequence of 5+ digits
-      /\b(\d[\d-]{10,})\b/
+      // 9-digit number pattern
+      /\b(\d{9})\b/,
+      // General patterns if prefixed by common words
+      /(?:ID|Number|No|№|Identity)\s*[:.]?\s*(\d{9})/i,
     ];
 
     let idFound = false;
@@ -157,17 +153,11 @@ const IDVerification = ({ onComplete }) => {
       for (const pattern of idPatterns) {
         const match = line.match(pattern);
         if (match) {
-          // Clean the ID number to ensure proper format
+          // Clean the ID number (remove spaces if any, just in case)
           let idNumber = match[1].replace(/\s+/g, '');
-          
-          // If it matches CNIC format (13 digits), format it properly
-          if (idNumber.replace(/\D/g, '').length === 13) {
-            const digits = idNumber.replace(/\D/g, '');
-            idNumber = `${digits.slice(0,5)}-${digits.slice(5,12)}-${digits.slice(12)}`;
-          }
 
-          // Validate that the ID contains only digits and hyphens
-          if (/^[\d-]+$/.test(idNumber) && idNumber.replace(/\D/g, '').length >= 5) {
+          // Validate: must be exactly 9 digits
+          if (/^\d{9}$/.test(idNumber)) {
             extractedData.idNumber = idNumber;
             idFound = true;
             console.log('Found ID:', idNumber);
@@ -319,7 +309,12 @@ const IDVerification = ({ onComplete }) => {
       setPreviewUrl(previewUrl);
       setUploadedFile(file);
 
-      // Process the image with OCR
+      
+      // Use the uploadImage function to handle the actual file upload
+      const uploadedFileUrl = await uploadImage(file); // Assuming the function returns the uploaded file's URL or some response
+      console.log('Uploaded file URL:', uploadedFileUrl);
+
+      // Optionally, handle OCR processing or other actions here
       await processImageWithOCR(file);
     } catch (error) {
       console.error('Error handling file:', error);
@@ -358,8 +353,8 @@ const IDVerification = ({ onComplete }) => {
     if (!lastName?.trim()) newErrors.lastName = 'Last name is required';
     if (!idNumber?.trim()) {
       newErrors.idNumber = 'ID number is required';
-    } else if (!/^\d{5}-\d{7}-\d{1}$/.test(idNumber)) {
-      newErrors.idNumber = 'ID number must be in format: XXXXX-XXXXXXX-X';
+    } else if (!/^\d{9}$/.test(idNumber)) {
+      newErrors.idNumber = 'ID number must be in format: XXXXXXXXX (9 digits)';
     }
 
     if (!dateOfBirth) {
