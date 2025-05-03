@@ -5,6 +5,7 @@ import LoginPage from './components/Login'
 import SignUp from './components/SignUp/SignUp'
 import Dashboard from './components/Dashboard'
 import ForgotPassword from './components/ForgotPassword'
+import LifestyleSummary from './components/SignUp/LifestyleSummary';
 import './App.css'
 
 // Protected Route Component
@@ -35,6 +36,7 @@ const App = () => {
       <div className="min-h-screen">
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/summary" element={<LifestyleSummary />} />
           <Route 
             path="/login" 
             element={

@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import Select from 'react-select';
 import useSignupStore from '../../store/signupStore';
+import { useNavigate } from 'react-router-dom';
 
-const Lifestyle = ({ onComplete }) => {
+const Lifestyle = () => {
   const { lifestyleData, setLifestyleData } = useSignupStore();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState(lifestyleData || {
     computerAbility: 0,
     sportActivity: 0,
@@ -12,22 +16,61 @@ const Lifestyle = ({ onComplete }) => {
   });
 
   const interestOptions = [
-    'Safety read books', 'culture', 'cooking', 'trips', 'Photography', 'sport',
-    'other', 'don\'t have', 'study', 'gardening', 'computer', 'craftsmanship'
+    { value: 'reading', label: 'Reading' },
+    { value: 'writing', label: 'Writing' },
+    { value: 'studying', label: 'Studying' },
+    { value: 'languages', label: 'Learning Languages' },
+    { value: 'chess', label: 'Chess' },
+    { value: 'drawing', label: 'Drawing' },
+    { value: 'painting', label: 'Painting' },
+    { value: 'photography', label: 'Photography' },
+    { value: 'pottery', label: 'Pottery' },
+    { value: 'cooking', label: 'Cooking' },
+    { value: 'baking', label: 'Baking' },
+    { value: 'diy', label: 'DIY Crafts' },
+    { value: 'music', label: 'Playing Instruments' },
+    { value: 'singing', label: 'Singing' },
+    { value: 'gardening', label: 'Gardening' },
+    { value: 'meditation', label: 'Meditation' },
+    { value: 'yoga', label: 'Yoga' },
+    { value: 'journaling', label: 'Journaling' },
+    { value: 'volunteering', label: 'Volunteering' },
+    { value: 'programming', label: 'Programming' },
+    { value: 'electronics', label: 'Electronics' },
+    { value: 'robotics', label: 'Robotics' },
+    { value: 'gaming', label: 'Gaming' },
+    { value: '3dprinting', label: '3D Printing' },
+    { value: 'traveling', label: 'Traveling' },
+    { value: 'hiking', label: 'Hiking' },
+    { value: 'camping', label: 'Camping' },
+    { value: 'culture', label: 'Cultural Exploration' },
+    { value: 'museums', label: 'Visiting Museums' },
+    { value: 'walking', label: 'Walking' },
+    { value: 'jogging', label: 'Jogging' },
+    { value: 'running', label: 'Running' },
+    { value: 'cycling', label: 'Cycling' },
+    { value: 'swimming', label: 'Swimming' },
+    { value: 'tennis', label: 'Tennis' },
+    { value: 'soccer', label: 'Soccer' },
+    { value: 'basketball', label: 'Basketball' },
+    { value: 'volleyball', label: 'Volleyball' },
+    { value: 'tabletennis', label: 'Table Tennis' },
+    { value: 'martialarts', label: 'Martial Arts' },
+    { value: 'pilates', label: 'Pilates' },
+    { value: 'crossfit', label: 'CrossFit' },
+    { value: 'climbing', label: 'Climbing' },
+    { value: 'surfing', label: 'Surfing' },
+    { value: 'skiing', label: 'Skiing' },
+    { value: 'dancing', label: 'Dancing' },
+    { value: 'horseback', label: 'Horseback Riding' },
+    { value: 'gym', label: 'Gym Workouts' },
+    { value: 'homeworkouts', label: 'Home Workouts' }
   ];
-
-  const handleInterestSelection = (interest) => {
-    const updatedInterests = formData.interests.includes(interest)
-      ? formData.interests.filter(i => i !== interest)
-      : [...formData.interests, interest];
-    
-    setFormData({ ...formData, interests: updatedInterests });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setLifestyleData(formData);
-    onComplete();
+    navigate('/summary');
   };
 
   return (
@@ -37,7 +80,7 @@ const Lifestyle = ({ onComplete }) => {
         <p className="mt-1 text-sm text-gray-600">Tell us about your daily activities and interests</p>
       </div>
 
-      {/* Computer/Smartphone Ability */}
+      {/* Computer Ability */}
       <div className="space-y-4">
         <label className="block text-sm font-medium text-gray-700">
           Level of ability in using a computer/smartphone (0 = low, 5 = high)
@@ -51,7 +94,6 @@ const Lifestyle = ({ onComplete }) => {
                 value={level}
                 checked={formData.computerAbility === level}
                 onChange={(e) => setFormData({ ...formData, computerAbility: Number(e.target.value) })}
-                className="mb-1"
               />
               <span className="text-sm">{level}</span>
             </label>
@@ -59,7 +101,7 @@ const Lifestyle = ({ onComplete }) => {
         </div>
       </div>
 
-      {/* Sport Activity Level */}
+      {/* Sport Activity */}
       <div className="space-y-4">
         <label className="block text-sm font-medium text-gray-700">
           Level of weekly "sport" activity (0 = low, 5 = high)
@@ -73,7 +115,6 @@ const Lifestyle = ({ onComplete }) => {
                 value={level}
                 checked={formData.sportActivity === level}
                 onChange={(e) => setFormData({ ...formData, sportActivity: Number(e.target.value) })}
-                className="mb-1"
               />
               <span className="text-sm">{level}</span>
             </label>
@@ -81,7 +122,7 @@ const Lifestyle = ({ onComplete }) => {
         </div>
       </div>
 
-      {/* Weekly Schedule Occupancy */}
+      {/* Weekly Schedule */}
       <div className="space-y-4">
         <label className="block text-sm font-medium text-gray-700">
           Occupancy level of the weekly schedule (0 = low, 5 = high)
@@ -95,7 +136,6 @@ const Lifestyle = ({ onComplete }) => {
                 value={level}
                 checked={formData.weeklySchedule === level}
                 onChange={(e) => setFormData({ ...formData, weeklySchedule: Number(e.target.value) })}
-                className="mb-1"
               />
               <span className="text-sm">{level}</span>
             </label>
@@ -105,24 +145,20 @@ const Lifestyle = ({ onComplete }) => {
 
       {/* Interests */}
       <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">Interests (select all that apply)</label>
-        <div className="grid grid-cols-3 gap-3">
-          {interestOptions.map((interest) => (
-            <label key={interest} className="flex items-center p-2 border rounded-md hover:bg-gray-50">
-              <input
-                type="checkbox"
-                checked={formData.interests.includes(interest)}
-                onChange={() => handleInterestSelection(interest)}
-                className="mr-2"
-              />
-              <span className="text-sm">{interest}</span>
-            </label>
-          ))}
-        </div>
+        <label className="block text-sm font-medium text-gray-700">Interests (search and select multiple)</label>
+        <Select
+          isMulti
+          options={interestOptions}
+          value={interestOptions.filter(option => formData.interests.includes(option.value))}
+          onChange={(selectedOptions) => {
+            const selectedValues = selectedOptions.map(option => option.value);
+            setFormData({ ...formData, interests: selectedValues });
+          }}
+        />
       </div>
 
       {/* Sports Subspecialty */}
-      {formData.interests.includes('sport') && (
+      {formData.interests.includes('sports') && (
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">Sports Subspecialty</label>
           <input
@@ -145,4 +181,4 @@ const Lifestyle = ({ onComplete }) => {
   );
 };
 
-export default Lifestyle; 
+export default Lifestyle;
