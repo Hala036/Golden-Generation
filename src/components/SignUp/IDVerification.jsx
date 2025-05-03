@@ -139,16 +139,13 @@ const IDVerification = ({ onComplete }) => {
       toast.error('Name could not be detected. Please fill manually.');
     }
 
-    // Generic ID number detection
+    // Generic ID number detection (updated for 9-digit IDs)
     const idPatterns = [
-      // Pakistani CNIC pattern (e.g., 38303-3933740-7)
-      /(\d{5}[-]?\d{7}[-]?\d{1})/,
-      // General numeric ID patterns
-      /(?:ID|Number|No|№|Identity)\s*[:.]?\s*(\d[\d-]{5,})/i,
-      /(\d{5,}[-]?\d{5,}[-]?\d{1,})/,
-      // Fallback for any sequence of 5+ digits
-      /\b(\d[\d-]{10,})\b/
-    ];
+      // 9-digit number pattern
+      /\b(\d{9})\b/,
+      // General patterns if prefixed by common words
+      /(?:ID|Number|No|№|Identity)\s*[:.]?\s*(\d{9})/i,
+    ];    
 
     let idFound = false;
     for (const line of lines) {
@@ -358,8 +355,8 @@ const IDVerification = ({ onComplete }) => {
     if (!lastName?.trim()) newErrors.lastName = 'Last name is required';
     if (!idNumber?.trim()) {
       newErrors.idNumber = 'ID number is required';
-    } else if (!/^\d{5}-\d{7}-\d{1}$/.test(idNumber)) {
-      newErrors.idNumber = 'ID number must be in format: XXXXX-XXXXXXX-X';
+    } else if (!/^\d{9}$/.test(idNumber)) {
+      newErrors.idNumber = 'ID number must be in format: XXXXXXXXX (9 digits)';
     }
 
     if (!dateOfBirth) {
