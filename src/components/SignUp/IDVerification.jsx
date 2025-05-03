@@ -29,6 +29,17 @@ const IDVerification = ({ onComplete }) => {
     fileInputRef.current.click();
   };
 
+  const handleScanID = () => {
+    toast.info('QR or barcode scanning will be implemented soon');
+  };
+
+  const uploadImage = async (file) => {
+    const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(snapshot.ref);
+    return url;
+  };
+
   const processImageWithOCR = async (imageFile) => {
     setIsProcessing(true);
     let worker = null;
