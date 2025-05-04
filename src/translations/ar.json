@@ -1,0 +1,566 @@
+{
+    "common": {
+      "loading": "جاري التحميل...",
+      "error": "خطأ",
+      "success": "نجاح",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "submit": "إرسال",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "required": "مطلوب",
+      "optional": "اختياري",
+      "switchLanguage": "تغيير اللغة",
+      "step": "خطوة",
+      "of": "من",
+      "select": "اختر"
+    },
+    "auth": {
+      "login": {
+        "title": "تسجيل الدخول إلى حسابك",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "forgotPassword": "نسيت كلمة المرور؟",
+        "noAccount": "ليس لديك حساب؟",
+        "signIn": "تسجيل الدخول",
+        "signingIn": "جاري تسجيل الدخول...",
+        "signUp": "إنشاء حساب",
+        "user": "مستخدم",
+        "admin": "مسؤول",
+        "success": "تم تسجيل الدخول بنجاح!",
+        "error": "فشل تسجيل الدخول. يرجى التحقق من بياناتك.",
+        "imageAlt": "زوجان يستمتعان بالفعالية"
+      },
+      "signup": {
+        "title": "إنشاء حسابك",
+        "haveAccount": "لديك حساب بالفعل؟",
+        "signIn": "تسجيل الدخول",
+        "creating": "جاري إنشاء حسابك...",
+        "success": "تم إنشاء الحساب بنجاح!",
+        "error": {
+          "incomplete": "يرجى إكمال جميع المعلومات المطلوبة",
+          "general": "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى."
+        },
+        "steps": {
+          "idVerification": "التحقق من الهوية",
+          "credentials": "بيانات الحساب",
+          "personalDetails": "البيانات الشخصية",
+          "workBackground": "الخبرة العملية",
+          "lifestyle": "نمط الحياة",
+          "veteransCommunity": "مجتمع المحاربين القدامى"
+        }
+      },
+      "personalDetails": {
+        "title": "البيانات الشخصية",
+        "subtitle": "أخبرنا عن نفسك",
+        "firstName": {
+          "label": "الاسم الأول",
+          "placeholder": "أدخل اسمك الأول"
+        },
+        "lastName": {
+          "label": "اسم العائلة",
+          "placeholder": "أدخل اسم عائلتك"
+        },
+        "birthDate": {
+          "label": "تاريخ الميلاد"
+        },
+        "gender": {
+          "label": "الجنس",
+          "placeholder": "اختر جنسك",
+          "options": {
+            "male": "ذكر",
+            "female": "أنثى",
+            "other": "آخر"
+          }
+        },
+        "maritalStatus": {
+          "label": "الحالة الاجتماعية",
+          "placeholder": "اختر حالتك الاجتماعية",
+          "options": {
+            "single": "أعزب/عزباء",
+            "married": "متزوج/متزوجة",
+            "divorced": "مطلق/مطلقة",
+            "widowed": "أرمل/أرملة"
+          }
+        },
+        "city": {
+          "label": "المدينة",
+          "placeholder": "أدخل مدينتك"
+        },
+        "address": {
+          "label": "العنوان",
+          "placeholder": "أدخل عنوانك الكامل"
+        },
+        "phone": {
+          "label": "رقم الهاتف (اختياري)",
+          "placeholder": "أدخل رقم هاتفك"
+        },
+        "mobilePhone": {
+          "label": "رقم الجوال",
+          "placeholder": "أدخل رقم جوالك"
+        },
+        "emergencyContact": {
+          "title": "جهة الاتصال للطوارئ",
+          "name": {
+            "label": "اسم جهة الاتصال",
+            "placeholder": "أدخل اسم جهة الاتصال"
+          },
+          "phone": {
+            "label": "هاتف جهة الاتصال",
+            "placeholder": "أدخل رقم هاتف جهة الاتصال"
+          },
+          "relation": {
+            "label": "العلاقة",
+            "placeholder": "أدخل علاقتك بجهة الاتصال"
+          }
+        },
+        "continue": "متابعة",
+        "nativeLanguage": {
+          "label": "اللغة الأم",
+          "placeholder": "أدخل لغتك الأم"
+        },
+        "hebrewLevel": {
+          "label": "مستوى العبرية",
+          "placeholder": "أدخل مستوى العبرية لديك"
+        },
+        "arrivalDate": {
+          "label": "تاريخ الوصول",
+          "placeholder": "اختر تاريخ الوصول"
+        },
+        "originCountry": {
+          "label": "بلد المنشأ",
+          "placeholder": "أدخل بلد منشأك"
+        },
+        "healthCondition": {
+          "label": "الحالة الصحية",
+          "placeholder": "أدخل حالتك الصحية"
+        },
+        "militaryService": {
+          "label": "الخدمة العسكرية",
+          "placeholder": "أدخل خدمتك العسكرية"
+        },
+        "additionalOptions": "خيارات إضافية",
+        "hasCar": {
+          "label": "يمتلك سيارة"
+        },
+        "livingAlone": {
+          "label": "يعيش بمفرده"
+        },
+        "familyInSettlement": {
+          "label": "عائلة في المستوطنة"
+        },
+        "hasWeapon": {
+          "label": "يمتلك سلاح"
+        }
+      },
+      "workBackground": {
+        "title": "الخبرة العملية",
+        "subtitle": "أخبرنا عن خبرتك المهنية",
+        "retirementStatus": {
+          "label": "حالة التقاعد",
+          "options": {
+            "notRetired": "لم أتقاعد",
+            "partially": "جزئي",
+            "full": "كامل"
+          }
+        },
+        "currentEmployment": {
+          "label": "هل تعمل حالياً؟",
+          "yes": "نعم",
+          "dischargeDate": "تاريخ التسريح المتوقع"
+        },
+        "lastJobs": {
+          "label": "آخر الوظائف",
+          "options": {
+            "doctor": "طبيب",
+            "funds": "صناديق",
+            "sales": "مبيعات",
+            "marketing": "تسويق",
+            "highTech": "تقنية عالية",
+            "teaching": "تدريس",
+            "housewife": "ربة منزل",
+            "admin": "إدارة",
+            "socialAcademy": "أكاديمية اجتماعية",
+            "psychology": "علم نفس",
+            "tourism": "سياحة",
+            "retailing": "بيع بالتجزئة",
+            "nursing": "تمريض",
+            "engineer": "مهندس",
+            "management": "إدارة",
+            "coaching": "تدريب/إرشاد",
+            "design": "تصميم",
+            "idf": "IDF",
+            "other": "آخر"
+          }
+        },
+        "subspecialty": {
+          "label": "التخصص في مجال العمل",
+          "placeholder": "أدخل تخصصك"
+        },
+        "academicDegrees": {
+          "label": "الشهادات الأكاديمية",
+          "placeholder": "أدخل شهاداتك الأكاديمية"
+        },
+        "continue": "متابعة"
+      },
+      "lifestyle": {
+        "title": "نمط الحياة",
+        "subtitle": "أخبرنا عن أنشطتك اليومية واهتماماتك",
+        "computerAbility": {
+          "label": "مستوى القدرة على استخدام الكمبيوتر/الهاتف الذكي (0 = منخفض، 5 = عالي)",
+          "levels": {
+            "0": "لا يوجد",
+            "1": "مبتدئ",
+            "2": "متوسط",
+            "3": "جيد",
+            "4": "جيد جداً",
+            "5": "ممتاز"
+          }
+        },
+        "sportActivity": {
+          "label": "مستوى النشاط الرياضي الأسبوعي (0 = منخفض، 5 = عالي)",
+          "levels": {
+            "0": "لا يوجد",
+            "1": "نادراً",
+            "2": "أحياناً",
+            "3": "بانتظام",
+            "4": "غالباً",
+            "5": "نشط جداً"
+          }
+        },
+        "weeklySchedule": {
+          "label": "مستوى الانشغال في الجدول الأسبوعي (0 = منخفض، 5 = عالي)",
+          "levels": {
+            "0": "متاح جداً",
+            "1": "متاح في الغالب",
+            "2": "متوازن",
+            "3": "منشغل قليلاً",
+            "4": "منشغل",
+            "5": "منشغل جداً"
+          }
+        },
+        "interests": {
+          "label": "الاهتمامات (اختر جميع ما ينطبق)",
+          "options": {
+            "books": "قراءة الكتب",
+            "culture": "ثقافة",
+            "cooking": "طبخ",
+            "trips": "رحلات",
+            "photography": "تصوير",
+            "sport": "رياضة",
+            "other": "آخر",
+            "none": "لا يوجد",
+            "study": "دراسة",
+            "gardening": "بستنة",
+            "computer": "كمبيوتر",
+            "craftsmanship": "حرفية"
+          }
+        },
+        "sportsSubspecialty": {
+          "label": "التخصص الرياضي",
+          "placeholder": "أدخل تخصصك الرياضي"
+        },
+        "continue": "متابعة"
+      },
+      "veteransCommunity": {
+        "title": "المحاربون القدامى في المجتمع",
+        "subtitle": "أخبرنا عن مشاركتك المجتمعية",
+        "currentActivities": {
+          "label": "الأنشطة الحالية",
+          "options": {
+            "cooking": "طبخ",
+            "trips": "رحلات",
+            "choir": "جوقة",
+            "torahClasses": "دروس التوراة",
+            "lectures": "محاضرات",
+            "exercise": "تمارين"
+          }
+        },
+        "notParticipating": {
+          "label": "سبب عدم المشاركة",
+          "placeholder": "اختر السبب",
+          "options": {
+            "noChallenge": "لا يوجد تحدٍ",
+            "notRelevant": "غير ذي صلة",
+            "noInfo": "لا أملك معلومات",
+            "notInteresting": "غير مثير للاهتمام",
+            "noTime": "ليس لدي وقت"
+          }
+        },
+        "volunteering": {
+          "isVolunteer": {
+            "label": "هل أنت متطوع بالفعل؟",
+            "yes": "نعم"
+          },
+          "areas": {
+            "label": "مجالات التطوع",
+            "options": {
+              "publicity": "علاقات عامة",
+              "health": "صحة",
+              "eater": "تغذية",
+              "teaching": "تدريس",
+              "highTech": "تقنية عالية",
+              "tourism": "سياحة",
+              "safety": "سلامة",
+              "funds": "صناديق",
+              "specialTreat": "معاملة خاصة",
+              "craftsmanship": "حرفية",
+              "aaliyah": "عليا",
+              "culture": "ثقافة"
+            }
+          },
+          "frequency": {
+            "label": "التكرار",
+            "placeholder": "اختر التكرار",
+            "options": {
+              "onceMonth": "مرة في الشهر",
+              "onceTwoWeeks": "مرة كل أسبوعين",
+              "onceWeek": "مرة في الأسبوع",
+              "twiceWeek": "مرتين في الأسبوع"
+            }
+          },
+          "hours": {
+            "label": "الساعات",
+            "placeholder": "اختر الساعات",
+            "options": {
+              "morning": "ساعات الصباح",
+              "noon": "ساعات الظهيرة",
+              "evening": "ساعات المساء"
+            }
+          },
+          "days": {
+            "label": "الأيام",
+            "options": {
+              "monday": "الاثنين",
+              "tuesday": "الثلاثاء",
+              "wednesday": "الأربعاء",
+              "thursday": "الخميس",
+              "friday": "الجمعة",
+              "saturday": "السبت"
+            }
+          }
+        },
+        "additionalVolunteering": {
+          "label": "هل ترغب في التطوع إضافياً؟",
+          "yes": "نعم",
+          "areas": {
+            "label": "مجالات الاهتمام"
+          },
+          "frequency": {
+            "label": "التكرار المفضل"
+          }
+        },
+        "consultation": {
+          "label": "هل ترغب في استشارة في أي من هذه المجالات؟",
+          "options": {
+            "company": "شركة",
+            "gardening": "بستنة",
+            "health": "صحة",
+            "nutrition": "تغذية",
+            "homeEconomics": "اقتصاد منزلي",
+            "houseOrder": "ترتيب المنزل",
+            "marketing": "تسويق",
+            "shopping": "تسوق",
+            "mobility": "تنقل",
+            "digital": "رقمي",
+            "legal": "قانوني",
+            "psychology": "علم نفس",
+            "houseRules": "قواعد المنزل",
+            "sport": "رياضة"
+          }
+        },
+        "continue": "متابعة"
+      },
+      "idVerification": {
+        "title": "التحقق من الهوية",
+        "subtitle": "يرجى تقديم بيانات هويتك",
+        "idNumber": {
+          "label": "رقم الهوية",
+          "placeholder": "أدخل رقم هويتك"
+        },
+        "idType": {
+          "label": "نوع الهوية",
+          "placeholder": "اختر نوع الهوية",
+          "options": {
+            "passport": "جواز سفر",
+            "nationalId": "هوية وطنية",
+            "driverLicense": "رخصة قيادة"
+          }
+        },
+        "expiryDate": {
+          "label": "تاريخ انتهاء الصلاحية"
+        },
+        "idImage": {
+          "label": "صورة الهوية",
+          "uploadButton": "رفع ملف",
+          "dragDrop": "أو اسحب وأفلت",
+          "fileTypes": "PNG, JPG, JPEG حتى 5MB",
+          "fileSelected": "تم اختيار الملف بنجاح"
+        },
+        "selfie": {
+          "label": "صورة مع الهوية",
+          "uploadButton": "رفع ملف",
+          "dragDrop": "أو اسحب وأفلت",
+          "fileTypes": "PNG, JPG, JPEG حتى 5MB",
+          "fileSelected": "تم اختيار الملف بنجاح"
+        },
+        "errors": {
+          "idRequired": "رقم الهوية مطلوب",
+          "idFormat": "رقم الهوية يجب أن يكون 9 أرقام",
+          "idTypeRequired": "نوع الهوية مطلوب",
+          "expiryRequired": "تاريخ انتهاء الصلاحية مطلوب",
+          "expired": "انتهت صلاحية الهوية",
+          "idImageRequired": "صورة الهوية مطلوبة",
+          "selfieRequired": "الصورة مع الهوية مطلوبة",
+          "fileSize": "يجب أن يكون حجم الملف أقل من 5MB",
+          "fileType": "يسمح فقط بملفات PNG و JPG و JPEG"
+        },
+        "continue": "متابعة",
+        "language": {
+          "select": "اختر اللغة",
+          "hebEng": "العبرية + الإنجليزية",
+          "heb": "العبرية",
+          "eng": "الإنجليزية"
+        },
+        "uploadInstructions": "يرجى تحميل أو مسح بطاقة الهوية الخاصة بك للتعبئة التلقائية، أو املأ النموذج يدويًا.",
+        "uploadButton": "تحميل بطاقة الهوية",
+        "startScanning": "بدء المسح",
+        "acceptedFormats": "الصيغ المقبولة: JPG, JPEG, PNG (بحد أقصى 5MB)",
+        "form": {
+          "firstName": "الاسم الأول",
+          "lastName": "اسم العائلة",
+          "idNumber": "رقم الهوية",
+          "idNumberPlaceholder": "أدخل 9 أرقام",
+          "dateOfBirth": "تاريخ الميلاد",
+          "gender": "الجنس",
+          "selectGender": "اختر الجنس",
+          "genderMale": "ذكر",
+          "genderFemale": "أنثى",
+          "genderOther": "آخر",
+          "submit": "متابعة"
+        },
+        "errors": {
+          "firstNameRequired": "الاسم الأول مطلوب",
+          "lastNameRequired": "اسم العائلة مطلوب",
+          "idNumberRequired": "رقم الهوية مطلوب",
+          "invalidIdNumber": "رقم الهوية يجب أن يكون 9 أرقام",
+          "dateOfBirthRequired": "تاريخ الميلاد مطلوب",
+          "ageRequirement": "الحد الأدنى للعمر هو 50 عامًا",
+          "ageRequirementNotMet": "لم يتم استيفاء شرط العمر: الحد الأدنى للعمر هو 50 عامًا",
+          "genderRequired": "الجنس مطلوب",
+          "invalidFileType": "نوع الملف غير صالح. يرجى رفع ملف JPG أو JPEG أو PNG",
+          "fileSize": "حجم الملف يتجاوز 5MB",
+          "processing": "خطأ في معالجة الملف",
+          "extraction": "لا يمكن استخراج البيانات من الصورة",
+          "ocr": "خطأ في التعرف على النص"
+        }
+      },
+      "forgotPassword": {
+        "title": "إعادة تعيين كلمة المرور",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "sendButton": "إرسال رابط إعادة التعيين",
+        "sending": "جاري الإرسال...",
+        "backToLogin": "العودة لتسجيل الدخول",
+        "success": "تم إرسال بريد إعادة تعيين كلمة المرور! يرجى التحقق من بريدك.",
+        "error": "فشل إرسال بريد إعادة التعيين"
+      },
+      "logout": {
+        "success": "تم تسجيل الخروج بنجاح!",
+        "error": "فشل تسجيل الخروج. يرجى المحاولة مرة أخرى."
+      },
+      "credentials": {
+        "title": "بيانات الحساب",
+        "subtitle": "أنشئ بيانات حسابك",
+        "email": {
+          "label": "البريد الإلكتروني",
+          "placeholder": "أدخل بريدك الإلكتروني",
+          "required": "البريد الإلكتروني مطلوب",
+          "invalid": "صيغة البريد الإلكتروني غير صالحة",
+          "inUse": "البريد الإلكتروني مسجل بالفعل",
+          "available": "البريد الإلكتروني متاح"
+        },
+        "username": {
+          "label": "اسم المستخدم",
+          "placeholder": "اختر اسم مستخدم",
+          "required": "اسم المستخدم مطلوب",
+          "minLength": "يجب أن يكون اسم المستخدم 3 أحرف على الأقل",
+          "invalid": "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام وشرطات سفلية فقط",
+          "inUse": "اسم المستخدم مستخدم بالفعل",
+          "available": "اسم المستخدم متاح"
+        },
+        "password": {
+          "label": "كلمة المرور",
+          "placeholder": "أنشئ كلمة مرور",
+          "required": "كلمة المرور مطلوبة",
+          "minLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+          "requirements": "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم واحد على الأقل"
+        },
+        "confirmPassword": {
+          "label": "تأكيد كلمة المرور",
+          "placeholder": "أكد كلمة مرورك",
+          "required": "يرجى تأكيد كلمة المرور",
+          "mismatch": "كلمات المرور غير متطابقة"
+        },
+        "validation": {
+          "wait": "يرجى الانتظار أثناء التحقق من معلوماتك",
+          "fix": "يرجى تصحيح الأخطاء قبل المتابعة",
+          "success": "تم التحقق من البيانات بنجاح"
+        }
+      }
+    },
+    "dashboard": {
+      "welcome": "مرحباً",
+      "profile": "الملف الشخصي",
+      "events": "الفعاليات",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج",
+      "upcomingEvents": "الفعاليات القادمة",
+      "pastEvents": "الفعاليات السابقة",
+      "noEvents": "لم يتم العثور على فعاليات",
+      "createEvent": "إنشاء فعالية",
+      "editEvent": "تعديل فعالية",
+      "deleteEvent": "حذف فعالية",
+      "eventDetails": "تفاصيل الفعالية",
+      "eventTitle": "عنوان الفعالية",
+      "eventDate": "تاريخ الفعالية",
+      "eventTime": "وقت الفعالية",
+      "eventLocation": "موقع الفعالية",
+      "eventDescription": "وصف الفعالية",
+      "eventParticipants": "مشاركون الفعالية",
+      "eventStatus": "حالة الفعالية",
+      "search": {
+        "placeholder": "البحث في الفعاليات",
+        "button": "بحث"
+      },
+      "language": {
+        "english": "الإنجليزية",
+        "russian": "الروسية",
+        "hebrew": "العبرية",
+        "arabic": "العربية"
+      },
+      "header": {
+        "title": "الجيل الذهبي",
+        "logout": "تسجيل الخروج"
+      },
+      "notifications": "الإشعارات",
+      "calendar": "التقويم",
+      "messages": "الرسائل"
+    },
+    "errors": {
+      "required": "هذا الحقل مطلوب",
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صالح",
+      "invalidPhone": "يرجى إدخال رقم هاتف صالح",
+      "invalidDate": "يرجى إدخال تاريخ صالح",
+      "passwordMismatch": "كلمات المرور غير متطابقة",
+      "passwordRequirements": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل، وحرف كبير، وحرف صغير، ورقم واحد",
+      "usernameRequirements": "يجب أن يكون اسم المستخدم 3 أحرف على الأقل ويمكن أن يحتوي على أحرف وأرقام وشرطات سفلية فقط",
+      "futureDate": "لا يمكن أن يكون التاريخ في المستقبل",
+      "minAge": "الحد الأدنى للعمر هو 50 عاماً"
+    },
+    "header": {
+      "search": "بحث",
+      "language": "اللغة"
+    }
+  } 

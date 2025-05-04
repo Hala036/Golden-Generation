@@ -1,0 +1,488 @@
+{
+    "common": {
+      "loading": "טוען...",
+      "error": "שגיאה",
+      "success": "הצלחה",
+      "back": "חזרה",
+      "continue": "המשך",
+      "submit": "שלח",
+      "save": "שמור",
+      "cancel": "ביטול",
+      "delete": "מחק",
+      "edit": "ערוך",
+      "required": "נדרש",
+      "optional": "אופציונלי",
+      "switchLanguage": "החלף שפה",
+      "step": "שלב",
+      "of": "מתוך",
+      "select": "בחר"
+    },
+    "auth": {
+      "idVerification": {
+        "title": "אימות תעודת זהות",
+        "subtitle": "אנא העלה את תעודת הזהות שלך או סרוק אותה",
+        "language": {
+          "select": "בחר שפת תעודת זהות",
+          "hebEng": "עברית + אנגלית",
+          "heb": "עברית",
+          "eng": "אנגלית"
+        },
+        "uploadInstructions": "העלה או סרוק את תעודת הזהות שלך למילוי אוטומטי, או מלא את הטופס ידנית",
+        "uploadButton": "העלה תעודת זהות",
+        "startScanning": "סרוק תעודת זהות",
+        "stopScanning": "הפסק סריקה",
+        "processing": "מעבד...",
+        "acceptedFormats": "פורמטים מקובלים: JPG, JPEG, PNG (מקסימום 5MB)",
+        "captureImage": "צלם תמונה",
+        "removeFile": "הסר קובץ",
+        "idPreview": "תצוגה מקדימה של תעודת זהות",
+        "form": {
+          "firstName": "שם פרטי",
+          "lastName": "שם משפחה",
+          "idNumber": "מספר תעודת זהות",
+          "idNumberPlaceholder": "הזן 9 ספרות",
+          "dateOfBirth": "תאריך לידה",
+          "gender": "מגדר",
+          "selectGender": "בחר מגדר",
+          "genderMale": "זכר",
+          "genderFemale": "נקבה",
+          "genderOther": "אחר",
+          "submit": "המשך"
+        },
+        "error": {
+          "firstNameRequired": "שם פרטי נדרש",
+          "lastNameRequired": "שם משפחה נדרש",
+          "idNumberRequired": "מספר תעודת זהות נדרש",
+          "invalidIdNumber": "מספר תעודת זהות חייב להכיל 9 ספרות",
+          "dateOfBirthRequired": "תאריך לידה נדרש",
+          "ageRequirement": "גיל מינימלי נדרש הוא 50 שנים",
+          "ageRequirementNotMet": "דרישת הגיל לא מולאה: גיל מינימלי נדרש הוא 50 שנים",
+          "genderRequired": "מגדר נדרש",
+          "invalidFileType": "סוג קובץ לא חוקי. אנא העלה קובץ JPG, JPEG או PNG",
+          "fileSize": "גודל הקובץ חורג מ-5MB",
+          "processing": "שגיאה בעיבוד הקובץ",
+          "extraction": "לא ניתן לחלץ נתונים מהתמונה",
+          "ocr": "שגיאה בזיהוי הטקסט"
+        },
+        "success": {
+          "extracted": "הנתונים חולצו בהצלחה מתעודת הזהות"
+        }
+      },
+      "login": {
+        "title": "התחבר לחשבון שלך",
+        "email": "כתובת אימייל",
+        "password": "סיסמה",
+        "forgotPassword": "שכחת את הסיסמה?",
+        "noAccount": "אין לך חשבון?",
+        "signIn": "התחבר",
+        "signingIn": "מתחבר...",
+        "signUp": "הירשם",
+        "user": "משתמש",
+        "admin": "מנהל",
+        "success": "התחברת בהצלחה!",
+        "error": "התחברות נכשלה. אנא בדוק את פרטי ההתחברות שלך.",
+        "imageAlt": "זוג נהנה מאירוע"
+      },
+      "signup": {
+        "title": "צור חשבון",
+        "haveAccount": "כבר יש לך חשבון?",
+        "signIn": "התחבר",
+        "creating": "יוצר את החשבון שלך...",
+        "success": "החשבון נוצר בהצלחה!",
+        "error": {
+          "incomplete": "אנא מלא את כל השדות הנדרשים",
+          "general": "יצירת החשבון נכשלה. אנא נסה שוב."
+        },
+        "steps": {
+          "idVerification": "אימות זהות",
+          "credentials": "פרטי חשבון",
+          "personalDetails": "פרטים אישיים",
+          "workBackground": "רקע תעסוקתי",
+          "lifestyle": "אורח חיים",
+          "veteransCommunity": "קהילת ותיקים"
+        }
+      },
+      "personalDetails": {
+        "title": "פרטים אישיים",
+        "subtitle": "ספר לנו על עצמך",
+        "phone": {
+          "label": "מספר טלפון (אופציונלי)",
+          "placeholder": "הזן את מספר הטלפון שלך"
+        },
+        "maritalStatus": {
+          "label": "מצב משפחתי",
+          "placeholder": "בחר מצב משפחתי",
+          "options": {
+            "single": "רווק/ה",
+            "married": "נשוי/אה",
+            "divorced": "גרוש/ה",
+            "widowed": "אלמן/ה"
+          }
+        },
+        "address": {
+          "label": "כתובת",
+          "placeholder": "הזן את הכתובת המלאה שלך"
+        },
+        "nativeLanguage": {
+          "label": "שפת אם",
+          "placeholder": "הזן את שפת האם שלך"
+        },
+        "hebrewLevel": {
+          "label": "רמת עברית",
+          "placeholder": "הזן את רמת העברית שלך"
+        },
+        "arrivalDate": {
+          "label": "תאריך הגעה",
+          "placeholder": "בחר תאריך הגעה"
+        },
+        "originCountry": {
+          "label": "ארץ מוצא",
+          "placeholder": "הזן את ארץ המוצא שלך"
+        },
+        "healthCondition": {
+          "label": "מצב בריאותי",
+          "placeholder": "הזן את מצבך הבריאותי"
+        },
+        "militaryService": {
+          "label": "שירות צבאי",
+          "placeholder": "הזן את שירותך הצבאי"
+        },
+        "additionalOptions": "אפשרויות נוספות",
+        "hasCar": {
+          "label": "יש רכב"
+        },
+        "livingAlone": {
+          "label": "גר לבד"
+        },
+        "familyInSettlement": {
+          "label": "משפחה בהתיישבות"
+        },
+        "hasWeapon": {
+          "label": "נושא נשק"
+        }
+      },
+      "workBackground": {
+        "title": "רקע תעסוקתי",
+        "subtitle": "ספר לנו על הניסיון המקצועי שלך",
+        "retirementStatus": {
+          "label": "מצב פרישה",
+          "options": {
+            "notRetired": "לא פרשתי",
+            "partially": "חלקי",
+            "full": "מלא"
+          }
+        },
+        "currentEmployment": {
+          "label": "האם אתה עובד כרגע?",
+          "yes": "כן",
+          "dischargeDate": "תאריך שחרור צפוי"
+        },
+        "lastJobs": {
+          "label": "מקומות עבודה אחרונים",
+          "options": {
+            "doctor": "רופא",
+            "funds": "קרנות",
+            "sales": "מכירות",
+            "marketing": "שיווק",
+            "highTech": "הייטק",
+            "teaching": "הוראה",
+            "housewife": "עקרת בית",
+            "admin": "מנהל",
+            "socialAcademy": "אקדמיה חברתית",
+            "psychology": "פסיכולוגיה",
+            "tourism": "תיירות",
+            "retailing": "קמעונאות",
+            "nursing": "סיעוד",
+            "engineer": "מהנדס",
+            "management": "ניהול",
+            "coaching": "אימון/הדרכה",
+            "design": "עיצוב",
+            "idf": "צה\"ל",
+            "other": "אחר"
+          }
+        },
+        "subspecialty": {
+          "label": "התמחות בתחום העבודה",
+          "placeholder": "הזן את התמחותך"
+        },
+        "academicDegrees": {
+          "label": "תארים אקדמיים",
+          "placeholder": "הזן את תאריך האקדמיים"
+        },
+        "continue": "המשך"
+      },
+      "lifestyle": {
+        "title": "אורח חיים",
+        "subtitle": "ספר לנו על הפעילויות היומיומיות והתחביבים שלך",
+        "computerAbility": {
+          "label": "רמת יכולת מחשב/סמארטפון (0 = נמוך, 5 = גבוה)",
+          "levels": {
+            "0": "אין",
+            "1": "מתחיל",
+            "2": "בינוני",
+            "3": "טוב",
+            "4": "טוב מאוד",
+            "5": "מצוין"
+          }
+        },
+        "sportActivity": {
+          "label": "רמת פעילות ספורטיבית שבועית (0 = נמוך, 5 = גבוה)",
+          "levels": {
+            "0": "אין",
+            "1": "לעיתים רחוקות",
+            "2": "לעיתים",
+            "3": "בקביעות",
+            "4": "לעיתים קרובות",
+            "5": "פעיל מאוד"
+          }
+        },
+        "weeklySchedule": {
+          "label": "רמת עומס בלוח השבועי (0 = נמוך, 5 = גבוה)",
+          "levels": {
+            "0": "זמין מאוד",
+            "1": "זמין בדרך כלל",
+            "2": "מאוזן",
+            "3": "עסוק מעט",
+            "4": "עסוק",
+            "5": "עסוק מאוד"
+          }
+        },
+        "interests": {
+          "label": "תחומי עניין (בחר את כל המתאים)",
+          "options": {
+            "books": "קריאת ספרים",
+            "culture": "תרבות",
+            "cooking": "בישול",
+            "trips": "טיולים",
+            "photography": "צילום",
+            "sport": "ספורט",
+            "other": "אחר",
+            "none": "אין",
+            "study": "לימודים",
+            "gardening": "גינון",
+            "computer": "מחשב",
+            "craftsmanship": "מלאכת יד"
+          }
+        },
+        "sportsSubspecialty": {
+          "label": "התמחות ספורטיבית",
+          "placeholder": "הזן את התמחותך הספורטיבית"
+        },
+        "continue": "המשך"
+      },
+      "veteransCommunity": {
+        "title": "קהילת ותיקים",
+        "subtitle": "ספר לנו על המעורבות שלך בקהילת הוותיקים",
+        "currentActivities": {
+          "label": "פעילויות נוכחיות",
+          "options": {
+            "cooking": "בישול",
+            "trips": "טיולים",
+            "choir": "מקהלה",
+            "torahClasses": "שיעורי תורה",
+            "lectures": "הרצאות",
+            "exercise": "תרגילים"
+          }
+        },
+        "notParticipating": {
+          "label": "סיבת אי השתתפות",
+          "placeholder": "בחר סיבה",
+          "options": {
+            "noChallenge": "אין אתגר",
+            "notRelevant": "לא רלוונטי",
+            "noInfo": "אין לי מידע",
+            "notInteresting": "לא מעניין",
+            "noTime": "אין לי זמן"
+          }
+        },
+        "volunteering": {
+          "isVolunteer": {
+            "label": "האם אתה מתנדב כבר?",
+            "yes": "כן"
+          },
+          "areas": {
+            "label": "תחומי התנדבות",
+            "options": {
+              "publicity": "יחסי ציבור",
+              "health": "בריאות",
+              "eater": "תזונה",
+              "teaching": "הוראה",
+              "highTech": "הייטק",
+              "tourism": "תיירות",
+              "safety": "בטיחות",
+              "funds": "קרנות",
+              "specialTreat": "טיפול מיוחד",
+              "craftsmanship": "מלאכת יד",
+              "aaliyah": "עלייה",
+              "culture": "תרבות"
+            }
+          },
+          "frequency": {
+            "label": "תדירות",
+            "placeholder": "בחר תדירות",
+            "options": {
+              "onceMonth": "פעם בחודש",
+              "onceTwoWeeks": "פעם בשבועיים",
+              "onceWeek": "פעם בשבוע",
+              "twiceWeek": "פעמיים בשבוע"
+            }
+          },
+          "hours": {
+            "label": "שעות",
+            "placeholder": "בחר שעות",
+            "options": {
+              "morning": "שעות בוקר",
+              "noon": "שעות צהריים",
+              "evening": "שעות ערב"
+            }
+          },
+          "days": {
+            "label": "ימים",
+            "options": {
+              "monday": "יום שני",
+              "tuesday": "יום שלישי",
+              "wednesday": "יום רביעי",
+              "thursday": "יום חמישי",
+              "friday": "יום שישי",
+              "saturday": "יום שבת"
+            }
+          }
+        },
+        "additionalVolunteering": {
+          "label": "האם תרצה להתנדב בנוסף?",
+          "yes": "כן",
+          "areas": {
+            "label": "תחומי עניין"
+          },
+          "frequency": {
+            "label": "תדירות מועדפת"
+          }
+        },
+        "consultation": {
+          "label": "האם תרצה ייעוץ באחד מהתחומים הבאים?",
+          "options": {
+            "company": "חברה",
+            "gardening": "גינון",
+            "health": "בריאות",
+            "nutrition": "תזונה",
+            "homeEconomics": "כלכלת בית",
+            "houseOrder": "סדר בבית",
+            "marketing": "שיווק",
+            "shopping": "קניות",
+            "mobility": "ניידות",
+            "digital": "דיגיטלי",
+            "legal": "משפטי",
+            "psychology": "פסיכולוגיה",
+            "houseRules": "חוקי בית",
+            "sport": "ספורט"
+          }
+        },
+        "continue": "המשך"
+      },
+      "forgotPassword": {
+        "title": "איפוס סיסמה",
+        "emailPlaceholder": "הזן את האימייל שלך",
+        "sendButton": "שלח קישור לאיפוס",
+        "sending": "שולח...",
+        "backToLogin": "חזרה להתחברות",
+        "success": "נשלח אימייל לאיפוס סיסמה! אנא בדוק את תיבת הדואר שלך.",
+        "error": "שליחת אימייל האיפוס נכשלה"
+      },
+      "logout": {
+        "success": "התנתקת בהצלחה!",
+        "error": "ההתנתקות נכשלה. אנא נסה שוב."
+      },
+      "credentials": {
+        "title": "פרטי חשבון",
+        "subtitle": "צור את פרטי החשבון שלך",
+        "email": {
+          "label": "אימייל",
+          "placeholder": "הזן את האימייל שלך",
+          "required": "אימייל נדרש",
+          "invalid": "פורמט אימייל לא תקין",
+          "inUse": "האימייל כבר בשימוש",
+          "available": "האימייל זמין"
+        },
+        "username": {
+          "label": "שם משתמש",
+          "placeholder": "בחר שם משתמש",
+          "required": "שם משתמש נדרש",
+          "minLength": "שם המשתמש חייב להכיל לפחות 3 תווים",
+          "invalid": "שם המשתמש יכול להכיל רק אותיות, מספרים וקו תחתון",
+          "inUse": "שם המשתמש כבר בשימוש",
+          "available": "שם המשתמש זמין"
+        },
+        "password": {
+          "label": "סיסמה",
+          "placeholder": "צור סיסמה",
+          "required": "סיסמה נדרשת",
+          "minLength": "הסיסמה חייב להכיל לפחות 8 תווים",
+          "requirements": "הסיסמה חייבת להכיל אות גדולה, אות קטנה וספרה אחת לפחות"
+        },
+        "confirmPassword": {
+          "label": "אימות סיסמה",
+          "placeholder": "אמת את הסיסמה שלך",
+          "required": "אנא אמת את הסיסמה",
+          "mismatch": "הסיסמאות אינן תואמות"
+        },
+        "validation": {
+          "wait": "אנא המתן בזמן שאנו בודקים את המידע שלך",
+          "fix": "אנא תקן את השגיאות לפני שתמשיך",
+          "success": "המידע אומת בהצלחה"
+        }
+      }
+    },
+    "dashboard": {
+      "welcome": "ברוך הבא",
+      "profile": "פרופיל",
+      "events": "אירועים",
+      "settings": "הגדרות",
+      "logout": "התנתק",
+      "upcomingEvents": "אירועים קרובים",
+      "pastEvents": "אירועים קודמים",
+      "noEvents": "לא נמצאו אירועים",
+      "createEvent": "צור אירוע",
+      "editEvent": "ערוך אירוע",
+      "deleteEvent": "מחק אירוע",
+      "eventDetails": "פרטי אירוע",
+      "eventTitle": "כותרת האירוע",
+      "eventDate": "תאריך האירוע",
+      "eventTime": "שעת האירוע",
+      "eventLocation": "מיקום האירוע",
+      "eventDescription": "תיאור האירוע",
+      "eventParticipants": "משתתפי האירוע",
+      "eventStatus": "סטטוס האירוע",
+      "search": {
+        "placeholder": "חיפוש אירועים",
+        "button": "חיפוש"
+      },
+      "language": {
+        "english": "אנגלית",
+        "russian": "רוסית",
+        "hebrew": "עברית",
+        "arabic": "ערבית"
+      },
+      "header": {
+        "title": "דור הזהב",
+        "logout": "התנתק"
+      },
+      "notifications": "התראות",
+      "calendar": "לוח שנה",
+      "messages": "הודעות"
+    },
+    "errors": {
+      "required": "שדה זה נדרש",
+      "invalidEmail": "אנא הזן אימייל תקין",
+      "invalidPhone": "אנא הזן מספר טלפון תקין",
+      "invalidDate": "אנא הזן תאריך תקין",
+      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "passwordRequirements": "הסיסמה חייבת להכיל לפחות 8 תווים, אות גדולה, אות קטנה וספרה אחת",
+      "usernameRequirements": "שם המשתמש חייב להכיל לפחות 3 תווים ויכול להכיל רק אותיות, מספרים וקו תחתון",
+      "futureDate": "לא ניתן לבחור תאריך בעתיד",
+      "minAge": "גיל מינימלי הוא 50 שנים"
+    },
+    "header": {
+      "search": "חיפוש",
+      "language": "שפה"
+    }
+  } 

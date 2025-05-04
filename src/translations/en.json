@@ -1,0 +1,566 @@
+{
+    "common": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "back": "Back",
+      "continue": "Continue",
+      "submit": "Submit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "required": "Required",
+      "optional": "Optional",
+      "switchLanguage": "Switch Language",
+      "step": "Step",
+      "of": "of",
+      "select": "Select"
+    },
+    "auth": {
+      "login": {
+        "title": "Sign in to your account",
+        "email": "Email address",
+        "password": "Password",
+        "forgotPassword": "Forgot your password?",
+        "noAccount": "Don't have an account?",
+        "signIn": "Sign in",
+        "signingIn": "Signing in...",
+        "signUp": "Sign up",
+        "user": "User",
+        "admin": "Admin",
+        "success": "Login successful!",
+        "error": "Failed to login. Please check your credentials.",
+        "imageAlt": "Couple enjoying event"
+      },
+      "signup": {
+        "title": "Create Your Account",
+        "haveAccount": "Already have an account?",
+        "signIn": "Sign in",
+        "creating": "Creating your account...",
+        "success": "Account created successfully!",
+        "error": {
+          "incomplete": "Please complete all required information",
+          "general": "Failed to create account. Please try again."
+        },
+        "steps": {
+          "idVerification": "ID Verification",
+          "credentials": "Account Credentials",
+          "personalDetails": "Personal Details",
+          "workBackground": "Work Background",
+          "lifestyle": "Lifestyle",
+          "veteransCommunity": "Veterans Community"
+        }
+      },
+      "personalDetails": {
+        "title": "Personal Details",
+        "subtitle": "Tell us about yourself",
+        "firstName": {
+          "label": "First Name",
+          "placeholder": "Enter your first name"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "placeholder": "Enter your last name"
+        },
+        "birthDate": {
+          "label": "Date of Birth"
+        },
+        "gender": {
+          "label": "Gender",
+          "placeholder": "Select your gender",
+          "options": {
+            "male": "Male",
+            "female": "Female",
+            "other": "Other"
+          }
+        },
+        "maritalStatus": {
+          "label": "Marital Status",
+          "placeholder": "Select your marital status",
+          "options": {
+            "single": "Single",
+            "married": "Married",
+            "divorced": "Divorced",
+            "widowed": "Widowed"
+          }
+        },
+        "city": {
+          "label": "City",
+          "placeholder": "Enter your city"
+        },
+        "address": {
+          "label": "Address",
+          "placeholder": "Enter your full address"
+        },
+        "phone": {
+          "label": "Phone Number (Optional)",
+          "placeholder": "Enter your phone number"
+        },
+        "mobilePhone": {
+          "label": "Mobile Phone",
+          "placeholder": "Enter your mobile phone number"
+        },
+        "emergencyContact": {
+          "title": "Emergency Contact",
+          "name": {
+            "label": "Contact Name",
+            "placeholder": "Enter contact name"
+          },
+          "phone": {
+            "label": "Contact Phone",
+            "placeholder": "Enter contact phone number"
+          },
+          "relation": {
+            "label": "Relationship",
+            "placeholder": "Enter your relationship to the contact"
+          }
+        },
+        "continue": "Continue",
+        "nativeLanguage": {
+          "label": "Native Language",
+          "placeholder": "Enter your native language"
+        },
+        "hebrewLevel": {
+          "label": "Hebrew Level",
+          "placeholder": "Enter your Hebrew level"
+        },
+        "arrivalDate": {
+          "label": "Arrival Date",
+          "placeholder": "Select your arrival date"
+        },
+        "originCountry": {
+          "label": "Country of Origin",
+          "placeholder": "Enter your country of origin"
+        },
+        "healthCondition": {
+          "label": "Health Condition",
+          "placeholder": "Enter your health condition"
+        },
+        "militaryService": {
+          "label": "Military Service",
+          "placeholder": "Enter your military service"
+        },
+        "additionalOptions": "Additional Options",
+        "hasCar": {
+          "label": "Has Car"
+        },
+        "livingAlone": {
+          "label": "Living Alone"
+        },
+        "familyInSettlement": {
+          "label": "Family in Settlement"
+        },
+        "hasWeapon": {
+          "label": "Has Weapon"
+        }
+      },
+      "workBackground": {
+        "title": "Work Background",
+        "subtitle": "Tell us about your professional experience",
+        "retirementStatus": {
+          "label": "Retirement Status",
+          "options": {
+            "notRetired": "I didn't retire",
+            "partially": "Partially",
+            "full": "Full"
+          }
+        },
+        "currentEmployment": {
+          "label": "Are you working today?",
+          "yes": "Yes",
+          "dischargeDate": "Expected discharge date"
+        },
+        "lastJobs": {
+          "label": "Last Job(s)",
+          "options": {
+            "doctor": "Doctor",
+            "funds": "Funds",
+            "sales": "Sales",
+            "marketing": "Marketing",
+            "highTech": "High tech",
+            "teaching": "Teaching",
+            "housewife": "Housewife",
+            "admin": "Admin",
+            "socialAcademy": "Social Academy",
+            "psychology": "Psychology p.",
+            "tourism": "Tourism",
+            "retailing": "Retailing",
+            "nursing": "Nursing",
+            "engineer": "Engineer",
+            "management": "Management",
+            "coaching": "Coaching/Mentor",
+            "design": "Design",
+            "idf": "IDF",
+            "other": "Other"
+          }
+        },
+        "subspecialty": {
+          "label": "Subspecialty in work field",
+          "placeholder": "Enter your subspecialty"
+        },
+        "academicDegrees": {
+          "label": "Academic Degrees",
+          "placeholder": "Enter your academic degrees"
+        },
+        "continue": "Continue"
+      },
+      "lifestyle": {
+        "title": "Lifestyle",
+        "subtitle": "Tell us about your daily activities and interests",
+        "computerAbility": {
+          "label": "Level of ability in using a computer/smartphone (0 = low, 5 = high)",
+          "levels": {
+            "0": "None",
+            "1": "Basic",
+            "2": "Fair",
+            "3": "Good",
+            "4": "Very Good",
+            "5": "Excellent"
+          }
+        },
+        "sportActivity": {
+          "label": "Level of weekly sport activity (0 = low, 5 = high)",
+          "levels": {
+            "0": "None",
+            "1": "Rarely",
+            "2": "Sometimes",
+            "3": "Regular",
+            "4": "Often",
+            "5": "Very Active"
+          }
+        },
+        "weeklySchedule": {
+          "label": "Occupancy level of the weekly schedule (0 = low, 5 = high)",
+          "levels": {
+            "0": "Very Free",
+            "1": "Mostly Free",
+            "2": "Balanced",
+            "3": "Somewhat Busy",
+            "4": "Busy",
+            "5": "Very Busy"
+          }
+        },
+        "interests": {
+          "label": "Interests (select all that apply)",
+          "options": {
+            "books": "Safety read books",
+            "culture": "Culture",
+            "cooking": "Cooking",
+            "trips": "Trips",
+            "photography": "Photography",
+            "sport": "Sport",
+            "other": "Other",
+            "none": "Don't have",
+            "study": "Study",
+            "gardening": "Gardening",
+            "computer": "Computer",
+            "craftsmanship": "Craftsmanship"
+          }
+        },
+        "sportsSubspecialty": {
+          "label": "Sports Subspecialty",
+          "placeholder": "Enter your sports subspecialty"
+        },
+        "continue": "Continue"
+      },
+      "veteransCommunity": {
+        "title": "Veterans in the Community",
+        "subtitle": "Tell us about your community involvement",
+        "currentActivities": {
+          "label": "Current Activities",
+          "options": {
+            "cooking": "Cooking",
+            "trips": "Trips",
+            "choir": "Choir",
+            "torahClasses": "Torah classes",
+            "lectures": "Lectures",
+            "exercise": "Exercise"
+          }
+        },
+        "notParticipating": {
+          "label": "Reason for not participating",
+          "placeholder": "Select a reason",
+          "options": {
+            "noChallenge": "Not another challenger",
+            "notRelevant": "Not relevant",
+            "noInfo": "I have no information",
+            "notInteresting": "Not interesting",
+            "noTime": "I don't have time"
+          }
+        },
+        "volunteering": {
+          "isVolunteer": {
+            "label": "Are you already a volunteer?",
+            "yes": "Yes"
+          },
+          "areas": {
+            "label": "Volunteer Areas",
+            "options": {
+              "publicity": "Publicity",
+              "health": "Health",
+              "eater": "Eater",
+              "teaching": "Teaching",
+              "highTech": "High tech",
+              "tourism": "Tourism",
+              "safety": "Safety",
+              "funds": "Funds",
+              "specialTreat": "A special treat",
+              "craftsmanship": "Craftsmanship",
+              "aaliyah": "Aaliyah",
+              "culture": "Culture"
+            }
+          },
+          "frequency": {
+            "label": "Frequency",
+            "placeholder": "Select frequency",
+            "options": {
+              "onceMonth": "Once a month",
+              "onceTwoWeeks": "Once every two weeks",
+              "onceWeek": "Once a week",
+              "twiceWeek": "Twice a week"
+            }
+          },
+          "hours": {
+            "label": "Hours",
+            "placeholder": "Select hours",
+            "options": {
+              "morning": "Morning hours",
+              "noon": "Noon hours",
+              "evening": "Evening hours"
+            }
+          },
+          "days": {
+            "label": "Days",
+            "options": {
+              "monday": "Monday",
+              "tuesday": "Tuesday",
+              "wednesday": "Wednesday",
+              "thursday": "Thursday",
+              "friday": "Friday",
+              "saturday": "Saturday"
+            }
+          }
+        },
+        "additionalVolunteering": {
+          "label": "Would you like to volunteer additionally?",
+          "yes": "Yes",
+          "areas": {
+            "label": "Areas of Interest"
+          },
+          "frequency": {
+            "label": "Preferred Frequency"
+          }
+        },
+        "consultation": {
+          "label": "Would you like consultation in any of these areas?",
+          "options": {
+            "company": "Company",
+            "gardening": "Gardening",
+            "health": "Health",
+            "nutrition": "Food/nutrition",
+            "homeEconomics": "Home economics",
+            "houseOrder": "Order in the house",
+            "marketing": "Marketing",
+            "shopping": "Shopping",
+            "mobility": "Mobility",
+            "digital": "Digital",
+            "legal": "Legal",
+            "psychology": "Psychology",
+            "houseRules": "House rules",
+            "sport": "Sport"
+          }
+        },
+        "continue": "Continue"
+      },
+      "idVerification": {
+        "title": "ID Verification",
+        "subtitle": "Please provide your identification details",
+        "idNumber": {
+          "label": "ID Number",
+          "placeholder": "Enter your ID number"
+        },
+        "idType": {
+          "label": "ID Type",
+          "placeholder": "Select ID type",
+          "options": {
+            "passport": "Passport",
+            "nationalId": "National ID",
+            "driverLicense": "Driver's License"
+          }
+        },
+        "expiryDate": {
+          "label": "ID Expiry Date"
+        },
+        "idImage": {
+          "label": "ID Document Image",
+          "uploadButton": "Upload ID Document",
+          "dragDrop": "or drag and drop",
+          "fileTypes": "PNG, JPG, JPEG up to 5MB",
+          "fileSelected": "File selected successfully"
+        },
+        "selfie": {
+          "label": "Selfie with ID",
+          "uploadButton": "Upload a file",
+          "dragDrop": "or drag and drop",
+          "fileTypes": "PNG, JPG, JPEG up to 5MB",
+          "fileSelected": "File selected successfully"
+        },
+        "errors": {
+          "idRequired": "ID number is required",
+          "idFormat": "ID number must be 9 digits",
+          "idTypeRequired": "ID type is required",
+          "expiryRequired": "Expiry date is required",
+          "expired": "ID has expired",
+          "idImageRequired": "ID image is required",
+          "selfieRequired": "Selfie image is required",
+          "fileSize": "File size must be less than 5MB",
+          "fileType": "Only PNG, JPG, and JPEG files are allowed"
+        },
+        "continue": "Continue",
+        "language": {
+          "select": "Select language",
+          "hebEng": "Hebrew + English",
+          "heb": "Hebrew",
+          "eng": "English"
+        },
+        "uploadInstructions": "Please upload or scan your ID for auto-fill, or fill the form manually.",
+        "uploadButton": "Upload ID Document",
+        "startScanning": "Start Scanning",
+        "acceptedFormats": "Accepted formats: JPG, JPEG, PNG (max 5MB)",
+        "form": {
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "idNumber": "ID Number",
+          "idNumberPlaceholder": "Enter 9 digits",
+          "dateOfBirth": "Date of Birth",
+          "gender": "Gender",
+          "selectGender": "Select gender",
+          "genderMale": "Male",
+          "genderFemale": "Female",
+          "genderOther": "Other",
+          "submit": "Continue"
+        },
+        "errors": {
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "idNumberRequired": "ID number is required",
+          "invalidIdNumber": "ID number must be 9 digits",
+          "dateOfBirthRequired": "Date of birth is required",
+          "ageRequirement": "Minimum age is 50 years",
+          "ageRequirementNotMet": "Age requirement not met: minimum age is 50 years",
+          "genderRequired": "Gender is required",
+          "invalidFileType": "Invalid file type. Please upload a JPG, JPEG, or PNG file",
+          "fileSize": "File size exceeds 5MB",
+          "processing": "Error processing file",
+          "extraction": "Could not extract data from image",
+          "ocr": "Text recognition error"
+        }
+      },
+      "forgotPassword": {
+        "title": "Reset Password",
+        "emailPlaceholder": "Enter your email",
+        "sendButton": "Send Reset Link",
+        "sending": "Sending...",
+        "backToLogin": "Back to Login",
+        "success": "Password reset email sent! Please check your inbox.",
+        "error": "Failed to send reset email"
+      },
+      "logout": {
+        "success": "Logged out successfully!",
+        "error": "Failed to logout. Please try again."
+      },
+      "credentials": {
+        "title": "Account Credentials",
+        "subtitle": "Create your account credentials",
+        "email": {
+          "label": "Email Address",
+          "placeholder": "Enter your email address",
+          "required": "Email is required",
+          "invalid": "Invalid email format",
+          "inUse": "Email is already registered",
+          "available": "Email is available"
+        },
+        "username": {
+          "label": "Username",
+          "placeholder": "Choose a username",
+          "required": "Username is required",
+          "minLength": "Username must be at least 3 characters",
+          "invalid": "Username can only contain letters, numbers, and underscores",
+          "inUse": "Username is already taken",
+          "available": "Username is available"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Create a password",
+          "required": "Password is required",
+          "minLength": "Password must be at least 8 characters",
+          "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+        },
+        "confirmPassword": {
+          "label": "Confirm Password",
+          "placeholder": "Confirm your password",
+          "required": "Please confirm your password",
+          "mismatch": "Passwords do not match"
+        },
+        "validation": {
+          "wait": "Please wait while we verify your information",
+          "fix": "Please fix the errors before continuing",
+          "success": "Credentials validated successfully"
+        }
+      }
+    },
+    "dashboard": {
+      "welcome": "Welcome",
+      "profile": "Profile",
+      "events": "Events",
+      "settings": "Settings",
+      "logout": "Logout",
+      "upcomingEvents": "Upcoming Events",
+      "pastEvents": "Past Events",
+      "noEvents": "No events found",
+      "createEvent": "Create Event",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event",
+      "eventDetails": "Event Details",
+      "eventTitle": "Event Title",
+      "eventDate": "Event Date",
+      "eventTime": "Event Time",
+      "eventLocation": "Event Location",
+      "eventDescription": "Event Description",
+      "eventParticipants": "Event Participants",
+      "eventStatus": "Event Status",
+      "search": {
+        "placeholder": "Search Events",
+        "button": "Search"
+      },
+      "language": {
+        "english": "English",
+        "russian": "Russian",
+        "hebrew": "Hebrew",
+        "arabic": "Arabic"
+      },
+      "header": {
+        "title": "Golden Generation",
+        "logout": "Logout"
+      },
+      "notifications": "Notifications",
+      "calendar": "Calendar",
+      "messages": "Messages"
+    },
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "invalidPhone": "Please enter a valid phone number",
+      "invalidDate": "Please enter a valid date",
+      "passwordMismatch": "Passwords do not match",
+      "passwordRequirements": "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number",
+      "usernameRequirements": "Username must be at least 3 characters and can only contain letters, numbers, and underscores",
+      "futureDate": "Date cannot be in the future",
+      "minAge": "Minimum age required is 50 years old"
+    },
+    "header": {
+      "search": "Search",
+      "language": "Language"
+    }
+  } 

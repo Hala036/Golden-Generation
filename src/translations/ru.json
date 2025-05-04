@@ -1,0 +1,566 @@
+{
+    "common": {
+      "loading": "Загрузка...",
+      "error": "Ошибка",
+      "success": "Успешно",
+      "back": "Назад",
+      "continue": "Продолжить",
+      "submit": "Отправить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Редактировать",
+      "required": "Обязательно",
+      "optional": "Необязательно",
+      "switchLanguage": "Сменить язык",
+      "step": "Шаг",
+      "of": "из",
+      "select": "Выбрать"
+    },
+    "auth": {
+      "login": {
+        "title": "Вход в аккаунт",
+        "email": "Электронная почта",
+        "password": "Пароль",
+        "forgotPassword": "Забыли пароль?",
+        "noAccount": "Нет аккаунта?",
+        "signIn": "Войти",
+        "signingIn": "Вход...",
+        "signUp": "Регистрация",
+        "user": "Пользователь",
+        "admin": "Администратор",
+        "success": "Вход выполнен успешно!",
+        "error": "Ошибка входа. Проверьте данные.",
+        "imageAlt": "Пара на мероприятии"
+      },
+      "signup": {
+        "title": "Создание аккаунта",
+        "haveAccount": "Уже есть аккаунт?",
+        "signIn": "Войти",
+        "creating": "Создание аккаунта...",
+        "success": "Аккаунт успешно создан!",
+        "error": {
+          "incomplete": "Пожалуйста, заполните все обязательные поля",
+          "general": "Ошибка создания аккаунта. Попробуйте снова."
+        },
+        "steps": {
+          "idVerification": "Верификация ID",
+          "credentials": "Данные аккаунта",
+          "personalDetails": "Личные данные",
+          "workBackground": "Профессиональный опыт",
+          "lifestyle": "Образ жизни",
+          "veteransCommunity": "Сообщество ветеранов"
+        }
+      },
+      "personalDetails": {
+        "title": "Личные данные",
+        "subtitle": "Расскажите о себе",
+        "firstName": {
+          "label": "Имя",
+          "placeholder": "Введите ваше имя"
+        },
+        "lastName": {
+          "label": "Фамилия",
+          "placeholder": "Введите вашу фамилию"
+        },
+        "birthDate": {
+          "label": "Дата рождения"
+        },
+        "gender": {
+          "label": "Пол",
+          "placeholder": "Выберите пол",
+          "options": {
+            "male": "Мужской",
+            "female": "Женский",
+            "other": "Другой"
+          }
+        },
+        "maritalStatus": {
+          "label": "Семейное положение",
+          "placeholder": "Выберите семейное положение",
+          "options": {
+            "single": "Холост/Не замужем",
+            "married": "Женат/Замужем",
+            "divorced": "Разведен/Разведена",
+            "widowed": "Вдовец/Вдова"
+          }
+        },
+        "city": {
+          "label": "Город",
+          "placeholder": "Введите ваш город"
+        },
+        "address": {
+          "label": "Адрес",
+          "placeholder": "Введите ваш полный адрес"
+        },
+        "phone": {
+          "label": "Телефон (необязательно)",
+          "placeholder": "Введите ваш номер телефона"
+        },
+        "mobilePhone": {
+          "label": "Мобильный телефон",
+          "placeholder": "Введите ваш номер мобильного телефона"
+        },
+        "emergencyContact": {
+          "title": "Контактное лицо",
+          "name": {
+            "label": "Имя контактного лица",
+            "placeholder": "Введите имя контактного лица"
+          },
+          "phone": {
+            "label": "Телефон контактного лица",
+            "placeholder": "Введите телефон контактного лица"
+          },
+          "relation": {
+            "label": "Отношение",
+            "placeholder": "Укажите ваше отношение к контактному лицу"
+          }
+        },
+        "continue": "Продолжить",
+        "nativeLanguage": {
+          "label": "Родной язык",
+          "placeholder": "Введите ваш родной язык"
+        },
+        "hebrewLevel": {
+          "label": "Уровень иврита",
+          "placeholder": "Введите ваш уровень иврита"
+        },
+        "arrivalDate": {
+          "label": "Дата прибытия",
+          "placeholder": "Выберите дату прибытия"
+        },
+        "originCountry": {
+          "label": "Страна происхождения",
+          "placeholder": "Введите вашу страну происхождения"
+        },
+        "healthCondition": {
+          "label": "Состояние здоровья",
+          "placeholder": "Введите ваше состояние здоровья"
+        },
+        "militaryService": {
+          "label": "Военная служба",
+          "placeholder": "Введите вашу военную службу"
+        },
+        "additionalOptions": "Дополнительные опции",
+        "hasCar": {
+          "label": "Есть автомобиль"
+        },
+        "livingAlone": {
+          "label": "Живу один"
+        },
+        "familyInSettlement": {
+          "label": "Семья в поселении"
+        },
+        "hasWeapon": {
+          "label": "Есть оружие"
+        }
+      },
+      "workBackground": {
+        "title": "Профессиональный опыт",
+        "subtitle": "Расскажите о вашем профессиональном опыте",
+        "retirementStatus": {
+          "label": "Статус пенсии",
+          "options": {
+            "notRetired": "Не на пенсии",
+            "partially": "Частично",
+            "full": "Полная"
+          }
+        },
+        "currentEmployment": {
+          "label": "Вы работаете сейчас?",
+          "yes": "Да",
+          "dischargeDate": "Ожидаемая дата увольнения"
+        },
+        "lastJobs": {
+          "label": "Последние места работы",
+          "options": {
+            "doctor": "Врач",
+            "funds": "Фонды",
+            "sales": "Продажи",
+            "marketing": "Маркетинг",
+            "highTech": "Высокие технологии",
+            "teaching": "Преподавание",
+            "housewife": "Домохозяйка",
+            "admin": "Администрация",
+            "socialAcademy": "Социальная академия",
+            "psychology": "Психология",
+            "tourism": "Туризм",
+            "retailing": "Розничная торговля",
+            "nursing": "Медсестра",
+            "engineer": "Инженер",
+            "management": "Управление",
+            "coaching": "Коучинг/Наставничество",
+            "design": "Дизайн",
+            "idf": "IDF",
+            "other": "Другое"
+          }
+        },
+        "subspecialty": {
+          "label": "Специализация в области работы",
+          "placeholder": "Введите вашу специализацию"
+        },
+        "academicDegrees": {
+          "label": "Академические степени",
+          "placeholder": "Введите ваши академические степени"
+        },
+        "continue": "Продолжить"
+      },
+      "lifestyle": {
+        "title": "Образ жизни",
+        "subtitle": "Расскажите о вашей повседневной деятельности и интересах",
+        "computerAbility": {
+          "label": "Уровень владения компьютером/смартфоном (0 = низкий, 5 = высокий)",
+          "levels": {
+            "0": "Нет",
+            "1": "Базовый",
+            "2": "Средний",
+            "3": "Хороший",
+            "4": "Очень хороший",
+            "5": "Отличный"
+          }
+        },
+        "sportActivity": {
+          "label": "Уровень спортивной активности в неделю (0 = низкий, 5 = высокий)",
+          "levels": {
+            "0": "Нет",
+            "1": "Редко",
+            "2": "Иногда",
+            "3": "Регулярно",
+            "4": "Часто",
+            "5": "Очень активно"
+          }
+        },
+        "weeklySchedule": {
+          "label": "Занятость в недельном расписании (0 = низкая, 5 = высокая)",
+          "levels": {
+            "0": "Очень свободно",
+            "1": "В основном свободно",
+            "2": "Сбалансированно",
+            "3": "Довольно занято",
+            "4": "Занято",
+            "5": "Очень занято"
+          }
+        },
+        "interests": {
+          "label": "Интересы (выберите все подходящие)",
+          "options": {
+            "books": "Чтение книг",
+            "culture": "Культура",
+            "cooking": "Кулинария",
+            "trips": "Путешествия",
+            "photography": "Фотография",
+            "sport": "Спорт",
+            "other": "Другое",
+            "none": "Нет",
+            "study": "Учеба",
+            "gardening": "Садоводство",
+            "computer": "Компьютер",
+            "craftsmanship": "Ремесло"
+          }
+        },
+        "sportsSubspecialty": {
+          "label": "Спортивная специализация",
+          "placeholder": "Введите вашу спортивную специализацию"
+        },
+        "continue": "Продолжить"
+      },
+      "veteransCommunity": {
+        "title": "Ветераны в сообществе",
+        "subtitle": "Расскажите о вашем участии в сообществе",
+        "currentActivities": {
+          "label": "Текущие занятия",
+          "options": {
+            "cooking": "Кулинария",
+            "trips": "Путешествия",
+            "choir": "Хор",
+            "torahClasses": "Занятия по Торе",
+            "lectures": "Лекции",
+            "exercise": "Упражнения"
+          }
+        },
+        "notParticipating": {
+          "label": "Причина неучастия",
+          "placeholder": "Выберите причину",
+          "options": {
+            "noChallenge": "Нет вызова",
+            "notRelevant": "Не актуально",
+            "noInfo": "Нет информации",
+            "notInteresting": "Не интересно",
+            "noTime": "Нет времени"
+          }
+        },
+        "volunteering": {
+          "isVolunteer": {
+            "label": "Вы уже волонтер?",
+            "yes": "Да"
+          },
+          "areas": {
+            "label": "Области волонтерства",
+            "options": {
+              "publicity": "Публичность",
+              "health": "Здоровье",
+              "eater": "Питание",
+              "teaching": "Преподавание",
+              "highTech": "Высокие технологии",
+              "tourism": "Туризм",
+              "safety": "Безопасность",
+              "funds": "Фонды",
+              "specialTreat": "Особое обращение",
+              "craftsmanship": "Ремесло",
+              "aaliyah": "Алия",
+              "culture": "Культура"
+            }
+          },
+          "frequency": {
+            "label": "Частота",
+            "placeholder": "Выберите частоту",
+            "options": {
+              "onceMonth": "Раз в месяц",
+              "onceTwoWeeks": "Раз в две недели",
+              "onceWeek": "Раз в неделю",
+              "twiceWeek": "Два раза в неделю"
+            }
+          },
+          "hours": {
+            "label": "Часы",
+            "placeholder": "Выберите часы",
+            "options": {
+              "morning": "Утренние часы",
+              "noon": "Дневные часы",
+              "evening": "Вечерние часы"
+            }
+          },
+          "days": {
+            "label": "Дни",
+            "options": {
+              "monday": "Понедельник",
+              "tuesday": "Вторник",
+              "wednesday": "Среда",
+              "thursday": "Четверг",
+              "friday": "Пятница",
+              "saturday": "Суббота"
+            }
+          }
+        },
+        "additionalVolunteering": {
+          "label": "Хотите ли вы дополнительно волонтерить?",
+          "yes": "Да",
+          "areas": {
+            "label": "Области интересов"
+          },
+          "frequency": {
+            "label": "Предпочтительная частота"
+          }
+        },
+        "consultation": {
+          "label": "Хотите ли вы консультацию в любой из этих областей?",
+          "options": {
+            "company": "Компания",
+            "gardening": "Садоводство",
+            "health": "Здоровье",
+            "nutrition": "Питание",
+            "homeEconomics": "Домашняя экономика",
+            "houseOrder": "Порядок в доме",
+            "marketing": "Маркетинг",
+            "shopping": "Покупки",
+            "mobility": "Мобильность",
+            "digital": "Цифровые технологии",
+            "legal": "Юридические вопросы",
+            "psychology": "Психология",
+            "houseRules": "Правила дома",
+            "sport": "Спорт"
+          }
+        },
+        "continue": "Продолжить"
+      },
+      "idVerification": {
+        "title": "Верификация ID",
+        "subtitle": "Пожалуйста, предоставьте ваши идентификационные данные",
+        "idNumber": {
+          "label": "Номер ID",
+          "placeholder": "Введите ваш номер ID"
+        },
+        "idType": {
+          "label": "Тип ID",
+          "placeholder": "Выберите тип ID",
+          "options": {
+            "passport": "Паспорт",
+            "nationalId": "Национальный ID",
+            "driverLicense": "Водительские права"
+          }
+        },
+        "expiryDate": {
+          "label": "Срок действия ID"
+        },
+        "idImage": {
+          "label": "Изображение ID",
+          "uploadButton": "Загрузить файл",
+          "dragDrop": "или перетащите",
+          "fileTypes": "PNG, JPG, JPEG до 5MB",
+          "fileSelected": "Файл успешно выбран"
+        },
+        "selfie": {
+          "label": "Фото с ID",
+          "uploadButton": "Загрузить файл",
+          "dragDrop": "или перетащите",
+          "fileTypes": "PNG, JPG, JPEG до 5MB",
+          "fileSelected": "Файл успешно выбран"
+        },
+        "errors": {
+          "idRequired": "Номер ID обязателен",
+          "idFormat": "Номер ID должен содержать 9 цифр",
+          "idTypeRequired": "Тип ID обязателен",
+          "expiryRequired": "Срок действия обязателен",
+          "expired": "ID просрочен",
+          "idImageRequired": "Изображение ID обязательно",
+          "selfieRequired": "Фото с ID обязательно",
+          "fileSize": "Размер файла должен быть менее 5MB",
+          "fileType": "Допустимы только файлы PNG, JPG и JPEG"
+        },
+        "continue": "Продолжить",
+        "language": {
+          "select": "Выберите язык",
+          "hebEng": "Иврит + Английский",
+          "heb": "Иврит",
+          "eng": "Английский"
+        },
+        "uploadInstructions": "Пожалуйста, загрузите или отсканируйте ваш ID для автозаполнения, либо заполните форму вручную.",
+        "uploadButton": "Загрузить удостоверение личности",
+        "startScanning": "Начать сканирование",
+        "acceptedFormats": "Допустимые форматы: JPG, JPEG, PNG (макс. 5MB)",
+        "form": {
+          "firstName": "Имя",
+          "lastName": "Фамилия",
+          "idNumber": "Номер ID",
+          "idNumberPlaceholder": "Введите 9 цифр",
+          "dateOfBirth": "Дата рождения",
+          "gender": "Пол",
+          "selectGender": "Выберите пол",
+          "genderMale": "Мужской",
+          "genderFemale": "Женский",
+          "genderOther": "Другой",
+          "submit": "Продолжить"
+        },
+        "errors": {
+          "firstNameRequired": "Имя обязательно",
+          "lastNameRequired": "Фамилия обязательна",
+          "idNumberRequired": "Номер ID обязателен",
+          "invalidIdNumber": "Номер ID должен содержать 9 цифр",
+          "dateOfBirthRequired": "Дата рождения обязательна",
+          "ageRequirement": "Минимальный возраст — 50 лет",
+          "ageRequirementNotMet": "Требование по возрасту не выполнено: минимальный возраст — 50 лет",
+          "genderRequired": "Пол обязателен",
+          "invalidFileType": "Недопустимый тип файла. Загрузите JPG, JPEG или PNG",
+          "fileSize": "Размер файла превышает 5MB",
+          "processing": "Ошибка обработки файла",
+          "extraction": "Не удалось извлечь данные из изображения",
+          "ocr": "Ошибка распознавания текста"
+        }
+      },
+      "forgotPassword": {
+        "title": "Сброс пароля",
+        "emailPlaceholder": "Введите ваш email",
+        "sendButton": "Отправить ссылку для сброса",
+        "sending": "Отправка...",
+        "backToLogin": "Вернуться к входу",
+        "success": "Письмо для сброса пароля отправлено! Проверьте почту.",
+        "error": "Ошибка отправки письма для сброса"
+      },
+      "logout": {
+        "success": "Выход выполнен успешно!",
+        "error": "Ошибка выхода. Попробуйте снова."
+      },
+      "credentials": {
+        "title": "Данные аккаунта",
+        "subtitle": "Создайте данные вашего аккаунта",
+        "email": {
+          "label": "Электронная почта",
+          "placeholder": "Введите ваш email",
+          "required": "Email обязателен",
+          "invalid": "Неверный формат email",
+          "inUse": "Email уже зарегистрирован",
+          "available": "Email доступен"
+        },
+        "username": {
+          "label": "Имя пользователя",
+          "placeholder": "Выберите имя пользователя",
+          "required": "Имя пользователя обязательно",
+          "minLength": "Имя пользователя должно содержать минимум 3 символа",
+          "invalid": "Имя пользователя может содержать только буквы, цифры и подчеркивания",
+          "inUse": "Имя пользователя уже занято",
+          "available": "Имя пользователя доступно"
+        },
+        "password": {
+          "label": "Пароль",
+          "placeholder": "Создайте пароль",
+          "required": "Пароль обязателен",
+          "minLength": "Пароль должен содержать минимум 8 символов",
+          "requirements": "Пароль должен содержать минимум одну заглавную букву, одну строчную букву и одну цифру"
+        },
+        "confirmPassword": {
+          "label": "Подтверждение пароля",
+          "placeholder": "Подтвердите ваш пароль",
+          "required": "Пожалуйста, подтвердите пароль",
+          "mismatch": "Пароли не совпадают"
+        },
+        "validation": {
+          "wait": "Пожалуйста, подождите, пока мы проверяем ваши данные",
+          "fix": "Пожалуйста, исправьте ошибки перед продолжением",
+          "success": "Данные успешно проверены"
+        }
+      }
+    },
+    "dashboard": {
+      "welcome": "Добро пожаловать",
+      "profile": "Профиль",
+      "events": "Мероприятия",
+      "settings": "Настройки",
+      "logout": "Выход",
+      "upcomingEvents": "Предстоящие мероприятия",
+      "pastEvents": "Прошедшие мероприятия",
+      "noEvents": "Мероприятия не найдены",
+      "createEvent": "Создать мероприятие",
+      "editEvent": "Редактировать мероприятие",
+      "deleteEvent": "Удалить мероприятие",
+      "eventDetails": "Детали мероприятия",
+      "eventTitle": "Название мероприятия",
+      "eventDate": "Дата мероприятия",
+      "eventTime": "Время мероприятия",
+      "eventLocation": "Место проведения",
+      "eventDescription": "Описание мероприятия",
+      "eventParticipants": "Участники мероприятия",
+      "eventStatus": "Статус мероприятия",
+      "search": {
+        "placeholder": "Поиск мероприятий",
+        "button": "Поиск"
+      },
+      "language": {
+        "english": "Английский",
+        "russian": "Русский",
+        "hebrew": "Иврит",
+        "arabic": "Арабский"
+      },
+      "header": {
+        "title": "Золотое поколение",
+        "logout": "Выход"
+      },
+      "notifications": "Уведомления",
+      "calendar": "Календарь",
+      "messages": "Сообщения"
+    },
+    "errors": {
+      "required": "Это поле обязательно",
+      "invalidEmail": "Пожалуйста, введите корректный email",
+      "invalidPhone": "Пожалуйста, введите корректный номер телефона",
+      "invalidDate": "Пожалуйста, введите корректную дату",
+      "passwordMismatch": "Пароли не совпадают",
+      "passwordRequirements": "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру",
+      "usernameRequirements": "Имя пользователя должно содержать минимум 3 символа и может содержать только буквы, цифры и подчеркивания",
+      "futureDate": "Дата не может быть в будущем",
+      "minAge": "Минимальный возраст - 50 лет"
+    },
+    "header": {
+      "search": "Поиск",
+      "language": "Язык"
+    }
+  } 
