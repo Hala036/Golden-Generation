@@ -1,13 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useLanguage } from './context/LanguageContext';
-import LoginPage from './component/Login';
-import SignUp from './component/SignUp/SignUp';
-import ForgotPassword from './component/ForgotPassword';
-import Dashboard from './component/Dashboard';
-import PublicRoute from './component/PublicRoute';
-import ProtectedRoute from './component/ProtectedRoute';
-import LanguageSwitcher from './component/LanguageSwitcher';
+import LoginPage from './components/Login';
+import SignUp from './components/SignUp/SignUp';
+import ForgotPassword from './components/ForgotPassword';
+import Dashboard from './components/Dashboard';
+import PublicRoute from './components/PublicRoute';
+import ProtectedRoute from './components/ProtectedRoute';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
