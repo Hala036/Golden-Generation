@@ -14,7 +14,8 @@ const AppRoutes = () => {
 
   // Set document direction based on language
   React.useEffect(() => {
-    document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+    const rtlLanguages = ['he', 'ar'];
+    document.documentElement.dir = rtlLanguages.includes(language) ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);
 
