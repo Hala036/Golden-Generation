@@ -19,8 +19,10 @@ const AppRoutes = () => {
   }, [language]);
 
   return (
-    <div className="min-h-screen">
-      <LanguageSwitcher />
+    <div className="min-h-screen flex flex-col">
+      <div className="fixed top-2 right-2 z-50">
+        <LanguageSwitcher />
+      </div>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route 
