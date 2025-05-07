@@ -79,4 +79,4 @@ const SignUpProgress = ({ currentStep, stepValidation = {} }) => {
   );
 };
 
-export default SignUpProgress; 
+export default SignUpProgress;

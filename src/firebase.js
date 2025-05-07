@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -31,4 +31,68 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { app, analytics, auth, db, storage };
+// Settlement Management Functions
+/**
+ * Add a new settlement to available settlements
+ * @param {string} settlementName - The name of the settlement to add
+ * @returns {Promise<void>}
+ */
+const addSettlement = async (settlementName) => {
+  try {
+    await setDoc(doc(db, 'availableSettlements', settlementName), { 
+      name: settlementName,
+      available: true,
+      createdAt: new Date().toISOString() 
+    });
+    console.log(`Settlement "${settlementName}" added successfully`);
+    return true;
+  } catch (error) {
+    console.error("Error adding settlement:", error);
+    return false;
+  }
+};
+
+/**
+ * Get all available settlements
+ * @returns {Promise<Array>} - Array of settlement objects with name, available, etc.
+ */
+const getAvailableSettlements = async () => {
+  try {
+    const settlementsSnapshot = await getDocs(collection(db, 'availableSettlements'));
+    const settlements = [];
+    settlementsSnapshot.forEach((doc) => {
+      settlements.push({ id: doc.id, ...doc.data() });
+    });
+    return settlements;
+  } catch (error) {
+    console.error("Error getting settlements:", error);
+    return [];
+  }
+};
+
+/**
+ * Remove a settlement from available settlements
+ * @param {string} settlementName - The name of the settlement to remove
+ * @returns {Promise<boolean>} - True if successful, false otherwise
+ */
+const removeSettlement = async (settlementName) => {
+  try {
+    await deleteDoc(doc(db, 'availableSettlements', settlementName));
+    console.log(`Settlement "${settlementName}" removed successfully`);
+    return true;
+  } catch (error) {
+    console.error("Error removing settlement:", error);
+    return false;
+  }
+};
+
+export { 
+  app, 
+  analytics, 
+  auth, 
+  db, 
+  storage, 
+  addSettlement, 
+  getAvailableSettlements, 
+  removeSettlement 
+};
