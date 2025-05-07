@@ -137,15 +137,9 @@ const PersonalDetails = ({ onComplete }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    const requiredFields = ['address', 'settlement'];
+    // Removed the required fields validation - all fields are now optional
     
-    requiredFields.forEach(field => {
-      if (!personalData[field]?.trim()) {
-        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
-      }
-    });
-
-    // Additional validation for settlement
+    // Only validate the settlement if it has a value
     if (personalData.settlement && !settlements.some(s => s.id === personalData.settlement || s === personalData.settlement)) {
       newErrors.settlement = 'Please select a valid settlement';
     }
@@ -428,7 +422,6 @@ const PersonalDetails = ({ onComplete }) => {
             <FormField
               label="Address"
               name="address"
-              required
               placeholder="Enter your full address"
               className="sm:col-span-2"
             />
@@ -480,7 +473,6 @@ const PersonalDetails = ({ onComplete }) => {
                 value: settlement.id || settlement,
                 label: settlement.name || settlement
               })) : []}
-              required
               disabled={loading.settlements}
               className="sm:col-span-2"
             />
