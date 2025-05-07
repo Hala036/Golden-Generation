@@ -14,13 +14,16 @@ const AppRoutes = () => {
 
   // Set document direction based on language
   React.useEffect(() => {
-    document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+    const rtlLanguages = ['he', 'ar'];
+    document.documentElement.dir = rtlLanguages.includes(language) ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);
 
   return (
-    <div className="min-h-screen">
-      <LanguageSwitcher />
+    <div className="min-h-screen flex flex-col">
+      <div className="fixed top-2 right-2 z-50">
+        <LanguageSwitcher />
+      </div>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route 
