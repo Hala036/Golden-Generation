@@ -12,65 +12,75 @@ const Lifestyle = () => {
     sportActivity: 0,
     weeklySchedule: 0,
     interests: [],
-    sportsSubspecialty: ''
+    sportsSubspecialty: '',
+    customInterest: ''
   });
 
+  const [showOtherInput, setShowOtherInput] = useState(false);
+
   const interestOptions = [
-    { value: 'reading', label: 'Reading' },
-    { value: 'writing', label: 'Writing' },
-    { value: 'studying', label: 'Studying' },
-    { value: 'languages', label: 'Learning Languages' },
+    { value: '3dprinting', label: '3D Printing' },
+    { value: 'baking', label: 'Baking' },
+    { value: 'basketball', label: 'Basketball' },
+    { value: 'camping', label: 'Camping' },
     { value: 'chess', label: 'Chess' },
+    { value: 'climbing', label: 'Climbing' },
+    { value: 'cooking', label: 'Cooking' },
+    { value: 'crossfit', label: 'CrossFit' },
+    { value: 'culture', label: 'Cultural Exploration' },
+    { value: 'cycling', label: 'Cycling' },
+    { value: 'dancing', label: 'Dancing' },
+    { value: 'diy', label: 'DIY Crafts' },
     { value: 'drawing', label: 'Drawing' },
+    { value: 'electronics', label: 'Electronics' },
+    { value: 'gaming', label: 'Gaming' },
+    { value: 'gardening', label: 'Gardening' },
+    { value: 'gym', label: 'Gym Workouts' },
+    { value: 'hiking', label: 'Hiking' },
+    { value: 'homeworkouts', label: 'Home Workouts' },
+    { value: 'horseback', label: 'Horseback Riding' },
+    { value: 'journaling', label: 'Journaling' },
+    { value: 'languages', label: 'Learning Languages' },
+    { value: 'martialarts', label: 'Martial Arts' },
+    { value: 'meditation', label: 'Meditation' },
+    { value: 'museums', label: 'Visiting Museums' },
+    { value: 'music', label: 'Playing Instruments' },
     { value: 'painting', label: 'Painting' },
     { value: 'photography', label: 'Photography' },
-    { value: 'pottery', label: 'Pottery' },
-    { value: 'cooking', label: 'Cooking' },
-    { value: 'baking', label: 'Baking' },
-    { value: 'diy', label: 'DIY Crafts' },
-    { value: 'music', label: 'Playing Instruments' },
-    { value: 'singing', label: 'Singing' },
-    { value: 'gardening', label: 'Gardening' },
-    { value: 'meditation', label: 'Meditation' },
-    { value: 'yoga', label: 'Yoga' },
-    { value: 'journaling', label: 'Journaling' },
-    { value: 'volunteering', label: 'Volunteering' },
-    { value: 'programming', label: 'Programming' },
-    { value: 'electronics', label: 'Electronics' },
-    { value: 'robotics', label: 'Robotics' },
-    { value: 'gaming', label: 'Gaming' },
-    { value: '3dprinting', label: '3D Printing' },
-    { value: 'traveling', label: 'Traveling' },
-    { value: 'hiking', label: 'Hiking' },
-    { value: 'camping', label: 'Camping' },
-    { value: 'culture', label: 'Cultural Exploration' },
-    { value: 'museums', label: 'Visiting Museums' },
-    { value: 'walking', label: 'Walking' },
-    { value: 'jogging', label: 'Jogging' },
-    { value: 'running', label: 'Running' },
-    { value: 'cycling', label: 'Cycling' },
-    { value: 'swimming', label: 'Swimming' },
-    { value: 'tennis', label: 'Tennis' },
-    { value: 'soccer', label: 'Soccer' },
-    { value: 'basketball', label: 'Basketball' },
-    { value: 'volleyball', label: 'Volleyball' },
-    { value: 'tabletennis', label: 'Table Tennis' },
-    { value: 'martialarts', label: 'Martial Arts' },
     { value: 'pilates', label: 'Pilates' },
-    { value: 'crossfit', label: 'CrossFit' },
-    { value: 'climbing', label: 'Climbing' },
-    { value: 'surfing', label: 'Surfing' },
+    { value: 'pottery', label: 'Pottery' },
+    { value: 'programming', label: 'Programming' },
+    { value: 'reading', label: 'Reading' },
+    { value: 'robotics', label: 'Robotics' },
+    { value: 'running', label: 'Running' },
+    { value: 'singing', label: 'Singing' },
     { value: 'skiing', label: 'Skiing' },
-    { value: 'dancing', label: 'Dancing' },
-    { value: 'horseback', label: 'Horseback Riding' },
-    { value: 'gym', label: 'Gym Workouts' },
-    { value: 'homeworkouts', label: 'Home Workouts' }
+    { value: 'soccer', label: 'Soccer' },
+    { value: 'studying', label: 'Studying' },
+    { value: 'surfing', label: 'Surfing' },
+    { value: 'swimming', label: 'Swimming' },
+    { value: 'tabletennis', label: 'Table Tennis' },
+    { value: 'tennis', label: 'Tennis' },
+    { value: 'traveling', label: 'Traveling' },
+    { value: 'volleyball', label: 'Volleyball' },
+    { value: 'volunteering', label: 'Volunteering' },
+    { value: 'walking', label: 'Walking' },
+    { value: 'writing', label: 'Writing' },
+    { value: 'yoga', label: 'Yoga' },
   ];
+
+  // Sort alphabetically
+  const sortedOptions = interestOptions.sort((a, b) => a.label.localeCompare(b.label));
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLifestyleData(formData);
-    navigate('/summary');
+    const updatedData = { ...formData };
+    if (showOtherInput && formData.customInterest.trim()) {
+      updatedData.interests = [...formData.interests, formData.customInterest.trim()];
+    }
+    setLifestyleData(updatedData);
+    navigate('/VeteransCommunity');
+
   };
 
   return (
@@ -148,13 +158,29 @@ const Lifestyle = () => {
         <label className="block text-sm font-medium text-gray-700">Interests (search and select multiple)</label>
         <Select
           isMulti
-          options={interestOptions}
-          value={interestOptions.filter(option => formData.interests.includes(option.value))}
+          options={sortedOptions}
+          value={sortedOptions.filter(option => formData.interests.includes(option.value))}
           onChange={(selectedOptions) => {
             const selectedValues = selectedOptions.map(option => option.value);
             setFormData({ ...formData, interests: selectedValues });
           }}
         />
+        <button
+          type="button"
+          onClick={() => setShowOtherInput(!showOtherInput)}
+          className="text-sm text-black underline mt-2"
+        >
+          + Other
+        </button>
+        {showOtherInput && (
+          <input
+            type="text"
+            placeholder="Enter other interest"
+            value={formData.customInterest}
+            onChange={(e) => setFormData({ ...formData, customInterest: e.target.value })}
+            className="w-full mt-2 p-2 border border-gray-300 rounded"
+          />
+        )}
       </div>
 
       {/* Sports Subspecialty */}

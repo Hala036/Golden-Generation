@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -14,21 +13,26 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID
 };
 
-// Only initialize if there are no apps already
-const app = !getApps().length
-  ? initializeApp(firebaseConfig)
-  : getApp();
+// Check for missing config
+if (!firebaseConfig.apiKey || !firebaseConfig.authDomain) {
+  throw new Error("❌ One or more Firebase ENV variables are missing!");
+}
 
-// Now you can safely log to confirm
-console.log("FIREBASE CONFIG:", {
-  apiKey: firebaseConfig.apiKey,
-  authDomain: firebaseConfig.authDomain,
-  projectId: firebaseConfig.projectId
-});
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-const analytics = getAnalytics(app);
+// Optional: getAnalytics only if in browser
+let analytics;
+if (typeof window !== 'undefined') {
+  import("firebase/analytics").then(({ getAnalytics }) => {
+    analytics = getAnalytics(app);
+    console.log("📊 Firebase Analytics initialized");
+  });
+}
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { app, analytics, auth, db, storage };
+console.log("✅ Firebase initialized");
+
+export { app, auth, db, storage };
