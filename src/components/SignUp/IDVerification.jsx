@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { FaUpload, FaQrcode, FaFile, FaTimes } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from 'react';
+import { FaUpload, FaQrcode, FaFile, FaTimes, FaSpinner, FaInfoCircle } from 'react-icons/fa';
 import { storage } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import useSignupStore from '../../store/signupStore';
@@ -12,7 +12,10 @@ const IDVerification = ({ onComplete }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('eng+ara+heb+rus'); // Default to multiple languages
+  const [selectedLanguage, setSelectedLanguage] = useState('eng+ara+heb+rus');
+  const [settlements, setSettlements] = useState([]);
+  const [loadingSettlements, setLoadingSettlements] = useState(true);
+  const [settlementsError, setSettlementsError] = useState(false);
   const fileInputRef = useRef(null);
   const { idVerificationData, updateIdVerificationData } = useSignupStore();
 
@@ -25,6 +28,31 @@ const IDVerification = ({ onComplete }) => {
     { value: 'rus', label: 'Russian' }
   ];
 
+  // Fetch available settlements from API
+  useEffect(() => {
+    const fetchSettlements = async () => {
+      try {
+        setSettlementsError(false);
+        const response = await fetch('/api/settlements');
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setSettlements(data);
+      } catch (error) {
+        console.error('Error fetching settlements:', error);
+        setSettlementsError(true);
+        toast.error('Failed to load available settlements. Please try again later.');
+      } finally {
+        setLoadingSettlements(false);
+      }
+    };
+
+    fetchSettlements();
+  }, []);
+
   const handleUpload = () => {
     fileInputRef.current.click();
   };
@@ -34,24 +62,14 @@ const IDVerification = ({ onComplete }) => {
     let worker = null;
     
     try {
-      // Initialize worker
       worker = await createWorker();
-      
-      // Log initialization steps
-      console.log('Loading Tesseract...');
       await worker.load();
-      
-      console.log('Loading language...');
       await worker.loadLanguage(selectedLanguage);
-      
-      console.log('Initializing...');
       await worker.initialize(selectedLanguage);
       
-      console.log('Starting OCR...');
       const { data: { text } } = await worker.recognize(imageFile);
       console.log('Extracted OCR text:', text);
 
-      // Extract information from OCR text
       const extractedData = extractDataFromOCR(text);
       if (extractedData) {
         updateIdVerificationData(extractedData);
@@ -65,7 +83,6 @@ const IDVerification = ({ onComplete }) => {
     } finally {
       if (worker) {
         try {
-          console.log('Terminating worker...');
           await worker.terminate();
         } catch (terminateError) {
           console.error('Error terminating worker:', terminateError);
@@ -349,7 +366,7 @@ const IDVerification = ({ onComplete }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    const { firstName, lastName, dateOfBirth, gender, idNumber } = idVerificationData;
+    const { firstName, lastName, dateOfBirth, gender, idNumber,settlement } = idVerificationData;
 
     if (!firstName?.trim()) newErrors.firstName = 'First name is required';
     if (!lastName?.trim()) newErrors.lastName = 'Last name is required';
@@ -377,6 +394,7 @@ const IDVerification = ({ onComplete }) => {
     }
 
     if (!gender) newErrors.gender = 'Gender is required';
+    if (!settlement) newErrors.settlement = 'Settlement is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -388,6 +406,8 @@ const IDVerification = ({ onComplete }) => {
       onComplete();
     }
   };
+
+
 
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md mt-6">
@@ -401,16 +421,15 @@ const IDVerification = ({ onComplete }) => {
         <select
           value={selectedLanguage}
           onChange={(e) => setSelectedLanguage(e.target.value)}
-          className="w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]"
-        >
-          {languageOptions.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
+      className="w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]"
+    >
+      {languageOptions.map(option => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
       {/* ID Upload Section */}
       <div className="mb-8">
         <div className="text-center mb-4">
@@ -588,6 +607,45 @@ const IDVerification = ({ onComplete }) => {
               <p className="text-xs sm:text-sm text-red-500">{errors.gender}</p>
             )}
           </div>
+
+          {/* Settlement Dropdown */}
+          <div className="space-y-1 sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Settlement *
+            </label>
+            {loadingSettlements ? (
+              <div className="flex items-center gap-2 text-gray-500">
+                <FaSpinner className="animate-spin" />
+                <span>Loading settlements...</span>
+              </div>
+            ) : settlementsError ? (
+              <div className="text-red-500 flex items-center gap-1">
+                <FaInfoCircle />
+                <span>Failed to load settlements. Please try again later.</span>
+              </div>
+            ) : (
+              <select
+                name="settlement"
+                value={idVerificationData.settlement || ''}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
+                  errors.settlement
+                    ? 'border-red-500'
+                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
+                }`}
+              >
+                <option value="">Select settlement</option>
+                {settlements.map(settlement => (
+                  <option key={settlement.id || settlement} value={settlement.id || settlement}>
+                    {settlement.name || settlement}
+                  </option>
+                ))}
+              </select>
+            )}
+            {errors.settlement && (
+              <p className="text-xs sm:text-sm text-red-500">{errors.settlement}</p>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end pt-4">
@@ -600,7 +658,7 @@ const IDVerification = ({ onComplete }) => {
         </div>
       </form>
     </div>
-  );
-};
-
-export default IDVerification; 
+     );
+    };
+    
+    export default IDVerification;
