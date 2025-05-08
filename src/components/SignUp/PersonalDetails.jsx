@@ -19,15 +19,15 @@ import { toast } from 'react-hot-toast';
 
 const PersonalDetails = ({ onComplete }) => {
   const [errors, setErrors] = useState({});
-  const [settlements, setSettlements] = useState([]);
+  
   const { personalData, updatePersonalData } = useSignupStore();
   const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState({
-    settlements: true,
+   
     languages: true
   });
   const [apiError, setApiError] = useState({
-    settlements: false,
+   
     languages: false
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,30 +44,7 @@ const PersonalDetails = ({ onComplete }) => {
     { value: 'widowed', label: 'Widowed' },
   ];
 
-  // Fetch available settlements from API
-  useEffect(() => {
-    const fetchSettlements = async () => {
-      try {
-        setApiError(prev => ({ ...prev, settlements: false }));
-        const response = await fetch('/api/settlements');
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setSettlements(data);
-      } catch (error) {
-        console.error('Error fetching settlements:', error);
-        setApiError(prev => ({ ...prev, settlements: true }));
-        toast.error('Failed to load available settlements. Please try again later.');
-      } finally {
-        setLoading(prev => ({ ...prev, settlements: false }));
-      }
-    };
-
-    fetchSettlements();
-  }, []);
+  
 
   // Fetch languages from API
   useEffect(() => {
@@ -137,7 +114,7 @@ const PersonalDetails = ({ onComplete }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    const requiredFields = ['address', 'settlement'];
+    const requiredFields = ['address'];
     
     requiredFields.forEach(field => {
       if (!personalData[field]?.trim()) {
@@ -145,10 +122,7 @@ const PersonalDetails = ({ onComplete }) => {
       }
     });
 
-    // Additional validation for settlement
-    if (personalData.settlement && !settlements.some(s => s.id === personalData.settlement || s === personalData.settlement)) {
-      newErrors.settlement = 'Please select a valid settlement';
-    }
+   
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -172,13 +146,37 @@ const PersonalDetails = ({ onComplete }) => {
 
   const getLanguageIcon = (language) => {
     const lowercaseLang = language.toLowerCase();
-    if (lowercaseLang === 'english') return <FaGlobe className="text-blue-500" />;
-    if (lowercaseLang === 'spanish') return <FaComment className="text-red-500" />;
-    if (lowercaseLang === 'french') return <FaFlag className="text-indigo-500" />;
-    if (lowercaseLang === 'hebrew') return <FaUniversity className="text-yellow-600" />;
-    if (lowercaseLang === 'arabic') return <FaBookReader className="text-green-600" />;
-    return <FaHandshake className="text-gray-500" />;
+    let countryCode;
+  
+    switch (lowercaseLang) {
+      case 'english':
+        countryCode = 'gb'; // United Kingdom (or use 'us')
+        break;
+      case 'spanish':
+        countryCode = 'es';
+        break;
+      case 'french':
+        countryCode = 'fr';
+        break;
+      case 'hebrew':
+        countryCode = 'il';
+        break;
+      case 'arabic':
+        countryCode = 'sa'; // Saudi Arabia (or use 'ae', 'eg', etc.)
+        break;
+      default:
+        return <span className="text-xl">🌐</span>; // Fallback
+    }
+  
+    return (
+      <img
+        src={`https://flagcdn.com/w20/${countryCode}.png`}
+        alt={`${language} flag`}
+        className="w-5 h-4 object-cover rounded-sm"
+      />
+    );
   };
+  
 
   const FormField = ({ label, name, type = 'text', required = false, options, placeholder, className = '', disabled = false }) => {
     const getFieldIcon = () => {
@@ -191,7 +189,7 @@ const PersonalDetails = ({ onComplete }) => {
         case 'originCountry': return <FaGlobe className="text-[#FFD966]" />;
         case 'healthCondition': return <FaInfoCircle className="text-[#FFD966]" />;
         case 'militaryService': return <FaInfoCircle className="text-[#FFD966]" />;
-        case 'settlement': return <FaInfoCircle className="text-[#FFD966]" />;
+        
         default: return <FaInfoCircle className="text-[#FFD966]" />;
       }
     };
@@ -465,41 +463,7 @@ const PersonalDetails = ({ onComplete }) => {
           </div>
         </section>
 
-        {/* Settlement */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
-            <FaCheck className="text-green-500" />
-            <h3>Settlement</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <FormField
-              label="Settlement"
-              name="settlement"
-              type="select"
-              options={Array.isArray(settlements) ? settlements.map(settlement => ({
-                value: settlement.id || settlement,
-                label: settlement.name || settlement
-              })) : []}
-              required
-              disabled={loading.settlements}
-              className="sm:col-span-2"
-            />
-            {loading.settlements && (
-              <div className="flex items-center text-gray-500 sm:col-span-2">
-                <FaSpinner className="animate-spin mr-2" />
-                Loading available settlements...
-              </div>
-            )}
-            {!loading.settlements && settlements.length === 0 && (
-              <div className="text-red-500 sm:col-span-2">
-                {apiError.settlements 
-                  ? "Couldn't connect to the server. Please try again later."
-                  : "No settlements available for sign-up. Please contact support."}
-              </div>
-            )}
-          </div>
-        </section>
-
+       
         {/* Additional Information */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
