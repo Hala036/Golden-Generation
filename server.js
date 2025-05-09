@@ -82,9 +82,35 @@ const __dirname = path.dirname(__filename);
       ]);
     });
 
-    app.get('/api/health', (_req, res) => {
-      res.json({ status: 'ok', timestamp: new Date().toISOString() });
-    });
+  app.get('/api/settlements', async (req, res) => {
+  try {
+    let snapshot;
+    try {
+      snapshot = await admin.firestore()
+        .collection('availableSettlements')
+        .where('available', '==', true)
+        .orderBy('name', 'asc')
+        .get();
+    } catch (indexError) {
+      console.warn('Firestore index error, fallback:', indexError.message);
+      snapshot = await admin.firestore()
+        .collection('availableSettlements')
+        .where('available', '==', true)
+        .get();
+    }
+
+    const settlements = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.json(settlements || []);
+  } catch (err) {
+    console.error('Error fetching settlements:', err); // Make sure this logs the full error
+    res.status(500).json({ error: 'Failed to fetch settlements', message: err.message });
+  }
+});
+
 
     app.listen(PORT, '127.0.0.1', () => {
       console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);
