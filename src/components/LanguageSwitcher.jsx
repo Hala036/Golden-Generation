@@ -23,7 +23,13 @@ const LanguageSwitcher = () => {
       value={language}
       onChange={handleLanguageChange}
       style={{ width: 120 }}
-      dropdownStyle={{ direction: 'ltr' }}
+      styles={{
+        popup: {
+          root: {
+            direction: 'ltr',
+          },
+        },
+  }}
     >
       {languages.map((lang) => (
         <Option key={lang.code} value={lang.code}>
