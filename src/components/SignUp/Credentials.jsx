@@ -4,6 +4,7 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import useSignupStore from '../../store/signupStore';
 import { debounce } from 'lodash';
 import { toast } from 'react-hot-toast';
+import { fetchSignInMethodsForEmail } from 'firebase/auth';
 
 const Credentials = ({ onComplete }) => {
   const [errors, setErrors] = useState({});
@@ -26,7 +27,7 @@ const Credentials = ({ onComplete }) => {
         toast.error('Email is already registered');
       } else {
         setErrors(prev => ({ ...prev, email: '' }));
-        if (email.length > 0 && /\S+@\S+\.\S+/.test(email)) {
+        if (email.length > 0 && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
           toast.success('Email is available');
         }
       }
@@ -88,7 +89,7 @@ const Credentials = ({ onComplete }) => {
     // Email validation
     if (!email) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
       newErrors.email = 'Invalid email format';
     }
 
@@ -124,44 +125,58 @@ const Credentials = ({ onComplete }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isChecking) {
-      toast.error('Please wait while we verify your information');
-      return;
+        toast.error('Please wait while we verify your information');
+        return;
     }
 
-    if (!validateForm()) {
-      toast.error('Please fix the errors before continuing');
-      return;
-    }
-
-    // Final availability check before submission
+    // Show loading state
     setIsChecking(true);
+    toast.loading('Validating credentials...', { id: 'credentials-check' });
+
     try {
-      // Check both email and username one last time
-      const [emailAvailable, usernameAvailable] = await Promise.all([
-        checkEmailFinal(credentialsData.email),
-        checkUsernameFinal(credentialsData.username)
-      ]);
+        // Run all validations in parallel
+        const [formIsValid, usernameAvailable] = await Promise.all([
+            validateForm(),
+            checkUsernameFinal(credentialsData.username)
+        ]);
 
-      if (!emailAvailable) {
-        setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
-        toast.error('Email is already registered');
-        return;
-      }
+        if (!formIsValid) {
+            toast.error('Please fix the form errors', { id: 'credentials-check' });
+            return;
+        }
 
-      if (!usernameAvailable) {
-        setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        toast.error('Username is already taken');
-        return;
-      }
+        if (!usernameAvailable) {
+            setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
+            toast.error('Username is already taken', { id: 'credentials-check' });
+            return;
+        }
 
-      // If both are available, proceed
-      toast.success('Credentials validated successfully');
-      onComplete();
+        // Check if email exists in Firebase Auth
+        try {
+            const methods = await fetchSignInMethodsForEmail(auth, credentialsData.email);
+            if (methods.length > 0) {
+                setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
+                toast.error('Email is already registered', { id: 'credentials-check' });
+                return;
+            }
+        } catch (error) {
+            console.error('Firebase email check error:', error);
+            if (error.code === 'auth/invalid-email') {
+                setErrors(prev => ({ ...prev, email: 'Invalid email format' }));
+                toast.error('Invalid email format', { id: 'credentials-check' });
+                return;
+            }
+            throw error;
+        }
+
+        // If all checks pass
+        toast.success('Credentials validated successfully', { id: 'credentials-check' });
+        onComplete();
     } catch (error) {
-      console.error('Error in final validation:', error);
-      toast.error('Error validating credentials');
+        console.error('Error in credentials validation:', error);
+        toast.error('Error validating credentials', { id: 'credentials-check' });
     } finally {
-      setIsChecking(false);
+        setIsChecking(false);
     }
   };
 
