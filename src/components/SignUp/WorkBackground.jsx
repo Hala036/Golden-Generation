@@ -250,26 +250,36 @@ const WorkBackground = ({ onComplete }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Prepare data for Firebase storage, organizing "Other" selections clearly
+    // Clean the form data by removing undefined values or converting them to null
+    const cleanFormData = Object.entries(formData).reduce((acc, [key, value]) => {
+      // Skip undefined values entirely, convert empty strings to null
+      if (value === undefined) {
+        return acc;
+      }
+      acc[key] = value === '' ? null : value;
+      return acc;
+    }, {});
+
+      // Prepare data for Firebase storage, organizing "Other" selections clearly
     const dataForFirebase = {
-      ...formData,
+      ...cleanFormData,
       // Store custom job information in a structured way if "Other" was selected
       customJobInfo: {
-        isCustomJob: formData.jobTitle === 'Other' || formData.subspecialty === 'Other',
-        customJobTitle: formData.otherJob || null,
+        isCustomJob: cleanFormData.jobTitle === 'Other' || cleanFormData.subspecialty === 'Other',
+        customJobTitle: cleanFormData.otherJob || null,
         originalSelection: {
-          category: formData.category,
-          jobTitle: formData.jobTitle,
-          subspecialty: formData.subspecialty
+          category: cleanFormData.category || null,
+          jobTitle: cleanFormData.jobTitle || null,
+          subspecialty: cleanFormData.subspecialty || null
         }
       },
       // Store custom academic degree if "Other" was selected
       customAcademicInfo: {
-        isCustomDegree: formData.academicDegree === 'other',
-        customDegreeTitle: formData.otherAcademicDegree || null,
+        isCustomDegree: cleanFormData.academicDegree === 'other',
+        customDegreeTitle: cleanFormData.otherAcademicDegree || null,
       }
     };
-    
+      
     setWorkData(dataForFirebase);
     onComplete();
   };
@@ -556,7 +566,7 @@ const WorkBackground = ({ onComplete }) => {
           />
         </div>
       )}
-
+ 
       {/* Academic Degrees - Changed to dropdown list format */}
       <div className="space-y-4">
         <label className="block text-sm font-medium text-gray-700">Academic Degree</label>
