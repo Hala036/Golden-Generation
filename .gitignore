@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 .env
-service-account.json
+serviceAccountkey.json
