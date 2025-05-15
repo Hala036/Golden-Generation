@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, memo } from 'react';
+import React, { useEffect, useRef, useCallback, memo, useState } from 'react';
 import useSignupStore from '../../store/signupStore';
 import {
   FaCheck,
@@ -115,9 +115,9 @@ const CheckboxField = memo(({ label, name, className = '', checked, onChange }) 
 ));
 
 const PersonalDetails = memo(({ onComplete }) => {
-  const { updatePersonalData } = useSignupStore();
+  const { personalData, updatePersonalData } = useSignupStore();
   const formRef = useRef(null);
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState(personalData || {
     phoneNumber: '',
     maritalStatus: '',
     address: '',
@@ -133,19 +133,19 @@ const PersonalDetails = memo(({ onComplete }) => {
     familyInSettlement: false,
     hasWeapon: false,
   });
-  const [errors, setErrors] = React.useState({});
-  const [settlements, setSettlements] = React.useState([]);
-  const [languages, setLanguages] = React.useState([]);
-  const [loading, setLoading] = React.useState({
+  const [errors, setErrors] = useState({});
+  const [settlements, setSettlements] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [loading, setLoading] = useState({
     settlements: true,
     languages: true,
   });
-  const [apiError, setApiError] = React.useState({
+  const [apiError, setApiError] = useState({
     settlements: false,
     languages: false,
   });
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const hebrewLevels = ['beginner', 'intermediate', 'advanced', 'native'];
@@ -165,7 +165,7 @@ const PersonalDetails = memo(({ onComplete }) => {
         setApiError((prev) => ({ ...prev, settlements: false }));
         const response = await fetch('/api/settlements');
         if (!response.ok) {
-          throw new unrecognizedError(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
+          throw new Error(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
         setSettlements(data);
@@ -248,23 +248,17 @@ const PersonalDetails = memo(({ onComplete }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['address', 'settlement'];
-
-    requiredFields.forEach((field) => {
+    const requiredFields = ['address']; // Removed 'settlement' as per the merge conflict resolution
+    
+    requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        newErrors[field] = `${
-          field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')
-        } is required`;
+        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
       }
     });
 
-    if (formData.settlement && !settlements.some((s) => s.id === formData.settlement || s === formData.settlement)) {
-      newErrors.settlement = 'Please select a valid settlement';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData, settlements]);
+  }, [formData]);
 
   const handleSubmit = useCallback(
     (e) => {
@@ -298,19 +292,17 @@ const PersonalDetails = memo(({ onComplete }) => {
   const getFieldIcon = useCallback(
     (name) => {
       switch (name) {
-        case 'phoneNumber':
-        case 'maritalStatus':
-        case 'address':
-        case 'arrivalDate':
-        case 'originCountry':
-        case 'healthCondition':
-        case 'militaryService':
-        case 'settlement':
-          return <FaInfoCircle className="text-[#FFD966]" />;
-        case 'hebrewLevel':
-          return <FaLanguage className="text-[#FFD966]" />;
-        default:
-          return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'phoneNumber': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'maritalStatus': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'address': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'hebrewLevel': return <FaLanguage className="text-[#FFD966]" />;
+        case 'arrivalDate': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'originCountry': return <FaGlobe className="text-[#FFD966]" />;
+        case 'healthCondition': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'militaryService': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'settlement': return <FaInfoCircle className="text-[#FFD966]" />;
+        
+        default: return <FaInfoCircle className="text-[#FFD966]" />;
       }
     },
     []
@@ -532,7 +524,6 @@ const PersonalDetails = memo(({ onComplete }) => {
                 value: settlement.id || settlement,
                 label: settlement.name || settlement,
               })) : []}
-              required
               disabled={loading.settlements}
               className="sm:col-span-2"
               value={formData.settlement}
@@ -555,7 +546,8 @@ const PersonalDetails = memo(({ onComplete }) => {
             )}
           </div>
         </section>
-
+       
+        {/* Additional Information */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
             <FaCheck className="text-green-500" />

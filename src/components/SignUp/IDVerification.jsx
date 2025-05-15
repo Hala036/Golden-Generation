@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FaUpload, FaQrcode, FaFile, FaTimes, FaSpinner, FaInfoCircle } from 'react-icons/fa';
+import { storage } from '../../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import useSignupStore from '../../store/signupStore';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
@@ -7,7 +10,15 @@ const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
   const [errors, setErrors] = useState({});
   const { idVerificationData, updateIdVerificationData } = useSignupStore();
-
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('eng+ara+heb+rus');
+  const [settlements, setSettlements] = useState([]);
+  const [loadingSettlements, setLoadingSettlements] = useState(true);
+  const [settlementsError, setSettlementsError] = useState(false);
+  const fileInputRef = useRef(null);
+        
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'idNumber') {
@@ -21,11 +32,81 @@ const IDVerification = ({ onComplete }) => {
       }
     } else {
       updateIdVerificationData({ [name]: value });
-      if (errors[name]) {
-        setErrors(prev => ({ ...prev, [name]: '' }));
-      }
     }
   };
+
+  // Language options for OCR
+  const languageOptions = [
+    { value: 'eng+ara+heb+rus', label: 'Auto Detect (Recommended)' },
+    { value: 'eng', label: 'English' },
+    { value: 'ara', label: 'Arabic' },
+    { value: 'heb', label: 'Hebrew' },
+    { value: 'rus', label: 'Russian' }
+  ];
+
+  // Fetch available settlements from API
+  useEffect(() => {
+    const fetchSettlements = async () => {
+      try {
+        setSettlementsError(false);
+        const response = await fetch('/api/settlements');
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setSettlements(data);
+      } catch (error) {
+        console.error('Error fetching settlements:', error);
+        setSettlementsError(true);
+        toast.error('Failed to load available settlements. Please try again later.');
+      } finally {
+        setLoadingSettlements(false);
+      }
+    };
+
+    fetchSettlements();
+  }, []);
+
+  const handleUpload = () => {
+    fileInputRef.current.click();
+  };
+
+  const processImageWithOCR = async (imageFile) => {
+    setIsProcessing(true);
+    let worker = null;
+    
+    try {
+      worker = await createWorker();
+      await worker.load();
+      await worker.loadLanguage(selectedLanguage);
+      await worker.initialize(selectedLanguage);
+      
+      const { data: { text } } = await worker.recognize(imageFile);
+      console.log('Extracted OCR text:', text);
+
+      const extractedData = extractDataFromOCR(text);
+    if (extractedData) {
+      updateIdVerificationData(extractedData);
+      toast.success('Data extracted successfully!');
+    } else {
+      toast.error('Could not extract data from image. Please try again.');
+    }
+  } catch (error) {
+    console.error('OCR Error:', error);
+    toast.error('Error processing image. Please try again or fill the form manually.');
+  } finally {
+    if (worker) {
+      try {
+        await worker.terminate();
+      } catch (terminateError) {
+        console.error('Error terminating worker:', terminateError);
+      }
+    }
+    setIsProcessing(false);
+  }
+};
 
   const calculateAge = (dateString) => {
     const today = new Date();
@@ -39,34 +120,45 @@ const IDVerification = ({ onComplete }) => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
-    if (!idVerificationData.firstName) {
-      newErrors.firstName = t('auth.idVerification.error.firstNameRequired');
+  const newErrors = {};
+  const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
+
+  if (!firstName?.trim()) {
+    newErrors.firstName = t('auth.idVerification.error.firstNameRequired');
+  }
+
+  if (!lastName?.trim()) {
+    newErrors.lastName = t('auth.idVerification.error.lastNameRequired');
+  }
+
+  if (!idNumber?.trim()) {
+    newErrors.idNumber = t('auth.idVerification.error.idNumberRequired');
+  } else if (!/^\d{9}$/.test(idNumber)) {
+    newErrors.idNumber = t('auth.idVerification.error.invalidIdNumber');
+  }
+
+  if (!dateOfBirth) {
+    newErrors.dateOfBirth = t('auth.idVerification.error.dateOfBirthRequired');
+  } else {
+    const age = calculateAge(dateOfBirth);
+    const finalAge = typeof age === 'string' ? parseInt(age.split(' ')[0], 10) : age;
+    if (finalAge < 50) {
+      newErrors.dateOfBirth = t('auth.idVerification.error.ageRequirement');
+      toast.error(t('auth.idVerification.error.ageRequirementNotMet'));
     }
-    if (!idVerificationData.lastName) {
-      newErrors.lastName = t('auth.idVerification.error.lastNameRequired');
-    }
-    if (!idVerificationData.idNumber) {
-      newErrors.idNumber = t('auth.idVerification.error.idNumberRequired');
-    } else if (!/^\d{9}$/.test(idVerificationData.idNumber)) {
-      newErrors.idNumber = t('auth.idVerification.error.invalidIdNumber');
-    }
-    if (!idVerificationData.dateOfBirth) {
-      newErrors.dateOfBirth = t('auth.idVerification.error.dateOfBirthRequired');
-    } else {
-      const age = calculateAge(idVerificationData.dateOfBirth);
-      const finalAge = typeof age === 'string' ? parseInt(age.split(' ')[0], 10) : age;
-      if (finalAge < 50) {
-        newErrors.dateOfBirth = t('auth.idVerification.error.ageRequirement');
-        toast.error(t('auth.idVerification.error.ageRequirementNotMet'));
-      }
-    }
-    if (!idVerificationData.gender) {
-      newErrors.gender = t('auth.idVerification.error.genderRequired');
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  }
+
+  if (!gender) {
+    newErrors.gender = t('auth.idVerification.error.genderRequired');
+  }
+
+  if (!settlement) {
+    newErrors.settlement = t('auth.idVerification.error.settlementRequired');
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -76,10 +168,97 @@ const IDVerification = ({ onComplete }) => {
   };
 
   return (
+
     <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 bg-white rounded-lg shadow-md mt-4 sm:mt-6">
       <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('auth.idVerification.title')}</h2>
-        <p className="mt-2 text-sm sm:text-base text-gray-600">{t('auth.idVerification.subtitle')}</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">ID Verification</h2>
+        <p className="mt-2 text-sm sm:text-base text-gray-600">Please provide your identification details</p>
+      </div>
+      
+      {/* Language Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select ID Card Language
+        </label>
+        <select
+          value={selectedLanguage}
+          onChange={(e) => setSelectedLanguage(e.target.value)}
+      className="w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]"
+    >
+      {languageOptions.map(option => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+      {/* ID Upload Section */}
+      <div className="mb-8">
+        <div className="text-center mb-4">
+          <p className="text-gray-600 text-sm sm:text-base mb-4">
+            Upload or scan your ID for automatic filling, or fill the form manually
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="relative">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".jpg,.jpeg,.png"
+                className="hidden"
+              />
+              <button
+                onClick={handleUpload}
+                disabled={isLoading || isProcessing}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#FFD966] text-black rounded-lg hover:bg-yellow-400 transition disabled:opacity-50"
+              >
+                <FaUpload className="text-lg" />
+                <span>{isProcessing ? 'Processing...' : 'Upload ID'}</span>
+              </button>
+            </div>
+            
+            <button
+              onClick={handleScan}
+              disabled={isLoading || isProcessing}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#FFD966] text-black rounded-lg hover:bg-yellow-400 transition disabled:opacity-50"
+            >
+              <FaQrcode className="text-lg" />
+              <span>Scan ID</span>
+            </button>
+          </div>
+
+          <p className="mt-2 text-xs sm:text-sm text-gray-500">
+            Accepted formats: JPG, JPEG, PNG (max 5MB)
+          </p>
+        </div>
+
+        {/* File Preview */}
+        {uploadedFile && (
+          <div className="mt-4 flex justify-center">
+            <div className="relative inline-block">
+              <div className="border rounded-lg p-4 bg-gray-50 max-w-xs sm:max-w-sm mx-auto">
+                <button
+                  onClick={removeFile}
+                  className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                >
+                  <FaTimes size={12} />
+                </button>
+                {previewUrl === 'pdf' ? (
+                  <div className="flex items-center justify-center p-4">
+                    <FaFile className="text-4xl text-gray-400" />
+                    <span className="ml-2 text-sm">{uploadedFile.name}</span>
+                  </div>
+                ) : (
+                  <img
+                    src={previewUrl}
+                    alt="ID Preview"
+                    className="max-w-full h-auto rounded"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -185,6 +364,45 @@ const IDVerification = ({ onComplete }) => {
               <p className="text-xs sm:text-sm text-red-500">{errors.gender}</p>
             )}
           </div>
+
+          {/* Settlement Dropdown */}
+          <div className="space-y-1 sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Settlement *
+            </label>
+            {loadingSettlements ? (
+              <div className="flex items-center gap-2 text-gray-500">
+                <FaSpinner className="animate-spin" />
+                <span>Loading settlements...</span>
+              </div>
+            ) : settlementsError ? (
+              <div className="text-red-500 flex items-center gap-1">
+                <FaInfoCircle />
+                <span>Failed to load settlements. Please try again later.</span>
+              </div>
+            ) : (
+              <select
+                name="settlement"
+                value={idVerificationData.settlement || ''}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
+                  errors.settlement
+                    ? 'border-red-500'
+                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
+                }`}
+              >
+                <option value="">Select settlement</option>
+                {settlements.map(settlement => (
+                  <option key={settlement.id || settlement} value={settlement.id || settlement}>
+                    {settlement.name || settlement}
+                  </option>
+                ))}
+              </select>
+            )}
+            {errors.settlement && (
+              <p className="text-xs sm:text-sm text-red-500">{errors.settlement}</p>
+            )}
+          </div>
         </div>
         <div className="flex justify-end">
           <button
@@ -196,7 +414,7 @@ const IDVerification = ({ onComplete }) => {
         </div>
       </form>
     </div>
-  );
-};
-
-export default IDVerification; 
+     );
+    };
+    
+    export default IDVerification;
