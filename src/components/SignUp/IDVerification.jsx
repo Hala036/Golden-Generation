@@ -3,11 +3,13 @@ import { FaUpload, FaQrcode, FaFile, FaTimes, FaSpinner, FaInfoCircle } from 're
 import { storage } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import useSignupStore from '../../store/signupStore';
+import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
 
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { idVerificationData, updateIdVerificationData } = useSignupStore();
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -25,11 +27,8 @@ const IDVerification = ({ onComplete }) => {
       const cleanValue = value.replace(/\D/g, '');
       const truncatedValue = cleanValue.slice(0, 9);
       updateIdVerificationData({ [name]: truncatedValue });
-      if (truncatedValue.length !== 9 && truncatedValue.length > 0) {
-        setErrors(prev => ({ ...prev, [name]: 'ID number must be exactly 9 digits' }));
-      } else {
-        setErrors(prev => ({ ...prev, [name]: '' }));
-      }
+      // Remove the immediate validation
+      setErrors(prev => ({ ...prev, [name]: '' }));
     } else {
       updateIdVerificationData({ [name]: value });
     }
@@ -43,6 +42,54 @@ const IDVerification = ({ onComplete }) => {
     { value: 'heb', label: 'Hebrew' },
     { value: 'rus', label: 'Russian' }
   ];
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPG, JPEG, or PNG)');
+      return;
+    }
+
+    // Check file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Create a preview URL for the file
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewUrl(previewUrl);
+      setUploadedFile(file);
+
+      // Process the image with OCR
+      await processImageWithOCR(file);
+    } catch (error) {
+      console.error('Error handling file:', error);
+      toast.error('Error processing file. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const removeFile = () => {
+    if (previewUrl && previewUrl !== 'pdf') {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    setUploadedFile(null);
+  };
+
+  const handleScan = () => {
+    // Implement QR code scanning functionality here
+    toast.info('QR code scanning will be implemented soon');
+  };
 
   // Fetch available settlements from API
   useEffect(() => {
@@ -120,45 +167,45 @@ const IDVerification = ({ onComplete }) => {
   };
 
   const validateForm = () => {
-  const newErrors = {};
-  const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
+    const newErrors = {};
+    const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
 
-  if (!firstName?.trim()) {
-    newErrors.firstName = t('auth.idVerification.error.firstNameRequired');
-  }
-
-  if (!lastName?.trim()) {
-    newErrors.lastName = t('auth.idVerification.error.lastNameRequired');
-  }
-
-  if (!idNumber?.trim()) {
-    newErrors.idNumber = t('auth.idVerification.error.idNumberRequired');
-  } else if (!/^\d{9}$/.test(idNumber)) {
-    newErrors.idNumber = t('auth.idVerification.error.invalidIdNumber');
-  }
-
-  if (!dateOfBirth) {
-    newErrors.dateOfBirth = t('auth.idVerification.error.dateOfBirthRequired');
-  } else {
-    const age = calculateAge(dateOfBirth);
-    const finalAge = typeof age === 'string' ? parseInt(age.split(' ')[0], 10) : age;
-    if (finalAge < 50) {
-      newErrors.dateOfBirth = t('auth.idVerification.error.ageRequirement');
-      toast.error(t('auth.idVerification.error.ageRequirementNotMet'));
+    if (!firstName?.trim()) {
+      newErrors.firstName = t('First name is required');
     }
-  }
 
-  if (!gender) {
-    newErrors.gender = t('auth.idVerification.error.genderRequired');
-  }
+    if (!lastName?.trim()) {
+      newErrors.lastName = t('Last name is required');
+    }
 
-  if (!settlement) {
-    newErrors.settlement = t('auth.idVerification.error.settlementRequired');
-  }
+    if (!idNumber?.trim()) {
+      newErrors.idNumber = t('ID number is required');
+    } else if (!/^\d{9}$/.test(idNumber)) {
+      newErrors.idNumber = t('ID number must be 9 digits');
+    }
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    if (!dateOfBirth) {
+      newErrors.dateOfBirth = t('Date of birth is required');
+    } else {
+      const age = calculateAge(dateOfBirth);
+      const finalAge = typeof age === 'string' ? parseInt(age.split(' ')[0], 10) : age;
+      if (finalAge < 50) {
+        newErrors.dateOfBirth = t('Minimum age is 50 years');
+        toast.error(t('Age requirement not met: minimum age is 50 years'));
+      }
+    }
+
+    if (!gender) {
+      newErrors.gender = 'Gender is required';
+    }
+
+    if (!settlement) {
+      newErrors.settlement = 'Settlement is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -264,7 +311,7 @@ const IDVerification = ({ onComplete }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              {t('auth.idVerification.form.firstName')} *
+              First Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -283,7 +330,7 @@ const IDVerification = ({ onComplete }) => {
           </div>
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              {t('auth.idVerification.form.lastName')} *
+              Last Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -302,16 +349,15 @@ const IDVerification = ({ onComplete }) => {
           </div>
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              {t('auth.idVerification.form.idNumber')} *
+              ID Number <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="idNumber"
               value={idVerificationData.idNumber || ''}
               onChange={handleChange}
-              placeholder={t('auth.idVerification.form.idNumberPlaceholder')}
+              placeholder='Enter 9 digits'
               maxLength="9"
-              pattern="\d{9}"
               className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
                 errors.idNumber
                   ? 'border-red-500'
@@ -324,7 +370,7 @@ const IDVerification = ({ onComplete }) => {
           </div>
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              {t('auth.idVerification.form.dateOfBirth')} *
+              Date of Birth <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
@@ -344,7 +390,7 @@ const IDVerification = ({ onComplete }) => {
           </div>
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
-              {t('auth.idVerification.form.gender')} *
+              Gender <span className="text-red-500">*</span>
             </label>
             <select
               name="gender"
@@ -356,9 +402,9 @@ const IDVerification = ({ onComplete }) => {
                   : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
               }`}
             >
-              <option value="">{t('auth.idVerification.form.selectGender')}</option>
-              <option value="male">{t('auth.idVerification.form.male')}</option>
-              <option value="female">{t('auth.idVerification.form.female')}</option>
+              <option value="">Select gender</option>
+              <option value="male">male</option>
+              <option value="female">female</option>
             </select>
             {errors.gender && (
               <p className="text-xs sm:text-sm text-red-500">{errors.gender}</p>
