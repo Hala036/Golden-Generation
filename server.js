@@ -82,6 +82,10 @@ const __dirname = path.dirname(__filename);
       ]);
     });
 
+    app.get('/api/health', (_req, res) => {
+      res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    });
+
   app.get('/api/settlements', async (req, res) => {
   try {
     let snapshot;
@@ -110,7 +114,6 @@ const __dirname = path.dirname(__filename);
     res.status(500).json({ error: 'Failed to fetch settlements', message: err.message });
   }
 });
-
 
     app.listen(PORT, '127.0.0.1', () => {
       console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);
