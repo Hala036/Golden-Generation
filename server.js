@@ -2,20 +2,27 @@ import express from 'express';
 import cors from 'cors';
 import admin from 'firebase-admin';
 import { readFile } from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
+// Get the directory of the current module file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Firebase setup
 (async () => {
   try {
-    // Load service account
-    const serviceAccount = JSON.parse(
-      await readFile(new URL('./serviceAccountKey.json', import.meta.url))
-    );
-    
-    // Initialize Firebase
+    const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
+    const serviceAccount = JSON.parse(await readFile(serviceAccountPath, 'utf-8'));
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      databaseURL: 'https://golden-generation-de85d.firebaseio.com'
+      databaseURL: 'https://golden-generation-de85d.firebaseio.com',
     });
 
     // Middleware
@@ -25,7 +32,6 @@ const app = express();
     // Routes
     app.get('/api/settlements', async (req, res) => {
       try {
-        // Try a simpler query first if the index isn't ready
         let snapshot;
         try {
           snapshot = await admin.firestore()
@@ -34,19 +40,16 @@ const app = express();
             .orderBy('name', 'asc')
             .get();
         } catch (indexError) {
-          console.warn('Index not ready, using fallback query:', indexError.message);
-          // Fallback without ordering if index isn't ready
+          console.warn('Firestore index error, fallback:', indexError.message);
           snapshot = await admin.firestore()
             .collection('availableSettlements')
             .where('available', '==', true)
             .get();
         }
-        
         const settlements = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        
         res.json(settlements || []);
       } catch (err) {
         console.error('Error fetching settlements:', err.message);
@@ -54,47 +57,40 @@ const app = express();
       }
     });
 
-    app.get('/api/languages', (req, res) => {
-      try {
-        // Provide a more comprehensive list of common languages
-        const languages = [
-          { value: 'english', label: 'English' },
-          { value: 'arabic', label: 'Arabic' },
-          { value: 'hebrew', label: 'Hebrew' },
-          { value: 'french', label: 'French' },
-          { value: 'spanish', label: 'Spanish' },
-          { value: 'german', label: 'German' },
-          { value: 'russian', label: 'Russian' },
-          { value: 'portuguese', label: 'Portuguese' },
-          { value: 'chinese', label: 'Chinese (Mandarin)' },
-          { value: 'hindi', label: 'Hindi' },
-          { value: 'japanese', label: 'Japanese' },
-          { value: 'korean', label: 'Korean' },
-          { value: 'italian', label: 'Italian' },
-          { value: 'dutch', label: 'Dutch' },
-          { value: 'polish', label: 'Polish' },
-          { value: 'turkish', label: 'Turkish' },
-          { value: 'swedish', label: 'Swedish' },
-          { value: 'ukrainian', label: 'Ukrainian' },
-          { value: 'greek', label: 'Greek' },
-          { value: 'romanian', label: 'Romanian' }
-        ];
-        res.json(languages);
-      } catch (error) {
-        console.error("Error in /api/languages:", error);
-        res.status(500).json({ error: 'Failed to fetch languages', message: error.message });
-      }
+    app.get('/api/languages', (_req, res) => {
+      res.json([
+        { value: 'english', label: 'English' },
+        { value: 'arabic', label: 'Arabic' },
+        { value: 'hebrew', label: 'Hebrew' },
+        { value: 'french', label: 'French' },
+        { value: 'spanish', label: 'Spanish' },
+        { value: 'german', label: 'German' },
+        { value: 'russian', label: 'Russian' },
+        { value: 'portuguese', label: 'Portuguese' },
+        { value: 'chinese', label: 'Chinese (Mandarin)' },
+        { value: 'hindi', label: 'Hindi' },
+        { value: 'japanese', label: 'Japanese' },
+        { value: 'korean', label: 'Korean' },
+        { value: 'italian', label: 'Italian' },
+        { value: 'dutch', label: 'Dutch' },
+        { value: 'polish', label: 'Polish' },
+        { value: 'turkish', label: 'Turkish' },
+        { value: 'swedish', label: 'Swedish' },
+        { value: 'ukrainian', label: 'Ukrainian' },
+        { value: 'greek', label: 'Greek' },
+        { value: 'romanian', label: 'Romanian' }
+      ]);
     });
 
-    // Health check endpoint
     app.get('/api/health', (_req, res) => {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, '127.0.0.1', () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, '127.0.0.1', () => {
+      console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);
+    });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('❌ Failed to start server:', error.message);
     process.exit(1);
   }
 })();
