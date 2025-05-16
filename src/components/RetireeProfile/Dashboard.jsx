@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
-import profile from "../assets/profile.jpeg";
+import profile from "../../assets/profile.jpeg";
 import IconNav from "./IconNav"; // Importing icon navigation
 
 const Header = () => {

@@ -414,7 +414,7 @@ const IDVerification = ({ onComplete }) => {
           {/* Settlement Dropdown */}
           <div className="space-y-1 sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700">
-              Settlement *
+              Settlement <span className="text-red-500">*</span>
             </label>
             {loadingSettlements ? (
               <div className="flex items-center gap-2 text-gray-500">

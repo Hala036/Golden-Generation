@@ -2,12 +2,12 @@ import React, { useRef } from "react";
 import { FaArrowRight } from "react-icons/fa";
 
 // Import images
-import FootballImg from "../assets/Football.png";
-import SwimmingImg from "../assets/Swimming.png";
-import TennisImg from "../assets/Tennis.png";
-import WalkingImg from "../assets/Walking.png";
-import YogaImg from "../assets/Yoga.png";
-import GardeningImg from "../assets/Gardening.png";
+import FootballImg from "../../assets/Football.png";
+import SwimmingImg from "../../assets/Swimming.png";
+import TennisImg from "../../assets/Tennis.png";
+import WalkingImg from "../../assets/Walking.png";
+import YogaImg from "../../assets/Yoga.png";
+import GardeningImg from "../../assets/Gardening.png";
 
 // Event data with correct date format
 const events = [
