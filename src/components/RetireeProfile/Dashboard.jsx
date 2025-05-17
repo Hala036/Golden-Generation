@@ -60,7 +60,7 @@ const Dashboard = () => {
       <div className="w-70 bg-gray-100 shadow-lg">
         {/* Logo */}
         <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-orange-500">Golden Generation</h1>
+          <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1>
         </div>
 
         {/* Profile Section */}
@@ -83,7 +83,7 @@ const Dashboard = () => {
               onClick={() => setSelected(id)}
               className={`flex items-center space-x-3 px-6 py-3 cursor-pointer transition duration-200 ml-2
                 ${selected === id 
-                  ? "bg-orange-100 text-orange-500 border-r-4 border-orange-500" 
+                  ? "bg-yellow-100 text-yellow-700 border-r-4 border-yellow-500" 
                   : "text-gray-600 hover:bg-gray-200"}`}
             >
               <span className="text-xl">{icon}</span>
@@ -119,8 +119,12 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
-        {/* Search Bar */}
+      <div className="flex-1 p-8 flex flex-col h-screen box-border">
+      {/* Search Bar + Header */}
+      <div>
+        <h2 className="text-xl font-semibold mb-6">
+          {icons.find(icon => icon.id === selected)?.label}
+        </h2>
         <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
           <FaSearch className="text-gray-500" />
           <input 
@@ -129,17 +133,15 @@ const Dashboard = () => {
             className="border-none outline-none text-sm ml-2 w-full"
           />
         </div>
-
-        {/* Content Area */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-6">
-            {icons.find(icon => icon.id === selected)?.label}
-          </h2>
-          
-          {selected === "upcoming" && <Cards />}
-          {selected === "settings" && <SettingsCards />}
-        </div>
       </div>
+
+      {/* Scrollable Content Area */}
+      <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1">
+        {selected === "upcoming" && <Cards />}
+        {selected === "settings" && <SettingsCards />}
+      </div>
+    </div>
+
     </div>
   );
 };
