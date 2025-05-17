@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase";
+import { auth, getUserData } from "../../firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import profile from "../../assets/profile.jpeg";
@@ -24,6 +24,24 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [selected, setSelected] = useState("upcoming");
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const data = await getUserData(user.uid);
+          setUserData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.error("Failed to load user data");
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -39,18 +57,22 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-75 bg-gray-100 shadow-lg">
+      <div className="w-70 bg-gray-100 shadow-lg">
         {/* Logo */}
         <div className="p-4 border-b border-gray-200">
           <h1 className="text-xl font-bold text-orange-500">Golden Generation</h1>
         </div>
 
         {/* Profile Section */}
-        <div className="p-4 border-b border-gray-200 flex items-center space-x-3">
-          <img src={profile} alt="Profile" className="w-10 h-10 rounded-full" />
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">{userName}</span>
-          </div>
+        <div className="p-6 border-b border-gray-200 flex flex-col items-center">
+          <img 
+            src={profile} 
+            alt="Profile" 
+            className="w-20 h-20 rounded-full mb-3" // Increased size and added bottom margin
+          />
+          <span className="text-lg font-semibold">
+            {userData?.username || "User"}
+          </span>
         </div>
 
         {/* Navigation Items */}
@@ -59,7 +81,7 @@ const Dashboard = () => {
             <div
               key={id}
               onClick={() => setSelected(id)}
-              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition duration-200
+              className={`flex items-center space-x-3 px-6 py-3 cursor-pointer transition duration-200 ml-2
                 ${selected === id 
                   ? "bg-orange-100 text-orange-500 border-r-4 border-orange-500" 
                   : "text-gray-600 hover:bg-gray-200"}`}
