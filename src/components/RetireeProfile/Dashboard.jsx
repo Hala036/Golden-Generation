@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -49,8 +49,7 @@ const Dashboard = () => {
         <div className="p-4 border-b border-gray-200 flex items-center space-x-3">
           <img src={profile} alt="Profile" className="w-10 h-10 rounded-full" />
           <div className="flex flex-col">
-            <span className="text-sm font-medium">Welcome back!</span>
-            <span className="text-xs text-gray-500">User Profile</span>
+            <span className="text-sm font-medium">{userName}</span>
           </div>
         </div>
 
