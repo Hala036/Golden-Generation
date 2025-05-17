@@ -4,7 +4,7 @@ import { useLanguage } from './context/LanguageContext';
 import LoginPage from './components/Login';
 import SignUp from './components/SignUp/SignUp';
 import ForgotPassword from './components/ForgotPassword';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/RetireeProfile/Dashboard';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
