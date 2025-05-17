@@ -7,9 +7,12 @@ import { signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import profile from "../../assets/profile.jpeg";
 import IconNav from "./IconNav"; // Importing icon navigation
+import { useLanguage } from '../../context/LanguageContext'; 
+import { Select } from 'antd'; 
 
 const Header = () => {
   const navigate = useNavigate();
+  const { language, changeLanguage } = useLanguage();
 
   const handleLogout = async () => {
     try {
@@ -39,10 +42,17 @@ const Header = () => {
         <div className="flex items-center mr-11 space-x-4">
           <div className="flex items-center space-x-1">
             <MdLanguage className="text-xl text-gray-600" />
-            <select className="bg-transparent text-sm outline-none">
-              <option>English</option>
-              <option>Russian</option>
-            </select>
+            <Select
+              value={language}
+              onChange={changeLanguage}
+              className="w-24"
+              variant={false}
+            >
+              <Select.Option value="en">English</Select.Option>
+              <Select.Option value="he">עברית</Select.Option>
+              <Select.Option value="ru">Русский</Select.Option>
+              <Select.Option value="ar">العربية</Select.Option>
+            </Select>
           </div>
           <img src={profile} alt="Profile" className="w-10 h-10 rounded-full" />
           <button
