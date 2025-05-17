@@ -10,6 +10,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import Cards from "./Cards";
 import SettingsCards from "./SettingsCards";
+import AddEvents from "./AddEvents";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
@@ -146,19 +147,22 @@ const Dashboard = () => {
         <h2 className="text-xl font-semibold mb-6">
           {icons.find(icon => icon.id === selected)?.label}
         </h2>
-        <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
-          <FaSearch className="text-gray-500" />
-          <input 
-            type="text" 
-            placeholder="Search Events" 
-            className="border-none outline-none text-sm ml-2 w-full"
-          />
-        </div>
+        {selected === "upcoming" && (
+          <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
+            <FaSearch className="text-gray-500" />
+            <input 
+              type="text" 
+              placeholder="Search Events" 
+              className="border-none outline-none text-sm ml-2 w-full"
+            />
+          </div>
+        )}
       </div>
 
       {/* Scrollable Content Area */}
       <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1">
         {selected === "upcoming" && <Cards onJoinEvent={handleJoinEvent} />}
+        {selected === "add" && <AddEvents />}
         {selected === "settings" && <SettingsCards />}
       </div>
     </div>
