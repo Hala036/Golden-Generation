@@ -8,6 +8,9 @@ import Dashboard from './components/RetireeProfile/Dashboard';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
+ 
+
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -51,13 +54,14 @@ const AppRoutes = () => {
           } 
         />
         <Route 
-          path="/dashboard" 
+          path="/super-admin"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <SuperAdminDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
