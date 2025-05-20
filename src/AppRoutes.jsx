@@ -8,6 +8,7 @@ import Dashboard from './components/RetireeProfile/Dashboard';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import { useLocation } from "react-router-dom";
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -19,11 +20,17 @@ const AppRoutes = () => {
     document.documentElement.lang = language;
   }, [language]);
 
+    const location = useLocation();
+  const isDashboard = location.pathname.startsWith("/dashboard");
+
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="fixed top-2 right-2 z-50">
-        <LanguageSwitcher />
-      </div>
+      {!isDashboard && (
+        <div className="fixed top-2 right-2 z-50">
+          <LanguageSwitcher />
+        </div>
+      )}
+      
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route 
@@ -58,7 +65,6 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } 
         />
-        {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </div>
