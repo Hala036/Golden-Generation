@@ -8,6 +8,7 @@ import Dashboard from './components/RetireeProfile/Dashboard';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
 import { useLocation } from "react-router-dom";
 
 const AppRoutes = () => {
@@ -58,13 +59,15 @@ const AppRoutes = () => {
           } 
         />
         <Route 
-          path="/dashboard" 
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <SuperAdminDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
+        {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </div>
