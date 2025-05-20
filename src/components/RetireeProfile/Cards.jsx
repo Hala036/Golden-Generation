@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { FaArrowRight } from "react-icons/fa";
+import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 
 // Import images
 import FootballImg from "../../assets/Football.png";
@@ -11,62 +11,100 @@ import GardeningImg from "../../assets/Gardening.png";
 
 // Event data with correct date format
 const events = [
-  { title: "Football", date: "01-04-2025", image: FootballImg },
-  { title: "Swimming", date: "11-04-2025", image: SwimmingImg },
-  { title: "Tennis", date: "26-04-2025", image: TennisImg },
-  { title: "Walking in Nature", date: "07-05-2025", image: WalkingImg },
-  { title: "Yoga", date: "15-12-2025", image: YogaImg },
-  { title: "Gardening", date: "17-12-2025", image: GardeningImg },
+  {
+    title: "Football",
+    date: "01-06-2025",
+    location: "Sports Center",
+    description: "Join us for a friendly football match suitable for all skill levels and a great way to stay active.",
+    image: FootballImg
+  },
+  {
+    title: "Swimming",
+    date: "11-05-2025",
+    location: "Community Pool",
+    description: "Enjoy a relaxing swim in our heated pool. Lanes available for all speeds and abilities.",
+    image: SwimmingImg
+  },
+  {
+    title: "Tennis",
+    date: "26-07-2025",
+    location: "West Court Club",
+    description: "Meet others for casual singles and doubles matches on professional-grade courts.",
+    image: TennisImg
+  },
+  {
+    title: "Walking in Nature",
+    date: "07-07-2025",
+    location: "Greenhill Nature Reserve",
+    description: "Take a peaceful group walk through scenic trails and enjoy the beauty of the outdoors.",
+    image: WalkingImg
+  },
+  {
+    title: "Yoga",
+    date: "15-12-2025",
+    location: "Wellness Studio A",
+    description: "A gentle yoga class focused on breathing, stretching, and mindfulness — perfect for all levels.",
+    image: YogaImg
+  },
+  {
+    title: "Gardening",
+    date: "17-12-2025",
+    location: "Community Garden",
+    description: "Learn and share tips while tending to flower beds and vegetable patches in good company.",
+    image: GardeningImg
+  }
 ];
 
 // Sort events by ascending date (earliest first)
 events.sort((a, b) => new Date(a.date) - new Date(b.date));
 
 const Cards = () => {
-  const scrollRef = useRef(null);
-
-  // Scroll Right Function
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 260, behavior: "smooth" });
-    }
-  };
-
   return (
-    <div className="relative bg-[#D3D3D3] mt-4 max-w-screen-lg mx-auto">
-      {/* Scrollable Row */}
-      <div
-        ref={scrollRef}
-        className="flex space-x-6 overflow-x-scroll scrollbar-hide p-2"
-        style={{ scrollBehavior: "smooth" }}
-      >
+    <div className="bg-white p-4 overflow-y-auto">
+      {/* Grid Container */}
+      <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
         {events.map((event, index) => (
           <div
             key={index}
-            className="bg-white shadow-md rounded-lg overflow-hidden w-60 min-h-[300px] flex-shrink-0"
+            className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0"
           >
             <img
               src={event.image}
               alt={event.title}
-              className="w-full h-72 object-cover"
+              className="w-full h-48 object-cover"
             />
-            <div className="p-4 flex justify-between items-center">
-              <h3 className="text-base font-bold">{event.title}</h3>
-            </div>
-            <div className="px-4 pb-4 flex justify-between items-center">
-              <p className="text-gray-500 font-bold">{event.date}</p>
+            <div className="p-4">
+              <h3 className="text-base font-bold mb-2">{event.title}</h3>
+              {/* Date with Calendar Icon */}
+              <div className="flex items-center mb-2">
+                <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                <p className="text-gray-700 font-medium">{event.date}</p>
+              </div>
+
+              {/* Location with Pin Icon */}
+              <div className="flex items-center mb-3">
+                <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                <p className="text-gray-700 font-medium">{event.location}</p>
+              </div>
+
+              {/* Description */}
+              <p className="text-gray-500 text-sm">
+                {event.description}
+              </p>
+
+              {/* Join Button */}
+              <div className="mt-auto flex justify-end py-2">
+                <button
+                  className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
+                  onClick={() => {/* Handle join logic */}}
+                >
+                  Join
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Scroll Right Button */}
-      <button
-        onClick={scrollRight}
-        className="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md"
-      >
-        <FaArrowRight />
-      </button>
     </div>
   );
 };
