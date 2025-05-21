@@ -1,4 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
+import { signOut } from "firebase/auth";
+import { toast } from "react-hot-toast";
+import { FaSignOutAlt } from "react-icons/fa";
 
 // Mock data for demonstration
 const mockSeniors = [
@@ -20,6 +25,7 @@ const mockJobRequests = [
 ];
 
 export default function AdminPanel() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [seniors, setSeniors] = useState(mockSeniors);
   const [towns, setTowns] = useState(mockTowns);
@@ -80,6 +86,17 @@ export default function AdminPanel() {
     );
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast.success('Logged out successfully!');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Failed to logout. Please try again.');
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -127,6 +144,18 @@ export default function AdminPanel() {
             <span>Job Requests</span>
           </button>
         </nav>
+
+        {/* Add this logout button at the bottom of the sidebar */}
+        <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-white p-4">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full p-3 rounded hover:bg-gray-100 text-gray-700"
+          >
+            <span className="mr-3"><FaSignOutAlt /></span>
+            <span>Logout</span>
+          </button>
+        </div>
+        
       </div>
       
       {/* Main Content */}
