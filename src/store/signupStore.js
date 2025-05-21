@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 const useSignupStore = create((set) => ({
   // Current step
+  role: null,
   currentStep: 0,
   stepValidation: {
     0: false, // ID Verification
@@ -83,6 +84,7 @@ const useSignupStore = create((set) => ({
   },
 
   // Actions
+  setRole: (role) => set({ role }),
   setCurrentStep: (step) => set({ currentStep: step }),
   
   setStepValidation: (step, isValid) =>
@@ -126,6 +128,7 @@ const useSignupStore = create((set) => ({
   // Reset store
   resetStore: () =>
     set({
+      role: null,
       currentStep: 0,
       stepValidation: {
         0: false,

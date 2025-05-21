@@ -4,12 +4,14 @@ import { useLanguage } from './context/LanguageContext';
 import LoginPage from './components/Login';
 import SignUp from './components/SignUp/SignUp';
 import ForgotPassword from './components/ForgotPassword';
-import Dashboard from './components/RetireeProfile/Dashboard';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import Dashboard from './components/RetireeProfile/Dashboard';
 import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
+import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import { useLocation } from "react-router-dom";
+import RoleBasedDashboard from './RoleBasedDashboard';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -58,11 +60,11 @@ const AppRoutes = () => {
             </PublicRoute>
           } 
         />
-        <Route 
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <SuperAdminDashboard />
+              <Dashboard />
             </ProtectedRoute>
           }
         />
