@@ -7,9 +7,6 @@ import ForgotPassword from './components/ForgotPassword';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
-import Dashboard from './components/RetireeProfile/Dashboard';
-import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
-import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
 
@@ -64,7 +61,7 @@ const AppRoutes = () => {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <RoleBasedDashboard />
             </ProtectedRoute>
           }
         />
