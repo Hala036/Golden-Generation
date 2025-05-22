@@ -6,6 +6,11 @@ import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
 import useSignupStore from '../store/signupStore';
 
+const roleMap = {
+  user: 'retiree',
+  admin: 'admin'
+};
+
 const LoginPage = () => {
   const { setRole } = useSignupStore();
   const navigate = useNavigate();
@@ -37,8 +42,10 @@ const LoginPage = () => {
       }
 
       // Only allow login if attempting to login as the correct role type
-      if (selectedLoginType !== userData.role) {
-        throw new Error(`Invalid login type. Please login as ${userData.role}`);
+      if (selectedLoginType === 'admin' && userData.role !== 'admin' && userData.role !== 'superadmin') {
+        throw new Error('Invalid login type. Please login as admin');
+      } else if (selectedLoginType === 'user' && userData.role !== 'retiree') {
+        throw new Error('Invalid login type. Please login as user');
       }
 
       setRole(userData.role); // Set global role state
