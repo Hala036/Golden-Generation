@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSignupStore from '../../store/signupStore';
 import IDVerification from './IDVerification';
@@ -41,14 +41,6 @@ const SignUp = () => {
 
     if (step === 5) {
       try {
-        // Validate that we have all required data
-        if (!idVerificationData || !credentialsData || !personalData) {
-          toast.error('Please complete all required information');
-          return;
-        }
-
-        toast.loading('Creating your account...', { id: 'signup' });
-        
         // Create user in Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(
           auth,
@@ -56,7 +48,7 @@ const SignUp = () => {
           credentialsData.password
         );
 
-        // Prepare user data including veterans data
+        // Prepare user data
         const userData = {
           idVerification: idVerificationData,
           credentials: {
@@ -67,28 +59,19 @@ const SignUp = () => {
           workBackground: workData || {},
           lifestyle: lifestyleData || {},
           veteransCommunity: veteransData || {},
+          role: 'retiree',
           createdAt: new Date().toISOString(),
         };
 
-        // Store user data in Firestore
+        // Write to Firestore
         await setDoc(doc(db, 'users', userCredential.user.uid), userData);
-
-        // Store username separately
-        await setDoc(doc(db, 'usernames', credentialsData.username), {
-          uid: userCredential.user.uid,
+        
+        // Create username document
+        await setDoc(doc(db, 'usernames', credentialsData.username.toLowerCase()), {
+          uid: userCredential.user.uid
         });
 
-        // Create a separate collection for veterans data
-        if (veteransData) {
-          await setDoc(doc(db, 'veterans', userCredential.user.uid), {
-            ...veteransData,
-            userId: userCredential.user.uid,
-            email: credentialsData.email,
-            createdAt: new Date().toISOString(),
-          });
-        }
-
-        // Reset store and show success message
+        // Success handling
         resetStore();
         toast.success('Account created successfully!', { id: 'signup' });
         

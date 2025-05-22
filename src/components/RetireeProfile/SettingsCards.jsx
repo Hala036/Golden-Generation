@@ -1,5 +1,6 @@
 import { FaUserLock, FaFileInvoice, FaGlobe, FaUser, FaMoneyCheck, FaBell } from "react-icons/fa";
 
+
 const settingsOptions = [
   { label: "Login & Security", description: "Update your password and secure your account", icon: <FaUserLock /> },
   { label: "Taxes", description: "Manage taxpayer information and tax documents", icon: <FaFileInvoice /> },

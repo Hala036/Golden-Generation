@@ -4,10 +4,11 @@ import { useLanguage } from './context/LanguageContext';
 import LoginPage from './components/Login';
 import SignUp from './components/SignUp/SignUp';
 import ForgotPassword from './components/ForgotPassword';
-import Dashboard from './components/RetireeProfile/Dashboard';
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import { useLocation } from "react-router-dom";
+import RoleBasedDashboard from './RoleBasedDashboard';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -19,11 +20,17 @@ const AppRoutes = () => {
     document.documentElement.lang = language;
   }, [language]);
 
+    const location = useLocation();
+  const isDashboard = location.pathname.startsWith("/dashboard");
+
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="fixed top-2 right-2 z-50">
-        <LanguageSwitcher />
-      </div>
+      {!isDashboard && (
+        <div className="fixed top-2 right-2 z-50">
+          <LanguageSwitcher />
+        </div>
+      )}
+      
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route 
@@ -50,14 +57,15 @@ const AppRoutes = () => {
             </PublicRoute>
           } 
         />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <RoleBasedDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

@@ -3,6 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -30,6 +31,26 @@ const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// User Management Functions
+/**
+ * Get user data from Firestore
+ * @param {string} uid - The user's ID
+ * @returns {Promise<Object|null>} User data object or null if not found
+ */
+const getUserData = async (uid) => {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    if (userDoc.exists()) {
+      return userDoc.data();
+    }
+    console.warn("No user document found for UID:", uid);
+    return null;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
+};
 
 // Settlement Management Functions
 /**
@@ -94,5 +115,6 @@ export {
   storage, 
   addSettlement, 
   getAvailableSettlements, 
-  removeSettlement 
+  removeSettlement,
+  getUserData
 };

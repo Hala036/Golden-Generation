@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, getUserData } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
+import useSignupStore from '../store/signupStore';
+
+const roleMap = {
+  user: 'retiree',
+  admin: 'admin'
+};
 
 const LoginPage = () => {
+  const { setRole } = useSignupStore();
   const navigate = useNavigate();
-  const [role, setRole] = useState("user");
+  const [selectedLoginType, setSelectedLoginType] = useState("user");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,9 +34,23 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const userData = await getUserData(userCredential.user.uid);
+      
+      if (!userData?.role) {
+        throw new Error('User role not found');
+      }
+
+      // Only allow login if attempting to login as the correct role type
+      if (selectedLoginType === 'admin' && userData.role !== 'admin' && userData.role !== 'superadmin') {
+        throw new Error('Invalid login type. Please login as admin');
+      } else if (selectedLoginType === 'user' && userData.role !== 'retiree') {
+        throw new Error('Invalid login type. Please login as user');
+      }
+
+      setRole(userData.role); // Set global role state
       toast.success('Login successful!');
-      // Navigation will be handled by the ProtectedRoute component
+      
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.message || 'Failed to login. Please check your credentials.');
@@ -42,6 +63,16 @@ const LoginPage = () => {
     e.preventDefault();
     navigate('/signup', { replace: true });
   };
+
+  // After successful login and getting user data:
+const handleLogin = async () => {
+  try {
+    const userDoc = await getUserData(user.uid);
+    setRole(userDoc.role); // Set the role in the store
+  } catch (error) {
+    console.error('Error during login:', error);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-b from-gray-100 to-gray-200">
@@ -63,17 +94,17 @@ const LoginPage = () => {
           {/* Role Switcher */}
           <div className="flex justify-center bg-white rounded-full w-fit mx-auto shadow-md">
             <button
-              onClick={() => setRole("user")}
+              onClick={() => setSelectedLoginType("user")}
               className={`px-4 sm:px-6 py-2 rounded-l-full text-sm sm:text-base font-semibold transition duration-200 ${
-                role === "user" ? "bg-[#FFD966] text-gray-900" : "text-gray-600 hover:bg-gray-50"
+                selectedLoginType === "user" ? "bg-[#FFD966] text-gray-900" : "text-gray-600 hover:bg-gray-50"
               }`}
             >
               User
             </button>
             <button
-              onClick={() => setRole("admin")}
+              onClick={() => setSelectedLoginType("admin")}
               className={`px-4 sm:px-6 py-2 rounded-r-full text-sm sm:text-base font-semibold transition duration-200 ${
-                role === "admin" ? "bg-[#FFD966] text-gray-900" : "text-gray-600 hover:bg-gray-50"
+                selectedLoginType === "admin" ? "bg-[#FFD966] text-gray-900" : "text-gray-600 hover:bg-gray-50"
               }`}
             >
               Admin
