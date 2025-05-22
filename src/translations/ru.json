@@ -562,5 +562,12 @@
     "header": {
       "search": "Поиск",
       "language": "Язык"
+    },
+    "calendar": {
+      "reminderPlaceholder": "Напишите напоминание...",
+      "close": "Закрыть",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "at": "в {{time}}"
     }
   } 

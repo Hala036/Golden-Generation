@@ -562,5 +562,12 @@
     "header": {
       "search": "بحث",
       "language": "اللغة"
+    },
+    "calendar": {
+      "reminderPlaceholder": "اكتب تذكيرًا...",
+      "close": "إغلاق",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "at": "في {{time}}"
     }
   } 

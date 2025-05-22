@@ -484,5 +484,12 @@
     "header": {
       "search": "חיפוש",
       "language": "שפה"
+    },
+    "calendar": {
+      "reminderPlaceholder": "כתוב תזכורת...",
+      "close": "סגור",
+      "cancel": "ביטול",
+      "save": "שמור",
+      "at": "בשעה {{time}}"
     }
   } 

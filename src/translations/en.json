@@ -546,7 +546,16 @@
       },
       "notifications": "Notifications",
       "calendar": "Calendar",
-      "messages": "Messages"
+      "messages": {
+        "search": "Search users...",
+        "typeMessage": "Type a message...",
+        "selectChat": "Select a chat to start messaging",
+        "noMessages": "No messages yet",
+        "newChat": "New Chat",
+        "messageSent": "Message sent successfully",
+        "sendError": "Failed to send message. Please try again.",
+        "loading": "Sending message..."
+      }
     },
     "errors": {
       "required": "This field is required",
@@ -562,5 +571,12 @@
     "header": {
       "search": "Search",
       "language": "Language"
+    },
+    "calendar": {
+      "reminderPlaceholder": "Write a reminder...",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save",
+      "at": "at {{time}}"
     }
   } 
