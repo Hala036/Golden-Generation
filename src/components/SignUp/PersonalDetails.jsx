@@ -14,6 +14,8 @@ import {
   FaBookReader,
   FaHandshake,
   FaExclamationTriangle,
+  FaHome,
+  FaRoad,
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
@@ -120,6 +122,8 @@ const PersonalDetails = memo(({ onComplete }) => {
   const [formData, setFormData] = useState(personalData || {
     phoneNumber: '',
     maritalStatus: '',
+    streetName: '',
+    houseNumber: '',
     address: '',
     nativeLanguage: '',
     hebrewLevel: '',
@@ -248,13 +252,19 @@ const PersonalDetails = memo(({ onComplete }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['address']; // Removed 'settlement' as per the merge conflict resolution
+    const requiredFields = ['streetName', 'houseNumber']; // Updated required fields
     
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
+        const fieldName = field === 'streetName' ? 'Street Name' : 'House Number';
+        newErrors[field] = `${fieldName} is required`;
       }
     });
+
+    // Validate house number is numeric
+    if (formData.houseNumber && !/^\d+[a-zA-Z]?$/.test(formData.houseNumber.trim())) {
+      newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -264,7 +274,12 @@ const PersonalDetails = memo(({ onComplete }) => {
     (e) => {
       e.preventDefault();
       if (validateForm()) {
-        updatePersonalData(formData);
+        // Combine street name and house number into address field for backward compatibility
+        const updatedFormData = {
+          ...formData,
+          address: `${formData.houseNumber} ${formData.streetName}`.trim(),
+        };
+        updatePersonalData(updatedFormData);
         onComplete();
       } else {
         const firstErrorField = Object.keys(errors)[0];
@@ -294,6 +309,8 @@ const PersonalDetails = memo(({ onComplete }) => {
       switch (name) {
         case 'phoneNumber': return <FaInfoCircle className="text-[#FFD966]" />;
         case 'maritalStatus': return <FaInfoCircle className="text-[#FFD966]" />;
+        case 'streetName': return <FaRoad className="text-[#FFD966]" />;
+        case 'houseNumber': return <FaHome className="text-[#FFD966]" />;
         case 'address': return <FaInfoCircle className="text-[#FFD966]" />;
         case 'hebrewLevel': return <FaLanguage className="text-[#FFD966]" />;
         case 'arrivalDate': return <FaInfoCircle className="text-[#FFD966]" />;
@@ -378,11 +395,42 @@ const PersonalDetails = memo(({ onComplete }) => {
               error={errors.maritalStatus}
               getFieldIcon={() => getFieldIcon('maritalStatus')}
             />
+          </div>
+          
+          {/* Address Section */}
+          <div className="space-y-4">
+            <h4 className="text-md font-medium text-gray-700 flex items-center gap-2">
+              <FaHome className="text-[#FFD966]" />
+              Address Information
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <FormField
+                label="House Number"
+                name="houseNumber"
+                required
+                placeholder="123"
+                value={formData.houseNumber}
+                onChange={handleInputChange}
+                error={errors.houseNumber}
+                getFieldIcon={() => getFieldIcon('houseNumber')}
+              />
+              <FormField
+                label="Street Name"
+                name="streetName"
+                required
+                placeholder="Main Street"
+                className="sm:col-span-2"
+                value={formData.streetName}
+                onChange={handleInputChange}
+                error={errors.streetName}
+                getFieldIcon={() => getFieldIcon('streetName')}
+              />
+            </div>
             <FormField
-              label="Address"
+              label="Additional Address Details (Optional)"
               name="address"
-              required
-              placeholder="Enter your full address"
+              type="textarea"
+              placeholder="Apartment number, building name, or other address details..."
               className="sm:col-span-2"
               value={formData.address}
               onChange={handleInputChange}
