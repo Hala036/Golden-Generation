@@ -43,7 +43,7 @@ const RoleBasedDashboard = () => {
 
   switch (role) {
     case 'superadmin':
-      return <AdminDashboard />;
+      return <SuperAdminDashboard />;
     case 'admin':
       return <AdminDashboard />;
     case 'retiree':
