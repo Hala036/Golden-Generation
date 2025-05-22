@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaUpload, FaQrcode, FaFile, FaTimes, FaSpinner, FaInfoCircle } from 'react-icons/fa';
+import { FaUpload, FaQrcode, FaFile, FaTimes, FaSpinner, FaInfoCircle, FaMars, FaVenus, FaGenderless } from 'react-icons/fa';
 import { storage } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import useSignupStore from '../../store/signupStore';
@@ -15,7 +15,6 @@ const IDVerification = ({ onComplete }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('eng+ara+heb+rus');
   const [settlements, setSettlements] = useState([]);
   const [loadingSettlements, setLoadingSettlements] = useState(true);
   const [settlementsError, setSettlementsError] = useState(false);
@@ -33,15 +32,6 @@ const IDVerification = ({ onComplete }) => {
       updateIdVerificationData({ [name]: value });
     }
   };
-
-  // Language options for OCR
-  const languageOptions = [
-    { value: 'eng+ara+heb+rus', label: 'Auto Detect (Recommended)' },
-    { value: 'eng', label: 'English' },
-    { value: 'ara', label: 'Arabic' },
-    { value: 'heb', label: 'Hebrew' },
-    { value: 'rus', label: 'Russian' }
-  ];
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -127,33 +117,34 @@ const IDVerification = ({ onComplete }) => {
     try {
       worker = await createWorker();
       await worker.load();
-      await worker.loadLanguage(selectedLanguage);
-      await worker.initialize(selectedLanguage);
+      // Use auto-detect languages without user selection
+      await worker.loadLanguage('eng+ara+heb+rus');
+      await worker.initialize('eng+ara+heb+rus');
       
       const { data: { text } } = await worker.recognize(imageFile);
       console.log('Extracted OCR text:', text);
 
       const extractedData = extractDataFromOCR(text);
-    if (extractedData) {
-      updateIdVerificationData(extractedData);
-      toast.success('Data extracted successfully!');
-    } else {
-      toast.error('Could not extract data from image. Please try again.');
-    }
-  } catch (error) {
-    console.error('OCR Error:', error);
-    toast.error('Error processing image. Please try again or fill the form manually.');
-  } finally {
-    if (worker) {
-      try {
-        await worker.terminate();
-      } catch (terminateError) {
-        console.error('Error terminating worker:', terminateError);
+      if (extractedData) {
+        updateIdVerificationData(extractedData);
+        toast.success('Data extracted successfully!');
+      } else {
+        toast.error('Could not extract data from image. Please try again.');
       }
+    } catch (error) {
+      console.error('OCR Error:', error);
+      toast.error('Error processing image. Please try again or fill the form manually.');
+    } finally {
+      if (worker) {
+        try {
+          await worker.terminate();
+        } catch (terminateError) {
+          console.error('Error terminating worker:', terminateError);
+        }
+      }
+      setIsProcessing(false);
     }
-    setIsProcessing(false);
-  }
-};
+  };
 
   const calculateAge = (dateString) => {
     const today = new Date();
@@ -170,18 +161,18 @@ const IDVerification = ({ onComplete }) => {
     const newErrors = {};
     const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
 
+    if (!idNumber?.trim()) {
+      newErrors.idNumber = t('ID number is required');
+    } else if (!/^\d{9}$/.test(idNumber)) {
+      newErrors.idNumber = t('ID number must be 9 digits');
+    }
+
     if (!firstName?.trim()) {
       newErrors.firstName = t('First name is required');
     }
 
     if (!lastName?.trim()) {
       newErrors.lastName = t('Last name is required');
-    }
-
-    if (!idNumber?.trim()) {
-      newErrors.idNumber = t('ID number is required');
-    } else if (!/^\d{9}$/.test(idNumber)) {
-      newErrors.idNumber = t('ID number must be 9 digits');
     }
 
     if (!dateOfBirth) {
@@ -215,30 +206,12 @@ const IDVerification = ({ onComplete }) => {
   };
 
   return (
-
     <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 bg-white rounded-lg shadow-md mt-4 sm:mt-6">
       <div className="text-center mb-6 sm:mb-8">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">ID Verification</h2>
         <p className="mt-2 text-sm sm:text-base text-gray-600">Please provide your identification details</p>
       </div>
       
-      {/* Language Selection */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Select ID Card Language
-        </label>
-        <select
-          value={selectedLanguage}
-          onChange={(e) => setSelectedLanguage(e.target.value)}
-      className="w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]"
-    >
-      {languageOptions.map(option => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  </div>
       {/* ID Upload Section */}
       <div className="mb-8">
         <div className="text-center mb-4">
@@ -307,46 +280,10 @@ const IDVerification = ({ onComplete }) => {
           </div>
         )}
       </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              First Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              value={idVerificationData.firstName || ''}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                errors.firstName
-                  ? 'border-red-500'
-                  : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-              }`}
-            />
-            {errors.firstName && (
-              <p className="text-xs sm:text-sm text-red-500">{errors.firstName}</p>
-            )}
-          </div>
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Last Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              value={idVerificationData.lastName || ''}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                errors.lastName
-                  ? 'border-red-500'
-                  : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-              }`}
-            />
-            {errors.lastName && (
-              <p className="text-xs sm:text-sm text-red-500">{errors.lastName}</p>
-            )}
-          </div>
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
+          {/* ID Number - First field */}
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
               ID Number <span className="text-red-500">*</span>
@@ -368,51 +305,129 @@ const IDVerification = ({ onComplete }) => {
               <p className="text-xs sm:text-sm text-red-500">{errors.idNumber}</p>
             )}
           </div>
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Date of Birth <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="dateOfBirth"
-              value={idVerificationData.dateOfBirth || ''}
-              onChange={handleChange}
-              max={new Date().toISOString().split('T')[0]}
-              className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                errors.dateOfBirth
-                  ? 'border-red-500'
-                  : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-              }`}
-            />
-            {errors.dateOfBirth && (
-              <p className="text-xs sm:text-sm text-red-500">{errors.dateOfBirth}</p>
-            )}
-          </div>
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Gender <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="gender"
-              value={idVerificationData.gender || ''}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                errors.gender
-                  ? 'border-red-500'
-                  : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-              }`}
-            >
-              <option value="">Select gender</option>
-              <option value="male">male</option>
-              <option value="female">female</option>
-            </select>
-            {errors.gender && (
-              <p className="text-xs sm:text-sm text-red-500">{errors.gender}</p>
-            )}
+
+          {/* Other fields in a grid layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={idVerificationData.firstName || ''}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
+                  errors.firstName
+                    ? 'border-red-500'
+                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
+                }`}
+              />
+              {errors.firstName && (
+                <p className="text-xs sm:text-sm text-red-500">{errors.firstName}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={idVerificationData.lastName || ''}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
+                  errors.lastName
+                    ? 'border-red-500'
+                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
+                }`}
+              />
+              {errors.lastName && (
+                <p className="text-xs sm:text-sm text-red-500">{errors.lastName}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={idVerificationData.dateOfBirth || ''}
+                onChange={handleChange}
+                min="1900-01-01"
+                max={new Date().toISOString().split('T')[0]}
+                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
+                  errors.dateOfBirth
+                    ? 'border-red-500'
+                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
+                }`}
+              />
+              {errors.dateOfBirth && (
+                <p className="text-xs sm:text-sm text-red-500">{errors.dateOfBirth}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Gender <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div
+                  onClick={() => handleChange({ target: { name: 'gender', value: 'male' } })}
+                  className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+                    idVerificationData.gender === 'male'
+                      ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
+                      : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+                  }`}
+                >
+                  <FaMars className={`text-xl ${idVerificationData.gender === 'male' ? 'text-blue-600' : 'text-gray-500'}`} />
+                  <span className={`text-sm font-medium ${idVerificationData.gender === 'male' ? 'text-gray-900' : 'text-gray-600'}`}>
+                    Male
+                  </span>
+                </div>
+                
+                <div
+                  onClick={() => handleChange({ target: { name: 'gender', value: 'female' } })}
+                  className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+                    idVerificationData.gender === 'female'
+                      ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
+                      : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+                  }`}
+                >
+                  <FaVenus className={`text-xl ${idVerificationData.gender === 'female' ? 'text-pink-600' : 'text-gray-500'}`} />
+                  <span className={`text-sm font-medium ${idVerificationData.gender === 'female' ? 'text-gray-900' : 'text-gray-600'}`}>
+                    Female
+                  </span>
+                </div>
+                
+                <div
+                  onClick={() => handleChange({ target: { name: 'gender', value: 'other' } })}
+                  className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+                    idVerificationData.gender === 'other'
+                      ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
+                      : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+                  }`}
+                >
+                  <FaGenderless className={`text-xl ${idVerificationData.gender === 'other' ? 'text-purple-600' : 'text-gray-500'}`} />
+                  <span className={`text-sm font-medium ${idVerificationData.gender === 'other' ? 'text-gray-900' : 'text-gray-600'}`}>
+                    Other
+                  </span>
+                </div>
+              </div>
+              {errors.gender && (
+                <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
+                  <FaInfoCircle className="flex-shrink-0" />
+                  {errors.gender}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Settlement Dropdown */}
-          <div className="space-y-1 sm:col-span-2">
+          {/* Settlement Dropdown - Full width */}
+          <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">
               Settlement <span className="text-red-500">*</span>
             </label>
@@ -450,6 +465,7 @@ const IDVerification = ({ onComplete }) => {
             )}
           </div>
         </div>
+
         <div className="flex justify-end">
           <button
             type="submit"
@@ -460,7 +476,7 @@ const IDVerification = ({ onComplete }) => {
         </div>
       </form>
     </div>
-     );
-    };
-    
-    export default IDVerification;
+  );
+};
+
+export default IDVerification;
