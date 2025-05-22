@@ -10,6 +10,9 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import Cards from "./Cards";
 import SettingsCards from "./SettingsCards";
+import Calendar from "./Calendar";
+import Messages from "./Messages";
+import Notifications from "./Notifications";
 import AddEvents from "./AddEvents";
 
 const icons = [
@@ -164,6 +167,9 @@ const Dashboard = () => {
         {selected === "upcoming" && <Cards onJoinEvent={handleJoinEvent} />}
         {selected === "add" && <AddEvents />}
         {selected === "settings" && <SettingsCards />}
+        {selected === "calendar" && <Calendar />}
+        {selected === "messages" && <Messages />}
+        {selected === "notifications" && <Notifications />}
       </div>
     </div>
 
