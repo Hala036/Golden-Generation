@@ -58,27 +58,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleJoinEvent = async (eventId) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        toast.error('Please login to join events');
-        return;
-      }
-
-      // Update user's joined events
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        joinedEvents: arrayUnion(eventId)
-      });
-
-      toast.success('Successfully joined the event!');
-    } catch (error) {
-      console.error('Error joining event:', error);
-      toast.error('Failed to join event. Please try again.');
-    }
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -93,7 +72,7 @@ const Dashboard = () => {
           <img 
             src={profile} 
             alt="Profile" 
-            className="w-20 h-20 rounded-full mb-3" // Increased size and added bottom margin
+            className="w-20 h-20 rounded-full mb-3"
           />
           <span className="text-lg font-semibold">
             {userData?.username || "User"}
@@ -145,34 +124,33 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-8 flex flex-col h-screen box-border">
-      {/* Search Bar + Header */}
-      <div>
-        <h2 className="text-xl font-semibold mb-6">
-          {icons.find(icon => icon.id === selected)?.label}
-        </h2>
-        {selected === "upcoming" && (
-          <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
-            <FaSearch className="text-gray-500" />
-            <input 
-              type="text" 
-              placeholder="Search Events" 
-              className="border-none outline-none text-sm ml-2 w-full"
-            />
-          </div>
-        )}
-      </div>
+        {/* Search Bar + Header */}
+        <div>
+          <h2 className="text-xl font-semibold mb-6">
+            {icons.find(icon => icon.id === selected)?.label}
+          </h2>
+          {selected === "upcoming" && (
+            <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
+              <FaSearch className="text-gray-500" />
+              <input 
+                type="text" 
+                placeholder="Search Events" 
+                className="border-none outline-none text-sm ml-2 w-full"
+              />
+            </div>
+          )}
+        </div>
 
-      {/* Scrollable Content Area */}
-      <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1">
-        {selected === "upcoming" && <Cards onJoinEvent={handleJoinEvent} />}
-        {selected === "add" && <AddEvents />}
-        {selected === "settings" && <SettingsCards />}
-        {selected === "calendar" && <Calendar />}
-        {selected === "messages" && <Messages />}
-        {selected === "notifications" && <Notifications />}
+        {/* Scrollable Content Area */}
+        <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1">
+          {selected === "upcoming" && <Cards />}
+          {selected === "add" && <AddEvents />}
+          {selected === "settings" && <SettingsCards />}
+          {selected === "calendar" && <Calendar />}
+          {selected === "messages" && <Messages />}
+          {selected === "notifications" && <Notifications />}
+        </div>
       </div>
-    </div>
-
     </div>
   );
 };
