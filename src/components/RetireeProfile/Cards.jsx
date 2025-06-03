@@ -58,6 +58,27 @@ const events = [
 // Sort events by ascending date (earliest first)
 events.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+const handleJoinEvent = async (eventId) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error('Please login to join events');
+        return;
+      }
+
+      // Update user's joined events
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        joinedEvents: arrayUnion(eventId)
+      });
+
+      toast.success('Successfully joined the event!');
+    } catch (error) {
+      console.error('Error joining event:', error);
+      toast.error('Failed to join event. Please try again.');
+    }
+  };
+
 const Cards = () => {
   return (
     <div className="bg-white p-4 overflow-y-auto">
@@ -96,7 +117,7 @@ const Cards = () => {
               <div className="mt-auto flex justify-end py-2">
                 <button
                   className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-                  onClick={() => {/* Handle join logic */}}
+                  onClick={() => handleJoinEvent(event.title)}
                 >
                   Join
                 </button>

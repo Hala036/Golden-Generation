@@ -58,27 +58,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleJoinEvent = async (eventId) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        toast.error('Please login to join events');
-        return;
-      }
-
-      // Update user's joined events
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        joinedEvents: arrayUnion(eventId)
-      });
-
-      toast.success('Successfully joined the event!');
-    } catch (error) {
-      console.error('Error joining event:', error);
-      toast.error('Failed to join event. Please try again.');
-    }
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -164,7 +143,7 @@ const Dashboard = () => {
 
         {/* Scrollable Content Area */}
         <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1">
-          {selected === "upcoming" && <Cards onJoinEvent={handleJoinEvent} />}
+          {selected === "upcoming" && <Cards />}
           {selected === "add" && <AddEvents />}
           {selected === "settings" && <SettingsCards />}
           {selected === "calendar" && <Calendar />}
