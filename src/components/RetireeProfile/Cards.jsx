@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
 
 // Import images
 import FootballImg from "../../assets/Football.png";
@@ -82,6 +82,14 @@ const handleJoinEvent = async (eventId) => {
 const Cards = () => {
   return (
     <div className="bg-white p-4 overflow-y-auto">
+      <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
+        <FaSearch className="text-gray-500" />
+        <input 
+          type="text" 
+          placeholder="Search Events" 
+          className="border-none outline-none text-sm ml-2 w-full"
+        />
+      </div>
       {/* Grid Container */}
       <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
         {events.map((event, index) => (
