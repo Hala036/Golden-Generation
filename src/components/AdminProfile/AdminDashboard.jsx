@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaMapMarkerAlt, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
+import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -29,7 +29,7 @@ const icons = [
   { id: "notifications", label: "Notifications", icon: <FaBell /> },
   { id: "add", label: "Add Event", icon: <FaPlusCircle /> },
   { id: "calendar", label: "Calendar", icon: <FaCalendarAlt /> },
-  { id: "messages", label: "Messages", icon: <FaComments /> }
+  { id: "messages", label: "Messages", icon: <FaComments /> },
 ];
 
 const Dashboard = () => {
@@ -107,8 +107,8 @@ const Dashboard = () => {
         </nav>
 
         {/* Bottom Section */}
-        {/* <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-gray-100 p-4">
-          <div className="flex items-center space-x-2 mb-4">
+        <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-gray-100 p-4">
+          {/* <div className="flex items-center space-x-2 mb-4">
             <MdLanguage className="text-xl text-gray-600" />
             <Select
               value={language}
@@ -121,7 +121,16 @@ const Dashboard = () => {
               <Select.Option value="ru">Русский</Select.Option>
               <Select.Option value="ar">العربية</Select.Option>
             </Select>
+          </div>*/}
+
+          <div className="flex items-center text-1xl space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4">
+            <FaHeadset 
+              className="text-xl" 
+              onClick={() => setSelected("support")} 
+            />
+            <span className="text-sm">Contact Us</span>
           </div>
+
           <button
             onClick={handleLogout}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full"
@@ -129,7 +138,7 @@ const Dashboard = () => {
             <FaSignOutAlt className="text-xl" />
             <span className="text-sm">Logout</span>
           </button>
-        </div> */}
+        </div> 
       </div>
 
       {/* Main Content */}
@@ -171,13 +180,13 @@ const Dashboard = () => {
             </div>
 
             {/* Logout */}
-            <button
+            {/* <button
               onClick={handleLogout}
               className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800"
             >
               <FaSignOutAlt className="text-lg" />
               <span>Logout</span>
-            </button> 
+            </button>  */}
           </div>
         </div>
 
