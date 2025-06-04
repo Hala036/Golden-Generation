@@ -90,7 +90,7 @@ const Dashboard = () => {
         {/* Navigation Items */}
         <nav className="py-4">
           {icons
-            .filter(({ id }) => id !== "notifications" && id !== "messages") // Exclude notifications and messages
+            .filter(({ id }) => id !== "notifications" && id !== "messages")
             .map(({ id, label, icon }) => (
               <div
                 key={id}
@@ -164,14 +164,6 @@ const Dashboard = () => {
               </Select>
             </div>
 
-            {/* Logout */}
-            {/* <button
-              onClick={handleLogout}
-              className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800"
-            >
-              <FaSignOutAlt className="text-lg" />
-              <span>Logout</span>
-            </button>  */}
           </div>
         </div>
 
