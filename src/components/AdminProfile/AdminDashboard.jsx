@@ -21,7 +21,7 @@ import Notifications from "../RetireeProfile/Notifications";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
-  { id: "main", label: "Home Page", icon: <FaHome /> },
+  // { id: "main", label: "Home Page", icon: <FaHome /> },
   { id: "retirees", label: "Retirees", icon: <FaUser /> },
   { id: "jobs", label: "Jobs", icon: <FaBriefcase /> },
   { id: "analysis", label: "Analysis", icon: <FaChartBar /> },

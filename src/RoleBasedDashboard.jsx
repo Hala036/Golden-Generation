@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Dashboard from './components/RetireeProfile/Dashboard';
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
+import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
   const [role, setRole] = useState(null);
@@ -48,6 +49,8 @@ const RoleBasedDashboard = () => {
       return <AdminDashboard />;
     case 'retiree':
       return <Dashboard />;
+    case undefined:
+      return <Login />;
     default:
       return <div className="p-4">Unauthorized or unknown role.</div>;
   }
