@@ -31,21 +31,31 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
+      const fetchUserData = async () => {
+        try {
+          const user = auth.currentUser;
+          if (!user) {
+            console.error("No user is currently logged in.");
+            toast.error("No user is logged in.");
+            return;
+          }
           const data = await getUserData(user.uid);
-          setUserData(data);
+  
+          if (!data) {
+            console.error("No user data found for the given UID.");
+            toast.error("Failed to load user data.");
+            return;
+          }
+  
+          setUserData(data.credentials); // Set the credentials object, which contains the username
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          toast.error("Failed to load user data.");
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        toast.error("Failed to load user data");
-      }
-    };
-
-    fetchUserData();
-  }, []);
+      };
+  
+      fetchUserData();
+    }, []);
 
   const handleLogout = async () => {
     try {
