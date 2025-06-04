@@ -108,28 +108,13 @@ const Dashboard = () => {
 
         {/* Bottom Section */}
         <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-gray-100 p-4">
-          {/* <div className="flex items-center space-x-2 mb-4">
-            <MdLanguage className="text-xl text-gray-600" />
-            <Select
-              value={language}
-              onChange={changeLanguage}
-              className="w-24"
-              variant={false}
-            >
-              <Select.Option value="en">English</Select.Option>
-              <Select.Option value="he">עברית</Select.Option>
-              <Select.Option value="ru">Русский</Select.Option>
-              <Select.Option value="ar">العربية</Select.Option>
-            </Select>
-          </div>*/}
-
-          <div className="flex items-center text-1xl space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4">
-            <FaHeadset 
-              className="text-xl" 
-              onClick={() => setSelected("support")} 
-            />
+          <button
+            onClick={() => setSelected("support")}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4"
+          >
+            <FaHeadset className="text-xl" />
             <span className="text-sm">Contact Us</span>
-          </div>
+          </button>
 
           <button
             onClick={handleLogout}
@@ -204,6 +189,7 @@ const Dashboard = () => {
           {selected === "messages" && <Messages />}
           {selected === "add" && <AddEvent />}
           {selected === "notifications" && <Notifications />}
+          {selected === "support" && <Main />}
         </div>
       </div>
     </div>
