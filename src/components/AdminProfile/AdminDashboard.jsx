@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaMapMarkerAlt, FaBriefcase, FaHome } from "react-icons/fa";
+import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaMapMarkerAlt, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -10,9 +10,10 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import Main from "./Main";
 import Retirees from "./Retirees";
-import Towns from "./Towns";
 import Jobs from "./Jobs";
+import Analysis from "./Analysis";
 import Cards from "../RetireeProfile/Cards";
+import AddEvent from "../RetireeProfile/AddEvents";
 import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/Calendar";
 import Messages from "../RetireeProfile/Messages";
@@ -20,12 +21,13 @@ import Notifications from "../RetireeProfile/Notifications";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
-  { id: "main", label: "Main Page", icon: <FaHome /> },
+  { id: "main", label: "Home Page", icon: <FaHome /> },
   { id: "retirees", label: "Retirees", icon: <FaUser /> },
-  { id: "towns", label: "Towns", icon: <FaMapMarkerAlt /> },
   { id: "jobs", label: "Jobs", icon: <FaBriefcase /> },
+  { id: "analysis", label: "Analysis", icon: <FaChartBar /> },
   { id: "settings", label: "Settings", icon: <FaCog /> },
   { id: "notifications", label: "Notifications", icon: <FaBell /> },
+  { id: "add", label: "Add Event", icon: <FaPlusCircle /> },
   { id: "calendar", label: "Calendar", icon: <FaCalendarAlt /> },
   { id: "messages", label: "Messages", icon: <FaComments /> }
 ];
@@ -152,11 +154,12 @@ const Dashboard = () => {
           {selected === "upcoming" && <Cards />}
           {selected === "main" && <Main />}
           {selected === "retirees" && <Retirees />}
-          {selected === "towns" && <Towns />}
           {selected === "jobs" && <Jobs />}
+          {selected === "analysis" && <Analysis />}
           {selected === "settings" && <Settings />}
           {selected === "calendar" && <Calendar />}
           {selected === "messages" && <Messages />}
+          {selected === "add" && <AddEvent />}
           {selected === "notifications" && <Notifications />}
         </div>
       </div>
