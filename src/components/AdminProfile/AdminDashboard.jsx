@@ -21,7 +21,7 @@ import Notifications from "../RetireeProfile/Notifications";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
-  // { id: "main", label: "Home Page", icon: <FaHome /> },
+  { id: "main", label: "Home Page", icon: <FaHome /> },
   { id: "retirees", label: "Retirees", icon: <FaUser /> },
   { id: "jobs", label: "Jobs", icon: <FaBriefcase /> },
   { id: "analysis", label: "Analysis", icon: <FaChartBar /> },
@@ -29,7 +29,7 @@ const icons = [
   { id: "notifications", label: "Notifications", icon: <FaBell /> },
   { id: "add", label: "Add Event", icon: <FaPlusCircle /> },
   { id: "calendar", label: "Calendar", icon: <FaCalendarAlt /> },
-  { id: "messages", label: "Messages", icon: <FaComments /> },
+  { id: "messages", label: "Messages", icon: <FaComments /> }
 ];
 
 const Dashboard = () => {
@@ -42,13 +42,23 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const user = auth.currentUser;
-        if (user) {
-          const data = await getUserData(user.uid);
-          setUserData(data);
+        if (!user) {
+          console.error("No user is currently logged in.");
+          toast.error("No user is logged in.");
+          return;
         }
+        const data = await getUserData(user.uid);
+
+        if (!data) {
+          console.error("No user data found for the given UID.");
+          toast.error("Failed to load user data.");
+          return;
+        }
+
+        setUserData(data.credentials); // Set the credentials object, which contains the username
       } catch (error) {
         console.error("Error fetching user data:", error);
-        toast.error("Failed to load user data");
+        toast.error("Failed to load user data.");
       }
     };
 
@@ -167,11 +177,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-
-
         {/* Scrollable Content Area */}
         <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
-          {selected === "upcoming" && <Cards />}
+          {selected === "upcoming" && <Cards setSelected={setSelected} />}
           {selected === "main" && <Main />}
           {selected === "retirees" && <Retirees />}
           {selected === "jobs" && <Jobs />}
