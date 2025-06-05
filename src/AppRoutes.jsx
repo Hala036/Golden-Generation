@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
+import Events from './components/RetireeProfile/Events';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -65,6 +66,15 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route 
+          path="/events" 
+          element={
+            <ProtectedRoute>
+              <Events />
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
