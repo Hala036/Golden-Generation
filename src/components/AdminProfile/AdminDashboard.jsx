@@ -21,7 +21,7 @@ import Notifications from "../RetireeProfile/Notifications";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
-  // { id: "main", label: "Home Page", icon: <FaHome /> },
+  { id: "main", label: "Home Page", icon: <FaHome /> },
   { id: "retirees", label: "Retirees", icon: <FaUser /> },
   { id: "jobs", label: "Jobs", icon: <FaBriefcase /> },
   { id: "analysis", label: "Analysis", icon: <FaChartBar /> },
@@ -29,7 +29,7 @@ const icons = [
   { id: "notifications", label: "Notifications", icon: <FaBell /> },
   { id: "add", label: "Add Event", icon: <FaPlusCircle /> },
   { id: "calendar", label: "Calendar", icon: <FaCalendarAlt /> },
-  { id: "messages", label: "Messages", icon: <FaComments /> },
+  { id: "messages", label: "Messages", icon: <FaComments /> }
 ];
 
 const Dashboard = () => {
@@ -179,7 +179,7 @@ const Dashboard = () => {
 
         {/* Scrollable Content Area */}
         <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
-          {selected === "upcoming" && <Cards />}
+          {selected === "upcoming" && <Cards setSelected={setSelected} />}
           {selected === "main" && <Main />}
           {selected === "retirees" && <Retirees />}
           {selected === "jobs" && <Jobs />}
