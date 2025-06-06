@@ -21,6 +21,22 @@ const IDVerification = ({ onComplete }) => {
   const [settlementsError, setSettlementsError] = useState(false);
   const fileInputRef = useRef(null);
 
+    const isValidIsraeliID = (id) => {
+      if (!/^\d{5,9}$/.test(id)) return false;
+      // Pad to 9 digits
+      id = id.padStart(9, '0');
+      let sum = 0;
+
+      for (let i = 0; i < 9; i++) {
+        let num = Number(id[i]);
+        let multiplied = num * (i % 2 === 0 ? 1 : 2);
+        if (multiplied > 9) multiplied -= 9;
+        sum += multiplied;
+      }
+
+      return sum % 10 === 0;
+    };
+
   const checkIdAvailability = debounce(async (idNumber) => {
     if (!idNumber || idNumber.length !== 9) return;
 
@@ -54,9 +70,14 @@ const IDVerification = ({ onComplete }) => {
         setErrors((prev) => ({ ...prev, [name]: "" }));
       }
 
-      // Check ID number availability
+      // Validate ID number when it reaches 9 digits
       if (truncatedValue.length === 9) {
-        checkIdAvailability(truncatedValue);
+        if (!isValidIsraeliID(truncatedValue)) {
+          toast.error('Invalid Israeli ID number');
+        } else {
+          // If valid, check availability
+          checkIdAvailability(truncatedValue);
+        }
       }
     } else {
       updateIdVerificationData({ [name]: value });
