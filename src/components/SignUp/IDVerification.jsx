@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUpload, FaQrcode, FaFile, FaTimes, FaSpinner, FaInfoCircle, FaMars, FaVenus, FaGenderless } from 'react-icons/fa';
-import { storage } from '../../firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { debounce } from 'lodash';
+import { db } from '../../firebase';
 
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
@@ -19,15 +20,65 @@ const IDVerification = ({ onComplete }) => {
   const [loadingSettlements, setLoadingSettlements] = useState(true);
   const [settlementsError, setSettlementsError] = useState(false);
   const fileInputRef = useRef(null);
-        
+
+    const isValidIsraeliID = (id) => {
+      if (!/^\d{5,9}$/.test(id)) return false;
+      // Pad to 9 digits
+      id = id.padStart(9, '0');
+      let sum = 0;
+
+      for (let i = 0; i < 9; i++) {
+        let num = Number(id[i]);
+        let multiplied = num * (i % 2 === 0 ? 1 : 2);
+        if (multiplied > 9) multiplied -= 9;
+        sum += multiplied;
+      }
+
+      return sum % 10 === 0;
+    };
+
+  const checkIdAvailability = debounce(async (idNumber) => {
+    if (!idNumber || idNumber.length !== 9) return;
+
+    try {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("idVerification.idNumber", "==", idNumber), where("role", "==", "retiree"));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setErrors((prev) => ({ ...prev, idNumber: "ID number is already registered" }));
+        toast.error("ID number is already registered");
+      } else {
+        setErrors((prev) => ({ ...prev, idNumber: "" }));
+        toast.success("ID number is available");
+      }
+    } catch (error) {
+      console.error("Error checking ID number:", error);
+      toast.error("Error checking ID number availability");
+    }
+  }, 500);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
     if (name === 'idNumber') {
       const cleanValue = value.replace(/\D/g, '');
       const truncatedValue = cleanValue.slice(0, 9);
       updateIdVerificationData({ [name]: truncatedValue });
       // Remove the immediate validation
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      if (errors[name]) {
+        setErrors((prev) => ({ ...prev, [name]: "" }));
+      }
+
+      // Validate ID number when it reaches 9 digits
+      if (truncatedValue.length === 9) {
+        if (!isValidIsraeliID(truncatedValue)) {
+          toast.error('Invalid Israeli ID number');
+        } else {
+          // If valid, check availability
+          checkIdAvailability(truncatedValue);
+        }
+      }
     } else {
       updateIdVerificationData({ [name]: value });
     }
@@ -162,36 +213,37 @@ const IDVerification = ({ onComplete }) => {
     const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
 
     if (!idNumber?.trim()) {
-      newErrors.idNumber = t('ID number is required');
+      newErrors.idNumber = t("ID number is required");
     } else if (!/^\d{9}$/.test(idNumber)) {
-      newErrors.idNumber = t('ID number must be 9 digits');
+      newErrors.idNumber = t("ID number must be 9 digits");
+    } else if (errors.idNumber) {
+      newErrors.idNumber = errors.idNumber;
     }
 
     if (!firstName?.trim()) {
-      newErrors.firstName = t('First name is required');
+      newErrors.firstName = t("First name is required");
     }
 
     if (!lastName?.trim()) {
-      newErrors.lastName = t('Last name is required');
+      newErrors.lastName = t("Last name is required");
     }
 
     if (!dateOfBirth) {
-      newErrors.dateOfBirth = t('Date of birth is required');
+      newErrors.dateOfBirth = t("Date of birth is required");
     } else {
       const age = calculateAge(dateOfBirth);
-      const finalAge = typeof age === 'string' ? parseInt(age.split(' ')[0], 10) : age;
-      if (finalAge < 50) {
-        newErrors.dateOfBirth = t('Minimum age is 50 years');
-        toast.error(t('Age requirement not met: minimum age is 50 years'));
+      if (age < 50) {
+        newErrors.dateOfBirth = t("Minimum age is 50 years");
+        toast.error(t("Age requirement not met: minimum age is 50 years"));
       }
     }
 
     if (!gender) {
-      newErrors.gender = 'Gender is required';
+      newErrors.gender = "Gender is required";
     }
 
     if (!settlement) {
-      newErrors.settlement = 'Settlement is required';
+      newErrors.settlement = "Settlement is required";
     }
 
     setErrors(newErrors);

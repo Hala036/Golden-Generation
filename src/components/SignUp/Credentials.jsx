@@ -19,17 +19,12 @@ const Credentials = ({ onComplete }) => {
     try {
       // Check in users collection for email in credentials.email
       const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('credentials.email', '==', email.toLowerCase()));
+      const q = query(usersRef, where('credentials.email', '==', email.toLowerCase()), where("role", "==", "retiree"));
       const querySnapshot = await getDocs(q);
       
       if (!querySnapshot.empty) {
         setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
         toast.error('Email is already registered');
-      } else {
-        setErrors(prev => ({ ...prev, email: '' }));
-        if (email.length > 0 && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-          toast.success('Email is available');
-        }
       }
     } catch (error) {
       console.error('Error checking email:', error);
@@ -51,11 +46,6 @@ const Credentials = ({ onComplete }) => {
       if (usernameDoc.exists()) {
         setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
         toast.error('Username is already taken');
-      } else {
-        setErrors(prev => ({ ...prev, username: '' }));
-        if (username.length >= 3) {
-          toast.success('Username is available');
-        }
       }
     } catch (error) {
       console.error('Error checking username:', error);
