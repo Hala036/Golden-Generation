@@ -1,53 +1,31 @@
-// addSettlements.js
-import { addSettlement, getAvailableSettlements } from './firebase';
-import { useEffect } from 'react';
-import { toast } from 'react-toastify';
+import Papa from 'papaparse';
+import { addSettlement } from '../firebase'; // Adjust the path as needed
 
-// You can use this function to add multiple settlements
-const addMultipleSettlements = async (settlementNames) => {
-  console.log("Adding settlements...");
-  for (const name of settlementNames) {
-    await addSettlement(name);
+export const uploadSettlementsFromCSV = async () => {
+  try {
+    const response = await fetch('/settlements.csv');
+    const csvText = await response.text();
+
+    Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async function (results) {
+        const settlements = results.data
+          .map(row => row.name?.trim())
+          .filter(Boolean);
+
+        for (const name of settlements) {
+          await addSettlement(name);
+        }
+
+        alert('✅ CSV settlements uploaded successfully!');
+      },
+      error: function (error) {
+        alert('❌ Error parsing CSV: ' + error.message);
+      }
+    });
+  } catch (err) {
+    console.error('❌ Failed to fetch CSV:', err);
+    alert('❌ Failed to load the CSV file.');
   }
-  console.log("All settlements added successfully!");
-  
-  // Let's verify they were added
-  const currentSettlements = await getAvailableSettlements();
-  console.log("Current available settlements:", currentSettlements.map(s => s.name));
 };
-
-// List of settlements to add
-const SETTLEMENTS_TO_ADD = [
-  "Jerusalem",
-  "Tel Aviv",
-  "Haifa",
-  "Binyamin" // Add your settlement here
-];
-
-// Run the function
-addMultipleSettlements(SETTLEMENTS_TO_ADD)
-  .then(() => console.log("Script completed"))
-  .catch(error => console.error("Error running script:", error));
-
-// If you want to run this script directly:
-// 1. Save this file as addSettlements.js
-// 2. Run with: node addSettlements.js (if using Node.js)
-// Or import and call the function from your application code
-
-useEffect(() => {
-  const fetchSettlements = async () => {
-    try {
-      const response = await fetch('/api/settlements/available');
-      const data = await response.json();
-      setSettlements(data);
-    } catch (error) {
-      console.error('Error fetching settlements:', error);
-      toast.error('Failed to load available settlements');
-    } finally {
-      setLoading(prev => ({ ...prev, settlements: false }));
-    }
-  };
-
-  fetchSettlements();
-}, []);
-
