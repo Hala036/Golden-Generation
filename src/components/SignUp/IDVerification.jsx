@@ -6,6 +6,8 @@ import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import localSettlements from '../../data/settlements.json';
+import Select from 'react-select';
 
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
@@ -18,6 +20,7 @@ const IDVerification = ({ onComplete }) => {
   const [settlements, setSettlements] = useState([]);
   const [loadingSettlements, setLoadingSettlements] = useState(true);
   const [settlementsError, setSettlementsError] = useState(false);
+  const [settlementSearch, setSettlementSearch] = useState('');
   const fileInputRef = useRef(null);
         
   const handleChange = (e) => {
@@ -30,6 +33,9 @@ const IDVerification = ({ onComplete }) => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     } else {
       updateIdVerificationData({ [name]: value });
+      if (name === 'settlement') {
+        setSettlementSearch('');
+      }
     }
   };
 
@@ -81,29 +87,16 @@ const IDVerification = ({ onComplete }) => {
     toast.info('QR code scanning will be implemented soon');
   };
 
-  // Fetch available settlements from API
+  // Fetch available settlements from local JSON file
   useEffect(() => {
-    const fetchSettlements = async () => {
-      try {
-        setSettlementsError(false);
-        const response = await fetch('/api/settlements');
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setSettlements(data);
-      } catch (error) {
-        console.error('Error fetching settlements:', error);
-        setSettlementsError(true);
-        toast.error('Failed to load available settlements. Please try again later.');
-      } finally {
-        setLoadingSettlements(false);
-      }
-    };
-
-    fetchSettlements();
+    try {
+      setSettlements(localSettlements);
+    } catch (error) {
+      console.error('Error loading settlements from local file:', error);
+      setSettlementsError(true);
+    } finally {
+      setLoadingSettlements(false);
+    }
   }, []);
 
   const handleUpload = () => {
@@ -442,26 +435,44 @@ const IDVerification = ({ onComplete }) => {
                 <span>Failed to load settlements. Please try again later.</span>
               </div>
             ) : (
-              <select
-                name="settlement"
-                value={idVerificationData.settlement || ''}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                  errors.settlement
-                    ? 'border-red-500'
-                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-                }`}
-              >
-                <option value="">Select settlement</option>
-                {settlements.map(settlement => (
-                  <option key={settlement.id || settlement} value={settlement.id || settlement}>
-                    {settlement.name || settlement}
-                  </option>
-                ))}
-              </select>
-            )}
-            {errors.settlement && (
-              <p className="text-xs sm:text-sm text-red-500">{errors.settlement}</p>
+              <div className="space-y-2">
+                <Select
+                  options={settlements.map(s => ({
+                    value: s.id || s.name,
+                    label: s.name || s,
+                  }))}
+                  value={
+                    settlements.find(s => s.id === idVerificationData.settlement || s.name === idVerificationData.settlement)
+                      ? {
+                          value: idVerificationData.settlement,
+                          label:
+                            settlements.find(s => s.id === idVerificationData.settlement || s.name === idVerificationData.settlement)
+                              ?.name || idVerificationData.settlement,
+                        }
+                      : null
+                  }
+                  onChange={(selected) => {
+                    updateIdVerificationData({ settlement: selected.value });
+                  }}
+                  placeholder="Select settlement..."
+                  isSearchable
+                  className="text-sm"
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      borderColor: errors.settlement ? '#ef4444' : '#d1d5db',
+                      boxShadow: state.isFocused ? '0 0 0 1px #FFD966' : '',
+                      '&:hover': {
+                        borderColor: '#FFD966',
+                      },
+                    }),
+                  }}
+                />
+                {errors.settlement && (
+                  <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.settlement}</p>
+                )}
+              </div>
             )}
           </div>
         </div>
