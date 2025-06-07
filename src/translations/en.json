@@ -19,13 +19,14 @@
     },
     "auth": {
       "login": {
-        "title": "Sign in to your account",
+        "title": "Login as",
         "email": "Email address",
         "password": "Password",
-        "forgotPassword": "Forgot your password?",
+        "forgotPassword": "Forgot password?",
         "noAccount": "Don't have an account?",
         "signIn": "Sign in",
         "signingIn": "Signing in...",
+        "newAccount": "Don't have an account?",
         "signUp": "Sign up",
         "user": "User",
         "admin": "Admin",
@@ -415,7 +416,19 @@
           "idImageRequired": "ID image is required",
           "selfieRequired": "Selfie image is required",
           "fileSize": "File size must be less than 5MB",
-          "fileType": "Only PNG, JPG, and JPEG files are allowed"
+          "fileType": "Only PNG, JPG, and JPEG files are allowed",
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "idNumberRequired": "ID number is required",
+          "invalidIdNumber": "ID number must be 9 digits",
+          "dateOfBirthRequired": "Date of birth is required",
+          "ageRequirement": "Minimum age is 50 years",
+          "ageRequirementNotMet": "Age requirement not met: minimum age is 50 years",
+          "genderRequired": "Gender is required",
+          "invalidFileType": "Invalid file type. Please upload a JPG, JPEG, or PNG file",
+          "processing": "Error processing file",
+          "extraction": "Could not extract data from image",
+          "ocr": "Text recognition error"
         },
         "continue": "Continue",
         "language": {
@@ -440,21 +453,6 @@
           "genderFemale": "Female",
           "genderOther": "Other",
           "submit": "Continue"
-        },
-        "errors": {
-          "firstNameRequired": "First name is required",
-          "lastNameRequired": "Last name is required",
-          "idNumberRequired": "ID number is required",
-          "invalidIdNumber": "ID number must be 9 digits",
-          "dateOfBirthRequired": "Date of birth is required",
-          "ageRequirement": "Minimum age is 50 years",
-          "ageRequirementNotMet": "Age requirement not met: minimum age is 50 years",
-          "genderRequired": "Gender is required",
-          "invalidFileType": "Invalid file type. Please upload a JPG, JPEG, or PNG file",
-          "fileSize": "File size exceeds 5MB",
-          "processing": "Error processing file",
-          "extraction": "Could not extract data from image",
-          "ocr": "Text recognition error"
         }
       },
       "forgotPassword": {
@@ -517,7 +515,12 @@
       "settings": "Settings",
       "logout": "Logout",
       "upcomingEvents": "Upcoming Events",
-      "pastEvents": "Past Events",
+      "homePage": "Home Page",
+      "retirees": "Retirees",
+      "volunteerRequests": "Volunteer Requests",
+      "analytics": "Analytics",
+      "addEvent": "Add Event",
+      "contactUs": "Contact Us",
       "noEvents": "No events found",
       "createEvent": "Create Event",
       "editEvent": "Edit Event",
@@ -531,7 +534,8 @@
       "eventParticipants": "Event Participants",
       "eventStatus": "Event Status",
       "search": {
-        "placeholder": "Search Events",
+        "searchCategories": "Search Categories",
+        "searchEvents": "Search Events",
         "button": "Search"
       },
       "language": {

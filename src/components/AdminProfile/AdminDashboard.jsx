@@ -18,25 +18,28 @@ import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/Calendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
+import { useTranslation } from 'react-i18next';
 
-const icons = [
-  { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
-  { id: "main", label: "Home Page", icon: <FaHome /> },
-  { id: "retirees", label: "Retirees", icon: <FaUser /> },
-  { id: "jobs", label: "Jobs", icon: <FaBriefcase /> },
-  { id: "analysis", label: "Analysis", icon: <FaChartBar /> },
-  { id: "settings", label: "Settings", icon: <FaCog /> },
-  { id: "notifications", label: "Notifications", icon: <FaBell /> },
-  { id: "add", label: "Add Event", icon: <FaPlusCircle /> },
-  { id: "calendar", label: "Calendar", icon: <FaCalendarAlt /> },
-  { id: "messages", label: "Messages", icon: <FaComments /> }
-];
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [selected, setSelected] = useState("upcoming");
   const [userData, setUserData] = useState(null);
+
+  const icons = [
+    { id: "upcoming", label: t('dashboard.upcomingEvents'), icon: <FaCalendarCheck /> },
+    { id: "main", label: t('dashboard.homePage'), icon: <FaHome /> },
+    { id: "retirees", label: t('dashboard.retirees'), icon: <FaUser /> },
+    { id: "jobs", label: t('dashboard.volunteerRequests'), icon: <FaBriefcase /> },
+    { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
+    { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
+    { id: "notifications", label: t('dashboard.notifications'), icon: <FaBell /> },
+    { id: "add", label: t('dashboard.addEvent'), icon: <FaPlusCircle /> },
+    { id: "calendar", label: t('dashboard.calendar'), icon: <FaCalendarAlt /> },
+    { id: "messages", label: t('dashboard.messages'), icon: <FaComments /> }
+  ];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -123,7 +126,7 @@ const Dashboard = () => {
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4"
           >
             <FaHeadset className="text-xl" />
-            <span className="text-sm">Contact Us</span>
+            <span className="text-sm">{t('dashboard.contactUs')}</span>
           </button>
 
           <button
@@ -131,7 +134,7 @@ const Dashboard = () => {
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full"
           >
             <FaSignOutAlt className="text-xl" />
-            <span className="text-sm">Logout</span>
+            <span className="text-sm">{t('dashboard.logout')}</span>
           </button>
         </div> 
       </div>

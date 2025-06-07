@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
 import { db } from "../../firebase"; // Import your Firebase configuration
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { useTranslation } from 'react-i18next';
 
 // Import local images
 import TripImg from "../../assets/Trip.png";
@@ -37,6 +38,7 @@ const eventImages = {
 };
 
 const Cards = () => {
+  const { t } = useTranslation();
   const [view, setView] = useState("categories"); // Toggle between "categories" and "events"
   const [categories, setCategories] = useState([]); // Store categories
   const [events, setEvents] = useState([]); // Store events for the selected category
@@ -122,7 +124,7 @@ const Cards = () => {
         <FaSearch className="text-gray-500" />
         <input
           type="text"
-          placeholder={`Search ${view === "categories" ? "Categories" : "Events"}`}
+          placeholder={`${view === "categories" ? t('dashboard.search.searchCategories') : "Events"}`}
           className="border-none outline-none text-sm ml-2 w-full"
         />
       </div>

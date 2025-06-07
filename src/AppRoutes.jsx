@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useLanguage } from './context/LanguageContext';
 import LoginPage from './components/Login';
@@ -14,13 +14,13 @@ const AppRoutes = () => {
   const { language } = useLanguage();
 
   // Set document direction based on language
-  React.useEffect(() => {
+  useEffect(() => {
     const rtlLanguages = ['he', 'ar'];
     document.documentElement.dir = rtlLanguages.includes(language) ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);
 
-    const location = useLocation();
+  const location = useLocation();
   const isDashboard = location.pathname.startsWith("/dashboard");
 
   return (
