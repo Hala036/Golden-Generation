@@ -1,11 +1,12 @@
-import React from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import React, { useState, useEffect } from 'react';
 import { Select } from 'antd';
+import i18n from 'i18next';
+import { useLanguage } from '../context/LanguageContext'; // Import the LanguageContext hook
 
 const { Option } = Select;
 
 const LanguageSwitcher = () => {
-  const { language, changeLanguage, t } = useLanguage();
+  const { language, changeLanguage } = useLanguage(); // Access global language and changeLanguage function
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -14,22 +15,11 @@ const LanguageSwitcher = () => {
     { code: 'ar', name: 'العربية' }
   ];
 
-  const handleLanguageChange = (value) => {
-    changeLanguage(value);
-  };
-
   return (
     <Select
       value={language}
-      onChange={handleLanguageChange}
+      onChange={changeLanguage}
       style={{ width: 120 }}
-      styles={{
-        popup: {
-          root: {
-            direction: 'ltr',
-          },
-        },
-  }}
     >
       {languages.map((lang) => (
         <Option key={lang.code} value={lang.code}>
@@ -40,4 +30,4 @@ const LanguageSwitcher = () => {
   );
 };
 
-export default LanguageSwitcher; 
+export default LanguageSwitcher;

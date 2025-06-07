@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
 import useSignupStore from '../store/signupStore';
+import { useTranslation } from 'react-i18next';
 
 const roleMap = {
   user: 'retiree',
@@ -12,6 +13,7 @@ const roleMap = {
 };
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const { setRole } = useSignupStore();
   const navigate = useNavigate();
   const [selectedLoginType, setSelectedLoginType] = useState("user");
@@ -88,26 +90,30 @@ const handleLogin = async () => {
 
           {/* Header */}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
-            Login as
+            {t('auth.login.title')}
           </h2>
 
           {/* Role Switcher */}
           <div className="flex justify-center bg-white rounded-full w-fit mx-auto shadow-md">
             <button
               onClick={() => setSelectedLoginType("user")}
-              className={`px-4 sm:px-6 py-2 rounded-l-full text-sm sm:text-base font-semibold transition duration-200 ${
-                selectedLoginType === "user" ? "bg-[#FFD966] text-gray-900" : "text-gray-600 hover:bg-gray-50"
-              }`}
+              className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition duration-200 ${
+                selectedLoginType === "user"
+                  ? "bg-[#FFD966] text-gray-900"
+                  : "text-gray-600 hover:bg-gray-50"
+              } rtl:rounded-r-full ltr:rounded-l-full`}
             >
-              User
+              {t('auth.login.user')}
             </button>
             <button
               onClick={() => setSelectedLoginType("admin")}
-              className={`px-4 sm:px-6 py-2 rounded-r-full text-sm sm:text-base font-semibold transition duration-200 ${
-                selectedLoginType === "admin" ? "bg-[#FFD966] text-gray-900" : "text-gray-600 hover:bg-gray-50"
-              }`}
+              className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition duration-200 ${
+                selectedLoginType === "admin"
+                  ? "bg-[#FFD966] text-gray-900"
+                  : "text-gray-600 hover:bg-gray-50"
+              } rtl:rounded-l-full ltr:rounded-r-full`}
             >
-              Admin
+              {t('auth.login.admin')}
             </button>
           </div>
 
@@ -120,7 +126,7 @@ const handleLogin = async () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Email address"
+                  placeholder={t('auth.login.email')}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#FFD966] focus:border-transparent transition duration-200"
                   required
                 />
@@ -131,7 +137,7 @@ const handleLogin = async () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Password"
+                  placeholder={t('auth.login.password')}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#FFD966] focus:border-transparent transition duration-200"
                   required
                 />
@@ -144,7 +150,7 @@ const handleLogin = async () => {
                 onClick={() => navigate('/forgot-password')}
                 className="text-sm sm:text-base font-medium text-gray-600 hover:text-gray-800 transition duration-200"
               >
-                Forgot Password?
+                {t('auth.login.forgotPassword')}
               </button>
             </div>
 
@@ -153,18 +159,18 @@ const handleLogin = async () => {
               disabled={isLoading}
               className="w-full py-3 bg-[#FFD966] text-gray-900 rounded-lg text-sm sm:text-base font-semibold hover:bg-yellow-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              {isLoading ? 'Logging in...' : 'Log in'}
+              {isLoading ? t('auth.login.signingIn') : t('auth.login.signIn')}
             </button>
 
             {/* Footer Text */}
             <div className="text-center text-sm sm:text-base space-x-1">
-              <span className="text-gray-600">Don't have an account?</span>
+              <span className="text-gray-600">{t('auth.login.newAccount')}</span>
               <button
                 type="button"
                 onClick={handleSignUp}
                 className="font-semibold text-[#FFD966] hover:text-yellow-500 transition duration-200"
               >
-                Sign up
+                {t('auth.login.signUp')}
               </button>
             </div>
           </form>
