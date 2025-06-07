@@ -81,21 +81,25 @@ const FormField = memo(
     onChange, 
     error, 
     getFieldIcon,
-    // Add these props for dropdown functionality
     isDropdownOpen,
     setIsDropdownOpen,
     searchTerm,
     setSearchTerm,
-    getLanguageIcon
+    getLanguageIcon,
+    id, // new prop for id
+    autoComplete // new prop for autocomplete
   }) => {
+    const fieldId = id || `field-${name}`;
+    const autoCompleteAttr = autoComplete || name;
     return (
       <div className={`space-y-1 ${className}`}>
-        <label className="block text-sm font-medium text-gray-700 flex items-center gap-1">
+        <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700 flex items-center gap-1">
           {getFieldIcon()}
           {label} {required && <span className="text-red-500">*</span>}
         </label>
         {type === 'select' && name === 'nativeLanguage' ? (
           <Select
+            inputId={fieldId}
             name={name}
             value={options.find(option => option.value === value) || null}
             onChange={option => onChange({ target: { name, value: option ? option.value : '' } })}
@@ -139,9 +143,12 @@ const FormField = memo(
                 fontWeight: state.isSelected ? 600 : 400,
               }),
             }}
+            // Add inputProps for autocomplete
+            inputProps={{ autoComplete: autoCompleteAttr }}
           />
         ) : type === 'select' && name === 'originCountry' ? (
           <Select
+            inputId={fieldId}
             name={name}
             value={options.find(option => option.value === value) || null}
             onChange={option => onChange({ target: { name, value: option ? option.value : '' } })}
@@ -178,9 +185,11 @@ const FormField = memo(
                 fontWeight: state.isSelected ? 600 : 400,
               }),
             }}
+            inputProps={{ autoComplete: autoCompleteAttr }}
           />
         ) : type === 'select' ? (
           <select
+            id={fieldId}
             name={name}
             value={value || ''}
             onChange={onChange}
@@ -197,6 +206,7 @@ const FormField = memo(
               backgroundSize: '1.5em 1.5em',
               paddingRight: '2.5rem',
             }}
+            autoComplete={autoCompleteAttr}
           >
             <option value="">{`Select ${label.toLowerCase()}`}</option>
             {options.map((option) => (
@@ -207,6 +217,7 @@ const FormField = memo(
           </select>
         ) : type === 'textarea' ? (
           <textarea
+            id={fieldId}
             name={name}
             value={value || ''}
             onChange={onChange}
@@ -217,9 +228,11 @@ const FormField = memo(
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                 : 'border-gray-300 hover:border-[#FFD966] focus:border-[#FFD966] focus:ring-[#FFD966] transition-colors'
             }`}
+            autoComplete={autoCompleteAttr}
           />
         ) : (
           <input
+            id={fieldId}
             type={type}
             name={name}
             value={value || ''}
@@ -230,6 +243,7 @@ const FormField = memo(
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                 : 'border-gray-300 hover:border-[#FFD966] focus:border-[#FFD966] focus:ring-[#FFD966] transition-colors'
             }`}
+            autoComplete={autoCompleteAttr}
           />
         )}
         {error && (
@@ -256,16 +270,17 @@ const FormField = memo(
 );
 
 // Memoize CheckboxField
-const CheckboxField = memo(({ label, name, className = '', checked, onChange }) => (
+const CheckboxField = memo(({ label, name, className = '', checked, onChange, id }) => (
   <div className={`flex items-center ${className} hover:bg-gray-100 p-1 rounded-md transition-colors -mx-1`}>
     <input
       type="checkbox"
       name={name}
+      id={id || `field-${name}`}
       checked={checked || false}
       onChange={onChange}
       className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300 rounded cursor-pointer"
     />
-    <label className="ml-2 text-sm text-gray-700 cursor-pointer select-none flex-1">{label}</label>
+    <label htmlFor={id || `field-${name}`} className="ml-2 text-sm text-gray-700 cursor-pointer select-none flex-1">{label}</label>
   </div>
 ));
 
@@ -294,7 +309,7 @@ const PersonalDetails = memo(({ onComplete }) => {
   const [languages, setLanguages] = useState([]);
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState({
-    settlements: true,
+    settlements: false, // Changed from true to false
     languages: true,
   });
   const [apiError, setApiError] = useState({
@@ -329,6 +344,12 @@ const PersonalDetails = memo(({ onComplete }) => {
       setCountries([]);
       setLoading(prev => ({ ...prev, languages: false }));
     }
+  }, []);
+
+  // Add this useEffect to fix the loading state issue
+  useEffect(() => {
+    // Since you're not actually loading settlements, set it to false
+    setLoading(prev => ({ ...prev, settlements: false }));
   }, []);
 
   // Handle click outside dropdown
@@ -388,15 +409,18 @@ const PersonalDetails = memo(({ onComplete }) => {
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      console.log('Form data:', formData); // Debug: check form data
+      console.log('Validation result:', validateForm()); // Debug: check validation
       if (validateForm()) {
-        // Combine street name and house number into address field for backward compatibility
         const updatedFormData = {
           ...formData,
           address: `${formData.houseNumber} ${formData.streetName}`.trim(),
         };
+        console.log('Submitting:', updatedFormData); // Debug: check final data
         updatePersonalData(updatedFormData);
         onComplete();
       } else {
+        console.log('Validation errors:', errors); // Debug: check errors
         const firstErrorField = Object.keys(errors)[0];
         if (firstErrorField) {
           const element = document.querySelector(`[name="${firstErrorField}"]`);
@@ -491,7 +515,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Phone Number"
               name="phoneNumber"
+              id="phoneNumber"
               type="tel"
+              autoComplete="tel"
               placeholder="+1 (555) 000-0000"
               value={formData.phoneNumber}
               onChange={handleInputChange}
@@ -501,7 +527,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Marital Status"
               name="maritalStatus"
+              id="maritalStatus"
               type="select"
+              autoComplete="marital-status"
               options={maritalStatusOptions}
               value={formData.maritalStatus}
               onChange={handleInputChange}
@@ -520,7 +548,9 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="House Number"
                 name="houseNumber"
+                id="houseNumber"
                 required
+                autoComplete="address-line1"
                 placeholder="123"
                 value={formData.houseNumber}
                 onChange={handleInputChange}
@@ -530,7 +560,9 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="Street Name"
                 name="streetName"
+                id="streetName"
                 required
+                autoComplete="address-line2"
                 placeholder="Main Street"
                 className="sm:col-span-2"
                 value={formData.streetName}
@@ -542,7 +574,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Additional Address Details (Optional)"
               name="address"
+              id="address"
               type="textarea"
+              autoComplete="address-line3"
               placeholder="Apartment number, building name, or other address details..."
               className="sm:col-span-2"
               value={formData.address}
@@ -562,7 +596,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Native Language"
               name="nativeLanguage"
+              id="nativeLanguage"
               type="select"
+              autoComplete="language"
               options={languages}
               value={formData.nativeLanguage}
               onChange={handleInputChange}
@@ -579,7 +615,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Hebrew Level"
               name="hebrewLevel"
+              id="hebrewLevel"
               type="select"
+              autoComplete="hebrew-level"
               options={hebrewLevels.map(level => ({ value: level, label: level.charAt(0).toUpperCase() + level.slice(1) }))}
               value={formData.hebrewLevel}
               onChange={handleInputChange}
@@ -592,7 +630,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Arrival Date"
               name="arrivalDate"
+              id="arrivalDate"
               type="date"
+              autoComplete="bday"
               value={formData.arrivalDate}
               onChange={handleInputChange}
               error={errors.arrivalDate}
@@ -601,7 +641,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Origin Country"
               name="originCountry"
+              id="originCountry"
               type="select"
+              autoComplete="country"
               options={countries}
               value={formData.originCountry}
               onChange={handleInputChange}
@@ -622,7 +664,9 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="Health Condition"
                 name="healthCondition"
+                id="healthCondition"
                 type="textarea"
+                autoComplete="health-condition"
                 placeholder="Please describe any health conditions..."
                 value={formData.healthCondition}
                 onChange={handleInputChange}
@@ -632,7 +676,9 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="Military/National Service"
                 name="militaryService"
+                id="militaryService"
                 type="select"
+                autoComplete="military-service"
                 options={militaryOptions.map((option) => ({
                   value: option,
                   label: option === 'none' ? 'None' : option === 'military' ? 'Military Service' : 'National Service',
@@ -648,24 +694,28 @@ const PersonalDetails = memo(({ onComplete }) => {
                 <CheckboxField
                   label="I have a car"
                   name="hasCar"
+                  id="hasCar"
                   checked={formData.hasCar}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
                   label="Living alone"
                   name="livingAlone"
+                  id="livingAlone"
                   checked={formData.livingAlone}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
                   label="Family members in settlement"
                   name="familyInSettlement"
+                  id="familyInSettlement"
                   checked={formData.familyInSettlement}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
                   label="I carry a weapon"
                   name="hasWeapon"
+                  id="hasWeapon"
                   checked={formData.hasWeapon}
                   onChange={handleInputChange}
                 />
@@ -676,13 +726,22 @@ const PersonalDetails = memo(({ onComplete }) => {
         <div className="flex justify-end pt-6">
           <button
             type="submit"
-            disabled={loading.settlements}
+            disabled={loading.settlements || loading.languages}
             className={`w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform hover:scale-105 text-sm sm:text-base font-medium flex items-center justify-center gap-2 shadow-md ${
-              loading.settlements ? 'opacity-50 cursor-not-allowed' : ''
+              (loading.settlements || loading.languages) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            <span>Continue</span>
-            <FaCheck className="text-lg" />
+            {loading.settlements || loading.languages ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Loading...</span>
+              </>
+            ) : (
+              <>
+                <span>Continue</span>
+                <FaCheck className="text-lg" />
+              </>
+            )}
           </button>
         </div>
       </form>
