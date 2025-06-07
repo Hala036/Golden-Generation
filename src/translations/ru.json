@@ -26,6 +26,7 @@
         "noAccount": "Нет аккаунта?",
         "signIn": "Войти",
         "signingIn": "Вход...",
+        "newAccount": "У вас нет учетной записи?",
         "signUp": "Регистрация",
         "user": "Пользователь",
         "admin": "Администратор",
@@ -415,7 +416,19 @@
           "idImageRequired": "Изображение ID обязательно",
           "selfieRequired": "Фото с ID обязательно",
           "fileSize": "Размер файла должен быть менее 5MB",
-          "fileType": "Допустимы только файлы PNG, JPG и JPEG"
+          "fileType": "Допустимы только файлы PNG, JPG и JPEG",
+          "firstNameRequired": "Имя обязательно",
+          "lastNameRequired": "Фамилия обязательна",
+          "idNumberRequired": "Номер ID обязателен",
+          "invalidIdNumber": "Номер ID должен содержать 9 цифр",
+          "dateOfBirthRequired": "Дата рождения обязательна",
+          "ageRequirement": "Минимальный возраст — 50 лет",
+          "ageRequirementNotMet": "Требование по возрасту не выполнено: минимальный возраст — 50 лет",
+          "genderRequired": "Пол обязателен",
+          "invalidFileType": "Недопустимый тип файла. Загрузите JPG, JPEG или PNG",
+          "processing": "Ошибка обработки файла",
+          "extraction": "Не удалось извлечь данные из изображения",
+          "ocr": "Ошибка распознавания текста"
         },
         "continue": "Продолжить",
         "language": {
@@ -440,21 +453,6 @@
           "genderFemale": "Женский",
           "genderOther": "Другой",
           "submit": "Продолжить"
-        },
-        "errors": {
-          "firstNameRequired": "Имя обязательно",
-          "lastNameRequired": "Фамилия обязательна",
-          "idNumberRequired": "Номер ID обязателен",
-          "invalidIdNumber": "Номер ID должен содержать 9 цифр",
-          "dateOfBirthRequired": "Дата рождения обязательна",
-          "ageRequirement": "Минимальный возраст — 50 лет",
-          "ageRequirementNotMet": "Требование по возрасту не выполнено: минимальный возраст — 50 лет",
-          "genderRequired": "Пол обязателен",
-          "invalidFileType": "Недопустимый тип файла. Загрузите JPG, JPEG или PNG",
-          "fileSize": "Размер файла превышает 5MB",
-          "processing": "Ошибка обработки файла",
-          "extraction": "Не удалось извлечь данные из изображения",
-          "ocr": "Ошибка распознавания текста"
         }
       },
       "forgotPassword": {
