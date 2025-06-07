@@ -19,7 +19,7 @@
     },
     "auth": {
       "login": {
-        "title": "تسجيل الدخول إلى حسابك",
+        "title": "الدخول إلى حسابك",
         "email": "البريد الإلكتروني",
         "password": "كلمة المرور",
         "forgotPassword": "نسيت كلمة المرور؟",
@@ -509,28 +509,33 @@
       }
     },
     "dashboard": {
-      "welcome": "مرحباً",
+      "welcome": "مرحبًا",
       "profile": "الملف الشخصي",
       "events": "الفعاليات",
       "settings": "الإعدادات",
-      "logout": "تسجيل الخروج",
+      "logout": "الخروج",
       "upcomingEvents": "الفعاليات القادمة",
-      "pastEvents": "الفعاليات السابقة",
+      "homePage": "الصفحة الرئيسية",
+      "retirees": "المتقاعدون",
+      "volunteerRequests": "طلبات التطوع",
+      "analytics": "تحليل",
+      "addEvent": "إضافة فعالية",
+      "contactUs": "اتصل بنا",
       "noEvents": "لم يتم العثور على فعاليات",
       "createEvent": "إنشاء فعالية",
-      "editEvent": "تعديل فعالية",
-      "deleteEvent": "حذف فعالية",
+      "editEvent": "تعديل الفعالية",
+      "deleteEvent": "حذف الفعالية",
       "eventDetails": "تفاصيل الفعالية",
       "eventTitle": "عنوان الفعالية",
       "eventDate": "تاريخ الفعالية",
       "eventTime": "وقت الفعالية",
       "eventLocation": "موقع الفعالية",
       "eventDescription": "وصف الفعالية",
-      "eventParticipants": "مشاركون الفعالية",
+      "eventParticipants": "مشاركو الفعالية",
       "eventStatus": "حالة الفعالية",
       "search": {
-        "searchCategories": "البحث في الفئات",
-        "searchEvents": "البحث في الفعاليات",
+        "searchCategories": "البحث حسب الفئات",
+        "searchEvents": "البحث عن فعاليات",
         "button": "بحث"
       },
       "language": {
@@ -540,8 +545,8 @@
         "arabic": "العربية"
       },
       "header": {
-        "title": "الجيل الذهبي",
-        "logout": "تسجيل الخروج"
+        "title": "جيل الذهب",
+        "logout": "الخروج"
       },
       "notifications": "الإشعارات",
       "calendar": "التقويم",

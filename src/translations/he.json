@@ -440,12 +440,17 @@
       "settings": "הגדרות",
       "logout": "התנתק",
       "upcomingEvents": "אירועים קרובים",
-      "pastEvents": "אירועים קודמים",
+      "homePage": "דף הבית",
+      "retirees": "גמלאים",
+      "volunteerRequests": "בקשות התנדבות",
+      "analytics": "ניתוח",
+      "addEvent": "הוסף אירוע",
+      "contactUs": "צור קשר",
       "noEvents": "לא נמצאו אירועים",
       "createEvent": "צור אירוע",
       "editEvent": "ערוך אירוע",
       "deleteEvent": "מחק אירוע",
-      "eventDetails": "פרטי אירוע",
+      "eventDetails": "פרטי האירוע",
       "eventTitle": "כותרת האירוע",
       "eventDate": "תאריך האירוע",
       "eventTime": "שעת האירוע",
@@ -454,9 +459,9 @@
       "eventParticipants": "משתתפי האירוע",
       "eventStatus": "סטטוס האירוע",
       "search": {
-        "searchCategories": "חיפוש קטגוריות",
+        "searchCategories": "חיפוש לפי קטגוריות",
         "searchEvents": "חיפוש אירועים",
-        "button": "חיפוש"
+        "button": "חפש"
       },
       "language": {
         "english": "אנגלית",
