@@ -529,7 +529,8 @@
       "eventParticipants": "مشاركون الفعالية",
       "eventStatus": "حالة الفعالية",
       "search": {
-        "placeholder": "البحث في الفعاليات",
+        "searchCategories": "البحث في الفئات",
+        "searchEvents": "البحث في الفعاليات",
         "button": "بحث"
       },
       "language": {

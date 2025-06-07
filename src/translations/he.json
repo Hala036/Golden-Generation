@@ -454,7 +454,8 @@
       "eventParticipants": "משתתפי האירוע",
       "eventStatus": "סטטוס האירוע",
       "search": {
-        "placeholder": "חיפוש אירועים",
+        "searchCategories": "חיפוש קטגוריות",
+        "searchEvents": "חיפוש אירועים",
         "button": "חיפוש"
       },
       "language": {

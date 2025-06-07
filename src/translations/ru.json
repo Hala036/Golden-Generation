@@ -529,7 +529,8 @@
       "eventParticipants": "Участники мероприятия",
       "eventStatus": "Статус мероприятия",
       "search": {
-        "placeholder": "Поиск мероприятий",
+        "searchCategories": "Категории поиска",
+        "searchEvents": "Поиск мероприятий",
         "button": "Поиск"
       },
       "language": {

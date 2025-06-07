@@ -529,7 +529,8 @@
       "eventParticipants": "Event Participants",
       "eventStatus": "Event Status",
       "search": {
-        "placeholder": "Search Events",
+        "searchCategories": "Search Categories",
+        "searchEvents": "Search Events",
         "button": "Search"
       },
       "language": {
