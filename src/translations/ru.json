@@ -566,5 +566,30 @@
     "header": {
       "search": "Поиск",
       "language": "Язык"
+    },
+    "admin": {
+      "retirees": {
+        "title": "Управление пенсионерами",
+        "addRetiree": "Добавить пенсионера",
+        "viewRetiree": "Просмотр пенсионера",
+        "searchRetirees": "Поиск пенсионеров",
+        "noRetireesFound": "Пенсионеры не найдены",
+        "retireeDetails": "Информация о пенсионере",
+        "retireeName": "Имя",
+        "retireeEmail": "Эл. почта",
+        "retireePhone": "Номер телефона",
+        "filters": {
+          "search": "Поиск по любому признаку...",
+          "addFilter": "Добавить фильтр",
+          "remove": "Удалить",
+          "select": "Выбрать характеристику"
+        },
+        "table": {
+          "name": "Имя",
+          "age": "Возраст",
+          "gender": "Пол",
+          "work": "Сферы деятельности"
+        }
+      }
     }
   } 

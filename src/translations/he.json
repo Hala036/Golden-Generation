@@ -491,5 +491,30 @@
     "header": {
       "search": "חיפוש",
       "language": "שפה"
+    },
+    "admin": {
+      "retirees": {
+        "title": "ניהול גמלאים",
+        "addRetiree": "הוסף גמלאי",
+        "viewRetiree": "הצג גמלאי",
+        "searchRetirees": "חפש גמלאים",
+        "noRetireesFound": "לא נמצאו גמלאים",
+        "retireeDetails": "פרטי גמלאי",
+        "retireeName": "שם",
+        "retireeEmail": "דוא\"ל",
+        "retireePhone": "מספר טלפון",
+        "filters": {
+          "search": "חפש לפי כל תכונה...", 
+          "addFilter": "הוסף מסנן",
+          "remove": "הסר",
+          "select": "בחר תכונה"
+        },
+        "table": {
+          "name": "שם",
+          "age": "גיל",
+          "gender": "מגדר",
+          "work": "תחומי עיסוק"
+        }
+      }
     }
   } 
