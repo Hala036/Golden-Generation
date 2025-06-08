@@ -10,7 +10,6 @@ import { db } from '../../firebase';
 import localSettlements from '../../data/settlements.json';
 import Select from 'react-select';
 
-
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
@@ -44,10 +43,7 @@ const IDVerification = ({ onComplete }) => {
   const checkIdAvailability = debounce(async (idNumber) => {
     if (!idNumber || idNumber.length !== 9) return;
 
-    try {
-      // Temporarily disable Firebase check until config is set up
-      // Remove this comment and uncomment the Firebase code once config is properly imported
-      
+    try {      
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("idVerification.idNumber", "==", idNumber), where("role", "==", "retiree"));
       const querySnapshot = await getDocs(q);
