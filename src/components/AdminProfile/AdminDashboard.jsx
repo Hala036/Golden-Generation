@@ -18,12 +18,13 @@ import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/Calendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
+import JobNotifications from "./JobNotifications";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
   { id: "main", label: "Home Page", icon: <FaHome /> },
   { id: "retirees", label: "Retirees", icon: <FaUser /> },
-  { id: "jobs", label: "Jobs", icon: <FaBriefcase /> },
+  { id: "Jobs", label: "Voluntary Request", icon: <FaBriefcase /> },
   { id: "analysis", label: "Analysis", icon: <FaChartBar /> },
   { id: "settings", label: "Settings", icon: <FaCog /> },
   { id: "notifications", label: "Notifications", icon: <FaBell /> },
@@ -93,7 +94,7 @@ const Dashboard = () => {
             className="w-20 h-20 rounded-full mb-3"
           />
           <span className="text-lg font-semibold">
-            {userData?.username || "User"}
+            {userData?.username || "Admin"}
           </span>
         </div>
 
@@ -182,13 +183,13 @@ const Dashboard = () => {
           {selected === "upcoming" && <Cards setSelected={setSelected} />}
           {selected === "main" && <Main />}
           {selected === "retirees" && <Retirees />}
-          {selected === "jobs" && <Jobs />}
+          {selected === "Jobs" && <Jobs />}
           {selected === "analysis" && <Analysis />}
           {selected === "settings" && <Settings />}
           {selected === "calendar" && <Calendar />}
           {selected === "messages" && <Messages />}
           {selected === "add" && <AddEvent />}
-          {selected === "notifications" && <Notifications />}
+          {selected === "notifications" && <JobNotifications />}
           {selected === "support" && <Main />}
         </div>
       </div>
