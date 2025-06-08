@@ -507,7 +507,8 @@
           "search": "חפש לפי כל תכונה...", 
           "addFilter": "הוסף מסנן",
           "remove": "הסר",
-          "select": "בחר תכונה"
+          "select": "בחר תכונה",
+          "enterValue": "הזן ערך"
         },
         "table": {
           "name": "שם",

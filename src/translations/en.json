@@ -582,7 +582,8 @@
             "search": "Search by any feature...",
             "addFilter": "Add Filter",
             "remove": "Remove",
-            "select": "Select Feature"
+            "select": "Select Feature",
+            "enterValue": "Enter Value"
           },
           "table": {
             "name": "Name",

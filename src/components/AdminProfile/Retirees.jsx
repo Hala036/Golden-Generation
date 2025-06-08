@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase"; // Adjust the path to your Firebase config
+import { db } from "../../firebase";
 import { getAuth } from "firebase/auth";
 
 const Retirees = () => {
@@ -11,12 +11,12 @@ const Retirees = () => {
   const [retirees, setRetirees] = useState([]);
   const [adminSettlement, setAdminSettlement] = useState(null);
   const [loading, setLoading] = useState(true);
-  const fetchAdminSettlementCalled = useRef(false); // Track if the function has been called
+  const fetchAdminSettlementCalled = useRef(false);
 
   // Fetch admin's settlement
   useEffect(() => {
     const fetchAdminSettlement = async () => {
-      if (fetchAdminSettlementCalled.current) return; // Prevent multiple calls
+      if (fetchAdminSettlementCalled.current) return;
       fetchAdminSettlementCalled.current = true;
 
       try {
@@ -29,14 +29,11 @@ const Retirees = () => {
           return;
         }
 
-        // Fetch the admin document directly using the UID as the document ID
         const adminDocRef = doc(db, "users", user.uid);
         const adminDoc = await getDoc(adminDocRef);
 
         if (adminDoc.exists()) {
           const adminData = adminDoc.data();
-
-          // Verify the role is "admin"
           if (adminData.role === "admin") {
             setAdminSettlement(adminData.idVerification?.settlement || null);
           } else {
@@ -57,14 +54,14 @@ const Retirees = () => {
   useEffect(() => {
     const fetchRetirees = async () => {
       if (!adminSettlement) {
-        console.error("Admin settlement is null or undefined. Cannot fetch retirees.");
+        if (!fetchAdminSettlementCalled.current) {
+          console.error("Admin settlement is null or undefined. Cannot fetch retirees.");
+        }
         setLoading(false);
         return;
       }
 
       try {
-        console.log("Fetching retirees for settlement:", adminSettlement);
-
         const q = query(
           collection(db, "users"),
           where("role", "==", "retiree"),
@@ -72,14 +69,11 @@ const Retirees = () => {
         );
         const querySnapshot = await getDocs(q);
 
-        console.log("Retirees query snapshot size:", querySnapshot.size);
-
         if (!querySnapshot.empty) {
           const fetchedRetirees = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
-          console.log("Fetched retirees:", fetchedRetirees);
           setRetirees(fetchedRetirees);
         } else {
           console.error("No retirees found for the admin's settlement.");
@@ -91,43 +85,59 @@ const Retirees = () => {
       }
     };
 
-    fetchRetirees();
+    if (adminSettlement) {
+      fetchRetirees();
+    }
   }, [adminSettlement]);
 
-  // Add a new filter
   const addFilter = () => {
     setDynamicFilters([...dynamicFilters, { key: "", value: "" }]);
   };
 
-  // Update a filter
   const updateFilter = (index, key, value) => {
     const updatedFilters = [...dynamicFilters];
     updatedFilters[index] = { ...updatedFilters[index], [key]: value };
     setDynamicFilters(updatedFilters);
   };
 
-  // Remove a filter
   const removeFilter = (index) => {
     const updatedFilters = dynamicFilters.filter((_, i) => i !== index);
     setDynamicFilters(updatedFilters);
   };
 
-  // Filter retirees based on search term and dynamic filters
+  // Helper to flatten all values in a nested object
+  const flattenObject = (obj) => {
+    const result = [];
+
+    const recursiveFlatten = (value) => {
+      if (value === null || value === undefined) return;
+      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        result.push(value.toString().toLowerCase());
+      } else if (Array.isArray(value)) {
+        value.forEach(recursiveFlatten);
+      } else if (typeof value === "object") {
+        Object.values(value).forEach(recursiveFlatten);
+      }
+    };
+
+    recursiveFlatten(obj);
+    return result;
+  };
+
   const filteredRetirees = retirees.filter((retiree) => {
-    const matchesSearch =
-      searchTerm === "" ||
-      Object.values(retiree).some((value) =>
-        Array.isArray(value)
-          ? value.some((v) => v.toString().toLowerCase().includes(searchTerm.toLowerCase()))
-          : value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const allValues = flattenObject(retiree);
+    const matchesSearch = searchTerm === "" || allValues.some((val) => val.includes(searchTerm.toLowerCase()));
 
     const matchesDynamicFilters = dynamicFilters.every((filter) => {
       if (!filter.key || !filter.value) return true;
-      const retireeValue = retiree[filter.key];
-      return Array.isArray(retireeValue)
-        ? retireeValue.some((v) => v.toString().toLowerCase().includes(filter.value.toLowerCase()))
-        : retireeValue.toString().toLowerCase().includes(filter.value.toLowerCase());
+      const value = retiree[filter.key];
+      if (value === null || value === undefined) return false;
+      if (Array.isArray(value)) {
+        return value.some((v) =>
+          v.toString().toLowerCase().includes(filter.value.toLowerCase())
+        );
+      }
+      return value.toString().toLowerCase().includes(filter.value.toLowerCase());
     });
 
     return matchesSearch && matchesDynamicFilters;
