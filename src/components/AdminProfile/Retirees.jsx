@@ -1,18 +1,98 @@
-import React, { useState } from "react";
-import { useTranslation } from 'react-i18next';
-
-// Mock data for seniors (added gender field)
-const mockSeniors = [
-  { id: 1, name: "David Cohen", age: 68, gender: "Male", phone: "054-1234567", city: "Springfield", interests: ["Reading", "Gardening"], workFields: ["Education", "Consulting"] },
-  { id: 2, name: "Sarah Klein", age: 72, gender: "Female", phone: "050-7654321", city: "Riverside", interests: ["Cooking", "Art"], workFields: ["Healthcare"] },
-  { id: 3, name: "Jacob Miller", age: 65, gender: "Male", phone: "052-9876543", city: "Lincoln", interests: ["Technology", "Music"], workFields: ["IT", "Engineering"] },
-  { id: 4, name: "Ruth Gordon", age: 70, gender: "Female", phone: "053-3456789", city: "Springfield", interests: ["Walking", "History"], workFields: ["Finance"] },
-];
+import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase"; // Adjust the path to your Firebase config
+import { getAuth } from "firebase/auth";
 
 const Retirees = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [dynamicFilters, setDynamicFilters] = useState([]);
+  const [retirees, setRetirees] = useState([]);
+  const [adminSettlement, setAdminSettlement] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const fetchAdminSettlementCalled = useRef(false); // Track if the function has been called
+
+  // Fetch admin's settlement
+  useEffect(() => {
+    const fetchAdminSettlement = async () => {
+      if (fetchAdminSettlementCalled.current) return; // Prevent multiple calls
+      fetchAdminSettlementCalled.current = true;
+
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+          console.error("No logged-in user found.");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch the admin document directly using the UID as the document ID
+        const adminDocRef = doc(db, "users", user.uid);
+        const adminDoc = await getDoc(adminDocRef);
+
+        if (adminDoc.exists()) {
+          const adminData = adminDoc.data();
+
+          // Verify the role is "admin"
+          if (adminData.role === "admin") {
+            setAdminSettlement(adminData.idVerification?.settlement || null);
+          } else {
+            console.error("User is not an admin.");
+          }
+        } else {
+          console.error("Admin document not found in the users collection.");
+        }
+      } catch (error) {
+        console.error("Error fetching admin settlement:", error);
+      }
+    };
+
+    fetchAdminSettlement();
+  }, []);
+
+  // Fetch retirees from Firestore
+  useEffect(() => {
+    const fetchRetirees = async () => {
+      if (!adminSettlement) {
+        console.error("Admin settlement is null or undefined. Cannot fetch retirees.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        console.log("Fetching retirees for settlement:", adminSettlement);
+
+        const q = query(
+          collection(db, "users"),
+          where("role", "==", "retiree"),
+          where("idVerification.settlement", "==", adminSettlement)
+        );
+        const querySnapshot = await getDocs(q);
+
+        console.log("Retirees query snapshot size:", querySnapshot.size);
+
+        if (!querySnapshot.empty) {
+          const fetchedRetirees = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          console.log("Fetched retirees:", fetchedRetirees);
+          setRetirees(fetchedRetirees);
+        } else {
+          console.error("No retirees found for the admin's settlement.");
+        }
+      } catch (error) {
+        console.error("Error fetching retirees:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRetirees();
+  }, [adminSettlement]);
 
   // Add a new filter
   const addFilter = () => {
@@ -32,11 +112,11 @@ const Retirees = () => {
     setDynamicFilters(updatedFilters);
   };
 
-  // Filter seniors based on search term and dynamic filters
-  const filteredSeniors = mockSeniors.filter((senior) => {
+  // Filter retirees based on search term and dynamic filters
+  const filteredRetirees = retirees.filter((retiree) => {
     const matchesSearch =
       searchTerm === "" ||
-      Object.values(senior).some((value) =>
+      Object.values(retiree).some((value) =>
         Array.isArray(value)
           ? value.some((v) => v.toString().toLowerCase().includes(searchTerm.toLowerCase()))
           : value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,21 +124,25 @@ const Retirees = () => {
 
     const matchesDynamicFilters = dynamicFilters.every((filter) => {
       if (!filter.key || !filter.value) return true;
-      const seniorValue = senior[filter.key];
-      return Array.isArray(seniorValue)
-        ? seniorValue.some((v) => v.toString().toLowerCase().includes(filter.value.toLowerCase()))
-        : seniorValue.toString().toLowerCase().includes(filter.value.toLowerCase());
+      const retireeValue = retiree[filter.key];
+      return Array.isArray(retireeValue)
+        ? retireeValue.some((v) => v.toString().toLowerCase().includes(filter.value.toLowerCase()))
+        : retireeValue.toString().toLowerCase().includes(filter.value.toLowerCase());
     });
 
     return matchesSearch && matchesDynamicFilters;
   });
 
+  if (loading) {
+    return <div>{t("common.loading")}</div>;
+  }
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Seniors</h1>
+        <h1 className="text-3xl font-bold">{t("admin.retirees.title")}</h1>
         <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded">
-          {t('admin.retirees.addRetiree')}
+          {t("admin.retirees.addRetiree")}
         </button>
       </div>
 
@@ -67,7 +151,7 @@ const Retirees = () => {
         <div className="mb-4">
           <input
             type="text"
-            placeholder={t('admin.retirees.filters.search')}
+            placeholder={t("admin.retirees.filters.search")}
             className="w-full p-2 border rounded"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -83,16 +167,17 @@ const Retirees = () => {
                 value={filter.key}
                 onChange={(e) => updateFilter(index, "key", e.target.value)}
               >
-                <option value="">Select Feature</option>
-                {Object.keys(mockSeniors[0]).map((key) => (
-                  <option key={key} value={key}>
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                  </option>
-                ))}
+                <option value="">{t("common.select")}</option>
+                {retirees.length > 0 &&
+                  Object.keys(retirees[0]).map((key) => (
+                    <option key={key} value={key}>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </option>
+                  ))}
               </select>
               <input
                 type="text"
-                placeholder="Enter value"
+                placeholder={t("admin.retirees.filters.enterValue")}
                 className="p-2 border rounded"
                 value={filter.value}
                 onChange={(e) => updateFilter(index, "value", e.target.value)}
@@ -101,7 +186,7 @@ const Retirees = () => {
                 className="bg-[#FF4137] hover:bg-[#FF291E] text-white px-4 py-2 rounded"
                 onClick={() => removeFilter(index)}
               >
-                {t('admin.retirees.filters.remove')}
+                {t("admin.retirees.filters.remove")}
               </button>
             </div>
           ))}
@@ -109,37 +194,38 @@ const Retirees = () => {
             className="bg-[#7FDF7F] hover:bg-[#58D558] text-white px-4 py-2 rounded"
             onClick={addFilter}
           >
-            {t('admin.retirees.filters.addFilter')}
+            {t("admin.retirees.filters.addFilter")}
           </button>
         </div>
       </div>
 
-      {/* Seniors Table */}
+      {/* Retirees Table */}
       <div className="bg-white rounded shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('admin.retirees.table.name')}
+                {t("admin.retirees.table.name")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('admin.retirees.table.age')}
+                {t("admin.retirees.table.age")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('admin.retirees.table.gender')}
+                {t("admin.retirees.table.gender")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('admin.retirees.table.work')}
+                {t("admin.retirees.table.work")}
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredSeniors.map((senior) => (
-              <tr key={senior.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.age}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.gender}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.workFields.join(", ")}</td>
+            {filteredRetirees.map((retiree) => (
+              <tr key={retiree.id}>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.firstName || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}</td>
               </tr>
             ))}
           </tbody>
