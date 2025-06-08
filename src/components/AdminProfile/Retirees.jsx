@@ -224,7 +224,6 @@ const Retirees = () => {
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.firstName || "N/A"}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}</td>
               </tr>
             ))}
