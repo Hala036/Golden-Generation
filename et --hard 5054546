@@ -1,0 +1,106 @@
+[33m3a01704[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msettlments_list[m[33m)[m Merge branch 'master' into settlments_list
+[33md5ed108[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #32 from Hala036/i18next
+[33mc60a0f3[m Add translations to AdminDashboard
+[33m5054546[m[33m ([m[1;31morigin/settlments_list[m[33m)[m Remove SettlementsManager component from AdminProfile
+[33m681f41c[m Add getAllSettlements function to fetch settlements from Firestore
+[33mb1baf34[m Refactor settlement upload functionality to parse CSV and add settlements
+[33m2e89f7c[m Add settlements.json file with initial settlement data
+[33m62d773b[m Add languages.json file with comprehensive language data
+[33m48f5411[m Add languagesGrouped.json file with structured language data
+[33m3581ce4[m Implement new feature for user authentication and improve error handling
+[33m8e49de0[m Add SettlementsManager component for managing settlements with features to toggle availability, delete, and upload from CSV
+[33m93db77a[m Refactor PersonalDetails component to integrate react-select for language and origin country fields, enhancing user experience and improving data handling with local JSON files.
+[33m440d562[m Refactor IDVerification component to use local settlements data and replace select element with react-select for improved user experience
+[33m5d278ca[m Implement new feature for user authentication and improve error handling
+[33m36ecc69[m Implement code changes to enhance functionality and improve performance ,  containing flags
+[33mf12eb52[m Add lucide-react and papaparse dependencies to package.json
+[33ma1b4113[m Add lucide-react and papaparse dependencies to package-lock.json
+[33m167aed9[m[33m ([m[1;31morigin/i18next[m[33m)[m Improve language handling in LanguageSwitcher
+[33mbe28d79[m Implement internationalization support with language context and direction handling
+[33m9e0dad2[m Add internationalization support to Login component and update translations
+[33m1853930[m Add i18next for internationalization support and update LanguageSwitcher component
+[33m9c23c42[m[33m ([m[1;31morigin/adminJobRequest[m[33m)[m Merge pull request #31 from Hala036/signup-id-verification
+[33m0ee3b1e[m implemented a function to check for validity of ID
+[33mda21460[m Remove unnecessary successful input toast messages, and improve email availability check for retirees only
+[33m8ec34a4[m Added verification for ID number uniqueness across retiree profiles
+[33m79f8ed8[m[33m ([m[1;32mmaster[m[33m)[m Merge pull request #30 from Hala036/fetch-user-data
+[33mcb9d46f[m Categorised events in cards component + connected to firebase collections
+[33m28c22ac[m Add Events component and update routing in AppRoutes
+[33m2aad509[m Fetch user data (and username) in dashboards
+[33m1d96a8e[m Merge pull request #29 from Hala036/icons-move
+[33md132645[m clean up code
+[33m409ed7f[m Add support button to AdminDashboard and update UI interaction
+[33m386afe8[m Add customer support to AdminDashboard
+[33m29a8222[m Refactor AdminDashboard layout
+[33md6ce0ae[m Merge pull request #28 from Hala036/login-fix
+[33md0a64d1[m[33m ([m[1;31morigin/login-fix[m[33m)[m Add login redirection for undefined roles and comment out home page icon in AdminDashboard
+[33m6eb9b24[m Merge pull request #27 from Hala036/Admin
+[33mce496e3[m Add Analysis component and update AdminDashboard with new icons and routes
+[33md00eae5[m Fixed dashboard  UI and code design, and added components for each tab
+[33ma960ab5[m Merge pull request #26 from Hala036/calendar-fix
+[33m853ffb3[m calenrad added
+[33mfc6f26d[m Merge pull request #25 from Hala036/multi-user-ui
+[33m7724f29[m cleanup dashboard
+[33m864e114[m[33m ([m[1;32mmulti-user-ui[m[33m)[m Add Admins, Candidates, Settlements, and Volunteers components with basic structure and functionality
+[33mf61e15e[m calendar
+[33md0a3a10[m superadmin redirect
+[33m65cea53[m Merge pull request #24 from Hala036/multi-user-ui
+[33m34ab4b6[m Merge pull request #23 from Hala036/Id_house_street
+[33m1e801f3[m[33m ([m[1;31morigin/Id_house_street[m[33m, [m[1;32mId_house_street[m[33m)[m Enhance PersonalDetails component: add street name and house number fields, update form validation, and improve address handling
+[33m544bc7b[m Refactor IDVerification component: streamline language handling, enhance gender selection UI, and improve form validation
+[33m008f167[m icons added
+[33m0254cee[m Update role handling in login and dashboard components
+[33m0d36c3b[m logout functionality
+[33mccddeb0[m fix routes
+[33m77976ab[m Implement role-based dashboard and enhance login/signup functionality
+[33m3c8b93b[m remove unused user registration function
+[33m5ec67a3[m Initialize Firebase functions with dependencies and scripts
+[33md1857b8[m Merge pull request #21 from Hala036/superAdminUI
+[33m0680e5a[m[33m ([m[1;31morigin/superAdminUI[m[33m, [m[1;32msuperAdminUI[m[33m)[m Merge branch 'multi-user-ui' into superAdminUI
+[33m5773f6e[m Merge pull request #20 from Hala036/Admin-UI
+[33md095927[m[33m ([m[1;31morigin/Admin-UI[m[33m)[m add SearchSeniors component and remove unused RetireeProfile components
+[33m9df6990[m Merge pull request #19 from Hala036/retiree-profile
+[33mff99dae[m Temporarily set route to SuperAdminDashboard
+[33md3ad423[m reverse
+[33mc5194f6[m[33m ([m[1;31morigin/retiree-profile[m[33m)[m package lock
+[33m30d35df[m first try
+[33ma312b63[m superAdminUi
+[33m28fa29f[m first try
+[33mf5d23ab[m Add events tab
+[33m99416e1[m Add event joining functionality to Dashboard component
+[33m4cb9c33[m Event cards UI
+[33mbf904c3[m Merge branch 'master' of https://github.com/Hala036/Golden-Generation
+[33mf03513a[m Fetch user data from Firestore and update profile display in Dashboard
+[33m0f8df65[m Add user name display in Dashboard and import useEffect
+[33m73cf1d1[m Convert dashboard to sidebar
+[33me06dbf3[m Implement language selection using Ant Design's Select component in Header
+[33m33ebb32[m Conditionally render LanguageSwitcher
+[33m3eeb98f[m[33m ([m[1;31morigin/TextSize[m[33m)[m Merge pull request #17 from Hala036/fileSystem
+[33m5166caa[m reorganise filesystem by transferring files to RetireeProfile and AdminProfile + fixed routing in AppRoutes
+[33me6a1d89[m[33m ([m[1;31morigin/superAdmin_settlments[m[33m, [m[1;32msuperAdmin_settlments[m[33m, [m[1;32mID_vertification[m[33m)[m fix IDVerification after merge
+[33m9c2be71[m Merge pull request #16 from Hala036/0007
+[33m27effd9[m[33m ([m[1;31morigin/0007[m[33m)[m Merge branch 'master' into 0007
+[33m73a13fa[m server
+[33m9fa5c44[m package
+[33m044ab23[m package-lock.
+[33m6fab39e[m gitignore
+[33m06f253b[m Merge pull request #15 from Hala036/email-check
+[33m8fee090[m Enhance email validation
+[33mdb0e0b9[m clean undefined values in Work Background
+[33m3b5e2b8[m Refactor LanguageSwitcher to use styles prop for dropdown direction (fix warning)
+[33m401f39f[m personaldetails_update
+[33m057f8ef[m id
+[33m5020aeb[m[33m ([m[1;31morigin/UI_lastPageSignUP[m[33m)[m Merge branch 'master' of https://github.com/Hala036/Golden-Generation
+[33m16f3892[m Stop tracking serviceAccountKey.json
+[33m2ff53f6[m[33m ([m[1;31morigin/edits-of(hobbies-list-,-jobs)[m[33m)[m Merge branch 'master' of https://github.com/Hala036/Golden-Generation
+[33m825595a[m Merge pull request #13 from Hala036/raghad
+[33m05adb43[m[33m ([m[1;31morigin/raghad[m[33m, [m[1;32mraghad[m[33m)[m Remove serviceAccountKey.json from tracking
+[33m5c15ddc[m Stop tracking serviceAccountKey.json
+[33mce5e9cd[m Add health check endpoint and improve settlements fetching logic
+[33mc6ac103[m Merge pull request #12 from Hala036/raghad
+[33m2bcafb4[m Merge branch 'master' into raghad
+[33mdee803d[m avoided conflicts by updating lock file manually
+[33m8912cc3[m Trigger GitHub conflict check
+[33m9e992a3[m Regenerated lock file after resolving merge conflict
+[33m417053b[m package-lock.json conflicts resolved
+[33mde0faae[m Merg

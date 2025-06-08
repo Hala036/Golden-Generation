@@ -4,10 +4,11 @@ import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
-
+import debounce from 'lodash.debounce';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 import localSettlements from '../../data/settlements.json';
 import Select from 'react-select';
-
 
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
@@ -42,7 +43,7 @@ const IDVerification = ({ onComplete }) => {
   const checkIdAvailability = debounce(async (idNumber) => {
     if (!idNumber || idNumber.length !== 9) return;
 
-    try {
+    try {      
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("idVerification.idNumber", "==", idNumber), where("role", "==", "retiree"));
       const querySnapshot = await getDocs(q);
@@ -54,6 +55,7 @@ const IDVerification = ({ onComplete }) => {
         setErrors((prev) => ({ ...prev, idNumber: "" }));
         toast.success("ID number is available");
       }
+      
     } catch (error) {
       console.error("Error checking ID number:", error);
       toast.error("Error checking ID number availability");
@@ -246,6 +248,28 @@ const IDVerification = ({ onComplete }) => {
     e.preventDefault();
     if (validateForm()) {
       onComplete();
+    }
+  };
+
+  // Add the missing extractDataFromOCR function
+  const extractDataFromOCR = (text) => {
+    // This is a placeholder function - you'll need to implement the actual OCR data extraction logic
+    // based on the format of Israeli ID cards
+    try {
+      // Example implementation - adjust based on your specific requirements
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      
+      // You would implement specific parsing logic here based on Israeli ID card format
+      // This is just an example structure
+      const extractedData = {};
+      
+      // Look for patterns in the OCR text that match ID card fields
+      // This would need to be customized based on actual ID card format
+      
+      return Object.keys(extractedData).length > 0 ? extractedData : null;
+    } catch (error) {
+      console.error('Error extracting data from OCR:', error);
+      return null;
     }
   };
 

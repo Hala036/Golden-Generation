@@ -37,15 +37,16 @@ const Credentials = ({ onComplete }) => {
   // Debounced username check
   const checkUsernameAvailability = debounce(async (username) => {
     if (!username || username.length < 3) return;
-    
     setIsChecking(true);
     try {
-      const usernameRef = doc(db, 'usernames', username.toLowerCase());
-      const usernameDoc = await getDoc(usernameRef);
-      
-      if (usernameDoc.exists()) {
-        setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        toast.error('Username is already taken');
+      // Only check Firestore if username is valid and not empty
+      if (username && username.length >= 3) {
+        const usernameRef = doc(db, 'usernames', username.toLowerCase());
+        const usernameDoc = await getDoc(usernameRef);
+        if (usernameDoc.exists()) {
+          setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
+          toast.error('Username is already taken');
+        }
       }
     } catch (error) {
       console.error('Error checking username:', error);
@@ -179,6 +180,7 @@ const Credentials = ({ onComplete }) => {
   };
 
   const checkUsernameFinal = async (username) => {
+    if (!username || username.length < 3) return false;
     const usernameRef = doc(db, 'usernames', username.toLowerCase());
     const usernameDoc = await getDoc(usernameRef);
     return !usernameDoc.exists();
@@ -371,4 +373,4 @@ const Credentials = ({ onComplete }) => {
   );
 };
 
-export default Credentials; 
+export default Credentials;
