@@ -5,18 +5,8 @@ import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
 import debounce from 'lodash.debounce';
-// Add the missing Firebase imports - Update the path to match your project structure
 import { collection, query, where, getDocs } from 'firebase/firestore';
-// Try one of these import paths based on your project structure:
-// import { db } from '../../firebase/config';
-// import { db } from '../../firebase';
-// import { db } from '../../config/firebase';
-// import { db } from '../firebase/config';
-// import { db } from './firebase/config';
-
-// Temporary solution: Comment out Firebase imports if config doesn't exist yet
-// import { db } from '../../firebase/config';
-
+import { db } from '../../firebase';
 import localSettlements from '../../data/settlements.json';
 import Select from 'react-select';
 
@@ -58,7 +48,6 @@ const IDVerification = ({ onComplete }) => {
       // Temporarily disable Firebase check until config is set up
       // Remove this comment and uncomment the Firebase code once config is properly imported
       
-      /*
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("idVerification.idNumber", "==", idNumber), where("role", "==", "retiree"));
       const querySnapshot = await getDocs(q);
@@ -70,12 +59,6 @@ const IDVerification = ({ onComplete }) => {
         setErrors((prev) => ({ ...prev, idNumber: "" }));
         toast.success("ID number is available");
       }
-      */
-      
-      // Temporary simulation - remove this once Firebase is configured
-      console.log("Checking ID availability for:", idNumber);
-      setErrors((prev) => ({ ...prev, idNumber: "" }));
-      toast.success("ID number is available (temporary - no database check)");
       
     } catch (error) {
       console.error("Error checking ID number:", error);
