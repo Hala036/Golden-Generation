@@ -35,7 +35,7 @@ const VeteransCommunity = ({ onComplete }) => {
   ];
   const frequencyOptions = ['once a month', 'once every two weeks', 'once a week', 'twice a week'];
   const timeOptions = ['morning hours', 'noon hours', 'evening hours'];
-  const dayOptions = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayOptions = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const consultationOptions = [
     'company', 'gardening', 'health', 'food/nutrition', 'home economics', 'Order in the house',
     'Marketing', 'Shopping', 'Mobility', 'digital', 'legal', 'psychology', 'House rules', 'sport'
