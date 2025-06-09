@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getAuth } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
 
 const Retirees = () => {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ const Retirees = () => {
   const [adminSettlement, setAdminSettlement] = useState(null);
   const [loading, setLoading] = useState(true);
   const fetchAdminSettlementCalled = useRef(false);
+  const navigate = useNavigate();
 
   // Fetch admin's settlement
   useEffect(() => {
@@ -143,6 +145,10 @@ const Retirees = () => {
     return matchesSearch && matchesDynamicFilters;
   });
 
+  const handleViewProfile = (retiree) => {
+    navigate("/view-profile", { state: { retireeData: retiree } });
+  };
+
   if (loading) {
     return <div>{t("common.loading")}</div>;
   }
@@ -230,7 +236,10 @@ const Retirees = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredRetirees.map((retiree) => (
-              <tr key={retiree.id}>
+              <tr key={retiree.id}
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => handleViewProfile(retiree)} // Attach the function here
+              >
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.firstName || "N/A"}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
