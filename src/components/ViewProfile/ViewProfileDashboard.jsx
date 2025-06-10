@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FaBell, FaPlusCircle, FaComments, FaSignOutAlt, FaUser, FaHeadset } from "react-icons/fa";
+import { FaUser, FaComments, FaArrowLeft } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
-import { auth, getUserData } from "../../firebase";
-import { signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 import { toast } from "react-hot-toast";
 import profile from "../../assets/profile.jpeg";
 import { useLanguage } from '../../context/LanguageContext';
@@ -12,49 +12,43 @@ import ProfileDetails from "./ProfileDetails";
 import Messages from "./SendMessage";
 import { useTranslation } from 'react-i18next';
 
-
 const ViewProfileDashboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
-  const [selected, setSelected] = useState("upcoming");
+  const [selected, setSelected] = useState("profile");
+
+  // Retrieve the retiree ID from the state passed via navigation
   const location = useLocation();
-
-  // Retrieve the target user's data from the state
   const retireeData = location.state?.retireeData;
+  const retireeIdNumber = retireeData?.idVerification?.idNumber;
 
-  // Redirect to a fallback page if retireeData is not available
-  if (!retireeData) {
-    toast.error("No retiree data available.");
-    navigate("/dashboard");
-    return null;
-  }
+
+  // Redirect to a fallback page if retireeIdNumber is not available
+  useEffect(() => {
+    if (!retireeIdNumber) {
+      toast.error("No retiree ID number available.");
+      navigate("/dashboard");
+    }
+  }, [retireeIdNumber, navigate]);
 
   const icons = [
-    { id: "retirees", label: "Profile", icon: <FaUser /> },
+    { id: "profile", label: "Profile", icon: <FaUser /> },
     { id: "messages", label: "Send Messages", icon: <FaComments /> }
   ];
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast.success('Logged out successfully!');
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Failed to logout. Please try again.');
-    }
+  const handleBackToProfile = () => {
+    navigate("/dashboard"); // Adjust this based on the user's role
   };
 
+  if (!retireeData) {
+    return <div>{t("common.loading")}</div>;
+  }
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 mt-15">
       {/* Sidebar */}
       <div className="w-70 bg-gray-100 shadow-lg">
-        Logo
-        <div className="p-4 border-b border-gray-200">
-          {/* <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1> */}
-        </div>
-
         {/* Profile Section */}
         <div className="p-6 border-b border-gray-200 flex flex-col items-center">
           <img 
@@ -63,7 +57,7 @@ const ViewProfileDashboard = () => {
             className="w-20 h-20 rounded-full mb-3"
           />
           <span className="text-lg font-semibold">
-            {retireeData.name || "Retiree"}
+            {retireeData?.credentials?.username || "Retiree"}
           </span>
         </div>
 
@@ -87,19 +81,11 @@ const ViewProfileDashboard = () => {
         {/* Bottom Section */}
         <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-gray-100 p-4">
           <button
-            onClick={() => setSelected("support")}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4"
+            onClick={handleBackToProfile}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
           >
-            <FaHeadset className="text-xl" />
-            <span className="text-sm">{t('dashboard.contactUs')}</span>
-          </button>
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full"
-          >
-            <FaSignOutAlt className="text-xl" />
-            <span className="text-sm">{t('dashboard.logout')}</span>
+            <FaArrowLeft className="text-xl" />
+            <span className="text-sm">Back To Profile</span>
           </button>
         </div> 
       </div>
@@ -110,18 +96,6 @@ const ViewProfileDashboard = () => {
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-6 py-4 z-10 flex items-center justify-between">
           <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1>
           <div className="flex items-center gap-4">
-            {/* Action Icons */}
-            <div className="flex items-center gap-3">
-              <FaBell 
-                className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800" 
-                onClick={() => setSelected("notifications")} 
-              />
-              <FaComments 
-                className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800" 
-                onClick={() => setSelected("messages")} 
-              />
-            </div>
-
             {/* Language Selector */}
             <div className="flex items-center gap-1 text-sm ml-5">
               <MdLanguage className="text-lg text-gray-600" />
@@ -137,15 +111,13 @@ const ViewProfileDashboard = () => {
                 <Select.Option value="ar">العربية</Select.Option>
               </Select>
             </div>
-
           </div>
         </div>
 
         {/* Scrollable Content Area */}
         <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
-            {/* {selected === "upcoming" && <Cards setSelected={setSelected} />} */}
-            {selected === "profile" && <ProfileDetails retireeData={retireeData} />}
-            {selected === "messages" && <Messages retireeData={retireeData} />}
+          {selected === "profile" && <ProfileDetails retireeData={retireeData} />}
+          {selected === "messages" && <Messages retireeData={retireeData} />}
         </div>
       </div>
     </div>

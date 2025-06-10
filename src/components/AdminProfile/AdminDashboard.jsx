@@ -80,13 +80,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 mt-15">
       {/* Sidebar */}
       <div className="w-70 bg-gray-100 shadow-lg">
-        Logo
-        <div className="p-4 border-b border-gray-200">
-          {/* <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1> */}
-        </div>
 
         {/* Profile Section */}
         <div className="p-6 border-b border-gray-200 flex flex-col items-center">
