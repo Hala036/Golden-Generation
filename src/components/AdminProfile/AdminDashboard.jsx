@@ -29,7 +29,7 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(null);
 
   const icons = [
-    { id: "upcoming", label: t('dashboard.upcomingEvents'), icon: <FaCalendarCheck /> },
+    { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "main", label: t('dashboard.homePage'), icon: <FaHome /> },
     { id: "retirees", label: t('dashboard.retirees'), icon: <FaUser /> },
     { id: "jobs", label: t('dashboard.volunteerRequests'), icon: <FaBriefcase /> },
@@ -80,9 +80,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 mt-15">
+    <div className="flex min-h-screen bg-gray-50 ">
       {/* Sidebar */}
-      <div className="w-70 bg-gray-100 shadow-lg">
+      <div className="w-70 bg-gray-100 shadow-lg h-[calc(100vh-60px)] mt-15">
 
         {/* Profile Section */}
         <div className="p-6 border-b border-gray-200 flex flex-col items-center">
