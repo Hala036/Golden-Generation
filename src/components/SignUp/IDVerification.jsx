@@ -64,22 +64,37 @@ const IDVerification = ({ onComplete }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name === 'idNumber') {
+
+    if (name === 'dateOfBirth') {
+      // Calculate age when dateOfBirth is updated
+      const calculateAge = (dob) => {
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      };
+
+      const age = calculateAge(value);
+
+      // Update idVerificationData with dateOfBirth and age
+      updateIdVerificationData({ dateOfBirth: value, age });
+    } else if (name === 'idNumber') {
       const cleanValue = value.replace(/\D/g, '');
       const truncatedValue = cleanValue.slice(0, 9);
       updateIdVerificationData({ [name]: truncatedValue });
-      // Remove the immediate validation
+
       if (errors[name]) {
-        setErrors((prev) => ({ ...prev, [name]: "" }));
+        setErrors((prev) => ({ ...prev, [name]: '' }));
       }
 
-      // Validate ID number when it reaches 9 digits
       if (truncatedValue.length === 9) {
         if (!isValidIsraeliID(truncatedValue)) {
           toast.error('Invalid Israeli ID number');
         } else {
-          // If valid, check availability
           checkIdAvailability(truncatedValue);
         }
       }

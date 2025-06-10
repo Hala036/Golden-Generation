@@ -566,5 +566,31 @@
     "header": {
       "search": "بحث",
       "language": "اللغة"
+    },
+    "admin": {
+      "retirees": {
+        "title": "إدارة المتقاعدين",
+        "addRetiree": "إضافة متقاعد",
+        "viewRetiree": "عرض المتقاعد",
+        "searchRetirees": "البحث عن متقاعدين",
+        "noRetireesFound": "لم يتم العثور على متقاعدين",
+        "retireeDetails": "تفاصيل المتقاعد",
+        "retireeName": "الاسم",
+        "retireeEmail": "البريد الإلكتروني",
+        "retireePhone": "رقم الهاتف",
+        "filters": {
+          "search": "...البحث عن طريق أي ميزة",
+          "addFilter": "إضافة فلتر",
+          "remove": "إزالة",
+          "select": "اختر ميزة",
+          "enterValue": "أدخل قيمة"
+        },
+        "table": {
+          "name": "الاسم",
+          "age": "العمر",
+          "gender": "الجنس",
+          "work": "مجالات العمل"
+        }
+      }
     }
   } 
