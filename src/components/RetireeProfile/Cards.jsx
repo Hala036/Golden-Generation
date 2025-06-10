@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
+import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaArrowLeft } from "react-icons/fa";
 import { db } from "../../firebase"; // Import your Firebase configuration
 import { collection, getDocs } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
@@ -87,17 +87,19 @@ const Cards = () => {
   };
 
   return (
-    <div className="bg-white p-4 overflow-y-auto">
+    <div className="bg-white p-4">
       {/* Check if an event is selected */}
       {selectedEvent ? (
         // Event Details View
         <div>
           <button
-            className="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-md"
             onClick={handleBackToEvents}
-          >
-            {t("dashboard.events.backToEvents")}
+            className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
+            >
+              <FaArrowLeft className="text-xl" />
+              {t("dashboard.events.backToEvents")}
           </button>
+
           <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
           <p className="mb-2">
             <FaCalendarAlt className="inline text-[#FFD966] mr-2" />
@@ -119,7 +121,7 @@ const Cards = () => {
         // Events List View
         <>
           {/* Search Bar and Filter */}
-          <div className="sticky top-0 bg-white z-10 flex items-center justify-between mb-4 p-4 shadow-md">
+          <div className="sticky top-0 bg-white z-10 flex items-center justify-between mb-4 p-1 shadow-sm w-full">
             <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
               <FaSearch className="text-gray-500" />
               <input
