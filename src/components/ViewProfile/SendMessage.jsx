@@ -15,7 +15,7 @@ const SendMessage = ({ retireeData }) => {
       <textarea
         className="w-full p-2 border rounded mb-4"
         rows="5"
-        placeholder={`Write a message to ${retireeData.name}`}
+        placeholder={`Write a message to ${retireeData.idVerification.firstName}`}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
