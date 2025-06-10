@@ -533,6 +533,9 @@
       "eventDescription": "وصف الفعالية",
       "eventParticipants": "مشاركو الفعالية",
       "eventStatus": "حالة الفعالية",
+      "filter": {
+        "allCategories": "جميع الفئات"
+      },
       "search": {
         "searchCategories": "البحث حسب الفئات",
         "searchEvents": "البحث عن فعاليات",

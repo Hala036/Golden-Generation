@@ -533,6 +533,9 @@
       "eventDescription": "Описание события",
       "eventParticipants": "Участники события",
       "eventStatus": "Статус события",
+      "filter": {
+        "allCategories": "Все категории"
+      },
       "search": {
         "searchCategories": "Поиск по категориям",
         "searchEvents": "Поиск событий",

@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaUser, FaComments, FaArrowLeft } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase";
 import { toast } from "react-hot-toast";
 import profile from "../../assets/profile.jpeg";
 import { useLanguage } from '../../context/LanguageContext';

@@ -533,6 +533,9 @@
       "eventDescription": "Event Description",
       "eventParticipants": "Event Participants",
       "eventStatus": "Event Status",
+      "filter": {
+        "allCategories": "All Categories"
+      },
       "search": {
         "searchCategories": "Search Categories",
         "searchEvents": "Search Events",

@@ -1,179 +1,158 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
 import { db } from "../../firebase"; // Import your Firebase configuration
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { useTranslation } from 'react-i18next';
-
-// Import local images
-import TripImg from "../../assets/Trip.png";
-import VacationImg from "../../assets/Vacation.png";
-import WorkshopImg from "../../assets/Workshop.png";
-import LectureImg from "../../assets/Lecture.png";
-import HomeGroupImg from "../../assets/HomeGroup.png";
-import SocialEventImg from "../../assets/SocialEvent.png";
-import Walking from "../../assets/Walking.png";
-import BookClub from "../../assets/BookClub.png";
-
-// Map local images to categories and events
-const categoryImages = {
-  trip: TripImg,
-  vacation: VacationImg,
-  workshop: WorkshopImg,
-  lecture: LectureImg,
-  homegroup: HomeGroupImg,
-  socialevent : SocialEventImg,
-  walking : Walking,
-  bookclub: BookClub
-};
-
-const eventImages = {
-  trip: TripImg,
-  vacation: VacationImg,
-  workshop: WorkshopImg,
-  lecture: LectureImg,
-  homegroup: HomeGroupImg,
-  socialevent : SocialEventImg,
-  walking : Walking,
-  bookclub: BookClub
-};
+import { collection, getDocs } from "firebase/firestore";
+import { useTranslation } from "react-i18next";
 
 const Cards = () => {
   const { t } = useTranslation();
-  const [view, setView] = useState("categories"); // Toggle between "categories" and "events"
+  const [events, setEvents] = useState([]); // Store all events
+  const [filteredEvents, setFilteredEvents] = useState([]); // Store filtered events
   const [categories, setCategories] = useState([]); // Store categories
-  const [events, setEvents] = useState([]); // Store events for the selected category
-  const [selectedCategory, setSelectedCategory] = useState(null); // Track the selected category
+  const [selectedCategory, setSelectedCategory] = useState("all"); // Track selected category
+  const [searchQuery, setSearchQuery] = useState(""); // Track search input
   const [loading, setLoading] = useState(false); // Loading state
+  const [selectedEvent, setSelectedEvent] = useState(null); // Track the selected event for details view
 
-  // Fetch categories from Firestore
+  // Fetch categories and events from Firestore
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
+        // Fetch categories
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await getDocs(categoriesRef);
         const categoriesData = categoriesSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          image: categoryImages[doc.id], // Map local image
         }));
         setCategories(categoriesData);
+
+        // Fetch events
+        const eventsRef = collection(db, "events");
+        const eventsSnapshot = await getDocs(eventsRef);
+        const eventsData = eventsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setEvents(eventsData);
+        setFilteredEvents(eventsData); // Initially show all events
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, []);
 
-  // Fetch events for the selected category
-  const handleCategoryClick = async (category) => {
+  // Handle category filter
+  const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    setView("events");
-    setLoading(true);
-
-    try {
-      const eventsRef = collection(db, "events");
-      const eventsQuery = query(eventsRef, where("categoryId", "==", category.id));
-      const eventsSnapshot = await getDocs(eventsQuery);
-      const eventsData = eventsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        image: eventImages[doc.id], // Map local image
-      }));
-      setEvents(eventsData);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    } finally {
-      setLoading(false);
+    if (category === "all") {
+      setFilteredEvents(events.filter((event) => event.title.toLowerCase().includes(searchQuery.toLowerCase())));
+    } else {
+      setFilteredEvents(
+        events.filter(
+          (event) =>
+            event.categoryId === category &&
+            event.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
     }
   };
 
-  const handleBackToCategories = () => {
-    setSelectedCategory(null);
-    setView("categories");
+  // Handle search input
+  const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    setFilteredEvents(
+      events.filter(
+        (event) =>
+          (selectedCategory === "all" || event.categoryId === selectedCategory) &&
+          event.title.toLowerCase().includes(query)
+      )
+    );
   };
 
-  const handleJoinEvent = async (eventTitle) => {
-    try {
-      const user = auth.currentUser; // Ensure the user is logged in
-      if (!user) {
-        alert("Please log in to join events.");
-        return;
-      }
+  // Handle "More Info" button click
+  const handleMoreInfo = (event) => {
+    setSelectedEvent(event); // Set the selected event for details view
+  };
 
-      // Update the user's joined events in Firestore
-      const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, {
-        joinedEvents: arrayUnion(eventTitle), // Add the event title to the user's joined events
-      });
-
-      alert(`Successfully joined the event: ${eventTitle}`);
-    } catch (error) {
-      console.error("Error joining event:", error);
-      alert("An error occurred while joining the event. Please try again.");
-    }
+  // Handle "Back to Events" button click
+  const handleBackToEvents = () => {
+    setSelectedEvent(null); // Reset the selected event to go back to the events list
   };
 
   return (
     <div className="bg-white p-4 overflow-y-auto">
-      {/* Search Bar */}
-      <div className="mb-6 flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm">
-        <FaSearch className="text-gray-500" />
-        <input
-          type="text"
-          placeholder={`${view === "categories" ? t('dashboard.search.searchCategories') : "Events"}`}
-          className="border-none outline-none text-sm ml-2 w-full"
-        />
-      </div>
-
-      {loading && <p>Loading...</p>}
-
-      {/* Categories View */}
-      {view === "categories" && !loading && (
-        <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 cursor-pointer hover:shadow-lg transition"
-              onClick={() => handleCategoryClick(category)}
-            >
-              <img
-                src={category.image}
-                alt={category.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-3xl font-bold mb-2 text-center">{category.title}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Events View */}
-      {view === "events" && selectedCategory && !loading && (
+      {/* Check if an event is selected */}
+      {selectedEvent ? (
+        // Event Details View
         <div>
           <button
-            className="mb-4 text-yellow-500 font-bold"
-            onClick={handleBackToCategories}
+            className="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-md"
+            onClick={handleBackToEvents}
           >
-            &larr; Back to Categories
+            {t("dashboard.events.backToEvents")}
           </button>
-          <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0"
-              >
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
+          <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
+          <p className="mb-2">
+            <FaCalendarAlt className="inline text-[#FFD966] mr-2" />
+            {selectedEvent.date}
+          </p>
+          <p className="mb-2">
+            <FaMapMarkerAlt className="inline text-[#FFD966] mr-2" />
+            {selectedEvent.location}
+          </p>
+          <p className="mb-4">{selectedEvent.description}</p>
+          <button
+            className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
+            onClick={() => alert(`Joined event: ${selectedEvent.title}`)}
+          >
+            {t("dashboard.events.join")}
+          </button>
+        </div>
+      ) : (
+        // Events List View
+        <>
+          {/* Search Bar and Filter */}
+          <div className="sticky top-0 bg-white z-10 flex items-center justify-between mb-4 p-4 shadow-md">
+            <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
+              <FaSearch className="text-gray-500" />
+              <input
+                type="text"
+                placeholder={t("dashboard.search.searchEvents")}
+                className="border-none outline-none text-sm ml-2 w-full"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
+            <select
+              className="ml-4 border px-2 py-1 rounded-md text-sm"
+              value={selectedCategory}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+            >
+              <option value="all">{t("dashboard.filter.allCategories")}</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          {loading && <p>Loading...</p>}
+
+          {/* Events Grid */}
+          {!loading && (
+            <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
+              {filteredEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4"
+                >
                   <h3 className="text-base font-bold mb-2">{event.title}</h3>
                   {/* Date with Calendar Icon */}
                   <div className="flex items-center mb-2">
@@ -189,20 +168,20 @@ const Cards = () => {
 
                   {/* Description */}
                   <p className="text-gray-500 text-sm">{event.description}</p>
-                  {/* Join Button */}
+                  {/* More Details Button */}
                   <div className="mt-auto flex justify-end py-2">
                     <button
                       className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-                      onClick={() => handleJoinEvent(event.title)}
+                      onClick={() => handleMoreInfo(event)}
                     >
-                      Join
+                      {t("dashboard.events.moreDetails")}
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

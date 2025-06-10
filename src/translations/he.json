@@ -458,6 +458,9 @@
       "eventDescription": "תיאור האירוע",
       "eventParticipants": "משתתפי האירוע",
       "eventStatus": "סטטוס האירוע",
+      "filter": {
+        "allCategories": "כל הקטגוריות"
+      },
       "search": {
         "searchCategories": "חיפוש לפי קטגוריות",
         "searchEvents": "חיפוש אירועים",
