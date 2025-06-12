@@ -64,18 +64,22 @@ const Jobs = () => {
     "Consulting",
     "Mentoring",
     "Home Assistance",
-    "Transportation"
+    "Transportation",
+    'publicity', 'health', 'eater', 'teaching', 'High tech', 'tourism',
+    'safety', 'funds', 'A special treat', 'craftsmanship', 'Aaliyah', 'culture'
   ];
   
   // Timing options
   const timingOptions = [
-    "Weekdays",
+    "once a month",
+    "once every two weeks",
+    "once a week",
+    "twice a week",
     "Weekends",
-    "Mornings",
-    "Afternoons",
-    "Evenings",
     "Flexible"
   ];
+  const timeOptions = ['morning hours', 'noon hours', 'evening hours'];
+  const dayOptions = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Sunday'];
   
   // Status options
   const statusOptions = [
@@ -437,7 +441,7 @@ const Jobs = () => {
                   required
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <select
@@ -455,7 +459,7 @@ const Jobs = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Field</label>
                 <select
@@ -473,7 +477,7 @@ const Jobs = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Professional Background (Optional)
@@ -487,17 +491,17 @@ const Jobs = () => {
                   placeholder="e.g. Healthcare, Education"
                 />
               </div>
-              
+
+              {/* Frequency */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Timing</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
                 <select
-                  name="timing"
-                  value={formData.timing}
+                  name="frequency"
+                  value={formData.frequency || ""}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded"
-                  required
                 >
-                  <option value="">Select Timing</option>
+                  <option value="">Select frequency</option>
                   {timingOptions.map((option) => (
                     <option key={option} value={option}>
                       {option}
@@ -505,7 +509,60 @@ const Jobs = () => {
                   ))}
                 </select>
               </div>
-              
+
+              {/* Timing */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Timing</label>
+                <select
+                  name="timing"
+                  value={formData.timing}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select Timing</option>
+                  {timeOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+ {/* Days selection - like gender but for days */}
+<div className="space-y-1">
+  <label className="block text-sm font-medium text-gray-700">
+    Select Days <span className="text-red-500">*</span>
+  </label>
+  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+    {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
+      <div
+        key={day}
+        onClick={() =>
+          setFormData((prev) => {
+            const selectedDays = prev.days || [];
+            return {
+              ...prev,
+              days: selectedDays.includes(day)
+                ? selectedDays.filter(d => d !== day)
+                : [...selectedDays, day]
+            };
+          })
+        }
+        className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+          (formData.days || []).includes(day)
+            ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
+            : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+        }`}
+      >
+        <span className={`text-sm font-medium ${(formData.days || []).includes(day) ? 'text-gray-900 font-bold' : 'text-gray-600'}`}>
+          {day}
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
+                      
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
@@ -519,7 +576,6 @@ const Jobs = () => {
                 ></textarea>
               </div>
             </div>
-            
             <div className="flex space-x-4">
               <button
                 type="submit"
@@ -539,69 +595,6 @@ const Jobs = () => {
           </form>
         </div>
       )}
-      
-            {/* Status History Modal */}
-      {showStatusHistory && selectedJobRequest && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">
-                Status History: {selectedJobRequest.title}
-              </h3>
-              <button
-                onClick={closeStatusHistory}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <FaTimes className="text-xl" />
-              </button>
-            </div>
-            
-            <div className="mb-4">
-              <p className="text-gray-600 mb-2">
-                <strong>Current Status:</strong>{" "}
-                <span
-                  className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
-                    selectedJobRequest.status === "Active"
-                      ? "bg-green-100 text-green-800"
-                      : selectedJobRequest.status === "In Progress"
-                      ? "bg-blue-100 text-blue-800"
-                      : selectedJobRequest.status === "Fulfilled"
-                      ? "bg-purple-100 text-purple-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {selectedJobRequest.status}
-                </span>
-              </p>
-              <p className="text-gray-600 mb-2">
-                <strong>Created:</strong>{" "}
-                {selectedJobRequest.createdAt
-                  ? new Date(selectedJobRequest.createdAt.seconds * 1000).toLocaleString()
-                  : "N/A"}
-              </p>
-              <p className="text-gray-600 mb-2">
-                <strong>Last Updated:</strong>{" "}
-                {selectedJobRequest.updatedAt
-                  ? new Date(selectedJobRequest.updatedAt.seconds * 1000).toLocaleString()
-                  : "N/A"}
-              </p>
-            </div>
-            
-            <StatusHistory statusHistory={selectedJobRequest.statusHistory} />
-            
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={closeStatusHistory}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Match Details Modal */}
       {showMatchDetails && selectedJobRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           {selectedSenior ? (
