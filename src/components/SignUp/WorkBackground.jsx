@@ -23,7 +23,9 @@ const categorizedJobs = {
       { label: "Dermatologist", icon: "🧬" },
       { label: "Emergency Physician", icon: "🚑" },
       { label: "Family Physician", icon: "👨‍👩‍👧‍👦" },
+
       { label: "Gastroenterologist", icon: "🍽️" },
+
       { label: "Neurologist", icon: "🧠" },
       { label: "Obstetrician", icon: "🤰" },
       { label: "Oncologist", icon: "🦠" },
@@ -200,14 +202,16 @@ const WorkBackground = ({ onComplete }) => {
     expectedRetirementDate: '',
     employmentDate: '',
     employmentType: '',
-    category: '',
-    jobTitle: '',
-    subspecialty: '',
-    otherJob: '',
-    academicDegree: '',
-    otherAcademicDegree: '',
     currentlyWorking: false,
     dischargeDate: '',
+    jobs: [{
+      category: '',
+      jobTitle: '',
+      subspecialty: '',
+      otherJob: '',
+      academicDegree: '',
+      otherAcademicDegree: '',
+    }]
   });
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -215,7 +219,7 @@ const WorkBackground = ({ onComplete }) => {
   const [showingAllCategories, setShowingAllCategories] = useState(true);
   const [flatJobList] = useState(createFlatJobList());
   const [filteredCategories, setFilteredCategories] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(null);
+  const [selectedJobs, setSelectedJobs] = useState([null]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -242,7 +246,9 @@ const WorkBackground = ({ onComplete }) => {
     if (formData.jobTitle) {
       const job = flatJobList.find(j => j.label === formData.jobTitle);
       if (job) {
-        setSelectedJob(job);
+        const newSelectedJobs = [...selectedJobs];
+        newSelectedJobs[0] = job;
+        setSelectedJobs(newSelectedJobs);
         setActiveCategory(job.category);
         setShowingAllCategories(false);
       }
@@ -263,62 +269,83 @@ const WorkBackground = ({ onComplete }) => {
     e.preventDefault();
     
     // Clean the form data by removing undefined values or converting them to null
-    const cleanFormData = Object.entries(formData).reduce((acc, [key, value]) => {
-      // Skip undefined values entirely, convert empty strings to null
-      if (value === undefined) {
-        return acc;
-      }
-      acc[key] = value === '' ? null : value;
-      return acc;
-    }, {});
+    const cleanFormData = {
+      ...formData,
+      jobs: formData.jobs.map(job => {
+        const cleanJob = Object.entries(job).reduce((acc, [key, value]) => {
+          if (value === undefined) return acc;
+          acc[key] = value === '' ? null : value;
+          return acc;
+        }, {});
 
-      // Prepare data for Firebase storage, organizing "Other" selections clearly
-    const dataForFirebase = {
-      ...cleanFormData,
-      // Store custom job information in a structured way if "Other" was selected
-      customJobInfo: {
-        isCustomJob: cleanFormData.jobTitle === 'Other' || cleanFormData.subspecialty === 'Other',
-        customJobTitle: cleanFormData.otherJob || null,
-        originalSelection: {
-          category: cleanFormData.category || null,
-          jobTitle: cleanFormData.jobTitle || null,
-          subspecialty: cleanFormData.subspecialty || null
-        }
-      },
-      // Store custom academic degree if "Other" was selected
-      customAcademicInfo: {
-        isCustomDegree: cleanFormData.academicDegree === 'other',
-        customDegreeTitle: cleanFormData.otherAcademicDegree || null,
-      }
+        return {
+          ...cleanJob,
+          customJobInfo: {
+            isCustomJob: cleanJob.jobTitle === 'Other' || cleanJob.subspecialty === 'Other',
+            customJobTitle: cleanJob.otherJob || null,
+            originalSelection: {
+              category: cleanJob.category || null,
+              jobTitle: cleanJob.jobTitle || null,
+              subspecialty: cleanJob.subspecialty || null
+            }
+          },
+          customAcademicInfo: {
+            isCustomDegree: cleanJob.academicDegree === 'other',
+            customDegreeTitle: cleanJob.otherAcademicDegree || null,
+          }
+        };
+      })
     };
       
-    setWorkData(dataForFirebase);
+    setWorkData(cleanFormData);
     onComplete();
   };
 
-  const handleCategoryClick = (category) => {
+  const addNewJob = () => {
+    setFormData({
+      ...formData,
+      jobs: [...formData.jobs, {
+        category: '',
+        jobTitle: '',
+        subspecialty: '',
+        otherJob: '',
+        academicDegree: '',
+        otherAcademicDegree: '',
+      }]
+    });
+    setSelectedJobs([...selectedJobs, null]);
+  };
+
+  const handleCategoryClick = (category, jobIndex) => {
     setActiveCategory(category);
     setShowingAllCategories(false);
   };
 
-  const handleJobSelect = (job, category) => {
-    setSelectedJob(job);
-    setFormData({
-      ...formData,
+  const handleJobSelect = (job, category, jobIndex) => {
+    const newSelectedJobs = [...selectedJobs];
+    newSelectedJobs[jobIndex] = job;
+    setSelectedJobs(newSelectedJobs);
+
+    const newJobs = [...formData.jobs];
+    newJobs[jobIndex] = {
+      ...newJobs[jobIndex],
       category,
       jobTitle: job.label,
       subspecialty: '',
       otherJob: job.label === 'Other' ? '' : undefined
-    });
+    };
+    setFormData({ ...formData, jobs: newJobs });
     setSearchTerm(''); // Clear search term when job is selected
   };
 
-  const handleSubspecialtySelect = (subspecialty) => {
-    setFormData({
-      ...formData,
+  const handleSubspecialtySelect = (subspecialty, jobIndex) => {
+    const newJobs = [...formData.jobs];
+    newJobs[jobIndex] = {
+      ...newJobs[jobIndex],
       subspecialty: subspecialty.label,
       otherJob: subspecialty.label === 'Other' ? '' : undefined
-    });
+    };
+    setFormData({ ...formData, jobs: newJobs });
   };
 
   const handleBackToCategories = () => {
@@ -326,54 +353,62 @@ const WorkBackground = ({ onComplete }) => {
     setActiveCategory('');
   };
 
-  const handleBackToJobs = () => {
-    // Keep the category but reset job selection
-    setSelectedJob(null);
-    setFormData({
-      ...formData,
+  const handleBackToJobs = (jobIndex) => {
+    const newSelectedJobs = [...selectedJobs];
+    newSelectedJobs[jobIndex] = null;
+    setSelectedJobs(newSelectedJobs);
+
+    const newJobs = [...formData.jobs];
+    newJobs[jobIndex] = {
+      ...newJobs[jobIndex],
       jobTitle: '',
       subspecialty: '',
       otherJob: ''
-    });
+    };
+    setFormData({ ...formData, jobs: newJobs });
   };
   
-  const handleChangeJob = () => {
-    // Complete reset of job selection to start fresh
-    setSelectedJob(null);
+  const handleChangeJob = (jobIndex) => {
+    const newSelectedJobs = [...selectedJobs];
+    newSelectedJobs[jobIndex] = null;
+    setSelectedJobs(newSelectedJobs);
     setShowingAllCategories(true);
     setActiveCategory('');
-    setFormData({
-      ...formData,
+
+    const newJobs = [...formData.jobs];
+    newJobs[jobIndex] = {
+      ...newJobs[jobIndex],
       category: '',
       jobTitle: '',
       subspecialty: '',
       otherJob: ''
-    });
+    };
+    setFormData({ ...formData, jobs: newJobs });
   };
 
   const renderSubspecialties = () => {
-    if (!selectedJob || !selectedJob.subspecialties || selectedJob.subspecialties.length === 0) {
+    if (!selectedJobs[0] || !selectedJobs[0].subspecialties || selectedJobs[0].subspecialties.length === 0) {
       return null;
     }
 
     return (
       <div className="mt-4">
         <div className="flex justify-between items-center mb-2">
-          <h4 className="text-md font-medium text-gray-800">Sub-specialties for {selectedJob.label}</h4>
+          <h4 className="text-md font-medium text-gray-800">Sub-specialties for {selectedJobs[0].label}</h4>
           <button 
             type="button" 
-            onClick={handleBackToJobs}
+            onClick={() => handleBackToJobs(0)}
             className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
           >
             <span className="mr-1">←</span> Change Job
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {selectedJob.subspecialties.map((sub) => (
+          {selectedJobs[0].subspecialties.map((sub) => (
             <div
               key={sub.label}
-              onClick={() => handleSubspecialtySelect(sub)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
+              onClick={() => handleSubspecialtySelect(sub, 0)}
+              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobs[0].subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{sub.icon}</span>
               <span className="text-sm font-medium">{sub.label}</span>
@@ -392,7 +427,7 @@ const WorkBackground = ({ onComplete }) => {
           {!showingAllCategories && (
             <button 
               type="button" 
-              onClick={handleBackToCategories}
+              onClick={() => handleBackToCategories()}
               className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
             >
               <span className="mr-1">←</span> All Categories
@@ -403,8 +438,8 @@ const WorkBackground = ({ onComplete }) => {
           {jobs.map((job) => (
             <div
               key={job.label}
-              onClick={() => handleJobSelect(job, category)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
+              onClick={() => handleJobSelect(job, category, 0)}
+              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobs[0].jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{job.icon}</span>
               <span className="text-sm font-medium">{job.label}</span>
@@ -415,8 +450,145 @@ const WorkBackground = ({ onComplete }) => {
     );
   };
 
-  const renderJobSelection = () => {
-    if (selectedJob) {
+  const renderJobSection = (jobIndex) => {
+    const job = formData.jobs[jobIndex];
+    const selectedJob = selectedJobs[jobIndex];
+    const isFirstJob = jobIndex === 0;
+
+    return (
+      <div key={jobIndex} className="border-2 border-green-500 rounded-lg p-6 mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+          {isFirstJob ? 'Select Your Job' : `Select Your ${jobIndex === 1 ? 'Second' : jobIndex === 2 ? 'Third' : `${jobIndex + 1}th`} Job`}
+        </h3>
+
+        {/* Display selected job in a highlighted box */}
+        {selectedJob && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between p-4 rounded-lg border bg-yellow-300">
+              <div className="flex items-center">
+                <span className="text-xl mr-2">{selectedJob.icon}</span>
+                <div>
+                  <span className="font-medium">{job.jobTitle}</span>
+                  {job.subspecialty && (
+                    <p className="text-sm text-gray-700">
+                      Subspecialty: {job.subspecialty === 'Other' ? job.otherJob : job.subspecialty}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleChangeJob(jobIndex)}
+                className="text-sm bg-white px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100"
+              >
+                Change Selection
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {/* Only show search bar if no job is selected */}
+        {!selectedJob && (
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search for a job..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full border rounded-md p-2 pl-10"
+            />
+            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4">
+          {renderSubspecialties()}
+        </div>
+
+        {/* Other Job Input */}
+        {((job.jobTitle === 'Other') || (job.subspecialty === 'Other')) && (
+          <div className="space-y-2 mt-4">
+            <label className="block text-sm font-medium text-gray-700">Please specify your job</label>
+            <input
+              type="text"
+              value={job.otherJob || ''}
+              onChange={(e) => {
+                const newJobs = [...formData.jobs];
+                newJobs[jobIndex] = { ...newJobs[jobIndex], otherJob: e.target.value };
+                setFormData({ ...formData, jobs: newJobs });
+              }}
+              className="w-full border rounded-md p-2"
+              placeholder="Enter your job title"
+              required
+            />
+          </div>
+        )}
+
+        {/* Academic Degrees */}
+        <div className="space-y-4 mt-6">
+          <label className="block text-sm font-medium text-gray-700">Academic Degree</label>
+          <div className="relative">
+            <select
+              value={job.academicDegree}
+              onChange={(e) => {
+                const newJobs = [...formData.jobs];
+                newJobs[jobIndex] = {
+                  ...newJobs[jobIndex],
+                  academicDegree: e.target.value,
+                  otherAcademicDegree: e.target.value === 'other' ? '' : newJobs[jobIndex].otherAcademicDegree
+                };
+                setFormData({ ...formData, jobs: newJobs });
+              }}
+              className="w-full border rounded-md p-2 pr-10 appearance-none bg-white"
+              required
+            >
+              <option value="" disabled>Select your highest academic degree</option>
+              {academicDegrees.map((degree) => (
+                <option key={degree.value} value={degree.value}>
+                  {degree.icon} {degree.label}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+          
+          {job.academicDegree === 'other' && (
+            <div className="mt-2">
+              <label className="block text-sm font-medium text-gray-700">Please specify your degree</label>
+              <input
+                type="text"
+                value={job.otherAcademicDegree || ''}
+                onChange={(e) => {
+                  const newJobs = [...formData.jobs];
+                  newJobs[jobIndex] = { ...newJobs[jobIndex], otherAcademicDegree: e.target.value };
+                  setFormData({ ...formData, jobs: newJobs });
+                }}
+                className="w-full border rounded-md p-2 mt-1"
+                placeholder="Enter your academic degree"
+                required
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderJobSelection = (jobIndex) => {
+    if (selectedJobs[jobIndex]) {
       return renderSubspecialties();
     }
 
@@ -438,7 +610,7 @@ const WorkBackground = ({ onComplete }) => {
             {Object.keys(categorizedJobs).map((category) => (
               <div
                 key={category}
-                onClick={() => handleCategoryClick(category)}
+                onClick={() => handleCategoryClick(category, jobIndex)}
                 className="cursor-pointer flex items-center justify-center p-4 rounded-lg border bg-white hover:bg-gray-100 transition"
               >
                 <span className="text-sm font-medium">{category}</span>
@@ -510,123 +682,19 @@ const WorkBackground = ({ onComplete }) => {
         )}
       </div>
 
-      {/* Job Search and Selection */}
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">
-          {selectedJob ? 'Your Selected Job' : 'Select Your Job'}
-        </label>
-        
-        {/* Display selected job in a highlighted box */}
-        {selectedJob && (
-          <div className="mb-4">
-            <div className="flex items-center justify-between p-4 rounded-lg border bg-yellow-300">
-              <div className="flex items-center">
-                <span className="text-xl mr-2">{selectedJob.icon}</span>
-                <div>
-                  <span className="font-medium">{formData.jobTitle}</span>
-                  {formData.subspecialty && (
-                    <p className="text-sm text-gray-700">
-                      Subspecialty: {formData.subspecialty === 'Other' ? formData.otherJob : formData.subspecialty}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleChangeJob}
-                className="text-sm bg-white px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100"
-              >
-                Change Selection
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {/* Only show search bar if no job is selected */}
-        {!selectedJob && (
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search for a job..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border rounded-md p-2 pl-10"
-            />
-            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        )}
+      {/* Render all job sections */}
+      {formData.jobs.map((_, index) => renderJobSection(index))}
 
-        <div className="mt-4">
-          {renderJobSelection()}
-        </div>
-      </div>
 
-      {/* Other Job Input */}
-      {((formData.jobTitle === 'Other') || (formData.subspecialty === 'Other')) && (
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Please specify your job</label>
-          <input
-            type="text"
-            value={formData.otherJob || ''}
-            onChange={(e) => setFormData({ ...formData, otherJob: e.target.value })}
-            className="w-full border rounded-md p-2"
-            placeholder="Enter your job title"
-            required
-          />
-        </div>
-      )}
- 
-      {/* Academic Degrees - Changed to dropdown list format */}
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">Academic Degree</label>
-        <div className="relative">
-          <select
-            value={formData.academicDegree}
-            onChange={(e) => setFormData({
-              ...formData,
-              academicDegree: e.target.value,
-              otherAcademicDegree: e.target.value === 'other' ? '' : formData.otherAcademicDegree
-            })}
-            className="w-full border rounded-md p-2 pr-10 appearance-none bg-white"
-            required
-          >
-            <option value="" disabled>Select your highest academic degree</option>
-            {academicDegrees.map((degree) => (
-              <option key={degree.value} value={degree.value}>
-                {degree.icon} {degree.label}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
-        </div>
-        
-        {formData.academicDegree === 'other' && (
-          <div className="mt-2">
-            <label className="block text-sm font-medium text-gray-700">Please specify your degree</label>
-            <input
-              type="text"
-              value={formData.otherAcademicDegree || ''}
-              onChange={(e) => setFormData({ ...formData, otherAcademicDegree: e.target.value })}
-              className="w-full border rounded-md p-2 mt-1"
-              placeholder="Enter your academic degree"
-              required
-            />
-          </div>
-        )}
-      </div>
+      {/* Add Another Job Button */}
+      <button
+        type="button"
+        onClick={addNewJob}
+        className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 mb-6"
+      >
+        Add Another Job
+      </button>
+
 
       <button
         type="submit"

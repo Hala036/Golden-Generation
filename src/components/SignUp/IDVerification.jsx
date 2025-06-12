@@ -4,6 +4,7 @@ import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+
 import debounce from 'lodash.debounce';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -295,6 +296,7 @@ const IDVerification = ({ onComplete }) => {
         <p className="mt-2 text-sm sm:text-base text-gray-600">Please provide your identification details</p>
       </div>
       
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {/* ID Number - First field */}
