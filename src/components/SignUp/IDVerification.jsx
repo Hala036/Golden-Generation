@@ -4,7 +4,7 @@ import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
-
+import debounce from 'lodash/debounce';
 import localSettlements from '../../data/settlements.json';
 import Select from 'react-select';
 
