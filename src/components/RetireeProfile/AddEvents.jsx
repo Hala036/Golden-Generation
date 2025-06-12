@@ -17,12 +17,18 @@ const AddEvents = () => {
     title: "",
     type: EVENT_TYPES[0],
     date: "",
-    time: "",
+    startDate: "",
+    endDate: "",
+    timeFrom: "",
+    timeTo: "",
     location: "",
     description: "",
     capacity: "",
     requirements: ""
   });
+
+  // New state for files
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +36,17 @@ const AddEvents = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles(prev => [...prev, ...files]);
+  };
+
+  // Remove a file from the list
+  const handleRemoveFile = (index) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -58,7 +75,10 @@ const AddEvents = () => {
         title: "",
         type: EVENT_TYPES[0],
         date: "",
-        time: "",
+        startDate: "",
+        endDate: "",
+        timeFrom: "",
+        timeTo: "",
         location: "",
         description: "",
         capacity: "",
@@ -110,33 +130,100 @@ const AddEvents = () => {
           </select>
         </div>
 
-        {/* Date and Time */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date
-            </label>
-            <input
-              type="date"
-              name="date"
-              value={eventData.date}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
-            />
+        {/* Add Photos and Files */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Add photos and files</label>
+          <input
+            id="add-files-input"
+            type="file"
+            multiple
+            accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/x-zip-compressed,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,.txt"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md mb-2"
+            onClick={() => document.getElementById('add-files-input').click()}
+          >
+            Add photos and files
+          </button>
+          {/* Show selected files */}
+          {selectedFiles.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {selectedFiles.map((file, idx) => (
+                <li key={idx} className="flex items-center justify-between bg-gray-100 px-2 py-1 rounded">
+                  <span className="text-sm text-gray-800">{file.name}</span>
+                  <button
+                    type="button"
+                    className="ml-2 text-red-500 hover:text-red-700 text-xs"
+                    onClick={() => handleRemoveFile(idx)}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Date / Date Range */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Date / Date Range
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <input
+                type="date"
+                name="startDate"
+                value={eventData.startDate}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              />
+              <span className="block text-xs text-gray-500 mt-1">Start date</span>
+            </div>
+            <div>
+              <input
+                type="date"
+                name="endDate"
+                value={eventData.endDate}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              />
+              <span className="block text-xs text-gray-500 mt-1">End date (optional)</span>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Time
-            </label>
-            <input
-              type="time"
-              name="time"
-              value={eventData.time}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
-            />
+        </div>
+        {/* Time Range */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Time Range
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">From</label>
+              <input
+                type="time"
+                name="timeFrom"
+                value={eventData.timeFrom}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">To</label>
+              <input
+                type="time"
+                name="timeTo"
+                value={eventData.timeTo}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              />
+            </div>
           </div>
         </div>
 

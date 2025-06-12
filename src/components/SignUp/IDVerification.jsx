@@ -4,6 +4,7 @@ import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+
 import debounce from 'lodash.debounce';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
