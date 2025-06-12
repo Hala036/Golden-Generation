@@ -66,6 +66,20 @@ const languageFlagMap = {
   // Add more as needed
 };
 
+// Hide number input spin buttons (arrows) for all browsers
+const numberInputSpinButtonStyle = `
+  /* Chrome, Safari, Edge, Opera */
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+`;
+
 // Memoize FormField to prevent unnecessary re-renders
 const FormField = memo(
   ({ 
@@ -406,7 +420,7 @@ const PersonalDetails = memo(({ onComplete }) => {
       }
     });
     // Validate house number is numeric
-    if (formData.houseNumber && !/^[\d]+[a-zA-Z]?$/.test(formData.houseNumber.trim())) {
+    if (formData.houseNumber && !/^\d+([a-zA-Z])?$/.test(formData.houseNumber.trim())) {
       newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
     }
     setErrors(newErrors);
@@ -479,6 +493,7 @@ const PersonalDetails = memo(({ onComplete }) => {
       .animate-fadeIn {
         animation: fadeIn 0.2s ease-out forwards;
       }
+      ${numberInputSpinButtonStyle}
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
@@ -523,13 +538,16 @@ const PersonalDetails = memo(({ onComplete }) => {
               label="Phone Number"
               name="phoneNumber"
               id="phoneNumber"
-              type="tel"
+              type="number"
               autoComplete="tel"
               placeholder="+1 (555) 000-0000"
               value={formData.phoneNumber}
               onChange={handleInputChange}
               error={errors.phoneNumber}
               getFieldIcon={() => getFieldIcon('phoneNumber')}
+              required
+              inputMode="numeric"
+              pattern="[0-9]*"
             />
             <FormField
               label="Marital Status"
@@ -557,12 +575,26 @@ const PersonalDetails = memo(({ onComplete }) => {
                 name="houseNumber"
                 id="houseNumber"
                 required
+                type="text"
                 autoComplete="address-line1"
                 placeholder="123"
                 value={formData.houseNumber}
-                onChange={handleInputChange}
+                onChange={e => {
+                  // Only allow 1-4 digits, optionally followed by a single letter (A-Z, a-z)
+                  const val = e.target.value.toUpperCase();
+                  if (val === '' || /^\d{1,4}[A-Z]?$/.test(val)) {
+                    handleInputChange({
+                      target: {
+                        name: 'houseNumber',
+                        value: val
+                      }
+                    });
+                  }
+                }}
                 error={errors.houseNumber}
                 getFieldIcon={() => getFieldIcon('houseNumber')}
+                inputMode="text"
+                pattern="\d{1,4}[A-Za-z]?"
               />
               <FormField
                 label="Street Name"
