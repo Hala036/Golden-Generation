@@ -23,7 +23,9 @@ const categorizedJobs = {
       { label: "Dermatologist", icon: "🧬" },
       { label: "Emergency Physician", icon: "🚑" },
       { label: "Family Physician", icon: "👨‍👩‍👧‍👦" },
-      { label: "Gastroenterologist", icon: "🔥" },
+
+      { label: "Gastroenterologist", icon: "🍽️" },
+
       { label: "Neurologist", icon: "🧠" },
       { label: "Obstetrician", icon: "🤰" },
       { label: "Oncologist", icon: "🦠" },
@@ -196,6 +198,8 @@ const WorkBackground = ({ onComplete }) => {
   const { workData, setWorkData } = useSignupStore();
   const [formData, setFormData] = useState(workData || {
     retirementStatus: '',
+    retirementDate: '',
+    expectedRetirementDate: '',
     employmentDate: '',
     employmentType: '',
     currentlyWorking: false,
@@ -250,6 +254,16 @@ const WorkBackground = ({ onComplete }) => {
       }
     }
   }, [formData.jobTitle, flatJobList]);
+
+  // Clear retirement dates when status changes
+  const handleRetirementStatusChange = (status) => {
+    setFormData({
+      ...formData,
+      retirementStatus: status,
+      retirementDate: '',
+      expectedRetirementDate: ''
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -628,42 +642,49 @@ const WorkBackground = ({ onComplete }) => {
                 name="retirementStatus"
                 value={status}
                 checked={formData.retirementStatus === status}
-                onChange={(e) => setFormData({ ...formData, retirementStatus: e.target.value })}
+                onChange={(e) => handleRetirementStatusChange(e.target.value)}
                 className="mr-2"
               />
               <span className="text-sm">{status}</span>
             </label>
           ))}
         </div>
-      </div>
 
-      {/* Employment Status */}
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">Are you working today?</label>
-        <div className="flex items-center gap-4">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.currentlyWorking}
-              onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
-              className="mr-2"
-            />
-            <span className="text-sm">Yes</span>
-          </label>
-          {formData.currentlyWorking && (
+        {/* Retirement Date Field */}
+        {(formData.retirementStatus === 'Partially retired' || formData.retirementStatus === 'Fully retired') && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              When did you retire?
+            </label>
             <input
               type="date"
-              value={formData.dischargeDate}
-              onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
-              className="border rounded-md p-2 text-sm"
-              placeholder="Expected discharge date"
+              value={formData.retirementDate}
+              onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+              className="w-full border rounded-md p-2"
+              required
             />
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Expected Retirement Date Field */}
+        {formData.retirementStatus === 'I didn\'t retire' && (
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Expected retirement date (optional)
+            </label>
+            <input
+              type="date"
+              value={formData.expectedRetirementDate}
+              onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
+              className="w-full border rounded-md p-2"
+            />
+          </div>
+        )}
       </div>
 
       {/* Render all job sections */}
       {formData.jobs.map((_, index) => renderJobSection(index))}
+
 
       {/* Add Another Job Button */}
       <button
@@ -673,6 +694,7 @@ const WorkBackground = ({ onComplete }) => {
       >
         Add Another Job
       </button>
+
 
       <button
         type="submit"

@@ -66,6 +66,20 @@ const languageFlagMap = {
   // Add more as needed
 };
 
+// Hide number input spin buttons (arrows) for all browsers
+const numberInputSpinButtonStyle = `
+  /* Chrome, Safari, Edge, Opera */
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+`;
+
 // Memoize FormField to prevent unnecessary re-renders
 const FormField = memo(
   ({ 
@@ -177,6 +191,8 @@ const FormField = memo(
                 '&:hover': { borderColor: '#FFD966' },
                 minHeight: 40,
               }),
+
+              
               option: (base, state) => ({
                 ...base,
                 backgroundColor: state.isSelected ? '#FFD96633' : state.isFocused ? '#FFD96611' : undefined,
@@ -303,6 +319,7 @@ const PersonalDetails = memo(({ onComplete }) => {
     livingAlone: false,
     familyInSettlement: false,
     hasWeapon: false,
+    isNewImmigrant: false, // Add this new field
   });
   const [errors, setErrors] = useState({});
   const [settlements, setSettlements] = useState([]);
@@ -388,20 +405,28 @@ const PersonalDetails = memo(({ onComplete }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber']; // Updated required fields
-    
+    const requiredFields = ['streetName', 'houseNumber']; // Base required fields
+    // Add required fields for new immigrants
+    if (formData.isNewImmigrant) {
+      requiredFields.push('arrivalDate', 'originCountry');
+    }
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        const fieldName = field === 'streetName' ? 'Street Name' : 'House Number';
+        let fieldName = field === 'streetName' ? 'Street Name' : 
+                       field === 'houseNumber' ? 'House Number' :
+                       field === 'arrivalDate' ? 'Arrival Date' :
+                       field === 'originCountry' ? 'Origin Country' : field;
         newErrors[field] = `${fieldName} is required`;
       }
     });
-
     // Validate house number is numeric
-    if (formData.houseNumber && !/^\d+[a-zA-Z]?$/.test(formData.houseNumber.trim())) {
+    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
       newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
     }
-
+    // Validate Israeli phone number
+    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = 'Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData]);
@@ -472,6 +497,7 @@ const PersonalDetails = memo(({ onComplete }) => {
       .animate-fadeIn {
         animation: fadeIn 0.2s ease-out forwards;
       }
+      ${numberInputSpinButtonStyle}
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
@@ -516,13 +542,26 @@ const PersonalDetails = memo(({ onComplete }) => {
               label="Phone Number"
               name="phoneNumber"
               id="phoneNumber"
-              type="tel"
+              type="text"
               autoComplete="tel"
-              placeholder="+1 (555) 000-0000"
+              placeholder="05XXXXXXXX"
               value={formData.phoneNumber}
-              onChange={handleInputChange}
+              onChange={e => {
+                // Only allow up to 10 digits, no letters or other characters
+                let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (val.length > 10) val = val.slice(0, 10);
+                handleInputChange({
+                  target: {
+                    name: 'phoneNumber',
+                    value: val
+                  }
+                });
+              }}
               error={errors.phoneNumber}
               getFieldIcon={() => getFieldIcon('phoneNumber')}
+              required
+              inputMode="numeric"
+              pattern="[0-9]{10}"
             />
             <FormField
               label="Marital Status"
@@ -550,12 +589,26 @@ const PersonalDetails = memo(({ onComplete }) => {
                 name="houseNumber"
                 id="houseNumber"
                 required
+                type="text"
                 autoComplete="address-line1"
                 placeholder="123"
                 value={formData.houseNumber}
-                onChange={handleInputChange}
+                onChange={e => {
+                  // Only allow 1-4 digits, optionally followed by a single letter (A-Z, a-z)
+                  const val = e.target.value.toUpperCase();
+                  if (val === '' || /^\d{1,4}[A-Z]?$/.test(val)) {
+                    handleInputChange({
+                      target: {
+                        name: 'houseNumber',
+                        value: val
+                      }
+                    });
+                  }
+                }}
                 error={errors.houseNumber}
                 getFieldIcon={() => getFieldIcon('houseNumber')}
+                inputMode="text"
+                pattern="\d{1,4}[A-Za-z]?"
               />
               <FormField
                 label="Street Name"
@@ -590,7 +643,7 @@ const PersonalDetails = memo(({ onComplete }) => {
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
             <FaCheck className="text-green-500" />
-            <h3>Language & Origin</h3>
+            <h3>Language & Background</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <FormField
@@ -605,7 +658,6 @@ const PersonalDetails = memo(({ onComplete }) => {
               error={errors.nativeLanguage}
               getFieldIcon={() => getFieldIcon('nativeLanguage')}
               disabled={loading.languages}
-              // Pass dropdown state and handlers
               isDropdownOpen={isDropdownOpen}
               setIsDropdownOpen={setIsDropdownOpen}
               searchTerm={searchTerm}
@@ -625,32 +677,46 @@ const PersonalDetails = memo(({ onComplete }) => {
               getFieldIcon={() => getFieldIcon('hebrewLevel')}
             />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <FormField
-              label="Arrival Date"
-              name="arrivalDate"
-              id="arrivalDate"
-              type="date"
-              autoComplete="bday"
-              value={formData.arrivalDate}
+          {/* New Immigrant Question - moved here, no highlight */}
+          <div className="mt-4">
+            <CheckboxField
+              label="I am a new immigrant to Israel"
+              name="isNewImmigrant"
+              id="isNewImmigrant"
+              checked={formData.isNewImmigrant}
               onChange={handleInputChange}
-              error={errors.arrivalDate}
-              getFieldIcon={() => getFieldIcon('arrivalDate')}
-            />
-            <FormField
-              label="Origin Country"
-              name="originCountry"
-              id="originCountry"
-              type="select"
-              autoComplete="country"
-              options={countries}
-              value={formData.originCountry}
-              onChange={handleInputChange}
-              error={errors.originCountry}
-              getFieldIcon={() => getFieldIcon('originCountry')}
             />
           </div>
+          {/* Conditional fields for new immigrants */}
+          {formData.isNewImmigrant && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+              <FormField
+                label="Arrival Date"
+                name="arrivalDate"
+                id="arrivalDate"
+                type="date"
+                required={true}
+                autoComplete="bday"
+                value={formData.arrivalDate}
+                onChange={handleInputChange}
+                error={errors.arrivalDate}
+                getFieldIcon={() => getFieldIcon('arrivalDate')}
+              />
+              <FormField
+                label="Origin Country"
+                name="originCountry"
+                id="originCountry"
+                type="select"
+                required={true}
+                autoComplete="country"
+                options={countries}
+                value={formData.originCountry}
+                onChange={handleInputChange}
+                error={errors.originCountry}
+                getFieldIcon={() => getFieldIcon('originCountry')}
+              />
+            </div>
+          )}
         </section>
 
         {/* Additional Information */}
