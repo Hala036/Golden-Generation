@@ -177,6 +177,8 @@ const FormField = memo(
                 '&:hover': { borderColor: '#FFD966' },
                 minHeight: 40,
               }),
+
+              
               option: (base, state) => ({
                 ...base,
                 backgroundColor: state.isSelected ? '#FFD96633' : state.isFocused ? '#FFD96611' : undefined,
@@ -303,6 +305,7 @@ const PersonalDetails = memo(({ onComplete }) => {
     livingAlone: false,
     familyInSettlement: false,
     hasWeapon: false,
+    isNewImmigrant: false, // Add this new field
   });
   const [errors, setErrors] = useState({});
   const [settlements, setSettlements] = useState([]);
@@ -388,20 +391,24 @@ const PersonalDetails = memo(({ onComplete }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber']; // Updated required fields
-    
+    const requiredFields = ['streetName', 'houseNumber']; // Base required fields
+    // Add required fields for new immigrants
+    if (formData.isNewImmigrant) {
+      requiredFields.push('arrivalDate', 'originCountry');
+    }
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        const fieldName = field === 'streetName' ? 'Street Name' : 'House Number';
+        let fieldName = field === 'streetName' ? 'Street Name' : 
+                       field === 'houseNumber' ? 'House Number' :
+                       field === 'arrivalDate' ? 'Arrival Date' :
+                       field === 'originCountry' ? 'Origin Country' : field;
         newErrors[field] = `${fieldName} is required`;
       }
     });
-
     // Validate house number is numeric
-    if (formData.houseNumber && !/^\d+[a-zA-Z]?$/.test(formData.houseNumber.trim())) {
+    if (formData.houseNumber && !/^[\d]+[a-zA-Z]?$/.test(formData.houseNumber.trim())) {
       newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData]);
@@ -590,7 +597,7 @@ const PersonalDetails = memo(({ onComplete }) => {
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
             <FaCheck className="text-green-500" />
-            <h3>Language & Origin</h3>
+            <h3>Language & Background</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <FormField
@@ -605,7 +612,6 @@ const PersonalDetails = memo(({ onComplete }) => {
               error={errors.nativeLanguage}
               getFieldIcon={() => getFieldIcon('nativeLanguage')}
               disabled={loading.languages}
-              // Pass dropdown state and handlers
               isDropdownOpen={isDropdownOpen}
               setIsDropdownOpen={setIsDropdownOpen}
               searchTerm={searchTerm}
@@ -625,32 +631,46 @@ const PersonalDetails = memo(({ onComplete }) => {
               getFieldIcon={() => getFieldIcon('hebrewLevel')}
             />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <FormField
-              label="Arrival Date"
-              name="arrivalDate"
-              id="arrivalDate"
-              type="date"
-              autoComplete="bday"
-              value={formData.arrivalDate}
+          {/* New Immigrant Question - moved here, no highlight */}
+          <div className="mt-4">
+            <CheckboxField
+              label="I am a new immigrant to Israel"
+              name="isNewImmigrant"
+              id="isNewImmigrant"
+              checked={formData.isNewImmigrant}
               onChange={handleInputChange}
-              error={errors.arrivalDate}
-              getFieldIcon={() => getFieldIcon('arrivalDate')}
-            />
-            <FormField
-              label="Origin Country"
-              name="originCountry"
-              id="originCountry"
-              type="select"
-              autoComplete="country"
-              options={countries}
-              value={formData.originCountry}
-              onChange={handleInputChange}
-              error={errors.originCountry}
-              getFieldIcon={() => getFieldIcon('originCountry')}
             />
           </div>
+          {/* Conditional fields for new immigrants */}
+          {formData.isNewImmigrant && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+              <FormField
+                label="Arrival Date"
+                name="arrivalDate"
+                id="arrivalDate"
+                type="date"
+                required={true}
+                autoComplete="bday"
+                value={formData.arrivalDate}
+                onChange={handleInputChange}
+                error={errors.arrivalDate}
+                getFieldIcon={() => getFieldIcon('arrivalDate')}
+              />
+              <FormField
+                label="Origin Country"
+                name="originCountry"
+                id="originCountry"
+                type="select"
+                required={true}
+                autoComplete="country"
+                options={countries}
+                value={formData.originCountry}
+                onChange={handleInputChange}
+                error={errors.originCountry}
+                getFieldIcon={() => getFieldIcon('originCountry')}
+              />
+            </div>
+          )}
         </section>
 
         {/* Additional Information */}
