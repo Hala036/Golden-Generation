@@ -297,7 +297,7 @@ const IDVerification = ({ onComplete }) => {
       </div>
       
       {/* ID Upload Section */}
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <div className="text-center mb-4">
           <p className="text-gray-600 text-sm sm:text-base mb-4">
             Upload or scan your ID for automatic filling, or fill the form manually
@@ -336,7 +336,6 @@ const IDVerification = ({ onComplete }) => {
           </p>
         </div>
 
-        {/* File Preview */}
         {uploadedFile && (
           <div className="mt-4 flex justify-center">
             <div className="relative inline-block">
@@ -363,7 +362,7 @@ const IDVerification = ({ onComplete }) => {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-4 sm:gap-6">
