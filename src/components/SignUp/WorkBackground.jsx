@@ -510,31 +510,6 @@ const WorkBackground = ({ onComplete }) => {
         )}
       </div>
 
-      {/* Employment Status */}
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">Are you working today?</label>
-        <div className="flex items-center gap-4">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.currentlyWorking}
-              onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
-              className="mr-2"
-            />
-            <span className="text-sm">Yes</span>
-          </label>
-          {formData.currentlyWorking && (
-            <input
-              type="date"
-              value={formData.dischargeDate}
-              onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
-              className="border rounded-md p-2 text-sm"
-              placeholder="Expected discharge date"
-            />
-          )}
-        </div>
-      </div>
-
       {/* Job Search and Selection */}
       <div className="space-y-4">
         <label className="block text-sm font-medium text-gray-700">
