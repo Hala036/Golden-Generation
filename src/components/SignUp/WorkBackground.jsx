@@ -683,7 +683,7 @@ const WorkBackground = ({ onComplete }) => {
       </div>
 
       {/* Render all job sections */}
-      {formData.jobs.map((_, index) => renderJobSection(index))}
+      {(formData.jobs || []).map((_, index) => renderJobSection(index))}
 
 
       {/* Add Another Job Button */}
