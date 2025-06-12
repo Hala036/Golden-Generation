@@ -420,8 +420,12 @@ const PersonalDetails = memo(({ onComplete }) => {
       }
     });
     // Validate house number is numeric
-    if (formData.houseNumber && !/^\d+([a-zA-Z])?$/.test(formData.houseNumber.trim())) {
+    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
       newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
+    }
+    // Validate Israeli phone number
+    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = 'Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -538,16 +542,26 @@ const PersonalDetails = memo(({ onComplete }) => {
               label="Phone Number"
               name="phoneNumber"
               id="phoneNumber"
-              type="number"
+              type="text"
               autoComplete="tel"
-              placeholder="+1 (555) 000-0000"
+              placeholder="05XXXXXXXX"
               value={formData.phoneNumber}
-              onChange={handleInputChange}
+              onChange={e => {
+                // Only allow up to 10 digits, no letters or other characters
+                let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (val.length > 10) val = val.slice(0, 10);
+                handleInputChange({
+                  target: {
+                    name: 'phoneNumber',
+                    value: val
+                  }
+                });
+              }}
               error={errors.phoneNumber}
               getFieldIcon={() => getFieldIcon('phoneNumber')}
               required
               inputMode="numeric"
-              pattern="[0-9]*"
+              pattern="[0-9]{10}"
             />
             <FormField
               label="Marital Status"
