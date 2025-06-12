@@ -436,28 +436,37 @@
     "dashboard": {
       "welcome": "ברוך הבא",
       "profile": "פרופיל",
-      "events": "אירועים",
       "settings": "הגדרות",
       "logout": "התנתק",
-      "upcomingEvents": "אירועים קרובים",
       "homePage": "דף הבית",
       "retirees": "גמלאים",
       "volunteerRequests": "בקשות התנדבות",
       "analytics": "ניתוח",
-      "addEvent": "הוסף אירוע",
       "contactUs": "צור קשר",
-      "noEvents": "לא נמצאו אירועים",
-      "createEvent": "צור אירוע",
-      "editEvent": "ערוך אירוע",
-      "deleteEvent": "מחק אירוע",
-      "eventDetails": "פרטי האירוע",
-      "eventTitle": "כותרת האירוע",
-      "eventDate": "תאריך האירוע",
-      "eventTime": "שעת האירוע",
-      "eventLocation": "מיקום האירוע",
-      "eventDescription": "תיאור האירוע",
-      "eventParticipants": "משתתפי האירוע",
-      "eventStatus": "סטטוס האירוע",
+      "events": {
+        "upcomingEvents": "אירועים קרובים",
+        "addEvent": "הוסף אירוע",
+        "events": "אירועים",
+        "noEvents": "לא נמצאו אירועים",
+        "createEvent": "צור אירוע",
+        "editEvent": "ערוך אירוע",
+        "deleteEvent": "מחיקת אירוע",
+        "eventDetails": "פרטי האירוע",
+        "eventTitle": "כותרת האירוע",
+        "eventDate": "תאריך האירוע",
+        "eventTime": "שעת האירוע",
+        "eventLocation": "מיקום האירוע",
+        "eventDescription": "תיאור האירוע",
+        "eventParticipants": "משתתפי האירוע",
+        "eventStatus": "סטטוס האירוע",
+        "backToEvents": "חזור לאירועים",
+        "join": "הצטרף לאירוע",
+        "leave": "עזוב את האירוע",
+        "moreDetails": "מידע נוסף"
+      },
+      "filter": {
+        "allCategories": "כל הקטגוריות"
+      },
       "search": {
         "searchCategories": "חיפוש לפי קטגוריות",
         "searchEvents": "חיפוש אירועים",
@@ -491,5 +500,31 @@
     "header": {
       "search": "חיפוש",
       "language": "שפה"
+    },
+    "admin": {
+      "retirees": {
+        "title": "ניהול גמלאים",
+        "addRetiree": "הוסף גמלאי",
+        "viewRetiree": "הצג גמלאי",
+        "searchRetirees": "חפש גמלאים",
+        "noRetireesFound": "לא נמצאו גמלאים",
+        "retireeDetails": "פרטי גמלאי",
+        "retireeName": "שם",
+        "retireeEmail": "דוא\"ל",
+        "retireePhone": "מספר טלפון",
+        "filters": {
+          "search": "חפש לפי כל תכונה...", 
+          "addFilter": "הוסף מסנן",
+          "remove": "הסר",
+          "select": "בחר תכונה",
+          "enterValue": "הזן ערך"
+        },
+        "table": {
+          "name": "שם",
+          "age": "גיל",
+          "gender": "מגדר",
+          "work": "תחומי עיסוק"
+        }
+      }
     }
   } 

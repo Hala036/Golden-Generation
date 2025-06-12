@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
+import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -22,10 +23,11 @@ const AppRoutes = () => {
 
   const location = useLocation();
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isViewProfile = location.pathname.startsWith("/view-profile");
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!isDashboard && (
+      {!isDashboard && !isViewProfile && (
         <div className="fixed top-2 right-2 z-50">
           <LanguageSwitcher />
         </div>
@@ -62,6 +64,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <RoleBasedDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/view-profile"
+          element={
+            <ProtectedRoute>
+              <ViewProfileDashboard />
             </ProtectedRoute>
           }
         />

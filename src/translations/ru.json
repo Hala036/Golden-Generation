@@ -511,28 +511,37 @@
     "dashboard": {
       "welcome": "Добро пожаловать",
       "profile": "Профиль",
-      "events": "События",
       "settings": "Настройки",
       "logout": "Выйти",
-      "upcomingEvents": "Предстоящие события",
       "homePage": "Главная страница",
       "retirees": "Пенсионеры",
       "volunteerRequests": "Запросы на волонтёрство",
       "analytics": "Аналитика",
-      "addEvent": "Добавить событие",
       "contactUs": "Связаться с нами",
-      "noEvents": "События не найдены",
-      "createEvent": "Создать событие",
-      "editEvent": "Редактировать событие",
-      "deleteEvent": "Удалить событие",
-      "eventDetails": "Детали события",
-      "eventTitle": "Название события",
-      "eventDate": "Дата события",
-      "eventTime": "Время события",
-      "eventLocation": "Место проведения",
-      "eventDescription": "Описание события",
-      "eventParticipants": "Участники события",
-      "eventStatus": "Статус события",
+      "events": {
+        "upcomingEvents": "Предстоящие события",
+        "addEvent": "Добавить событие",
+        "events": "События",
+        "noEvents": "Событий не найдено",
+        "createEvent": "Создать событие",
+        "editEvent": "Редактировать событие",
+        "deleteEvent": "Удалить событие",
+        "eventDetails": "Детали события",
+        "eventTitle": "Название события",
+        "eventDate": "Дата события",
+        "eventTime": "Время события",
+        "eventLocation": "Место проведения",
+        "eventDescription": "Описание события",
+        "eventParticipants": "Участники события",
+        "eventStatus": "Статус события",
+        "backToEvents": "Назад к событиям",
+        "join": "Присоединиться к событию",
+        "leave": "Покинуть событие",
+        "moreDetails": "Более подробная информация"
+      },
+      "filter": {
+        "allCategories": "Все категории"
+      },
       "search": {
         "searchCategories": "Поиск по категориям",
         "searchEvents": "Поиск событий",
@@ -566,5 +575,31 @@
     "header": {
       "search": "Поиск",
       "language": "Язык"
+    },
+    "admin": {
+      "retirees": {
+        "title": "Управление пенсионерами",
+        "addRetiree": "Добавить пенсионера",
+        "viewRetiree": "Просмотр пенсионера",
+        "searchRetirees": "Поиск пенсионеров",
+        "noRetireesFound": "Пенсионеры не найдены",
+        "retireeDetails": "Информация о пенсионере",
+        "retireeName": "Имя",
+        "retireeEmail": "Эл. почта",
+        "retireePhone": "Номер телефона",
+        "filters": {
+          "search": "Поиск по любому признаку...",
+          "addFilter": "Добавить фильтр",
+          "remove": "Удалить",
+          "select": "Выбрать характеристику",
+          "enterValue": "Введите значение"
+        },
+        "table": {
+          "name": "Имя",
+          "age": "Возраст",
+          "gender": "Пол",
+          "work": "Сферы деятельности"
+        }
+      }
     }
   } 
