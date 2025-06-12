@@ -36,7 +36,7 @@ const Dashboard = () => {
     { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
     { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
     { id: "notifications", label: t('dashboard.notifications'), icon: <FaBell /> },
-    { id: "add", label: t('dashboard.addEvent'), icon: <FaPlusCircle /> },
+    { id: "add", label: t('dashboard.events.addEvent'), icon: <FaPlusCircle /> },
     { id: "calendar", label: t('dashboard.calendar'), icon: <FaCalendarAlt /> },
     { id: "messages", label: t('dashboard.messages'), icon: <FaComments /> }
   ];
