@@ -6,7 +6,8 @@ import {
   updateDoc, 
   query, 
   where, 
-  serverTimestamp 
+  serverTimestamp,
+  Timestamp
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -23,32 +24,35 @@ export const performSeniorMatching = async (jobRequestId) => {
   try {
     console.log(`Starting matching algorithm for job request: ${jobRequestId}`);
     const jobRequestDoc = await getDoc(doc(jobRequestsCollection, jobRequestId));
-    
+
     if (!jobRequestDoc.exists()) {
       throw new Error("Voluntary request not found");
     }
-    
+
     const jobRequest = jobRequestDoc.data();
     console.log(`Job request found: ${jobRequest.title}`);
-    
+
     // Get all seniors (users with role 'retiree')
     const seniorsQuery = query(usersCollection, where("role", "==", "retiree"));
     const seniorsSnapshot = await getDocs(seniorsQuery);
-    
+
     console.log(`Found ${seniorsSnapshot.size} seniors to match against`);
-    
+
     const matchResults = [];
-    
+    const timestampNow = Timestamp.now(); // ✅ استخدم Timestamp.now() لمشكلة matchedAt
+
     seniorsSnapshot.forEach((seniorDoc) => {
       const senior = seniorDoc.data();
       const seniorId = seniorDoc.id;
-      
+
       // Calculate match score based on criteria
       const scoreDetails = calculateMatchScore(jobRequest, senior);
       const totalScore = scoreDetails.totalScore;
-      
+
       console.log(`Senior ${seniorId} match score: ${totalScore}`);
-      
+      console.log(`Score details for ${seniorId}:`, scoreDetails);
+      console.log("Job request data:", jobRequest);
+
       // Add to match results if score is above threshold (e.g., 30)
       if (totalScore >= 30) {
         matchResults.push({
@@ -59,22 +63,22 @@ export const performSeniorMatching = async (jobRequestId) => {
           seniorInterests: senior.interests || [],
           score: totalScore,
           scoreDetails: scoreDetails,
-          matchedAt: serverTimestamp()
+          matchedAt: timestampNow // ✅ آمنة الآن لأنها قيمة فعلية
         });
       }
     });
-    
+
     // Sort by score (highest first)
     matchResults.sort((a, b) => b.score - a.score);
-    
+
     console.log(`Found ${matchResults.length} matching seniors above threshold`);
-    
+
     // Update job request with match results
     await updateDoc(doc(jobRequestsCollection, jobRequestId), {
       matchResults,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp() // ✅ هذا يسمح به Firestore لأنه حقل وليس داخل array
     });
-    
+
     return matchResults;
   } catch (error) {
     console.error("Error matching seniors to job request:", error);
