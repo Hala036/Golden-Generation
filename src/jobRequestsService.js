@@ -38,7 +38,6 @@ export const createJobRequest = async (jobRequestData) => {
 
     const jobRequestRef = doc(jobRequestsCollection);
     const jobRequestId = jobRequestRef.id;
-    const now = new Date();
 
     const newJobRequest = {
       id: jobRequestId,
@@ -52,7 +51,7 @@ export const createJobRequest = async (jobRequestData) => {
       statusHistory: [
         {
           status: "Active",
-          timestamp: now,
+          timestamp: serverTimestamp(),
           changedBy: currentUser.uid,
           notes: "Job request created"
         }
@@ -119,14 +118,7 @@ export const getJobRequests = async (filters = {}) => {
     }
     
     // Always order by creation date (newest first)
-    // Note: This requires a composite index if filters are also applied
-    if (hasFilters) {
-      // If you've created the necessary composite indexes, you can use:
-      q = query(q, orderBy("createdAt", "desc"));
-    } else {
-      // Simple ordering without filters (doesn't require composite index)
-      q = query(q, orderBy("createdAt", "desc"));
-    }
+    q = query(q, orderBy("createdAt", "desc"));
     
     const querySnapshot = await getDocs(q);
     const jobRequests = [];
@@ -178,7 +170,7 @@ export const updateJobRequest = async (jobRequestId, updateData) => {
         delete updateData.statusNotes;
       }
       
-      updateData.statusHistory = [...currentData.statusHistory, statusHistoryEntry];
+      updateData.statusHistory = [...(currentData.statusHistory || []), statusHistoryEntry];
     }
     
     // Update the updatedAt timestamp

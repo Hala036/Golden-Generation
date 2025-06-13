@@ -813,6 +813,26 @@ const Jobs = () => {
         </div>
       )}
       
+      {/* Status History Modal */}
+      {showStatusHistory && selectedJobRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">
+                Status History: {selectedJobRequest.title}
+              </h3>
+              <button
+                onClick={closeStatusHistory}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FaTimes className="text-xl" />
+              </button>
+            </div>
+            <StatusHistory statusHistory={selectedJobRequest.statusHistory || []} />
+          </div>
+        </div>
+      )}
+
       {/* Job Requests List */}
       <div className="bg-white rounded shadow overflow-hidden">
         <h3 className="text-xl font-bold p-4 border-b">
@@ -850,43 +870,17 @@ const Jobs = () => {
                     >
                       {jobRequest.status}
                     </span>
-                    <div className="relative group">
-                      <button className="text-gray-500 hover:text-gray-700">
-                        <FaEdit className="text-lg" onClick={() => handleEdit(jobRequest)} />
-                      </button>
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1 z-10 hidden group-hover:block">
-                        <button
-                          onClick={() => handleEdit(jobRequest)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(jobRequest.id)}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                        >
-                          Delete
-                        </button>
-                        <div className="border-t border-gray-100 my-1"></div>
-                        {statusOptions.map((status) => (
-                          <button
-                            key={status}
-                            onClick={() => handleStatusChange(jobRequest.id, status)}
-                            className={`block w-full text-left px-4 py-2 text-sm ${
-                              jobRequest.status === status
-                                ? "bg-gray-100 font-semibold"
-                                : "text-gray-700 hover:bg-gray-100"
-                            }`}
-                            disabled={jobRequest.status === status}
-                          >
-                            Set as {status}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    <button
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={() => handleEdit(jobRequest)}
+                      title="Edit"
+                    >
+                      <FaEdit className="text-lg" />
+                    </button>
                     <button
                       onClick={() => handleDelete(jobRequest.id)}
                       className="text-red-500 hover:text-red-700"
+                      title="Delete"
                     >
                       <FaTrash />
                     </button>

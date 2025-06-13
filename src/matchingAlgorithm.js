@@ -54,7 +54,7 @@ export const performSeniorMatching = async (jobRequestId) => {
       console.log("Job request data:", jobRequest);
 
       // Add to match results if score is above threshold (e.g., 30)
-      if (totalScore >= 30) {
+      if (totalScore >= 10) {
         matchResults.push({
           seniorId: seniorId,
           seniorName: senior.credentials?.username || "Unknown",
