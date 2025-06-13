@@ -271,7 +271,7 @@ const WorkBackground = ({ onComplete }) => {
     // Clean the form data by removing undefined values or converting them to null
     const cleanFormData = {
       ...formData,
-      jobs: formData.jobs.map(job => {
+      jobs: formData.lastJobs.map(job => {
         const cleanJob = Object.entries(job).reduce((acc, [key, value]) => {
           if (value === undefined) return acc;
           acc[key] = value === '' ? null : value;
@@ -304,7 +304,7 @@ const WorkBackground = ({ onComplete }) => {
   const addNewJob = () => {
     setFormData({
       ...formData,
-      jobs: [...formData.jobs, {
+      jobs: [...formData.lastJobs, {
         category: '',
         jobTitle: '',
         subspecialty: '',
@@ -326,7 +326,7 @@ const WorkBackground = ({ onComplete }) => {
     newSelectedJobs[jobIndex] = job;
     setSelectedJobs(newSelectedJobs);
 
-    const newJobs = [...formData.jobs];
+    const newJobs = [...formData.lastJobs];
     newJobs[jobIndex] = {
       ...newJobs[jobIndex],
       category,
@@ -339,7 +339,7 @@ const WorkBackground = ({ onComplete }) => {
   };
 
   const handleSubspecialtySelect = (subspecialty, jobIndex) => {
-    const newJobs = [...formData.jobs];
+    const newJobs = [...formData.lastJobs];
     newJobs[jobIndex] = {
       ...newJobs[jobIndex],
       subspecialty: subspecialty.label,
@@ -358,7 +358,7 @@ const WorkBackground = ({ onComplete }) => {
     newSelectedJobs[jobIndex] = null;
     setSelectedJobs(newSelectedJobs);
 
-    const newJobs = [...formData.jobs];
+    const newJobs = [...formData.lastJobs];
     newJobs[jobIndex] = {
       ...newJobs[jobIndex],
       jobTitle: '',
@@ -375,7 +375,7 @@ const WorkBackground = ({ onComplete }) => {
     setShowingAllCategories(true);
     setActiveCategory('');
 
-    const newJobs = [...formData.jobs];
+    const newJobs = [...formData.lastJobs];
     newJobs[jobIndex] = {
       ...newJobs[jobIndex],
       category: '',
@@ -408,7 +408,7 @@ const WorkBackground = ({ onComplete }) => {
             <div
               key={sub.label}
               onClick={() => handleSubspecialtySelect(sub, 0)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobs[0].subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
+              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.lastJobs[0].subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{sub.icon}</span>
               <span className="text-sm font-medium">{sub.label}</span>
@@ -439,7 +439,7 @@ const WorkBackground = ({ onComplete }) => {
             <div
               key={job.label}
               onClick={() => handleJobSelect(job, category, 0)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobs[0].jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
+              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.lastJobs[0].jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{job.icon}</span>
               <span className="text-sm font-medium">{job.label}</span>
@@ -451,7 +451,7 @@ const WorkBackground = ({ onComplete }) => {
   };
 
   const renderJobSection = (jobIndex) => {
-    const job = formData.jobs[jobIndex];
+    const job = formData.lastJobs[jobIndex];
     const selectedJob = selectedJobs[jobIndex];
     const isFirstJob = jobIndex === 0;
 
@@ -522,7 +522,7 @@ const WorkBackground = ({ onComplete }) => {
               type="text"
               value={job.otherJob || ''}
               onChange={(e) => {
-                const newJobs = [...formData.jobs];
+                const newJobs = [...formData.lastJobs];
                 newJobs[jobIndex] = { ...newJobs[jobIndex], otherJob: e.target.value };
                 setFormData({ ...formData, jobs: newJobs });
               }}
@@ -540,7 +540,7 @@ const WorkBackground = ({ onComplete }) => {
             <select
               value={job.academicDegree}
               onChange={(e) => {
-                const newJobs = [...formData.jobs];
+                const newJobs = [...formData.lastJobs];
                 newJobs[jobIndex] = {
                   ...newJobs[jobIndex],
                   academicDegree: e.target.value,
@@ -572,7 +572,7 @@ const WorkBackground = ({ onComplete }) => {
                 type="text"
                 value={job.otherAcademicDegree || ''}
                 onChange={(e) => {
-                  const newJobs = [...formData.jobs];
+                  const newJobs = [...formData.lastJobs];
                   newJobs[jobIndex] = { ...newJobs[jobIndex], otherAcademicDegree: e.target.value };
                   setFormData({ ...formData, jobs: newJobs });
                 }}
@@ -683,7 +683,7 @@ const WorkBackground = ({ onComplete }) => {
       </div>
 
       {/* Render all job sections */}
-      {formData.jobs.map((_, index) => renderJobSection(index))}
+      {formData.lastJobs.map((_, index) => renderJobSection(index))}
 
 
       {/* Add Another Job Button */}
