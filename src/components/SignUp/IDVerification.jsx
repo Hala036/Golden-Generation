@@ -4,12 +4,12 @@ import useSignupStore from '../../store/signupStore';
 import { createWorker } from 'tesseract.js';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
-
 import debounce from 'lodash.debounce';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import localSettlements from '../../data/settlements.json';
 import Select from 'react-select';
+import { Users, Star, Check } from 'lucide-react';
 
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
@@ -289,152 +289,206 @@ const IDVerification = ({ onComplete }) => {
     }
   };
 
+  // Floating background elements for visual consistency
+  const FloatingElements = () => (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute w-32 h-32 top-10 left-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '0s' }} />
+      <div className="absolute w-24 h-24 top-1/3 right-20 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="absolute w-40 h-40 bottom-20 left-1/4 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '4s' }} />
+      <div className="absolute w-20 h-20 bottom-1/3 right-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '6s' }} />
+    </div>
+  );
+
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 bg-white rounded-lg shadow-md mt-4 sm:mt-6">
-      <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">ID Verification</h2>
-        <p className="mt-2 text-sm sm:text-base text-gray-600">Please provide your identification details</p>
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
+      <FloatingElements />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 sm:gap-6">
-          {/* ID Number - First field */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              ID Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="idNumber"
-              value={idVerificationData.idNumber || ''}
-              onChange={handleChange}
-              placeholder='Enter 9 digits'
-              maxLength="9"
-              className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                errors.idNumber
-                  ? 'border-red-500'
-                  : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-              }`}
-            />
-            {errors.idNumber && (
-              <p className="text-xs sm:text-sm text-red-500">{errors.idNumber}</p>
-            )}
+      <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative z-10">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center mb-4">
+            <Users className="w-12 h-12 text-yellow-500 mr-4" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              ID Verification
+            </h1>
           </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Please provide your identification details
+          </p>
+        </div>
 
-          {/* Other fields in a grid layout */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">
-                First Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                value={idVerificationData.firstName || ''}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                  errors.firstName
-                    ? 'border-red-500'
-                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-                }`}
-              />
-              {errors.firstName && (
-                <p className="text-xs sm:text-sm text-red-500">{errors.firstName}</p>
-              )}
+        <form onSubmit={handleSubmit} className="space-y-12">
+          {/* ID & Personal Info Section */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <div className="flex items-center mb-6">
+              <Star className="w-8 h-8 text-yellow-500 mr-3" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Identification Details
+                </h3>
+                <p className="text-gray-600 text-lg">Enter your ID and personal information</p>
+              </div>
             </div>
-
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={idVerificationData.lastName || ''}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                  errors.lastName
-                    ? 'border-red-500'
-                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-                }`}
-              />
-              {errors.lastName && (
-                <p className="text-xs sm:text-sm text-red-500">{errors.lastName}</p>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* ID Number */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  ID Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="idNumber"
+                  value={idVerificationData.idNumber || ''}
+                  onChange={handleChange}
+                  placeholder='Enter 9 digits'
+                  maxLength="9"
+                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
+                    errors.idNumber
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  }`}
+                />
+                {errors.idNumber && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {errors.idNumber}
+                  </p>
+                )}
+              </div>
+              {/* First Name */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  First Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={idVerificationData.firstName || ''}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
+                    errors.firstName
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  }`}
+                />
+                {errors.firstName && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {errors.firstName}
+                  </p>
+                )}
+              </div>
+              {/* Last Name */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={idVerificationData.lastName || ''}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
+                    errors.lastName
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  }`}
+                />
+                {errors.lastName && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {errors.lastName}
+                  </p>
+                )}
+              </div>
+              {/* Date of Birth */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Date of Birth <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="dateOfBirth"
+                  value={idVerificationData.dateOfBirth || ''}
+                  onChange={handleChange}
+                  min="1900-01-01"
+                  max={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
+                    errors.dateOfBirth
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  }`}
+                />
+                {errors.dateOfBirth && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {errors.dateOfBirth}
+                  </p>
+                )}
+              </div>
             </div>
-
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">
-                Date of Birth <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="dateOfBirth"
-                value={idVerificationData.dateOfBirth || ''}
-                onChange={handleChange}
-                min="1900-01-01"
-                max={new Date().toISOString().split('T')[0]}
-                className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base ${
-                  errors.dateOfBirth
-                    ? 'border-red-500'
-                    : 'border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966]'
-                }`}
-              />
-              {errors.dateOfBirth && (
-                <p className="text-xs sm:text-sm text-red-500">{errors.dateOfBirth}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">
+            {/* Gender Selection */}
+            <div className="mt-8">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Gender <span className="text-red-500">*</span>
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div
                   onClick={() => handleChange({ target: { name: 'gender', value: 'male' } })}
-                  className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+                  className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
                     idVerificationData.gender === 'male'
-                      ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
-                      : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+                      ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-xl shadow-yellow-200/50 scale-105 -translate-y-0.5'
+                      : 'border-gray-200 hover:border-yellow-300 hover:bg-gray-50'
                   }`}
                 >
-                  <FaMars className={`text-xl ${idVerificationData.gender === 'male' ? 'text-blue-600' : 'text-gray-500'}`} />
-                  <span className={`text-sm font-medium ${idVerificationData.gender === 'male' ? 'text-gray-900' : 'text-gray-600'}`}>
+                  <FaMars className={`text-2xl ${idVerificationData.gender === 'male' ? 'text-blue-600' : 'text-gray-500'}`} />
+                  <span className={`text-base font-semibold ${idVerificationData.gender === 'male' ? 'text-gray-900' : 'text-gray-600'}`}>
                     Male
                   </span>
+                  {idVerificationData.gender === 'male' && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
+                      <Check size={16} />
+                    </div>
+                  )}
                 </div>
-                
                 <div
                   onClick={() => handleChange({ target: { name: 'gender', value: 'female' } })}
-                  className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+                  className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
                     idVerificationData.gender === 'female'
-                      ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
-                      : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+                      ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-xl shadow-yellow-200/50 scale-105 -translate-y-0.5'
+                      : 'border-gray-200 hover:border-yellow-300 hover:bg-gray-50'
                   }`}
                 >
-                  <FaVenus className={`text-xl ${idVerificationData.gender === 'female' ? 'text-pink-600' : 'text-gray-500'}`} />
-                  <span className={`text-sm font-medium ${idVerificationData.gender === 'female' ? 'text-gray-900' : 'text-gray-600'}`}>
+                  <FaVenus className={`text-2xl ${idVerificationData.gender === 'female' ? 'text-pink-600' : 'text-gray-500'}`} />
+                  <span className={`text-base font-semibold ${idVerificationData.gender === 'female' ? 'text-gray-900' : 'text-gray-600'}`}>
                     Female
                   </span>
+                  {idVerificationData.gender === 'female' && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
+                      <Check size={16} />
+                    </div>
+                  )}
                 </div>
-                
                 <div
                   onClick={() => handleChange({ target: { name: 'gender', value: 'other' } })}
-                  className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
+                  className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
                     idVerificationData.gender === 'other'
-                      ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
-                      : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
+                      ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-xl shadow-yellow-200/50 scale-105 -translate-y-0.5'
+                      : 'border-gray-200 hover:border-yellow-300 hover:bg-gray-50'
                   }`}
                 >
-                  <FaGenderless className={`text-xl ${idVerificationData.gender === 'other' ? 'text-purple-600' : 'text-gray-500'}`} />
-                  <span className={`text-sm font-medium ${idVerificationData.gender === 'other' ? 'text-gray-900' : 'text-gray-600'}`}>
+                  <FaGenderless className={`text-2xl ${idVerificationData.gender === 'other' ? 'text-purple-600' : 'text-gray-500'}`} />
+                  <span className={`text-base font-semibold ${idVerificationData.gender === 'other' ? 'text-gray-900' : 'text-gray-600'}`}>
                     Other
                   </span>
+                  {idVerificationData.gender === 'other' && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
+                      <Check size={16} />
+                    </div>
+                  )}
                 </div>
               </div>
               {errors.gender && (
-                <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
+                <p className="text-xs text-red-500 flex items-center gap-1 mt-2">
                   <FaInfoCircle className="flex-shrink-0" />
                   {errors.gender}
                 </p>
@@ -442,23 +496,32 @@ const IDVerification = ({ onComplete }) => {
             </div>
           </div>
 
-          {/* Settlement Dropdown - Full width */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Settlement <span className="text-red-500">*</span>
-            </label>
-            {loadingSettlements ? (
-              <div className="flex items-center gap-2 text-gray-500">
-                <FaSpinner className="animate-spin" />
-                <span>Loading settlements...</span>
+          {/* Settlement Section */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <div className="flex items-center mb-6">
+              <Users className="w-8 h-8 text-blue-500 mr-3" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Settlement
+                </h3>
+                <p className="text-gray-600 text-lg">Select your place of residence</p>
               </div>
-            ) : settlementsError ? (
-              <div className="text-red-500 flex items-center gap-1">
-                <FaInfoCircle />
-                <span>Failed to load settlements. Please try again later.</span>
-              </div>
-            ) : (
-              <div className="space-y-2">
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Settlement <span className="text-red-500">*</span>
+              </label>
+              {loadingSettlements ? (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <FaSpinner className="animate-spin" />
+                  <span>Loading settlements...</span>
+                </div>
+              ) : settlementsError ? (
+                <div className="text-red-500 flex items-center gap-1">
+                  <FaInfoCircle />
+                  <span>Failed to load settlements. Please try again later.</span>
+                </div>
+              ) : (
                 <Select
                   options={settlements.map(s => ({
                     value: s.id || s.name,
@@ -479,7 +542,7 @@ const IDVerification = ({ onComplete }) => {
                   }}
                   placeholder="Select settlement..."
                   isSearchable
-                  className="text-sm"
+                  className="text-base"
                   classNamePrefix="react-select"
                   styles={{
                     control: (base, state) => ({
@@ -489,26 +552,47 @@ const IDVerification = ({ onComplete }) => {
                       '&:hover': {
                         borderColor: '#FFD966',
                       },
+                      minHeight: 44,
+                      borderRadius: 12,
                     }),
                   }}
                 />
-                {errors.settlement && (
-                  <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.settlement}</p>
-                )}
-              </div>
-            )}
+              )}
+              {errors.settlement && (
+                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <FaInfoCircle className="flex-shrink-0" />
+                  {errors.settlement}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-[#FFD966] text-black rounded-lg hover:bg-yellow-400 transition"
-          >
-            {t('auth.idVerification.form.submit') || 'Submit'}
-          </button>
-        </div>
-      </form>
+          {/* Submit Button */}
+          <div className="text-center pt-8">
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+            >
+              <Star className="w-6 h-6" />
+              <span>{t('auth.idVerification.form.submit') || 'Submit'}</span>
+              <Star className="w-6 h-6" />
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };
