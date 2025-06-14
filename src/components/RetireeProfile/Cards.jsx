@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaArrowLeft } from "react-icons/fa";
-import { db } from "../../firebase"; // Import your Firebase configuration
-import { collection, getDocs } from "firebase/firestore";
+import { db, auth } from "../../firebase"; // Import Firebase configuration
+import { collection, getDocs, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 
 // Import local images for fallback
@@ -104,6 +104,43 @@ const Cards = () => {
     setSelectedEvent(null); // Reset the selected event to go back to the events list
   };
 
+  // Handle "Join Event" button click
+  const handleJoinEvent = async (event) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to join events.");
+        return;
+      }
+
+      // Add the user's ID to the participants list in the event document
+      const eventDocRef = doc(db, "events", event.id);
+      await updateDoc(eventDocRef, {
+        participants: arrayUnion(user.uid),
+      });
+
+      // Add the event ID to the user's registered events list
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        await updateDoc(userDocRef, {
+          registeredEvents: arrayUnion(event.id),
+        });
+      } else {
+        // If the user document doesn't exist, create it with the registeredEvents field
+        await updateDoc(userDocRef, {
+          registeredEvents: [event.id],
+        });
+      }
+
+      alert(`Successfully joined event: ${event.title}`);
+    } catch (error) {
+      console.error("Error joining event:", error);
+      alert("Failed to join event. Please try again.");
+    }
+  };
+
   return (
     <div className="bg-white p-4">
       {/* Check if an event is selected */}
@@ -140,7 +177,7 @@ const Cards = () => {
           <p className="mb-4">{selectedEvent.description}</p>
           <button
             className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-            onClick={() => alert(`Joined event: ${selectedEvent.title}`)}
+            onClick={() => handleJoinEvent(selectedEvent)}
           >
             {t("dashboard.events.join")}
           </button>
