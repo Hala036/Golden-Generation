@@ -15,8 +15,7 @@ const EVENT_TYPES = [
 const AddEvents = () => {
   const [eventData, setEventData] = useState({
     title: "",
-    type: EVENT_TYPES[0],
-    date: "",
+    categoryId: EVENT_TYPES[0],
     startDate: "",
     endDate: "",
     timeFrom: "",
@@ -61,6 +60,7 @@ const AddEvents = () => {
 
       const newEvent = {
         ...eventData,
+        categoryId: eventData.categoryId.toLowerCase(),
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         participants: [],
@@ -73,8 +73,7 @@ const AddEvents = () => {
       // Reset form
       setEventData({
         title: "",
-        type: EVENT_TYPES[0],
-        date: "",
+        categoryId: EVENT_TYPES[0],
         startDate: "",
         endDate: "",
         timeFrom: "",
@@ -116,8 +115,8 @@ const AddEvents = () => {
             Event Type
           </label>
           <select
-            name="type"
-            value={eventData.type}
+            name="categoryId"
+            value={eventData.categoryId}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
