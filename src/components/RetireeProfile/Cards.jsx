@@ -147,15 +147,6 @@ const Cards = () => {
       {selectedEvent ? (
         // Event Details View
         <div>
-          {/* Banner Image */}
-          <div className="mb-4">
-            <img
-              src={selectedEvent.image || categoryImages[selectedEvent.categoryId]}
-              alt={selectedEvent.title}
-              className="w-full h-64 object-cover rounded-md"
-            />
-          </div>
-
           {/* Back to Events Button */}
           <button
             onClick={handleBackToEvents}
@@ -164,6 +155,15 @@ const Cards = () => {
             <FaArrowLeft className="text-xl" />
             {t("dashboard.events.backToEvents")}
           </button>
+
+          {/* Banner Image */}
+          <div className="mb-4">
+            <img
+              src={selectedEvent.image || categoryImages[selectedEvent.categoryId]}
+              alt={selectedEvent.title}
+              className="w-full h-64 object-cover rounded-md"
+            />
+          </div>
 
           <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
           <p className="mb-2">
