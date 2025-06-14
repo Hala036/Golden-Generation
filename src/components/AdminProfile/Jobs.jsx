@@ -682,7 +682,7 @@ const Jobs = () => {
                               <td className="py-2 px-4 border-b">{match.seniorLocation}</td>
                               <td className="py-2 px-4 border-b">
                                 {match.seniorBackground && match.seniorBackground.length > 0
-                                  ? match.seniorBackground.join(", ")
+                                  ? match.seniorBackground
                                   : "Not specified"}
                               </td>
                               <td className="py-2 px-4 border-b">

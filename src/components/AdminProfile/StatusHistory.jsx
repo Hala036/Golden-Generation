@@ -47,6 +47,24 @@ function StatusHistory({ statusHistory }) {
     }
   };
 
+  function formatStatusDate(ts) {
+    if (!ts) return "Unknown date";
+    // Firestore Timestamp
+    if (typeof ts === "object" && typeof ts.seconds === "number") {
+      return new Date(ts.seconds * 1000).toLocaleString();
+    }
+    // JS Date object
+    if (ts instanceof Date) {
+      return ts.toLocaleString();
+    }
+    // ISO string
+    if (typeof ts === "string") {
+      const d = new Date(ts);
+      return isNaN(d.getTime()) ? "Unknown date" : d.toLocaleString();
+    }
+    return "Unknown date";
+  }
+
   return (
     <div className="p-4">
       <h3 className="text-lg font-semibold mb-4 flex items-center">
@@ -74,9 +92,7 @@ function StatusHistory({ statusHistory }) {
                   {getStatusIcon(item.status)}
                   <span className="font-semibold ml-2">{item.status}</span>
                   <span className="text-gray-500 text-sm ml-auto">
-                    {item.timestamp
-                      ? new Date(item.timestamp.seconds * 1000).toLocaleString()
-                      : "Unknown date"}
+                    {formatStatusDate(item.timestamp)}
                   </span>
                 </div>
 

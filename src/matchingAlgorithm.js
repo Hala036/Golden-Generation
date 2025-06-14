@@ -23,7 +23,8 @@ const usersCollection = collection(db, "users");
 export const performSeniorMatching = async (jobRequestId) => {
   try {
     console.log(`Starting matching algorithm for job request: ${jobRequestId}`);
-    const jobRequestDoc = await getDoc(doc(jobRequestsCollection, jobRequestId));
+    const jobRequestRef = doc(jobRequestsCollection, jobRequestId);
+    const jobRequestDoc = await getDoc(jobRequestRef);
 
     if (!jobRequestDoc.exists()) {
       throw new Error("Voluntary request not found");
@@ -39,13 +40,13 @@ export const performSeniorMatching = async (jobRequestId) => {
     console.log(`Found ${seniorsSnapshot.size} seniors to match against`);
 
     const matchResults = [];
-    const timestampNow = Timestamp.now(); // ✅ استخدم Timestamp.now() لمشكلة matchedAt
+    const timestampNow = Timestamp.now();
 
     seniorsSnapshot.forEach((seniorDoc) => {
       const senior = seniorDoc.data();
       const seniorId = seniorDoc.id;
 
-      // Calculate match score based on criteria
+      // Calculate match score based on correct nested fields
       const scoreDetails = calculateMatchScore(jobRequest, senior);
       const totalScore = scoreDetails.totalScore;
 
@@ -53,17 +54,20 @@ export const performSeniorMatching = async (jobRequestId) => {
       console.log(`Score details for ${seniorId}:`, scoreDetails);
       console.log("Job request data:", jobRequest);
 
-      // Add to match results if score is above threshold (e.g., 30)
+      // Add to match results if score is above threshold (e.g., 10)
       if (totalScore >= 10) {
         matchResults.push({
           seniorId: seniorId,
           seniorName: senior.credentials?.username || "Unknown",
-          seniorLocation: senior.location || "Unknown",
-          seniorBackground: senior.professionalBackground || [],
-          seniorInterests: senior.interests || [],
+          seniorLocation: senior.personalDetails?.settlement || "Unknown",
+          seniorBackground: senior.workBackground?.category || "",
+          seniorInterests: senior.lifestyle?.interests || [],
+          seniorDays: senior.volunteerDays && senior.volunteerDays.length > 0
+            ? senior.volunteerDays
+            : (senior.additionalVolunteerDays || []),
           score: totalScore,
           scoreDetails: scoreDetails,
-          matchedAt: timestampNow // ✅ آمنة الآن لأنها قيمة فعلية
+          matchedAt: timestampNow
         });
       }
     });
@@ -73,12 +77,13 @@ export const performSeniorMatching = async (jobRequestId) => {
 
     console.log(`Found ${matchResults.length} matching seniors above threshold`);
 
-    // Update job request with match results
-    await updateDoc(doc(jobRequestsCollection, jobRequestId), {
+    // Update job request with match results in Firestore
+    await updateDoc(jobRequestRef, {
       matchResults,
-      updatedAt: serverTimestamp() // ✅ هذا يسمح به Firestore لأنه حقل وليس داخل array
+      updatedAt: serverTimestamp()
     });
 
+    // Optionally, return the results for further use in the app
     return matchResults;
   } catch (error) {
     console.error("Error matching seniors to job request:", error);
@@ -98,28 +103,26 @@ export const calculateMatchScore = (jobRequest, senior) => {
     interestsScore: 0,
     backgroundScore: 0,
     availabilityScore: 0,
+    frequencyScore: 0,
+    timingScore: 0,
     totalScore: 0
   };
-  
-  // Location match (highest weight - 40%)
-  if (senior.location === jobRequest.location) {
+
+  // Location match (40%)
+  const seniorLocation = senior.personalDetails?.settlement || "";
+  if (seniorLocation && seniorLocation === jobRequest.location) {
     scoreDetails.locationScore = 40;
-  } else if (senior.location && jobRequest.location) {
-    // Partial match for nearby locations could be implemented here
-    // This would require a database of location proximities
-    scoreDetails.locationScore = 0;
   }
-  
+
   // Interests match (25%)
-  if (senior.interests && Array.isArray(senior.interests)) {
-    if (senior.interests.includes(jobRequest.volunteerField)) {
+  const seniorInterests = senior.lifestyle?.interests || [];
+  if (Array.isArray(seniorInterests)) {
+    if (seniorInterests.includes(jobRequest.volunteerField)) {
       scoreDetails.interestsScore = 25;
     } else {
-      // Check for partial matches in interests
-      const interestKeywords = jobRequest.volunteerField.toLowerCase().split(/\s+/);
+      const interestKeywords = (jobRequest.volunteerField || "").toLowerCase().split(/\s+/);
       let partialMatches = 0;
-      
-      senior.interests.forEach(interest => {
+      seniorInterests.forEach(interest => {
         const interestLower = interest.toLowerCase();
         interestKeywords.forEach(keyword => {
           if (interestLower.includes(keyword) && keyword.length > 3) {
@@ -127,95 +130,81 @@ export const calculateMatchScore = (jobRequest, senior) => {
           }
         });
       });
-      
       if (partialMatches > 0) {
-        scoreDetails.interestsScore = Math.min(15, partialMatches * 5); // Up to 15 points for partial matches
+        scoreDetails.interestsScore = Math.min(15, partialMatches * 5);
       }
     }
   }
-  
+
   // Professional background match (25%)
-  if (senior.professionalBackground && jobRequest.professionalBackground) {
-    if (Array.isArray(senior.professionalBackground)) {
-      if (senior.professionalBackground.includes(jobRequest.professionalBackground)) {
-        scoreDetails.backgroundScore = 25;
-      } else {
-        // Check for partial matches in professional background
-        const backgroundKeywords = jobRequest.professionalBackground.toLowerCase().split(/\s+/);
-        let partialMatches = 0;
-        
-        senior.professionalBackground.forEach(background => {
-          const backgroundLower = background.toLowerCase();
-          backgroundKeywords.forEach(keyword => {
-            if (backgroundLower.includes(keyword) && keyword.length > 3) {
-              partialMatches++;
-            }
-          });
-        });
-        
-        if (partialMatches > 0) {
-          scoreDetails.backgroundScore = Math.min(15, partialMatches * 5); // Up to 15 points for partial matches
-        }
-      }
-    } else if (typeof senior.professionalBackground === 'string') {
-      if (senior.professionalBackground === jobRequest.professionalBackground) {
-        scoreDetails.backgroundScore = 25;
-      } else if (senior.professionalBackground.toLowerCase().includes(jobRequest.professionalBackground.toLowerCase()) ||
-                jobRequest.professionalBackground.toLowerCase().includes(senior.professionalBackground.toLowerCase())) {
-        scoreDetails.backgroundScore = 15; // Partial match
-      }
-    }
+  const seniorBackground = senior.workBackground?.category ?? "";
+  const jobBackground = jobRequest.professionalBackground ?? "";
+  if (seniorBackground && jobBackground && seniorBackground === jobBackground) {
+    scoreDetails.backgroundScore = 25;
+  } else if (
+    seniorBackground &&
+    jobBackground &&
+    typeof seniorBackground === "string" &&
+    typeof jobBackground === "string" &&
+    (seniorBackground.toLowerCase().includes(jobBackground.toLowerCase()) ||
+      jobBackground.toLowerCase().includes(seniorBackground.toLowerCase()))
+  ) {
+    scoreDetails.backgroundScore = 15;
   }
-  
-  // Availability match (10%)
-  if (senior.availability && jobRequest.timing) {
-    const timingLower = jobRequest.timing.toLowerCase();
-    
-    // Check for specific timing matches
-    if (
-      (timingLower.includes("weekday") && senior.availability.weekdays) ||
-      (timingLower.includes("weekend") && senior.availability.weekends) ||
-      (timingLower.includes("morning") && senior.availability.mornings) ||
-      (timingLower.includes("afternoon") && senior.availability.afternoons) ||
-      (timingLower.includes("evening") && senior.availability.evenings) ||
-      (timingLower === "flexible" && (
-        senior.availability.weekdays || 
-        senior.availability.weekends || 
-        senior.availability.mornings || 
-        senior.availability.afternoons || 
-        senior.availability.evenings
-      ))
-    ) {
+
+  // Availability match (days) (10%)
+  const jobDays = Array.isArray(jobRequest.days) ? jobRequest.days : [];
+  const seniorDays = Array.isArray(senior.volunteerDays) && senior.volunteerDays.length > 0
+    ? senior.volunteerDays
+    : (Array.isArray(senior.additionalVolunteerDays) ? senior.additionalVolunteerDays : []);
+  if (jobDays.length && seniorDays.length) {
+    const overlap = jobDays.filter(day => seniorDays.includes(day));
+    if (overlap.length === jobDays.length) {
       scoreDetails.availabilityScore = 10;
-    } else {
-      // Partial availability match
-      let availabilityMatches = 0;
-      
-      if (timingLower.includes("weekday") || timingLower.includes("weekend")) {
-        if (senior.availability.weekdays || senior.availability.weekends) {
-          availabilityMatches++;
-        }
-      }
-      
-      if (timingLower.includes("morning") || timingLower.includes("afternoon") || timingLower.includes("evening")) {
-        if (senior.availability.mornings || senior.availability.afternoons || senior.availability.evenings) {
-          availabilityMatches++;
-        }
-      }
-      
-      if (availabilityMatches > 0) {
-        scoreDetails.availabilityScore = 5; // Partial availability match
-      }
+    } else if (overlap.length > 0) {
+      scoreDetails.availabilityScore = 5;
     }
   }
-  
+
+  // Frequency match (10%)
+  const seniorFrequency = senior.volunteerFrequency || senior.additionalVolunteerFrequency || "";
+  const jobFrequency = jobRequest.frequency || "";
+  if (seniorFrequency && jobFrequency && seniorFrequency === jobFrequency) {
+    scoreDetails.frequencyScore = 10;
+  } else if (
+    seniorFrequency &&
+    jobFrequency &&
+    typeof seniorFrequency === "string" &&
+    typeof jobFrequency === "string" &&
+    seniorFrequency.toLowerCase().includes(jobFrequency.toLowerCase())
+  ) {
+    scoreDetails.frequencyScore = 5;
+  }
+
+  // Timing match (10%)
+  const seniorTiming = senior.volunteerHours || senior.additionalVolunteerHours || "";
+  const jobTiming = jobRequest.timing || "";
+  if (seniorTiming && jobTiming && seniorTiming === jobTiming) {
+    scoreDetails.timingScore = 10;
+  } else if (
+    seniorTiming &&
+    jobTiming &&
+    typeof seniorTiming === "string" &&
+    typeof jobTiming === "string" &&
+    seniorTiming.toLowerCase().includes(jobTiming.toLowerCase())
+  ) {
+    scoreDetails.timingScore = 5;
+  }
+
   // Calculate total score
-  scoreDetails.totalScore = 
-    scoreDetails.locationScore + 
-    scoreDetails.interestsScore + 
-    scoreDetails.backgroundScore + 
-    scoreDetails.availabilityScore;
-  
+  scoreDetails.totalScore =
+    scoreDetails.locationScore +
+    scoreDetails.interestsScore +
+    scoreDetails.backgroundScore +
+    scoreDetails.availabilityScore +
+    scoreDetails.frequencyScore +
+    scoreDetails.timingScore;
+
   return scoreDetails;
 };
 
@@ -229,17 +218,17 @@ export const getDetailedMatch = async (jobRequestId, seniorId) => {
   try {
     const jobRequestDoc = await getDoc(doc(jobRequestsCollection, jobRequestId));
     const seniorDoc = await getDoc(doc(usersCollection, seniorId));
-    
+
     if (!jobRequestDoc.exists() || !seniorDoc.exists()) {
       throw new Error("Job request or senior not found");
     }
-    
+
     const jobRequest = jobRequestDoc.data();
     const senior = seniorDoc.data();
-    
+
     // Calculate match score
     const scoreDetails = calculateMatchScore(jobRequest, senior);
-    
+
     return {
       jobRequest,
       senior,

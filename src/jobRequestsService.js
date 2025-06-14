@@ -11,7 +11,8 @@ import {
   orderBy, 
   serverTimestamp,
   Timestamp,
-  addDoc
+  addDoc,
+  arrayUnion
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
 import { 
@@ -39,30 +40,53 @@ export const createJobRequest = async (jobRequestData) => {
     const jobRequestRef = doc(jobRequestsCollection);
     const jobRequestId = jobRequestRef.id;
 
+    // Prepare job request data WITHOUT statusHistory
+    const {
+      title = "",
+      location = "",
+      volunteerField = "",
+      professionalBackground = "",
+      frequency = "",
+      timing = "",
+      days = [],
+      description = ""
+    } = jobRequestData;
+
     const newJobRequest = {
       id: jobRequestId,
-      ...jobRequestData,
+      title,
+      location,
+      volunteerField,
+      professionalBackground,
+      frequency,
+      timing,
+      days,
+      description,
       status: "Active",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       createdBy: currentUser.uid,
       assignedSeniors: [],
       matchResults: [],
-      statusHistory: [
-        {
-          status: "Active",
-          timestamp: serverTimestamp(),
-          changedBy: currentUser.uid,
-          notes: "Job request created"
-        }
-      ]
+      // statusHistory will be added after creation
     };
 
+    // 1. Create the job request document WITHOUT statusHistory
     await setDoc(jobRequestRef, newJobRequest);
-    
+
+    // 2. Add statusHistory with serverTimestamp() using updateDoc
+    await updateDoc(jobRequestRef, {
+      statusHistory: arrayUnion({
+        status: "Active",
+        timestamp: new Date().toISOString(), // Use client time as ISO string
+        changedBy: currentUser.uid,
+        notes: "Job request created"
+      })
+    });
+
     // Run matching algorithm after creating the job request
     await matchSeniorsToJobRequest(jobRequestId);
-    
+
     return jobRequestId;
   } catch (error) {
     console.error("Error creating job request:", error);
@@ -169,8 +193,11 @@ export const updateJobRequest = async (jobRequestId, updateData) => {
       if (updateData.statusNotes) {
         delete updateData.statusNotes;
       }
-      
-      updateData.statusHistory = [...(currentData.statusHistory || []), statusHistoryEntry];
+
+      // Use arrayUnion to append the new entry
+      await updateDoc(jobRequestRef, {
+        statusHistory: arrayUnion(statusHistoryEntry)
+      });
     }
     
     // Update the updatedAt timestamp
@@ -224,50 +251,17 @@ export const matchSeniorsToJobRequest = async (jobRequestId) => {
  */
 export const inviteSeniorToJobRequest = async (jobRequestId, seniorId) => {
   try {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-      throw new Error("User not authenticated");
-    }
-    
-    const jobRequestRef = doc(jobRequestsCollection, jobRequestId);
-    const jobRequestDoc = await getDoc(jobRequestRef);
-    
-    if (!jobRequestDoc.exists()) {
-      throw new Error("Job request not found");
-    }
-    
-    const jobRequest = jobRequestDoc.data();
-    
-    // Check if senior is already invited
-    const existingAssignment = jobRequest.assignedSeniors.find(
-      assignment => assignment.seniorId === seniorId
-    );
-    
-    if (existingAssignment) {
-      throw new Error("Senior is already invited to this job request");
-    }
-    
-    // Add senior to assigned seniors
-    const assignment = {
-      seniorId,
-      status: "Invited",
-      assignedAt: serverTimestamp(),
-      responseAt: null
-    };
-    
-    const updatedAssignedSeniors = [...jobRequest.assignedSeniors, assignment];
-    
-    await updateDoc(jobRequestRef, {
-      assignedSeniors: updatedAssignedSeniors,
-      updatedAt: serverTimestamp()
-    });
-    
-    // Create notification for the senior
+    // Fetch the job request to get the title
+    const jobRequestDoc = await getDoc(doc(jobRequestsCollection, jobRequestId));
+    const jobRequest = jobRequestDoc.exists() ? jobRequestDoc.data() : {};
+    const jobTitle = jobRequest.title || "a voluntary request";
+
     await addDoc(notificationsCollection, {
       recipientId: seniorId,
       type: "job_invitation",
+      title: "New Voluntary Request",
+      message: `You have been invited to a new job request: ${jobTitle}`,
       jobRequestId,
-      message: `You have been invited to a new job request: ${jobRequest.title}`,
       read: false,
       createdAt: serverTimestamp()
     });

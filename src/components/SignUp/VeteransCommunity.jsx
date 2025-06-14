@@ -18,7 +18,10 @@ const VeteransCommunity = ({ onComplete }) => {
     additionalVolunteerHours: '',
     additionalVolunteerDays: [],
     needsConsultation: false,
-    consultationFields: []
+    consultationFields: [],
+    // Add these if you want to collect them in the form:
+    settlement: '',
+    professionalBackground: ''
   });
 
   const activityOptions = ['cooking', 'trips', 'choir', 'Torah classes', 'Lectures', 'exercise'];
@@ -47,7 +50,6 @@ const VeteransCommunity = ({ onComplete }) => {
       const updatedArray = currentArray.includes(value)
         ? currentArray.filter(item => item !== value)
         : [...currentArray, value];
-      
       return {
         ...prev,
         [field]: updatedArray
@@ -74,8 +76,26 @@ const VeteransCommunity = ({ onComplete }) => {
       finalData.notParticipatingReason = reasonOptions[0];
     }
 
-    // Save the complete data to the store
-    setVeteransData(finalData);
+    // Map to nested structure for matching algorithm compatibility
+    const mappedData = {
+      ...finalData,
+      lifestyle: {
+        interests: [
+          ...(finalData.volunteerAreas || []),
+          ...(finalData.additionalVolunteerFields || [])
+        ]
+      },
+      workBackground: {
+        category: finalData.professionalBackground || ""
+      },
+      personalDetails: {
+        settlement: finalData.settlement || ""
+      },
+      volunteerDays: finalData.volunteerDays,
+      additionalVolunteerDays: finalData.additionalVolunteerDays,
+    };
+
+    setVeteransData(mappedData);
     onComplete();
   };
 
@@ -84,6 +104,31 @@ const VeteransCommunity = ({ onComplete }) => {
       <div className="text-center mb-6">
         <h3 className="text-xl font-semibold text-gray-900">Veterans in the Community</h3>
         <p className="mt-1 text-sm text-gray-600">Tell us about your community involvement</p>
+      </div>
+
+      {/* Settlement (Location) */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Settlement (Location)</label>
+        <input
+          type="text"
+          value={formData.settlement}
+          onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
+          className="w-full border rounded-md p-2"
+          placeholder="e.g. Haifa"
+          required
+        />
+      </div>
+
+      {/* Professional Background */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Professional Background</label>
+        <input
+          type="text"
+          value={formData.professionalBackground}
+          onChange={(e) => setFormData({ ...formData, professionalBackground: e.target.value })}
+          className="w-full border rounded-md p-2"
+          placeholder="e.g. Healthcare, Education"
+        />
       </div>
 
       {/* Current Activities */}
@@ -334,4 +379,4 @@ const VeteransCommunity = ({ onComplete }) => {
   );
 };
 
-export default VeteransCommunity; 
+export default VeteransCommunity;
