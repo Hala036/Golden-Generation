@@ -525,6 +525,24 @@
           "gender": "מגדר",
           "work": "תחומי עיסוק"
         }
+      },
+      "createEvent": {
+        "title": "צור אירוע",
+        "eventTitle": "כותרת האירוע",
+        "eventType": "סוג האירוע",
+        "addCategory": "הוסף קטגוריה",
+        "dateRange": "טווח תאריכים",
+        "startDate": "תאריך התחלה",
+        "endDate": "תאריך סיום",
+        "timeRange": "טווח שעות",
+        "timeFrom": "שעה התחלה",
+        "timeTo": "שעה סיום",
+        "location": "מיקום",
+        "description": "תיאור",
+        "capacity": "קיבולת",
+        "requirements": "דרישות מיוחדות",
+        "requirementsPlaceholder": "הזן דרישות מיוחדות לאירוע",
+        "submit": "שלח"
       }
     }
   } 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaArrowLeft } from "react-icons/fa";
 import { db } from "../../firebase"; // Import your Firebase configuration
 import { collection, getDocs } from "firebase/firestore";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -23,7 +23,7 @@ const categoryImages = {
 };
 
 const Cards = () => {
-  const { t } = useTranslation();
+  const { language, t } = useLanguage(); // Access language and translation function
   const [events, setEvents] = useState([]); // Store all events
   const [filteredEvents, setFilteredEvents] = useState([]); // Store filtered events
   const [categories, setCategories] = useState([]); // Store categories
@@ -123,15 +123,15 @@ const Cards = () => {
           <button
             onClick={handleBackToEvents}
             className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
-            >
-              <FaArrowLeft className="text-xl" />
-              {t("dashboard.events.backToEvents")}
+          >
+            <FaArrowLeft className="text-xl" />
+            {t("dashboard.events.backToEvents")}
           </button>
 
           <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
           <p className="mb-2">
             <FaCalendarAlt className="inline text-[#FFD966] mr-2" />
-              {selectedEvent.endDate ? `${selectedEvent.startDate} - ${selectedEvent.endDate}` : selectedEvent.startDate}
+            {selectedEvent.endDate ? `${selectedEvent.startDate} - ${selectedEvent.endDate}` : selectedEvent.startDate}
           </p>
           <p className="mb-2">
             <FaMapMarkerAlt className="inline text-[#FFD966] mr-2" />
@@ -168,7 +168,7 @@ const Cards = () => {
               <option value="all">{t("dashboard.filter.allCategories")}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.title}
+                  {category.translations[language]} {/* Display translation based on current language */}
                 </option>
               ))}
             </select>
@@ -201,7 +201,7 @@ const Cards = () => {
                       <FaCalendarAlt className="text-[#FFD966] mr-2" />
                       <p className="text-gray-700 font-medium">
                         {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                        </p>
+                      </p>
                     </div>
 
                     {/* Location with Pin Icon */}
