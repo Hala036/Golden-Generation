@@ -540,7 +540,13 @@
         "moreDetails": "More Info"
       },
       "filter": {
-        "allCategories": "All Categories"
+        "allCategories": "All Categories",
+        "trip": "Trip",
+        "vacation": "Vacation",
+        "workshop": "Workshop",
+        "lecture": "Lecture",
+        "homegroup": "Home Group",
+        "socialevent": "Social Event"
       },
       "search": {
         "searchCategories": "Search Categories",
@@ -600,6 +606,24 @@
             "gender": "Gender",
             "work": "Work Fields"
           }
+      },
+      "createEvent": {
+        "title": "Create Event",
+        "eventTitle": "Event Title",
+        "eventType": "Event Type",
+        "addCategory": "Add Category",
+        "dateRange": "Date Range",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "timeRange": "Time Range",
+        "timeFrom": "Time From",
+        "timeTo": "Time To",
+        "location": "Location",
+        "description": "Description",
+        "capacity": "Capacity",
+        "requirements": "Special Requirements",
+        "requirementsPlaceholder": "Enter any special requirements for the event",
+        "submit": "Submit"
       }
     }
   } 

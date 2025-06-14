@@ -1,22 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { db, auth } from "../../firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-
-const EVENT_TYPES = [
-  "Trip",
-  "Vacation",
-  "Workshop",
-  "Lecture",
-  "Home Group",
-  "Social Gathering"
-];
+import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc } from "firebase/firestore";
+import AddCategoryModal from "../AdminProfile/AddCategoryModal"; // Import the modal component
+import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 
 const AddEvents = () => {
+  const { language, t } = useLanguage(); // Access language and translation function
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false); // State for modal visibility
+  const [categories, setCategories] = useState([]); // Categories fetched from Firebase
   const [eventData, setEventData] = useState({
     title: "",
-    type: EVENT_TYPES[0],
-    date: "",
+    categoryId: "",
     startDate: "",
     endDate: "",
     timeFrom: "",
@@ -26,32 +21,65 @@ const AddEvents = () => {
     capacity: "",
     requirements: ""
   });
+  const [userRole, setUserRole] = useState(""); // State to store the user's role
 
-  // New state for files
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  // Fetch user role
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userDoc = await getDoc(doc(db, "users", user.uid)); // Assuming user roles are stored in the "users" collection
+          if (userDoc.exists()) {
+            setUserRole(userDoc.data().role); // Set the user's role
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
+  // Fetch categories from Firebase
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesRef = collection(db, "categories");
+        const categoriesSnapshot = await getDocs(categoriesRef);
+        const categoriesData = categoriesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setCategories(categoriesData);
+        // Set the default category to the first one fetched
+        if (categoriesData.length > 0) {
+          setEventData((prev) => ({
+            ...prev,
+            categoryId: categoriesData[0].id
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to fetch categories.");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEventData(prev => ({
+    setEventData((prev) => ({
       ...prev,
       [name]: value
     }));
   };
 
-  // Handle file selection
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setSelectedFiles(prev => [...prev, ...files]);
-  };
-
-  // Remove a file from the list
-  const handleRemoveFile = (index) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -59,8 +87,14 @@ const AddEvents = () => {
         return;
       }
 
+      const formatDate = (date) => {
+        const [year, month, day] = date.split("-");
+        return `${day}-${month}-${year}`;
+      };
+
       const newEvent = {
         ...eventData,
+        startDate: formatDate(eventData.startDate),
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         participants: [],
@@ -69,12 +103,10 @@ const AddEvents = () => {
 
       await addDoc(collection(db, "events"), newEvent);
       toast.success("Event created successfully!");
-      
-      // Reset form
+
       setEventData({
         title: "",
-        type: EVENT_TYPES[0],
-        date: "",
+        categoryId: categories.length > 0 ? categories[0].id : "",
         startDate: "",
         endDate: "",
         timeFrom: "",
@@ -92,13 +124,13 @@ const AddEvents = () => {
 
   return (
     <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Create New Event</h2>
-      
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">{t("admin.createEvent.title")}</h2>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Event Title
+            {t("admin.createEvent.eventTitle")}
           </label>
           <input
             type="text"
@@ -113,64 +145,37 @@ const AddEvents = () => {
         {/* Event Type */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Event Type
+            {t("admin.createEvent.eventType")}
           </label>
           <select
-            name="type"
-            value={eventData.type}
+            name="categoryId"
+            value={eventData.categoryId}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
           >
-            {EVENT_TYPES.map(type => (
-              <option key={type} value={type}>
-                {type}
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.translations[language]} {/* Display translation based on current language */}
               </option>
             ))}
           </select>
-        </div>
-
-        {/* Add Photos and Files */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Add photos and files</label>
-          <input
-            id="add-files-input"
-            type="file"
-            multiple
-            accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/x-zip-compressed,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,.txt"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
-          <button
-            type="button"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md mb-2"
-            onClick={() => document.getElementById('add-files-input').click()}
-          >
-            Add photos and files
-          </button>
-          {/* Show selected files */}
-          {selectedFiles.length > 0 && (
-            <ul className="mt-2 space-y-1">
-              {selectedFiles.map((file, idx) => (
-                <li key={idx} className="flex items-center justify-between bg-gray-100 px-2 py-1 rounded">
-                  <span className="text-sm text-gray-800">{file.name}</span>
-                  <button
-                    type="button"
-                    className="ml-2 text-red-500 hover:text-red-700 text-xs"
-                    onClick={() => handleRemoveFile(idx)}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
+          {/* Conditionally render the "Add Category" button */}
+          {(userRole === "admin" || userRole === "superadmin") && (
+            <button
+              type="button"
+              onClick={() => setShowAddCategoryModal(true)} // Open the modal
+              className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-6 py-2 rounded-md mt-2"
+            >
+              {t("admin.createEvent.addCategory")}
+            </button>
           )}
         </div>
 
         {/* Date / Date Range */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Date / Date Range
+            {t("admin.createEvent.dateRange")}
           </label>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -182,7 +187,7 @@ const AddEvents = () => {
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
               />
-              <span className="block text-xs text-gray-500 mt-1">Start date</span>
+              <span className="block text-xs text-gray-500 mt-1">{t("admin.createEvent.startDate")}</span>
             </div>
             <div>
               <input
@@ -192,18 +197,19 @@ const AddEvents = () => {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
               />
-              <span className="block text-xs text-gray-500 mt-1">End date (optional)</span>
+              <span className="block text-xs text-gray-500 mt-1">{t("admin.createEvent.endDate")}</span>
             </div>
           </div>
         </div>
+
         {/* Time Range */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Time Range
+            {t("admin.createEvent.timeRange")}
           </label>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">From</label>
+              <label className="block text-xs text-gray-500 mb-1">{t("admin.createEvent.timeFrom")}</label>
               <input
                 type="time"
                 name="timeFrom"
@@ -214,7 +220,7 @@ const AddEvents = () => {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">To</label>
+              <label className="block text-xs text-gray-500 mb-1">{t("admin.createEvent.timeTo")}</label>
               <input
                 type="time"
                 name="timeTo"
@@ -230,7 +236,7 @@ const AddEvents = () => {
         {/* Location */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Location
+            {t("admin.createEvent.location")}
           </label>
           <input
             type="text"
@@ -245,7 +251,7 @@ const AddEvents = () => {
         {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
+            {t("admin.createEvent.description")}
           </label>
           <textarea
             name="description"
@@ -261,7 +267,7 @@ const AddEvents = () => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Capacity
+              {t("admin.createEvent.capacity")}
             </label>
             <input
               type="number"
@@ -278,7 +284,7 @@ const AddEvents = () => {
         {/* Special Requirements */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Special Requirements (Optional)
+            {t("admin.createEvent.requirements")}
           </label>
           <textarea
             name="requirements"
@@ -286,7 +292,7 @@ const AddEvents = () => {
             onChange={handleChange}
             rows="3"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
-            placeholder="Any special requirements or items participants should bring..."
+            placeholder={t("admin.createEvent.requirementsPlaceholder")}
           />
         </div>
 
@@ -296,10 +302,17 @@ const AddEvents = () => {
             type="submit"
             className="bg-[#FFD966] hover:bg-yellow-500 text-white font-bold py-2 px-6 rounded-md transition-colors duration-200"
           >
-            Create Event
+            {t("admin.createEvent.submit")}
           </button>
         </div>
       </form>
+
+      {/* Add Category Modal */}
+      {showAddCategoryModal && (
+        <AddCategoryModal
+          onClose={() => setShowAddCategoryModal(false)} // Close the modal
+        />
+      )}
     </div>
   );
 };
