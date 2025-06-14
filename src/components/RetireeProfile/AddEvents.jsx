@@ -58,9 +58,16 @@ const AddEvents = () => {
         return;
       }
 
+      // Format dates to DD-MM-YYYY
+      const formatDate = (date) => {
+        const [year, month, day] = date.split("-");
+        return `${day}-${month}-${year}`;
+      };
+
       const newEvent = {
         ...eventData,
         categoryId: eventData.categoryId.toLowerCase(),
+        startDate: formatDate(eventData.startDate),
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         participants: [],
