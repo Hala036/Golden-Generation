@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import i18n from '../i18n'; // Import the i18n instance
 import enTranslations from '../translations/en.json';
 import heTranslations from '../translations/he.json';
 import ruTranslations from '../translations/ru.json';
@@ -13,8 +14,7 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => {
     // Load language preference from localStorage
     const savedLanguage = localStorage.getItem('language') || 'en';
-    setLanguage(savedLanguage);
-    setTranslations(getTranslations(savedLanguage));
+    changeLanguage(savedLanguage); // Use changeLanguage to initialize
   }, []);
 
   const getTranslations = (lang) => {
@@ -36,12 +36,20 @@ export const LanguageProvider = ({ children }) => {
     setLanguage(newLanguage);
     setTranslations(getTranslations(newLanguage));
     localStorage.setItem('language', newLanguage);
+
+    // Update i18n instance
+    i18n.changeLanguage(newLanguage);
+
+    // Update the direction of the document
+    const rtlLanguages = ['he', 'ar'];
+    document.documentElement.dir = rtlLanguages.includes(newLanguage) ? 'rtl' : 'ltr';
+    document.documentElement.lang = newLanguage;
   };
 
   const t = (key) => {
     const keys = key.split('.');
     let value = translations;
-    
+
     for (const k of keys) {
       if (value && typeof value === 'object') {
         value = value[k];
@@ -49,7 +57,7 @@ export const LanguageProvider = ({ children }) => {
         return key; // Return the key if translation not found
       }
     }
-    
+
     return value || key;
   };
 
@@ -66,4 +74,4 @@ export const useLanguage = () => {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
-}; 
+};

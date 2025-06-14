@@ -19,13 +19,14 @@
     },
     "auth": {
       "login": {
-        "title": "تسجيل الدخول إلى حسابك",
+        "title": "الدخول إلى حسابك",
         "email": "البريد الإلكتروني",
         "password": "كلمة المرور",
         "forgotPassword": "نسيت كلمة المرور؟",
         "noAccount": "ليس لديك حساب؟",
         "signIn": "تسجيل الدخول",
         "signingIn": "جاري تسجيل الدخول...",
+        "newAccount": "ليس لديك حساب؟",
         "signUp": "إنشاء حساب",
         "user": "مستخدم",
         "admin": "مسؤول",
@@ -415,7 +416,19 @@
           "idImageRequired": "صورة الهوية مطلوبة",
           "selfieRequired": "الصورة مع الهوية مطلوبة",
           "fileSize": "يجب أن يكون حجم الملف أقل من 5MB",
-          "fileType": "يسمح فقط بملفات PNG و JPG و JPEG"
+          "fileType": "يسمح فقط بملفات PNG و JPG و JPEG",
+          "firstNameRequired": "الاسم الأول مطلوب",
+          "lastNameRequired": "اسم العائلة مطلوب",
+          "idNumberRequired": "رقم الهوية مطلوب",
+          "invalidIdNumber": "رقم الهوية يجب أن يكون 9 أرقام",
+          "dateOfBirthRequired": "تاريخ الميلاد مطلوب",
+          "ageRequirement": "الحد الأدنى للعمر هو 50 عامًا",
+          "ageRequirementNotMet": "لم يتم استيفاء شرط العمر: الحد الأدنى للعمر هو 50 عامًا",
+          "genderRequired": "الجنس مطلوب",
+          "invalidFileType": "نوع الملف غير صالح. يرجى رفع ملف JPG أو JPEG أو PNG",
+          "processing": "خطأ في معالجة الملف",
+          "extraction": "لا يمكن استخراج البيانات من الصورة",
+          "ocr": "خطأ في التعرف على النص"
         },
         "continue": "متابعة",
         "language": {
@@ -440,21 +453,6 @@
           "genderFemale": "أنثى",
           "genderOther": "آخر",
           "submit": "متابعة"
-        },
-        "errors": {
-          "firstNameRequired": "الاسم الأول مطلوب",
-          "lastNameRequired": "اسم العائلة مطلوب",
-          "idNumberRequired": "رقم الهوية مطلوب",
-          "invalidIdNumber": "رقم الهوية يجب أن يكون 9 أرقام",
-          "dateOfBirthRequired": "تاريخ الميلاد مطلوب",
-          "ageRequirement": "الحد الأدنى للعمر هو 50 عامًا",
-          "ageRequirementNotMet": "لم يتم استيفاء شرط العمر: الحد الأدنى للعمر هو 50 عامًا",
-          "genderRequired": "الجنس مطلوب",
-          "invalidFileType": "نوع الملف غير صالح. يرجى رفع ملف JPG أو JPEG أو PNG",
-          "fileSize": "حجم الملف يتجاوز 5MB",
-          "processing": "خطأ في معالجة الملف",
-          "extraction": "لا يمكن استخراج البيانات من الصورة",
-          "ocr": "خطأ في التعرف على النص"
         }
       },
       "forgotPassword": {
@@ -511,27 +509,42 @@
       }
     },
     "dashboard": {
-      "welcome": "مرحباً",
+      "welcome": "مرحبًا",
       "profile": "الملف الشخصي",
-      "events": "الفعاليات",
       "settings": "الإعدادات",
-      "logout": "تسجيل الخروج",
-      "upcomingEvents": "الفعاليات القادمة",
-      "pastEvents": "الفعاليات السابقة",
-      "noEvents": "لم يتم العثور على فعاليات",
-      "createEvent": "إنشاء فعالية",
-      "editEvent": "تعديل فعالية",
-      "deleteEvent": "حذف فعالية",
-      "eventDetails": "تفاصيل الفعالية",
-      "eventTitle": "عنوان الفعالية",
-      "eventDate": "تاريخ الفعالية",
-      "eventTime": "وقت الفعالية",
-      "eventLocation": "موقع الفعالية",
-      "eventDescription": "وصف الفعالية",
-      "eventParticipants": "مشاركون الفعالية",
-      "eventStatus": "حالة الفعالية",
+      "logout": "الخروج",
+      "homePage": "الصفحة الرئيسية",
+      "retirees": "المتقاعدون",
+      "volunteerRequests": "طلبات التطوع",
+      "analytics": "تحليل",
+      "contactUs": "خدمة الزبائن",
+      "events": {
+        "upcomingEvents": "الأحداث القادمة",
+        "addEvent": "إضافة حدث",
+        "events": "الأحداث",
+        "noEvents": "لم يتم العثور على أحداث",
+        "createEvent": "إنشاء حدث",
+        "editEvent": "تعديل الحدث",
+        "deleteEvent": "حذف الحدث",
+        "eventDetails": "تفاصيل الحدث",
+        "eventTitle": "عنوان الحدث",
+        "eventDate": "تاريخ الحدث",
+        "eventTime": "وقت الحدث",
+        "eventLocation": "موقع الحدث",
+        "eventDescription": "وصف الحدث",
+        "eventParticipants": "مشاركو الحدث",
+        "eventStatus": "حالة الحدث",
+        "backToEvents": "العودة إلى الأحداث",
+        "join": "انضم إلى الحدث",
+        "leave": "غادر الحدث",
+        "moreDetails": "مزيد من المعلومات"
+      },
+      "filter": {
+        "allCategories": "جميع الفئات"
+      },
       "search": {
-        "placeholder": "البحث في الفعاليات",
+        "searchCategories": "البحث حسب الفئات",
+        "searchEvents": "البحث عن فعاليات",
         "button": "بحث"
       },
       "language": {
@@ -541,8 +554,8 @@
         "arabic": "العربية"
       },
       "header": {
-        "title": "الجيل الذهبي",
-        "logout": "تسجيل الخروج"
+        "title": "جيل الذهب",
+        "logout": "الخروج"
       },
       "notifications": "الإشعارات",
       "calendar": "التقويم",
@@ -562,5 +575,31 @@
     "header": {
       "search": "بحث",
       "language": "اللغة"
+    },
+    "admin": {
+      "retirees": {
+        "title": "إدارة المتقاعدين",
+        "addRetiree": "إضافة متقاعد",
+        "viewRetiree": "عرض المتقاعد",
+        "searchRetirees": "البحث عن متقاعدين",
+        "noRetireesFound": "لم يتم العثور على متقاعدين",
+        "retireeDetails": "تفاصيل المتقاعد",
+        "retireeName": "الاسم",
+        "retireeEmail": "البريد الإلكتروني",
+        "retireePhone": "رقم الهاتف",
+        "filters": {
+          "search": "...البحث عن طريق أي ميزة",
+          "addFilter": "إضافة فلتر",
+          "remove": "إزالة",
+          "select": "اختر ميزة",
+          "enterValue": "أدخل قيمة"
+        },
+        "table": {
+          "name": "الاسم",
+          "age": "العمر",
+          "gender": "الجنس",
+          "work": "مجالات العمل"
+        }
+      }
     }
   } 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useLanguage } from './context/LanguageContext';
 import LoginPage from './components/Login';
@@ -9,23 +9,25 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
+import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
 
   // Set document direction based on language
-  React.useEffect(() => {
+  useEffect(() => {
     const rtlLanguages = ['he', 'ar'];
     document.documentElement.dir = rtlLanguages.includes(language) ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);
 
-    const location = useLocation();
+  const location = useLocation();
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isViewProfile = location.pathname.startsWith("/view-profile");
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!isDashboard && (
+      {!isDashboard && !isViewProfile && (
         <div className="fixed top-2 right-2 z-50">
           <LanguageSwitcher />
         </div>
@@ -62,6 +64,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <RoleBasedDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/view-profile"
+          element={
+            <ProtectedRoute>
+              <ViewProfileDashboard />
             </ProtectedRoute>
           }
         />

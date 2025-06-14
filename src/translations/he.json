@@ -76,6 +76,7 @@
         "noAccount": "אין לך חשבון?",
         "signIn": "התחבר",
         "signingIn": "מתחבר...",
+        "newAccount": "אין לך חשבון?",
         "signUp": "הירשם",
         "user": "משתמש",
         "admin": "מנהל",
@@ -435,26 +436,41 @@
     "dashboard": {
       "welcome": "ברוך הבא",
       "profile": "פרופיל",
-      "events": "אירועים",
       "settings": "הגדרות",
       "logout": "התנתק",
-      "upcomingEvents": "אירועים קרובים",
-      "pastEvents": "אירועים קודמים",
-      "noEvents": "לא נמצאו אירועים",
-      "createEvent": "צור אירוע",
-      "editEvent": "ערוך אירוע",
-      "deleteEvent": "מחק אירוע",
-      "eventDetails": "פרטי אירוע",
-      "eventTitle": "כותרת האירוע",
-      "eventDate": "תאריך האירוע",
-      "eventTime": "שעת האירוע",
-      "eventLocation": "מיקום האירוע",
-      "eventDescription": "תיאור האירוע",
-      "eventParticipants": "משתתפי האירוע",
-      "eventStatus": "סטטוס האירוע",
+      "homePage": "דף הבית",
+      "retirees": "גמלאים",
+      "volunteerRequests": "בקשות התנדבות",
+      "analytics": "ניתוח",
+      "contactUs": "תמיכת לקוחות",
+      "events": {
+        "upcomingEvents": "אירועים קרובים",
+        "addEvent": "הוסף אירוע",
+        "events": "אירועים",
+        "noEvents": "לא נמצאו אירועים",
+        "createEvent": "צור אירוע",
+        "editEvent": "ערוך אירוע",
+        "deleteEvent": "מחיקת אירוע",
+        "eventDetails": "פרטי האירוע",
+        "eventTitle": "כותרת האירוע",
+        "eventDate": "תאריך האירוע",
+        "eventTime": "שעת האירוע",
+        "eventLocation": "מיקום האירוע",
+        "eventDescription": "תיאור האירוע",
+        "eventParticipants": "משתתפי האירוע",
+        "eventStatus": "סטטוס האירוע",
+        "backToEvents": "חזור לאירועים",
+        "join": "הצטרף לאירוע",
+        "leave": "עזוב את האירוע",
+        "moreDetails": "מידע נוסף"
+      },
+      "filter": {
+        "allCategories": "כל הקטגוריות"
+      },
       "search": {
-        "placeholder": "חיפוש אירועים",
-        "button": "חיפוש"
+        "searchCategories": "חיפוש לפי קטגוריות",
+        "searchEvents": "חיפוש אירועים",
+        "button": "חפש"
       },
       "language": {
         "english": "אנגלית",
@@ -484,5 +500,31 @@
     "header": {
       "search": "חיפוש",
       "language": "שפה"
+    },
+    "admin": {
+      "retirees": {
+        "title": "ניהול גמלאים",
+        "addRetiree": "הוסף גמלאי",
+        "viewRetiree": "הצג גמלאי",
+        "searchRetirees": "חפש גמלאים",
+        "noRetireesFound": "לא נמצאו גמלאים",
+        "retireeDetails": "פרטי גמלאי",
+        "retireeName": "שם",
+        "retireeEmail": "דוא\"ל",
+        "retireePhone": "מספר טלפון",
+        "filters": {
+          "search": "חפש לפי כל תכונה...", 
+          "addFilter": "הוסף מסנן",
+          "remove": "הסר",
+          "select": "בחר תכונה",
+          "enterValue": "הזן ערך"
+        },
+        "table": {
+          "name": "שם",
+          "age": "גיל",
+          "gender": "מגדר",
+          "work": "תחומי עיסוק"
+        }
+      }
     }
   } 

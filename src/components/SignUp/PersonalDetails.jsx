@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useCallback, memo, useState } from 'react';
 import useSignupStore from '../../store/signupStore';
+import languageList from '../../data/languages.json';
+import groupedLanguages from '../../data/languagesGrouped.json';
+import countryList from '../../data/country.json';
+
+import Select from 'react-select';
 import {
   FaCheck,
   FaInfoCircle,
-  FaSearch,
-  FaChevronDown,
+  FaSpinner,
   FaGlobe,
   FaLanguage,
-  FaSpinner,
   FaComment,
   FaFlag,
   FaUniversity,
@@ -16,20 +19,193 @@ import {
   FaExclamationTriangle,
   FaHome,
   FaRoad,
+  FaChevronDown,
+  FaSearch,
 } from 'react-icons/fa';
+import * as FaIcons from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+
+// Language code to country code mapping for flags
+const languageFlagMap = {
+  en: 'gb', // English → UK
+  he: 'il', // Hebrew → Israel
+  ar: 'sa', // Arabic → Saudi Arabia
+  ru: 'ru', // Russian → Russia
+  fr: 'fr', // French → France
+  es: 'es', // Spanish → Spain
+  de: 'de', // German → Germany
+  fa: 'ir', // Persian → Iran
+  am: 'et', // Amharic → Ethiopia
+  sw: 'tz', // Swahili → Tanzania
+  tl: 'ph', // Tagalog → Philippines
+  pt: 'br', // Portuguese → Brazil
+  it: 'it', // Italian → Italy
+  tr: 'tr', // Turkish → Turkey
+  zh: 'cn', // Chinese → China
+  hi: 'in', // Hindi → India
+  ja: 'jp', // Japanese → Japan
+  ko: 'kr', // Korean → South Korea
+  vi: 'vn', // Vietnamese → Vietnam
+  // Add more mappings as needed
+  'zh-tw': 'tw', // Traditional Chinese → Taiwan
+  'zh-hk': 'hk', // Cantonese → Hong Kong
+  'zh-cn': 'cn', // Simplified Chinese → China
+  'pt-br': 'br', // Brazilian Portuguese → Brazil
+  'pt-pt': 'pt', // European Portuguese → Portugal
+  'fr-ca': 'ca', // Canadian French → Canada
+  'fr-fr': 'fr', // French → France
+  'es-mx': 'mx', // Mexican Spanish → Mexico
+  'es-es': 'es', // European Spanish → Spain
+  'ru-ru': 'ru', // Russian → Russia
+  'ar-sa': 'sa', // Saudi Arabic → Saudi Arabia
+  'ar-eg': 'eg', // Egyptian Arabic → Egypt
+  'ar-ma': 'ma', // Moroccan Arabic → Morocco
+    
+
+
+  // Add more as needed
+};
+
+// Hide number input spin buttons (arrows) for all browsers
+const numberInputSpinButtonStyle = `
+  /* Chrome, Safari, Edge, Opera */
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+`;
 
 // Memoize FormField to prevent unnecessary re-renders
 const FormField = memo(
-  ({ label, name, type = 'text', required = false, options, placeholder, className = '', disabled = false, value, onChange, error, getFieldIcon }) => {
+  ({ 
+    label, 
+    name, 
+    type = 'text', 
+    required = false, 
+    options, 
+    placeholder, 
+    className = '', 
+    disabled = false, 
+    value, 
+    onChange, 
+    error, 
+    getFieldIcon,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    searchTerm,
+    setSearchTerm,
+    getLanguageIcon,
+    id, // new prop for id
+    autoComplete // new prop for autocomplete
+  }) => {
+    const fieldId = id || `field-${name}`;
+    const autoCompleteAttr = autoComplete || name;
     return (
       <div className={`space-y-1 ${className}`}>
-        <label className="block text-sm font-medium text-gray-700 flex items-center gap-1">
+        <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700 flex items-center gap-1">
           {getFieldIcon()}
           {label} {required && <span className="text-red-500">*</span>}
         </label>
-        {type === 'select' ? (
+        {type === 'select' && name === 'nativeLanguage' ? (
+          <Select
+            inputId={fieldId}
+            name={name}
+            value={options.find(option => option.value === value) || null}
+            onChange={option => onChange({ target: { name, value: option ? option.value : '' } })}
+            options={options}
+            isDisabled={disabled}
+            classNamePrefix="react-select"
+            placeholder={`Select ${label.toLowerCase()}`}
+            isSearchable
+            formatOptionLabel={option => {
+              const flagCode = languageFlagMap[option.value?.toLowerCase()] || option.value?.toLowerCase();
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {option.value && (
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                      <img
+                        src={`https://flagcdn.com/w20/${flagCode}.png`}
+                        alt={option.label}
+                        className="w-5 h-5 object-contain rounded-sm"
+                        onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'inline'; }}
+                      />
+                      <FaIcons.FaGlobe className="text-gray-500" style={{ display: 'none', marginLeft: 0 }} />
+                    </span>
+                  )}
+                  <span>{option.label}</span>
+                </div>
+              );
+            }}
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                borderColor: error ? '#ef4444' : base.borderColor,
+                boxShadow: state.isFocused ? (error ? '0 0 0 1px #ef4444' : '0 0 0 1px #FFD966') : base.boxShadow,
+                '&:hover': { borderColor: '#FFD966' },
+                minHeight: 40,
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isSelected ? '#FFD96633' : state.isFocused ? '#FFD96611' : undefined,
+                color: '#222',
+                padding: '8px 12px',
+                fontWeight: state.isSelected ? 600 : 400,
+              }),
+            }}
+            // Add inputProps for autocomplete
+            inputProps={{ autoComplete: autoCompleteAttr }}
+          />
+        ) : type === 'select' && name === 'originCountry' ? (
+          <Select
+            inputId={fieldId}
+            name={name}
+            value={options.find(option => option.value === value) || null}
+            onChange={option => onChange({ target: { name, value: option ? option.value : '' } })}
+            options={options}
+            isDisabled={disabled}
+            classNamePrefix="react-select"
+            placeholder={`Select ${label.toLowerCase()}`}
+            formatOptionLabel={option => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {option.value && (
+                  <img
+                    src={`https://flagcdn.com/w20/${option.value.toLowerCase()}.png`}
+                    alt={option.label}
+                    style={{ width: 20, height: 15, borderRadius: 2, objectFit: 'cover' }}
+                    onError={e => { e.target.style.display = 'none'; }}
+                  />
+                )}
+                <span>{option.label}</span>
+              </div>
+            )}
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                borderColor: error ? '#ef4444' : base.borderColor,
+                boxShadow: state.isFocused ? (error ? '0 0 0 1px #ef4444' : '0 0 0 1px #FFD966') : base.boxShadow,
+                '&:hover': { borderColor: '#FFD966' },
+                minHeight: 40,
+              }),
+
+              
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isSelected ? '#FFD96633' : state.isFocused ? '#FFD96611' : undefined,
+                color: '#222',
+                padding: '8px 12px',
+                fontWeight: state.isSelected ? 600 : 400,
+              }),
+            }}
+            inputProps={{ autoComplete: autoCompleteAttr }}
+          />
+        ) : type === 'select' ? (
           <select
+            id={fieldId}
             name={name}
             value={value || ''}
             onChange={onChange}
@@ -46,6 +222,7 @@ const FormField = memo(
               backgroundSize: '1.5em 1.5em',
               paddingRight: '2.5rem',
             }}
+            autoComplete={autoCompleteAttr}
           >
             <option value="">{`Select ${label.toLowerCase()}`}</option>
             {options.map((option) => (
@@ -56,6 +233,7 @@ const FormField = memo(
           </select>
         ) : type === 'textarea' ? (
           <textarea
+            id={fieldId}
             name={name}
             value={value || ''}
             onChange={onChange}
@@ -66,9 +244,11 @@ const FormField = memo(
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                 : 'border-gray-300 hover:border-[#FFD966] focus:border-[#FFD966] focus:ring-[#FFD966] transition-colors'
             }`}
+            autoComplete={autoCompleteAttr}
           />
         ) : (
           <input
+            id={fieldId}
             type={type}
             name={name}
             value={value || ''}
@@ -79,6 +259,7 @@ const FormField = memo(
                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                 : 'border-gray-300 hover:border-[#FFD966] focus:border-[#FFD966] focus:ring-[#FFD966] transition-colors'
             }`}
+            autoComplete={autoCompleteAttr}
           />
         )}
         {error && (
@@ -97,22 +278,25 @@ const FormField = memo(
       prevProps.disabled === nextProps.disabled &&
       prevProps.options === nextProps.options &&
       prevProps.className === nextProps.className &&
-      prevProps.placeholder === nextProps.placeholder
+      prevProps.placeholder === nextProps.placeholder &&
+      prevProps.isDropdownOpen === nextProps.isDropdownOpen &&
+      prevProps.searchTerm === nextProps.searchTerm
     );
   }
 );
 
 // Memoize CheckboxField
-const CheckboxField = memo(({ label, name, className = '', checked, onChange }) => (
+const CheckboxField = memo(({ label, name, className = '', checked, onChange, id }) => (
   <div className={`flex items-center ${className} hover:bg-gray-100 p-1 rounded-md transition-colors -mx-1`}>
     <input
       type="checkbox"
       name={name}
+      id={id || `field-${name}`}
       checked={checked || false}
       onChange={onChange}
       className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300 rounded cursor-pointer"
     />
-    <label className="ml-2 text-sm text-gray-700 cursor-pointer select-none flex-1">{label}</label>
+    <label htmlFor={id || `field-${name}`} className="ml-2 text-sm text-gray-700 cursor-pointer select-none flex-1">{label}</label>
   </div>
 ));
 
@@ -129,19 +313,20 @@ const PersonalDetails = memo(({ onComplete }) => {
     hebrewLevel: '',
     arrivalDate: '',
     originCountry: '',
-    settlement: '',
     healthCondition: '',
     militaryService: '',
     hasCar: false,
     livingAlone: false,
     familyInSettlement: false,
     hasWeapon: false,
+    isNewImmigrant: false, // Add this new field
   });
   const [errors, setErrors] = useState({});
   const [settlements, setSettlements] = useState([]);
   const [languages, setLanguages] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState({
-    settlements: true,
+    settlements: false, // Changed from true to false
     languages: true,
   });
   const [apiError, setApiError] = useState({
@@ -162,54 +347,26 @@ const PersonalDetails = memo(({ onComplete }) => {
     { value: 'widowed', label: 'Widowed' },
   ];
 
-  // Fetch settlements
+  // Replace fetch languages useEffect:
   useEffect(() => {
-    const fetchSettlements = async () => {
-      try {
-        setApiError((prev) => ({ ...prev, settlements: false }));
-        const response = await fetch('/api/settlements');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch settlements: ${response.status} ${response.statusText}`);
-        }
-        const data = await response.json();
-        setSettlements(data);
-      } catch (error) {
-        console.error('Error fetching settlements:', error);
-        setApiError((prev) => ({ ...prev, settlements: true }));
-        toast.error('Failed to load available settlements. Please try again later.');
-      } finally {
-        setLoading((prev) => ({ ...prev, settlements: false }));
-      }
-    };
-    fetchSettlements();
+    try {
+      setLanguages(Object.entries(languageList).map(([value, label]) => ({ value, label })));
+      setCountries(Array.isArray(countryList) ? countryList.map((c) => ({ value: c.code || c.name, label: c.name })) : []);
+      setLoading(prev => ({ ...prev, languages: false }));
+    } catch (error) {
+      console.error('Error loading languages or countries list:', error);
+      setApiError(prev => ({ ...prev, languages: true }));
+      toast.error('Failed to load languages or countries.');
+      setLanguages([]);
+      setCountries([]);
+      setLoading(prev => ({ ...prev, languages: false }));
+    }
   }, []);
 
-  // Fetch languages
+  // Add this useEffect to fix the loading state issue
   useEffect(() => {
-    const fetchLanguages = async () => {
-      try {
-        setApiError((prev) => ({ ...prev, languages: false }));
-        const response = await fetch('/api/languages');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch languages: ${response.status} ${response.statusText}`);
-        }
-        const data = await response.json();
-        setLanguages(data);
-      } catch (error) {
-        console.error('Error fetching languages:', error);
-        setApiError((prev) => ({ ...prev, languages: true }));
-        setLanguages([
-          { value: 'english', label: 'English' },
-          { value: 'spanish', label: 'Spanish' },
-          { value: 'french', label: 'French' },
-          { value: 'hebrew', label: 'Hebrew' },
-          { value: 'arabic', label: 'Arabic' },
-        ]);
-      } finally {
-        setLoading((prev) => ({ ...prev, languages: false }));
-      }
-    };
-    fetchLanguages();
+    // Since you're not actually loading settlements, set it to false
+    setLoading(prev => ({ ...prev, settlements: false }));
   }, []);
 
   // Handle click outside dropdown
@@ -246,26 +403,30 @@ const PersonalDetails = memo(({ onComplete }) => {
     []
   );
 
-  const filteredLanguages = useCallback(() => {
-    return languages.filter((lang) => lang.label.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [languages, searchTerm]);
-
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber']; // Updated required fields
-    
+    const requiredFields = ['streetName', 'houseNumber']; // Base required fields
+    // Add required fields for new immigrants
+    if (formData.isNewImmigrant) {
+      requiredFields.push('arrivalDate', 'originCountry');
+    }
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        const fieldName = field === 'streetName' ? 'Street Name' : 'House Number';
+        let fieldName = field === 'streetName' ? 'Street Name' : 
+                       field === 'houseNumber' ? 'House Number' :
+                       field === 'arrivalDate' ? 'Arrival Date' :
+                       field === 'originCountry' ? 'Origin Country' : field;
         newErrors[field] = `${fieldName} is required`;
       }
     });
-
     // Validate house number is numeric
-    if (formData.houseNumber && !/^\d+[a-zA-Z]?$/.test(formData.houseNumber.trim())) {
+    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
       newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
     }
-
+    // Validate Israeli phone number
+    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = 'Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData]);
@@ -273,15 +434,18 @@ const PersonalDetails = memo(({ onComplete }) => {
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      console.log('Form data:', formData); // Debug: check form data
+      console.log('Validation result:', validateForm()); // Debug: check validation
       if (validateForm()) {
-        // Combine street name and house number into address field for backward compatibility
         const updatedFormData = {
           ...formData,
           address: `${formData.houseNumber} ${formData.streetName}`.trim(),
         };
+        console.log('Submitting:', updatedFormData); // Debug: check final data
         updatePersonalData(updatedFormData);
         onComplete();
       } else {
+        console.log('Validation errors:', errors); // Debug: check errors
         const firstErrorField = Object.keys(errors)[0];
         if (firstErrorField) {
           const element = document.querySelector(`[name="${firstErrorField}"]`);
@@ -317,8 +481,6 @@ const PersonalDetails = memo(({ onComplete }) => {
         case 'originCountry': return <FaGlobe className="text-[#FFD966]" />;
         case 'healthCondition': return <FaInfoCircle className="text-[#FFD966]" />;
         case 'militaryService': return <FaInfoCircle className="text-[#FFD966]" />;
-        case 'settlement': return <FaInfoCircle className="text-[#FFD966]" />;
-        
         default: return <FaInfoCircle className="text-[#FFD966]" />;
       }
     },
@@ -335,6 +497,7 @@ const PersonalDetails = memo(({ onComplete }) => {
       .animate-fadeIn {
         animation: fadeIn 0.2s ease-out forwards;
       }
+      ${numberInputSpinButtonStyle}
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
@@ -378,17 +541,34 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Phone Number"
               name="phoneNumber"
-              type="tel"
-              placeholder="+1 (555) 000-0000"
+              id="phoneNumber"
+              type="text"
+              autoComplete="tel"
+              placeholder="05XXXXXXXX"
               value={formData.phoneNumber}
-              onChange={handleInputChange}
+              onChange={e => {
+                // Only allow up to 10 digits, no letters or other characters
+                let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (val.length > 10) val = val.slice(0, 10);
+                handleInputChange({
+                  target: {
+                    name: 'phoneNumber',
+                    value: val
+                  }
+                });
+              }}
               error={errors.phoneNumber}
               getFieldIcon={() => getFieldIcon('phoneNumber')}
+              required
+              inputMode="numeric"
+              pattern="[0-9]{10}"
             />
             <FormField
               label="Marital Status"
               name="maritalStatus"
+              id="maritalStatus"
               type="select"
+              autoComplete="marital-status"
               options={maritalStatusOptions}
               value={formData.maritalStatus}
               onChange={handleInputChange}
@@ -407,17 +587,35 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="House Number"
                 name="houseNumber"
+                id="houseNumber"
                 required
+                type="text"
+                autoComplete="address-line1"
                 placeholder="123"
                 value={formData.houseNumber}
-                onChange={handleInputChange}
+                onChange={e => {
+                  // Only allow 1-4 digits, optionally followed by a single letter (A-Z, a-z)
+                  const val = e.target.value.toUpperCase();
+                  if (val === '' || /^\d{1,4}[A-Z]?$/.test(val)) {
+                    handleInputChange({
+                      target: {
+                        name: 'houseNumber',
+                        value: val
+                      }
+                    });
+                  }
+                }}
                 error={errors.houseNumber}
                 getFieldIcon={() => getFieldIcon('houseNumber')}
+                inputMode="text"
+                pattern="\d{1,4}[A-Za-z]?"
               />
               <FormField
                 label="Street Name"
                 name="streetName"
+                id="streetName"
                 required
+                autoComplete="address-line2"
                 placeholder="Main Street"
                 className="sm:col-span-2"
                 value={formData.streetName}
@@ -429,7 +627,9 @@ const PersonalDetails = memo(({ onComplete }) => {
             <FormField
               label="Additional Address Details (Optional)"
               name="address"
+              id="address"
               type="textarea"
+              autoComplete="address-line3"
               placeholder="Apartment number, building name, or other address details..."
               className="sm:col-span-2"
               value={formData.address}
@@ -443,158 +643,82 @@ const PersonalDetails = memo(({ onComplete }) => {
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
             <FaCheck className="text-green-500" />
-            <h3>Language & Origin</h3>
+            <h3>Language & Background</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-1" ref={dropdownRef}>
-              <label className="block text-sm font-medium text-gray-700 flex items-center gap-1">
-                <FaLanguage className="text-[#FFD966]" />
-                Native Language
-              </label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  disabled={loading.languages}
-                  className={`w-full px-3 py-2 rounded-md shadow-sm text-sm sm:text-base text-left flex items-center justify-between
-                    ${errors.nativeLanguage
-                      ? 'border-2 border-red-500 focus:border-red-500 focus:ring-red-500'
-                      : 'border border-gray-300 hover:border-[#FFD966] focus:border-[#FFD966] focus:ring-[#FFD966] transition-colors'
-                    } ${loading.languages ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <div className="flex items-center gap-2">
-                    {languages.find((lang) => lang.value === formData.nativeLanguage) ? (
-                      getLanguageIcon(formData.nativeLanguage)
-                    ) : (
-                      <FaGlobe className="text-gray-500" />
-                    )}
-                    <span>
-                      {languages.find((lang) => lang.value === formData.nativeLanguage)?.label || 'Select language'}
-                    </span>
-                  </div>
-                  {loading.languages ? (
-                    <FaSpinner className="animate-spin text-gray-500" />
-                  ) : (
-                    <FaChevronDown
-                      className={`transition-transform ${isDropdownOpen ? 'transform rotate-180' : ''} text-gray-500`}
-                    />
-                  )}
-                </button>
-
-                {isDropdownOpen && !loading.languages && (
-                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto animate-fadeIn">
-                    <div className="sticky top-0 bg-white p-2 border-b shadow-sm">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          placeholder="Type to search languages..."
-                          className="w-full pl-8 pr-3 py-2 rounded-md border border-gray-300 focus:border-[#FFD966] focus:ring-[#FFD966] text-sm"
-                          autoFocus
-                        />
-                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      </div>
-                    </div>
-
-                    {filteredLanguages().length > 0 ? (
-                      <div>
-                        {filteredLanguages().map((lang) => (
-                          <div
-                            key={lang.value}
-                            className={`px-4 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between transition-colors
-                              ${formData.nativeLanguage === lang.value ? 'bg-[#FFD966] bg-opacity-10 font-medium' : ''}`}
-                            onClick={() => handleLanguageSelect(lang.value)}
-                          >
-                            <div className="flex items-center gap-2">
-                              {getLanguageIcon(lang.value)}
-                              <span>{lang.label}</span>
-                            </div>
-                            {formData.nativeLanguage === lang.value && <FaCheck className="text-green-500" />}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="p-4 text-center text-gray-500">No languages found</div>
-                    )}
-                  </div>
-                )}
-              </div>
-              {errors.nativeLanguage && (
-                <p className="text-xs sm:text-sm text-red-500 flex items-center gap-1">
-                  <FaInfoCircle className="flex-shrink-0" />
-                  {errors.nativeLanguage}
-                </p>
-              )}
-            </div>
+            <FormField
+              label="Native Language"
+              name="nativeLanguage"
+              id="nativeLanguage"
+              type="select"
+              autoComplete="language"
+              options={languages}
+              value={formData.nativeLanguage}
+              onChange={handleInputChange}
+              error={errors.nativeLanguage}
+              getFieldIcon={() => getFieldIcon('nativeLanguage')}
+              disabled={loading.languages}
+              isDropdownOpen={isDropdownOpen}
+              setIsDropdownOpen={setIsDropdownOpen}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              getLanguageIcon={getLanguageIcon}
+            />
             <FormField
               label="Hebrew Level"
               name="hebrewLevel"
+              id="hebrewLevel"
               type="select"
-              options={hebrewLevels}
+              autoComplete="hebrew-level"
+              options={hebrewLevels.map(level => ({ value: level, label: level.charAt(0).toUpperCase() + level.slice(1) }))}
               value={formData.hebrewLevel}
               onChange={handleInputChange}
               error={errors.hebrewLevel}
               getFieldIcon={() => getFieldIcon('hebrewLevel')}
             />
-            <FormField
-              label="Arrival Date"
-              name="arrivalDate"
-              type="date"
-              value={formData.arrivalDate}
+          </div>
+          {/* New Immigrant Question - moved here, no highlight */}
+          <div className="mt-4">
+            <CheckboxField
+              label="I am a new immigrant to Israel"
+              name="isNewImmigrant"
+              id="isNewImmigrant"
+              checked={formData.isNewImmigrant}
               onChange={handleInputChange}
-              error={errors.arrivalDate}
-              getFieldIcon={() => getFieldIcon('arrivalDate')}
-            />
-            <FormField
-              label="Country of Origin"
-              name="originCountry"
-              placeholder="Enter your country of origin"
-              value={formData.originCountry}
-              onChange={handleInputChange}
-              error={errors.originCountry}
-              getFieldIcon={() => getFieldIcon('originCountry')}
             />
           </div>
+          {/* Conditional fields for new immigrants */}
+          {formData.isNewImmigrant && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+              <FormField
+                label="Arrival Date"
+                name="arrivalDate"
+                id="arrivalDate"
+                type="date"
+                required={true}
+                autoComplete="bday"
+                value={formData.arrivalDate}
+                onChange={handleInputChange}
+                error={errors.arrivalDate}
+                getFieldIcon={() => getFieldIcon('arrivalDate')}
+              />
+              <FormField
+                label="Origin Country"
+                name="originCountry"
+                id="originCountry"
+                type="select"
+                required={true}
+                autoComplete="country"
+                options={countries}
+                value={formData.originCountry}
+                onChange={handleInputChange}
+                error={errors.originCountry}
+                getFieldIcon={() => getFieldIcon('originCountry')}
+              />
+            </div>
+          )}
         </section>
 
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
-            <FaCheck className="text-green-500" />
-            <h3>Settlement</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <FormField
-              label="Settlement"
-              name="settlement"
-              type="select"
-              options={Array.isArray(settlements) ? settlements.map((settlement) => ({
-                value: settlement.id || settlement,
-                label: settlement.name || settlement,
-              })) : []}
-              disabled={loading.settlements}
-              className="sm:col-span-2"
-              value={formData.settlement}
-              onChange={handleInputChange}
-              error={errors.settlement}
-              getFieldIcon={() => getFieldIcon('settlement')}
-            />
-            {loading.settlements && (
-              <div className="flex items-center text-gray-500 sm:col-span-2">
-                <FaSpinner className="animate-spin mr-2" />
-                Loading available settlements...
-              </div>
-            )}
-            {!loading.settlements && settlements.length === 0 && (
-              <div className="text-red-500 sm:col-span-2">
-                {apiError.settlements
-                  ? "Couldn't connect to the server. Please try again later."
-                  : 'No settlements available for sign-up. Please contact support.'}
-              </div>
-            )}
-          </div>
-        </section>
-       
         {/* Additional Information */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
@@ -606,7 +730,9 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="Health Condition"
                 name="healthCondition"
+                id="healthCondition"
                 type="textarea"
+                autoComplete="health-condition"
                 placeholder="Please describe any health conditions..."
                 value={formData.healthCondition}
                 onChange={handleInputChange}
@@ -616,7 +742,9 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FormField
                 label="Military/National Service"
                 name="militaryService"
+                id="militaryService"
                 type="select"
+                autoComplete="military-service"
                 options={militaryOptions.map((option) => ({
                   value: option,
                   label: option === 'none' ? 'None' : option === 'military' ? 'Military Service' : 'National Service',
@@ -632,24 +760,28 @@ const PersonalDetails = memo(({ onComplete }) => {
                 <CheckboxField
                   label="I have a car"
                   name="hasCar"
+                  id="hasCar"
                   checked={formData.hasCar}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
                   label="Living alone"
                   name="livingAlone"
+                  id="livingAlone"
                   checked={formData.livingAlone}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
                   label="Family members in settlement"
                   name="familyInSettlement"
+                  id="familyInSettlement"
                   checked={formData.familyInSettlement}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
                   label="I carry a weapon"
                   name="hasWeapon"
+                  id="hasWeapon"
                   checked={formData.hasWeapon}
                   onChange={handleInputChange}
                 />
@@ -657,17 +789,25 @@ const PersonalDetails = memo(({ onComplete }) => {
             </div>
           </div>
         </section>
-
         <div className="flex justify-end pt-6">
           <button
             type="submit"
-            disabled={loading.settlements}
+            disabled={loading.settlements || loading.languages}
             className={`w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform hover:scale-105 text-sm sm:text-base font-medium flex items-center justify-center gap-2 shadow-md ${
-              loading.settlements ? 'opacity-50 cursor-not-allowed' : ''
+              (loading.settlements || loading.languages) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            <span>Continue</span>
-            <FaCheck className="text-lg" />
+            {loading.settlements || loading.languages ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                <span>Loading...</span>
+              </>
+            ) : (
+              <>
+                <span>Continue</span>
+                <FaCheck className="text-lg" />
+              </>
+            )}
           </button>
         </div>
       </form>

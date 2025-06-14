@@ -2,9 +2,91 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../../firebase';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaVideo, FaComments } from 'react-icons/fa';
+import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaVideo, FaComments, FaMicrophone, FaMicrophoneSlash, FaPhoneSlash } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import profile from '../../assets/profile.jpeg';
+import AgoraRTC from 'agora-rtc-sdk-ng';
+
+// Agora audio call hook (in this file for simplicity)
+function useAgoraAudioCall() {
+  const [inCall, setInCall] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [callError, setCallError] = useState(null);
+  const clientRef = useRef(null);
+  const localAudioTrackRef = useRef(null);
+
+  const startCall = async ({ channelName, uid }) => {
+    setCallError(null);
+    clientRef.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+    try {
+      // *** DEBUGGING LOGS START ***
+      console.log("Frontend: Preparing to send token request.");
+      console.log("Frontend: channelName ->", channelName);
+      console.log("Frontend: uid ->", uid, typeof uid);
+      // *** DEBUGGING LOGS END ***
+
+      // Get token from backend
+      const res = await fetch('/api/agora/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelName, uid }),
+      });
+      const data = await res.json();
+
+      // *** DEBUGGING LOGS START ***
+      console.log("Frontend: Received response from token endpoint:", data);
+      // *** DEBUGGING LOGS END ***
+
+      if (!data.token || !data.appId) {
+        throw new Error(data.error || 'Failed to get Agora token from backend');
+      }
+
+      await clientRef.current.join(data.appId, channelName, data.token, uid);
+      localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
+      await clientRef.current.publish([localAudioTrackRef.current]);
+
+      clientRef.current.on('user-published', async (user, mediaType) => {
+        await clientRef.current.subscribe(user, mediaType);
+        if (mediaType === 'audio') {
+          user.audioTrack.play();
+        }
+      });
+
+      setInCall(true);
+    } catch (err) {
+      console.error('Error starting call:', err);
+      setCallError(err.message || 'Failed to start call');
+      setInCall(false);
+    }
+  };
+
+  const leaveCall = async () => {
+    try {
+      if (localAudioTrackRef.current) {
+        localAudioTrackRef.current.close();
+      }
+      if (clientRef.current) {
+        await clientRef.current.leave();
+      }
+    } catch {}
+    setInCall(false);
+    setIsMuted(false);
+  };
+
+  const toggleMute = async () => {
+    if (localAudioTrackRef.current) {
+      if (isMuted) {
+        await localAudioTrackRef.current.setEnabled(true);
+        setIsMuted(false);
+      } else {
+        await localAudioTrackRef.current.setEnabled(false);
+        setIsMuted(true);
+      }
+    }
+  };
+
+  return { inCall, startCall, leaveCall, isMuted, toggleMute, callError };
+}
 
 const Messages = () => {
   const [conversations, setConversations] = useState([]);
@@ -16,6 +98,10 @@ const Messages = () => {
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
   const { t } = useLanguage();
+  const { inCall, startCall, leaveCall, isMuted, toggleMute, callError } = useAgoraAudioCall();
+  const [callModalOpen, setCallModalOpen] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [typing, setTyping] = useState(false); // mock typing indicator
 
   // Fetch users for chat
   useEffect(() => {
@@ -56,21 +142,20 @@ const Messages = () => {
   // Fetch messages for selected chat
   useEffect(() => {
     if (!selectedChat) return;
-
+    setLoadingMessages(true);
     const q = query(
       collection(db, 'messages'),
       where('conversationId', '==', selectedChat.id),
       orderBy('timestamp', 'asc')
     );
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const messagesList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       setMessages(messagesList);
+      setLoadingMessages(false);
     });
-
     return () => unsubscribe();
   }, [selectedChat]);
 
@@ -98,14 +183,25 @@ const Messages = () => {
     }
   };
 
+  // Ensure only one conversation per user pair
   const startNewChat = async (userId) => {
+    // Check for existing conversation
+    const existing = conversations.find(conv =>
+      conv.participants.length === 2 &&
+      conv.participants.includes(auth.currentUser.uid) &&
+      conv.participants.includes(userId)
+    );
+    if (existing) {
+      setSelectedChat(existing);
+      return;
+    }
+    // Otherwise, create new
     try {
       const conversationData = {
         participants: [auth.currentUser.uid, userId],
         lastMessageTime: serverTimestamp(),
         lastMessage: ''
       };
-
       const docRef = await addDoc(collection(db, 'conversations'), conversationData);
       setSelectedChat({ id: docRef.id, ...conversationData });
     } catch (error) {
@@ -117,6 +213,40 @@ const Messages = () => {
     (user.username || '').toLowerCase().includes(searchQuery.toLowerCase()) &&
     user.id !== auth.currentUser?.uid
   );  
+
+  // Find the other user in the selected chat
+  const otherUser = selectedChat && users.find(u => u.id === selectedChat.participants.find(p => p !== auth.currentUser?.uid));
+
+  // Start audio call handler
+  const handleStartAudioCall = async () => {
+    if (!auth.currentUser) {
+      toast.error('You must be logged in to start a call');
+      return;
+    }
+    if (!otherUser) {
+      toast.error('No user selected for the call');
+      return;
+    }
+    const channelName = [auth.currentUser.uid, otherUser.id].sort().join('_');
+    const uid = Number(auth.currentUser.uid);
+    await startCall({ channelName, uid });
+    setCallModalOpen(true);
+  };
+
+  // Leave call handler
+  const handleLeaveCall = async () => {
+    await leaveCall();
+    setCallModalOpen(false);
+  };
+
+  // Typing indicator (mock)
+  const handleInputChange = (e) => {
+    setNewMessage(e.target.value);
+    if (!typing) {
+      setTyping(true);
+      setTimeout(() => setTyping(false), 1200); // mock typing for 1.2s
+    }
+  };
 
   return (
     <div className="flex h-[calc(100vh-200px)] bg-white rounded-lg shadow-lg overflow-hidden">
@@ -197,7 +327,7 @@ const Messages = () => {
               <div className="flex items-center">
                 <div className="relative">
                   <img
-                    src={profile}
+                    src={otherUser?.avatarUrl || profile}
                     alt="Profile"
                     className="w-10 h-10 rounded-full mr-4 object-cover border-2 border-orange-500"
                   />
@@ -205,13 +335,13 @@ const Messages = () => {
                 </div>
                 <div>
                   <h2 className="font-semibold text-gray-800">
-                    {users.find(u => u.id === selectedChat.participants.find(p => p !== auth.currentUser?.uid))?.username}
+                    {otherUser?.username}
                   </h2>
                   <p className="text-xs text-gray-500">Online</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <button className="p-2 text-gray-600 hover:text-orange-500 transition-colors">
+                <button className="p-2 text-gray-600 hover:text-orange-500 transition-colors" onClick={handleStartAudioCall} disabled={inCall} title="Start Audio Call">
                   <FaPhone />
                 </button>
                 <button className="p-2 text-gray-600 hover:text-orange-500 transition-colors">
@@ -225,30 +355,47 @@ const Messages = () => {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-              {messages.length === 0 ? (
+              {loadingMessages ? (
+                <div className="flex items-center justify-center h-full text-gray-400">Loading messages...</div>
+              ) : messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500">
                   {t('dashboard.messages.noMessages')}
                 </div>
               ) : (
-                messages.map(message => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.senderId === auth.currentUser?.uid ? 'justify-end' : 'justify-start'} mb-4`}
-                  >
+                messages.map(message => {
+                  const isMe = message.senderId === auth.currentUser?.uid;
+                  const sender = isMe ? auth.currentUser : otherUser;
+                  return (
                     <div
-                      className={`max-w-[70%] rounded-2xl p-3 shadow-sm ${
-                        message.senderId === auth.currentUser?.uid
-                          ? 'bg-orange-500 text-white rounded-tr-none'
-                          : 'bg-white text-gray-800 rounded-tl-none'
-                      }`}
+                      key={message.id}
+                      className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4 items-end`}
                     >
-                      <p className="text-sm">{message.text}</p>
-                      <span className={`text-xs ${message.senderId === auth.currentUser?.uid ? 'text-orange-100' : 'text-gray-500'}`}>
-                        {message.timestamp?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+                      {!isMe && (
+                        <img src={otherUser?.avatarUrl || profile} alt="avatar" className="w-8 h-8 rounded-full mr-2 border border-orange-300" />
+                      )}
+                      <div
+                        className={`max-w-[70%] rounded-2xl p-3 shadow-sm ${
+                          isMe
+                            ? 'bg-orange-500 text-white rounded-tr-none'
+                            : 'bg-white text-gray-800 rounded-tl-none border border-orange-100'
+                        }`}
+                      >
+                        <p className="text-sm break-words">{message.text}</p>
+                        <span className={`block text-xs mt-1 ${isMe ? 'text-orange-100' : 'text-gray-500'}`}>
+                          {message.timestamp?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      {isMe && (
+                        <img src={profile} alt="avatar" className="w-8 h-8 rounded-full ml-2 border border-orange-300" />
+                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
+              )}
+              {typing && (
+                <div className="flex items-center gap-2 text-xs text-gray-400 mt-2">
+                  <span className="animate-pulse">{otherUser?.username} is typing...</span>
+                </div>
               )}
               <div ref={messagesEndRef} />
             </div>
@@ -259,7 +406,7 @@ const Messages = () => {
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder={t('dashboard.messages.typeMessage')}
                   className="flex-1 p-3 border rounded-full focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                   disabled={isSending}
@@ -277,6 +424,21 @@ const Messages = () => {
                 </button>
               </div>
             </form>
+
+            {/* Audio Call Modal */}
+            {callModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-xs relative animate-fadeIn flex flex-col items-center">
+                  <h2 className="text-lg font-bold mb-2 text-orange-600">Audio Call</h2>
+                  {callError && <div className="text-red-500 mb-2">{callError}</div>}
+                  <div className="flex gap-4 my-4">
+                    <button onClick={toggleMute} className={`px-4 py-2 rounded ${isMuted ? 'bg-gray-300' : 'bg-orange-500 text-white'}`}>{isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />} {isMuted ? 'Unmute' : 'Mute'}</button>
+                    <button onClick={handleLeaveCall} className="px-4 py-2 rounded bg-red-500 text-white flex items-center gap-2"><FaPhoneSlash /> Leave</button>
+                  </div>
+                  <div className="text-gray-600">You are in a call with <b>{otherUser?.username}</b></div>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-gray-500 bg-gray-50">
@@ -311,7 +473,7 @@ const Messages = () => {
                 </div>
                 <div>
                   <h2 className="font-semibold text-gray-800">
-                    {users.find(u => u.id === selectedChat.participants.find(p => p !== auth.currentUser?.uid))?.username}
+                    {otherUser?.username}
                   </h2>
                   <p className="text-xs text-gray-500">Online</p>
                 </div>

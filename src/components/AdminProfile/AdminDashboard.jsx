@@ -18,6 +18,7 @@ import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/Calendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
+import { useTranslation } from 'react-i18next';
 import JobNotifications from "./JobNotifications";
 
 const icons = [
@@ -34,10 +35,13 @@ const icons = [
 ];
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [selected, setSelected] = useState("upcoming");
   const [userData, setUserData] = useState(null);
+
+ 
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -78,13 +82,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 ">
       {/* Sidebar */}
-      <div className="w-70 bg-gray-100 shadow-lg">
-        Logo
-        <div className="p-4 border-b border-gray-200">
-          {/* <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1> */}
-        </div>
+      <div className="w-70 bg-gray-100 shadow-lg h-[calc(100vh-60px)] mt-15">
 
         {/* Profile Section */}
         <div className="p-6 border-b border-gray-200 flex flex-col items-center">
@@ -124,7 +124,7 @@ const Dashboard = () => {
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4"
           >
             <FaHeadset className="text-xl" />
-            <span className="text-sm">Contact Us</span>
+            <span className="text-sm">{t('dashboard.contactUs')}</span>
           </button>
 
           <button
@@ -132,7 +132,7 @@ const Dashboard = () => {
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full"
           >
             <FaSignOutAlt className="text-xl" />
-            <span className="text-sm">Logout</span>
+            <span className="text-sm">{t('dashboard.logout')}</span>
           </button>
         </div> 
       </div>

@@ -1,163 +1,249 @@
-import React, { useState } from "react";
-
-// Mock data for seniors
-const mockSeniors = [
-  { id: 1, name: "David Cohen", age: 68, phone: "054-1234567", city: "Springfield", interests: ["Reading", "Gardening"], workFields: ["Education", "Consulting"] },
-  { id: 2, name: "Sarah Klein", age: 72, phone: "050-7654321", city: "Riverside", interests: ["Cooking", "Art"], workFields: ["Healthcare"] },
-  { id: 3, name: "Jacob Miller", age: 65, phone: "052-9876543", city: "Lincoln", interests: ["Technology", "Music"], workFields: ["IT", "Engineering"] },
-  { id: 4, name: "Ruth Gordon", age: 70, phone: "053-3456789", city: "Springfield", interests: ["Walking", "History"], workFields: ["Finance"] },
-];
+import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import { getAuth } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
 
 const Retirees = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState({
-    city: "",
-    ageMin: "",
-    ageMax: "",
-    interest: "",
-    workField: "",
+  const [dynamicFilters, setDynamicFilters] = useState([]);
+  const [retirees, setRetirees] = useState([]);
+  const [adminSettlement, setAdminSettlement] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const fetchAdminSettlementCalled = useRef(false);
+  const navigate = useNavigate();
+
+  // Fetch admin's settlement
+  useEffect(() => {
+    const fetchAdminSettlement = async () => {
+      if (fetchAdminSettlementCalled.current) return;
+      fetchAdminSettlementCalled.current = true;
+
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+          console.error("No logged-in user found.");
+          setLoading(false);
+          return;
+        }
+
+        const adminDocRef = doc(db, "users", user.uid);
+        const adminDoc = await getDoc(adminDocRef);
+
+        if (adminDoc.exists()) {
+          const adminData = adminDoc.data();
+          if (adminData.role === "admin") {
+            setAdminSettlement(adminData.idVerification?.settlement || null);
+          } else {
+            console.error("User is not an admin.");
+          }
+        } else {
+          console.error("Admin document not found in the users collection.");
+        }
+      } catch (error) {
+        console.error("Error fetching admin settlement:", error);
+      }
+    };
+
+    fetchAdminSettlement();
+  }, []);
+
+  // Fetch retirees from Firestore
+  useEffect(() => {
+    const fetchRetirees = async () => {
+      if (!adminSettlement) {
+        if (!fetchAdminSettlementCalled.current) {
+          console.error("Admin settlement is null or undefined. Cannot fetch retirees.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("role", "==", "retiree"),
+          where("idVerification.settlement", "==", adminSettlement)
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const fetchedRetirees = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setRetirees(fetchedRetirees);
+        } else {
+          console.error("No retirees found for the admin's settlement.");
+        }
+      } catch (error) {
+        console.error("Error fetching retirees:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (adminSettlement) {
+      fetchRetirees();
+    }
+  }, [adminSettlement]);
+
+  const addFilter = () => {
+    setDynamicFilters([...dynamicFilters, { key: "", value: "" }]);
+  };
+
+  const updateFilter = (index, key, value) => {
+    const updatedFilters = [...dynamicFilters];
+    updatedFilters[index] = { ...updatedFilters[index], [key]: value };
+    setDynamicFilters(updatedFilters);
+  };
+
+  const removeFilter = (index) => {
+    const updatedFilters = dynamicFilters.filter((_, i) => i !== index);
+    setDynamicFilters(updatedFilters);
+  };
+
+  // Helper to flatten all values in a nested object
+  const flattenObject = (obj) => {
+    const result = [];
+
+    const recursiveFlatten = (value) => {
+      if (value === null || value === undefined) return;
+      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        result.push(value.toString().toLowerCase());
+      } else if (Array.isArray(value)) {
+        value.forEach(recursiveFlatten);
+      } else if (typeof value === "object") {
+        Object.values(value).forEach(recursiveFlatten);
+      }
+    };
+
+    recursiveFlatten(obj);
+    return result;
+  };
+
+  const filteredRetirees = retirees.filter((retiree) => {
+    const allValues = flattenObject(retiree);
+    const matchesSearch = searchTerm === "" || allValues.some((val) => val.includes(searchTerm.toLowerCase()));
+
+    const matchesDynamicFilters = dynamicFilters.every((filter) => {
+      if (!filter.key || !filter.value) return true;
+      const value = retiree[filter.key];
+      if (value === null || value === undefined) return false;
+      if (Array.isArray(value)) {
+        return value.some((v) =>
+          v.toString().toLowerCase().includes(filter.value.toLowerCase())
+        );
+      }
+      return value.toString().toLowerCase().includes(filter.value.toLowerCase());
+    });
+
+    return matchesSearch && matchesDynamicFilters;
   });
 
-  // Filter seniors based on search term and filters
-  const filteredSeniors = mockSeniors.filter((senior) => {
-    const matchesSearch = senior.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCity = !filters.city || senior.city === filters.city;
-    const matchesAge =
-      (!filters.ageMin || senior.age >= parseInt(filters.ageMin)) &&
-      (!filters.ageMax || senior.age <= parseInt(filters.ageMax));
-    const matchesInterest =
-      !filters.interest ||
-      senior.interests.some((i) => i.toLowerCase().includes(filters.interest.toLowerCase()));
-    const matchesWorkField =
-      !filters.workField ||
-      senior.workFields.some((w) => w.toLowerCase().includes(filters.workField.toLowerCase()));
+  const handleViewProfile = (retiree) => {
+    navigate("/view-profile", { state: { retireeData: retiree } });
+  };
 
-    return matchesSearch && matchesCity && matchesAge && matchesInterest && matchesWorkField;
-  });
+  if (loading) {
+    return <div>{t("common.loading")}</div>;
+  }
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Seniors</h1>
+        <h1 className="text-3xl font-bold">{t("admin.retirees.title")}</h1>
         <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded">
-          Add Senior
+          {t("admin.retirees.addRetiree")}
         </button>
       </div>
 
-      {/* Search and Filters */}
+      {/* Search Bar */}
       <div className="bg-white p-4 rounded shadow mb-6">
         <div className="mb-4">
           <input
             type="text"
-            placeholder="Search by name..."
+            placeholder={t("admin.retirees.filters.search")}
             className="w-full p-2 border rounded"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">City</label>
-            <select
-              className="mt-1 block w-full p-2 border rounded"
-              value={filters.city}
-              onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-            >
-              <option value="">All Cities</option>
-              {[...new Set(mockSeniors.map((senior) => senior.city))].map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Age Range</label>
-            <div className="flex space-x-2">
+        {/* Dynamic Filters */}
+        <div className="space-y-4">
+          {dynamicFilters.map((filter, index) => (
+            <div key={index} className="flex space-x-4 items-center">
+              <select
+                className="p-2 border rounded"
+                value={filter.key}
+                onChange={(e) => updateFilter(index, "key", e.target.value)}
+              >
+                <option value="">{t("common.select")}</option>
+                {retirees.length > 0 &&
+                  Object.keys(retirees[0]).map((key) => (
+                    <option key={key} value={key}>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </option>
+                  ))}
+              </select>
               <input
-                type="number"
-                placeholder="Min"
-                className="mt-1 block w-full p-2 border rounded"
-                value={filters.ageMin}
-                onChange={(e) => setFilters({ ...filters, ageMin: e.target.value })}
+                type="text"
+                placeholder={t("admin.retirees.filters.enterValue")}
+                className="p-2 border rounded"
+                value={filter.value}
+                onChange={(e) => updateFilter(index, "value", e.target.value)}
               />
-              <input
-                type="number"
-                placeholder="Max"
-                className="mt-1 block w-full p-2 border rounded"
-                value={filters.ageMax}
-                onChange={(e) => setFilters({ ...filters, ageMax: e.target.value })}
-              />
+              <button
+                className="bg-[#FF4137] hover:bg-[#FF291E] text-white px-4 py-2 rounded"
+                onClick={() => removeFilter(index)}
+              >
+                {t("admin.retirees.filters.remove")}
+              </button>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Interest</label>
-            <input
-              type="text"
-              placeholder="Interest"
-              className="mt-1 block w-full p-2 border rounded"
-              value={filters.interest}
-              onChange={(e) => setFilters({ ...filters, interest: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Work Field</label>
-            <input
-              type="text"
-              placeholder="Work Field"
-              className="mt-1 block w-full p-2 border rounded"
-              value={filters.workField}
-              onChange={(e) => setFilters({ ...filters, workField: e.target.value })}
-            />
-          </div>
+          ))}
+          <button
+            className="bg-[#7FDF7F] hover:bg-[#58D558] text-white px-4 py-2 rounded"
+            onClick={addFilter}
+          >
+            {t("admin.retirees.filters.addFilter")}
+          </button>
         </div>
       </div>
 
-      {/* Seniors Table */}
+      {/* Retirees Table */}
       <div className="bg-white rounded shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
+                {t("admin.retirees.table.name")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Age
+                {t("admin.retirees.table.age")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                City
+                {t("admin.retirees.table.gender")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Interests
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Work Fields
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+                {t("admin.retirees.table.work")}
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredSeniors.map((senior) => (
-              <tr key={senior.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.age}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.city}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.phone}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.interests.join(", ")}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{senior.workFields.join(", ")}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-blue-600 hover:text-blue-900 mr-2">Edit</button>
-                  <button className="text-red-600 hover:text-red-900">Delete</button>
-                </td>
+            {filteredRetirees.map((retiree) => (
+              <tr key={retiree.id}
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => handleViewProfile(retiree)} // Attach the function here
+              >
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.firstName || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}</td>
               </tr>
             ))}
           </tbody>
