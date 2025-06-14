@@ -122,35 +122,30 @@ export const getJobRequestById = async (jobRequestId) => {
  */
 export const getJobRequests = async (filters = {}) => {
   try {
-    let q = jobRequestsCollection;
-    let hasFilters = false;
-    
-    // Apply filters if provided
-    if (filters.status) {
-      q = query(q, where("status", "==", filters.status));
-      hasFilters = true;
+    const constraints = [];
+
+    // Add filters only if they have a value
+    if (filters.status && filters.status !== "") {
+      constraints.push(where("status", "==", filters.status));
     }
-    
-    if (filters.location) {
-      q = query(q, where("location", "==", filters.location));
-      hasFilters = true;
+    if (filters.location && filters.location !== "") {
+      constraints.push(where("location", "==", filters.location));
     }
-    
-    if (filters.volunteerField) {
-      q = query(q, where("volunteerField", "==", filters.volunteerField));
-      hasFilters = true;
+    if (filters.volunteerField && filters.volunteerField !== "") {
+      constraints.push(where("volunteerField", "==", filters.volunteerField));
     }
-    
+
     // Always order by creation date (newest first)
-    q = query(q, orderBy("createdAt", "desc"));
-    
+    constraints.push(orderBy("createdAt", "desc"));
+
+    const q = query(jobRequestsCollection, ...constraints);
     const querySnapshot = await getDocs(q);
     const jobRequests = [];
-    
+
     querySnapshot.forEach((doc) => {
-      jobRequests.push(doc.data());
+      jobRequests.push({ id: doc.id, ...doc.data() });
     });
-    
+
     return jobRequests;
   } catch (error) {
     console.error("Error getting job requests:", error);

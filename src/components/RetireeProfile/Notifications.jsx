@@ -19,6 +19,7 @@ const Notifications = () => {
   // Fetch notifications from Firestore
   useEffect(() => {
     if (!currentUser) return;
+    console.log("Retiree UID for notifications:", currentUser.uid);
     const fetchNotifications = async () => {
       setLoading(true);
       const q = query(
@@ -82,8 +83,12 @@ const Notifications = () => {
                 <div className="font-semibold text-gray-800 truncate">{n.title || "Notification"}</div>
                 <div className="text-sm text-gray-600 truncate">{n.message}</div>
                 <div className="text-xs text-gray-400 mt-1">
-                  {n.createdAt?.toDate
-                    ? n.createdAt.toDate().toLocaleString()
+                  {n.createdAt
+                    ? typeof n.createdAt.toDate === "function"
+                      ? n.createdAt.toDate().toLocaleString()
+                      : typeof n.createdAt === "string"
+                        ? new Date(n.createdAt).toLocaleString()
+                        : ""
                     : ""}
                 </div>
               </div>
