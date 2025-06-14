@@ -113,32 +113,13 @@ export const getJobRequestById = async (jobRequestId) => {
 };
 
 /**
- * Get all job requests with optional filtering
- * @param {Object} filters - Optional filters
- * @param {string} filters.status - Filter by status
- * @param {string} filters.location - Filter by location
- * @param {string} filters.volunteerField - Filter by volunteer field
+ * Get all job requests (no filters)
  * @returns {Promise<Array>} - Array of job request objects
  */
-export const getJobRequests = async (filters = {}) => {
+export const getJobRequests = async () => {
   try {
-    const constraints = [];
-
-    // Add filters only if they have a value
-    if (filters.status && filters.status !== "") {
-      constraints.push(where("status", "==", filters.status));
-    }
-    if (filters.location && filters.location !== "") {
-      constraints.push(where("location", "==", filters.location));
-    }
-    if (filters.volunteerField && filters.volunteerField !== "") {
-      constraints.push(where("volunteerField", "==", filters.volunteerField));
-    }
-
-    // Always order by creation date (newest first)
-    constraints.push(orderBy("createdAt", "desc"));
-
-    const q = query(jobRequestsCollection, ...constraints);
+    // Only order by creation date, no filters
+    const q = query(jobRequestsCollection, orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
     const jobRequests = [];
 

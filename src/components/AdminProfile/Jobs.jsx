@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaFilter, FaSearch, FaPlus, FaEdit, FaTrash, FaUserPlus, FaCheck, FaTimes, FaHistory, FaInfoCircle } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaUserPlus, FaCheck, FaTimes, FaHistory, FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { 
   createJobRequest, 
@@ -18,7 +18,7 @@ const Jobs = () => {
   const [jobRequests, setJobRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // State for form
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,74 +29,49 @@ const Jobs = () => {
     professionalBackground: "",
     timing: ""
   });
-  
+
   // State for editing
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
-  
-  // State for filters
-  const [filters, setFilters] = useState({
-    status: "Active",
-    location: "",
-    volunteerField: ""
-  });
-  const [showFilters, setShowFilters] = useState(false);
-  
+
   // State for settlements (locations)
   const [settlements, setSettlements] = useState([]);
-  
+
   // State for viewing match details
   const [selectedJobRequest, setSelectedJobRequest] = useState(null);
   const [showMatchDetails, setShowMatchDetails] = useState(false);
   const [selectedSenior, setSelectedSenior] = useState(null);
-  
+
   // State for viewing status history
   const [showStatusHistory, setShowStatusHistory] = useState(false);
-  
+
   // Volunteer field options
   const volunteerFields = [
-    "Healthcare",
-    "Education",
-    "Technology",
-    "Arts",
-    "Social Services",
-    "Administration",
-    "Consulting",
-    "Mentoring",
-    "Home Assistance",
-    "Transportation",
-    'publicity', 'health', 'eater', 'teaching', 'High tech', 'tourism',
-    'safety', 'funds', 'A special treat', 'craftsmanship', 'Aaliyah', 'culture'
+    "Healthcare", "Education", "Technology", "Arts", "Social Services", "Administration",
+    "Consulting", "Mentoring", "Home Assistance", "Transportation", 'publicity', 'health',
+    'eater', 'teaching', 'High tech', 'tourism', 'safety', 'funds', 'A special treat',
+    'craftsmanship', 'Aaliyah', 'culture'
   ];
-  
+
   // Timing options
   const timingOptions = [
-    "once a month",
-    "once every two weeks",
-    "once a week",
-    "twice a week",
-    "Weekends",
-    "Flexible"
+    "once a month", "once every two weeks", "once a week", "twice a week", "Weekends", "Flexible"
   ];
   const timeOptions = ['morning hours', 'noon hours', 'evening hours'];
-  const dayOptions = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Sunday'];
-  
+
   // Status options
   const statusOptions = [
-    "Active",
-    "In Progress",
-    "Fulfilled",
-    "Archived"
+    "Active", "In Progress", "Fulfilled", "Archived"
   ];
-  
+
   // Fetch job requests and settlements on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const fetchedJobRequests = await getJobRequests(filters);
+        const fetchedJobRequests = await getJobRequests(); // No filters
         setJobRequests(fetchedJobRequests);
-        
+
         const fetchedSettlements = await getAvailableSettlements();
         setSettlements(fetchedSettlements);
       } catch (err) {
@@ -107,10 +82,10 @@ const Jobs = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
-  }, [filters]);
-  
+  }, []);
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -119,36 +94,24 @@ const Jobs = () => {
       [name]: value
     });
   };
-  
-  // Handle filter changes
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters({
-      ...filters,
-      [name]: value
-    });
-  };
-  
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      
+
       if (editMode) {
-        // Update existing job request
         await updateJobRequest(editId, formData);
         toast.success("Voluntary request updated successfully");
       } else {
-        // Create new job request
         await createJobRequest(formData);
         toast.success("Voluntary request created successfully");
       }
-      
-      // Reset form and fetch updated job requests
+
       resetForm();
-      const updatedJobRequests = await getJobRequests(filters);
+      const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
     } catch (err) {
       console.error("Error submitting form:", err);
@@ -157,7 +120,7 @@ const Jobs = () => {
       setLoading(false);
     }
   };
-  
+
   // Handle job request deletion
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this voluntary request?")) {
@@ -165,9 +128,8 @@ const Jobs = () => {
         setLoading(true);
         await deleteJobRequest(id);
         toast.success("Voluntary request deleted successfully");
-        
-        // Fetch updated job requests
-        const updatedJobRequests = await getJobRequests(filters);
+
+        const updatedJobRequests = await getJobRequests();
         setJobRequests(updatedJobRequests);
       } catch (err) {
         console.error("Error deleting voluntary request:", err);
@@ -177,7 +139,7 @@ const Jobs = () => {
       }
     }
   };
-  
+
   // Handle edit button click
   const handleEdit = (jobRequest) => {
     setFormData({
@@ -193,7 +155,7 @@ const Jobs = () => {
     setShowForm(true);
     window.scrollTo(0, 0);
   };
-  
+
   // Handle status change
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -203,9 +165,8 @@ const Jobs = () => {
         statusNotes: `Status manually changed to ${newStatus}`
       });
       toast.success(`Status updated to ${newStatus}`);
-      
-      // Fetch updated job requests
-      const updatedJobRequests = await getJobRequests(filters);
+
+      const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
     } catch (err) {
       console.error("Error updating status:", err);
@@ -214,19 +175,17 @@ const Jobs = () => {
       setLoading(false);
     }
   };
-  
+
   // Handle inviting a senior
   const handleInviteSenior = async (jobRequestId, seniorId) => {
     try {
       setLoading(true);
       await inviteSeniorToJobRequest(jobRequestId, seniorId);
       toast.success("Senior invited successfully");
-      
-      // Fetch updated job request details
-      const updatedJobRequests = await getJobRequests(filters);
+
+      const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
-      
-      // If match details are open, update the selected job request
+
       if (showMatchDetails && selectedJobRequest) {
         const updatedJobRequest = updatedJobRequests.find(jr => jr.id === selectedJobRequest.id);
         setSelectedJobRequest(updatedJobRequest);
@@ -238,19 +197,17 @@ const Jobs = () => {
       setLoading(false);
     }
   };
-  
+
   // Handle re-running the matching algorithm
   const handleRerunMatching = async (jobRequestId) => {
     try {
       setLoading(true);
       await matchSeniorsToJobRequest(jobRequestId);
       toast.success("Matching algorithm re-run successfully");
-      
-      // Fetch updated job requests
-      const updatedJobRequests = await getJobRequests(filters);
+
+      const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
-      
-      // If match details are open, update the selected job request
+
       if (showMatchDetails && selectedJobRequest) {
         const updatedJobRequest = updatedJobRequests.find(jr => jr.id === selectedJobRequest.id);
         setSelectedJobRequest(updatedJobRequest);
@@ -262,7 +219,7 @@ const Jobs = () => {
       setLoading(false);
     }
   };
-  
+
   // Reset form
   const resetForm = () => {
     setFormData({
@@ -277,44 +234,44 @@ const Jobs = () => {
     setEditId(null);
     setShowForm(false);
   };
-  
+
   // View match details
   const viewMatchDetails = (jobRequest) => {
     setSelectedJobRequest(jobRequest);
     setShowMatchDetails(true);
-    setSelectedSenior(null); // Reset selected senior when viewing all matches
-    setShowStatusHistory(false); // Close status history when viewing matches
+    setSelectedSenior(null);
+    setShowStatusHistory(false);
   };
-  
+
   // View detailed match for a specific senior
   const viewSeniorMatchDetails = (jobRequest, seniorId) => {
     setSelectedJobRequest(jobRequest);
     setSelectedSenior(seniorId);
     setShowMatchDetails(true);
-    setShowStatusHistory(false); // Close status history when viewing senior match
+    setShowStatusHistory(false);
   };
-  
+
   // Close match details
   const closeMatchDetails = () => {
     setSelectedJobRequest(null);
     setShowMatchDetails(false);
     setSelectedSenior(null);
   };
-  
+
   // View status history
   const viewStatusHistory = (jobRequest) => {
     setSelectedJobRequest(jobRequest);
     setShowStatusHistory(true);
-    setShowMatchDetails(false); // Close match details when viewing status history
+    setShowMatchDetails(false);
     setSelectedSenior(null);
   };
-  
+
   // Close status history
   const closeStatusHistory = () => {
     setShowStatusHistory(false);
     setSelectedJobRequest(null);
   };
-  
+
   // Render loading state
   if (loading && !jobRequests.length) {
     return (
@@ -325,7 +282,7 @@ const Jobs = () => {
       </div>
     );
   }
-  
+
   // Render error state
   if (error && !jobRequests.length) {
     return (
@@ -336,19 +293,12 @@ const Jobs = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Voluntary Requests</h1>
         <div className="flex space-x-4">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded"
-          >
-            <FaFilter />
-            <span>Filters</span>
-          </button>
           <button
             onClick={() => {
               resetForm();
@@ -361,66 +311,7 @@ const Jobs = () => {
           </button>
         </div>
       </div>
-      
-      {/* Filters */}
-      {showFilters && (
-        <div className="bg-white rounded shadow p-6 mb-6">
-          <h3 className="text-xl font-bold mb-4">Filter voluntary requests</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">All Statuses</option>
-                {statusOptions.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-              <select
-                name="location"
-                value={filters.location}
-                onChange={handleFilterChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">All Locations</option>
-                {settlements.map((settlement) => (
-                  <option key={settlement.id} value={settlement.name}>
-                    {settlement.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Field</label>
-              <select
-                name="volunteerField"
-                value={filters.volunteerField}
-                onChange={handleFilterChange}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">All Fields</option>
-                {volunteerFields.map((field) => (
-                  <option key={field} value={field}>
-                    {field}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
-      
+
       {/* Create/Edit Job Request Form */}
       {showForm && (
         <div className="bg-white rounded shadow p-6 mb-6">
