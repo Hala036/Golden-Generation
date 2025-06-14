@@ -4,6 +4,24 @@ import { db } from "../../firebase"; // Import your Firebase configuration
 import { collection, getDocs } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 
+// Import local images for fallback
+import TripImg from "../../assets/Trip.png";
+import VacationImg from "../../assets/Vacation.png";
+import WorkshopImg from "../../assets/Workshop.png";
+import LectureImg from "../../assets/Lecture.png";
+import HomeGroupImg from "../../assets/HomeGroup.png";
+import SocialEventImg from "../../assets/SocialEvent.png";
+
+// Map local images to categories
+const categoryImages = {
+  trip: TripImg,
+  vacation: VacationImg,
+  workshop: WorkshopImg,
+  lecture: LectureImg,
+  homegroup: HomeGroupImg,
+  socialevent: SocialEventImg,
+};
+
 const Cards = () => {
   const { t } = useTranslation();
   const [events, setEvents] = useState([]); // Store all events
@@ -92,6 +110,16 @@ const Cards = () => {
       {selectedEvent ? (
         // Event Details View
         <div>
+          {/* Banner Image */}
+          <div className="mb-4">
+            <img
+              src={selectedEvent.image || categoryImages[selectedEvent.categoryId]}
+              alt={selectedEvent.title}
+              className="w-full h-64 object-cover rounded-md"
+            />
+          </div>
+
+          {/* Back to Events Button */}
           <button
             onClick={handleBackToEvents}
             className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
@@ -103,7 +131,7 @@ const Cards = () => {
           <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
           <p className="mb-2">
             <FaCalendarAlt className="inline text-[#FFD966] mr-2" />
-            {selectedEvent.date}
+              {selectedEvent.endDate ? `${selectedEvent.startDate} - ${selectedEvent.endDate}` : selectedEvent.startDate}
           </p>
           <p className="mb-2">
             <FaMapMarkerAlt className="inline text-[#FFD966] mr-2" />
@@ -150,37 +178,52 @@ const Cards = () => {
           {/* Events Grid */}
           {!loading && (
             <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
-              {filteredEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4"
-                >
-                  <h3 className="text-base font-bold mb-2">{event.title}</h3>
-                  {/* Date with Calendar Icon */}
-                  <div className="flex items-center mb-2">
-                    <FaCalendarAlt className="text-[#FFD966] mr-2" />
-                    <p className="text-gray-700 font-medium">{event.date}</p>
-                  </div>
+              {filteredEvents.map((event) => {
+                const backgroundImage = event.image || categoryImages[event.categoryId];
+                return (
+                  <div
+                    key={event.id}
+                    className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4"
+                  >
+                    {/* Event Title */}
+                    <h3 className="text-base font-bold mb-2">{event.title}</h3>
 
-                  {/* Location with Pin Icon */}
-                  <div className="flex items-center mb-3">
-                    <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
-                    <p className="text-gray-700 font-medium">{event.location}</p>
-                  </div>
+                    {/* Event Image */}
+                    <div className="mb-4">
+                      <img
+                        src={backgroundImage}
+                        alt={event.title}
+                        className="w-full h-48 object-cover rounded-md"
+                      />
+                    </div>
+                    {/* Date with Calendar Icon */}
+                    <div className="flex items-center mb-2">
+                      <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                      <p className="text-gray-700 font-medium">
+                        {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
+                        </p>
+                    </div>
 
-                  {/* Description */}
-                  <p className="text-gray-500 text-sm">{event.description}</p>
-                  {/* More Details Button */}
-                  <div className="mt-auto flex justify-end py-2">
-                    <button
-                      className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-                      onClick={() => handleMoreInfo(event)}
-                    >
-                      {t("dashboard.events.moreDetails")}
-                    </button>
+                    {/* Location with Pin Icon */}
+                    <div className="flex items-center mb-3">
+                      <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                      <p className="text-gray-700 font-medium">{event.location}</p>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-gray-500 text-sm">{event.description}</p>
+                    {/* More Details Button */}
+                    <div className="mt-auto flex justify-end py-2">
+                      <button
+                        className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
+                        onClick={() => handleMoreInfo(event)}
+                      >
+                        {t("dashboard.events.moreDetails")}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </>
