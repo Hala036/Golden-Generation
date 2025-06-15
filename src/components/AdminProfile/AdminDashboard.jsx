@@ -19,6 +19,7 @@ import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/Calendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
+import Support from "../RetireeProfile/Support";
 import { useTranslation } from 'react-i18next';
 
 
@@ -189,7 +190,7 @@ const Dashboard = () => {
           {selected === "messages" && <Messages />}
           {selected === "add" && <AddEvent />}
           {selected === "notifications" && <Notifications />}
-          {selected === "support" && <Main />}
+          {selected === "support" && <Support />}
         </div>
       </div>
     </div>
