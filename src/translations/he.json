@@ -439,7 +439,7 @@
       "settings": "הגדרות",
       "logout": "התנתק",
       "homePage": "דף הבית",
-      "retirees": "גמלאים",
+      "retirees": "ותיקים",
       "volunteerRequests": "בקשות התנדבות",
       "analytics": "ניתוח",
       "contactUs": "תמיכת לקוחות",
@@ -503,12 +503,12 @@
     },
     "admin": {
       "retirees": {
-        "title": "ניהול גמלאים",
-        "addRetiree": "הוסף גמלאי",
-        "viewRetiree": "הצג גמלאי",
-        "searchRetirees": "חפש גמלאים",
-        "noRetireesFound": "לא נמצאו גמלאים",
-        "retireeDetails": "פרטי גמלאי",
+        "title": "ניהול ותיקים",
+        "addRetiree": "הוסף ותיק",
+        "viewRetiree": "הצג ותיק",
+        "searchRetirees": "חפש ותיקים",
+        "noRetireesFound": "לא נמצאו ותיקים",
+        "retireeDetails": "פרטי ותיק",
         "retireeName": "שם",
         "retireeEmail": "דוא\"ל",
         "retireePhone": "מספר טלפון",
@@ -525,6 +525,24 @@
           "gender": "מגדר",
           "work": "תחומי עיסוק"
         }
+      },
+      "createEvent": {
+        "title": "צור אירוע",
+        "eventTitle": "כותרת האירוע",
+        "eventType": "סוג האירוע",
+        "addCategory": "הוסף קטגוריה",
+        "dateRange": "טווח תאריכים",
+        "startDate": "תאריך התחלה",
+        "endDate": "תאריך סיום",
+        "timeRange": "טווח שעות",
+        "timeFrom": "שעה התחלה",
+        "timeTo": "שעה סיום",
+        "location": "מיקום",
+        "description": "תיאור",
+        "capacity": "קיבולת",
+        "requirements": "דרישות מיוחדות",
+        "requirementsPlaceholder": "הזן דרישות מיוחדות לאירוע",
+        "submit": "שלח"
       }
     }
   } 

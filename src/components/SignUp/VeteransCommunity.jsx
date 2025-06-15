@@ -517,4 +517,3 @@ const VeteransCommunity = ({ onComplete }) => {
 };
 
 export default VeteransCommunity;
-

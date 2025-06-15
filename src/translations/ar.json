@@ -600,6 +600,24 @@
           "gender": "الجنس",
           "work": "مجالات العمل"
         }
-      }
+      },
+      "createEvent": {
+        "title": "إنشاء حدث",
+        "eventTitle": "عنوان الحدث",
+        "eventType": "نوع الحدث",
+        "addCategory": "إضافة فئة",
+        "dateRange": "نطاق التاريخ",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "timeRange": "نطاق الوقت",
+        "timeFrom": "وقت البدء",
+        "timeTo": "وقت الانتهاء",
+        "location": "الموقع",
+        "description": "الوصف",
+        "capacity": "السعة",
+        "requirements": "متطلبات خاصة",
+        "requirementsPlaceholder": "أدخل أي متطلبات خاصة للحدث",
+        "submit": "إرسال"
+      }      
     }
   } 
