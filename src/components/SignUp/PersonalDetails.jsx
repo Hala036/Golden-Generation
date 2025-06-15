@@ -24,6 +24,7 @@ import {
 } from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { Star } from 'lucide-react';
 
 // Language code to country code mapping for flags
 const languageFlagMap = {
@@ -842,9 +843,9 @@ const PersonalDetails = memo(({ onComplete }) => {
                 </>
               ) : (
                 <>
-                  <FaCheck className="w-6 h-6" />
+                  <Star className="w-6 h-6" />
                   <span>Continue</span>
-                  <FaCheck className="w-6 h-6" />
+                  <Star className="w-6 h-6" />
                 </>
               )}
             </button>
