@@ -87,23 +87,40 @@ const AddEvents = () => {
         return;
       }
 
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+
       const formatDate = (date) => {
         const [year, month, day] = date.split("-");
         return `${day}-${month}-${year}`;
       };
 
+      let eventStatus = "active"; // Default status
+      let eventColor = "yellow"; // Default color
+
+      if (userRole === "retiree") {
+        eventStatus = "pending"; // Retiree-created events are pending
+        eventColor = "green"; // Pending events are green
+      } else if (userRole === "admin" || userRole === "superadmin") {
+        eventColor = "blue"; // Admin-created events are blue
+      }
+
       const newEvent = {
         ...eventData,
         startDate: formatDate(eventData.startDate),
+        endDate: eventData.endDate ? formatDate(eventData.endDate) : "",
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         participants: [],
-        status: "active"
+        status: eventStatus,
+        color: eventColor,
+        settlement: userSettlement // Include the user's settlement
       };
 
       await addDoc(collection(db, "events"), newEvent);
       toast.success("Event created successfully!");
 
+      // Reset form
       setEventData({
         title: "",
         categoryId: categories.length > 0 ? categories[0].id : "",

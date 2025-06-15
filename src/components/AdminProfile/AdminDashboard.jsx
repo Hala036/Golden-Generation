@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
+import { FaClock, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -12,6 +12,7 @@ import Main from "./Main";
 import Retirees from "./Retirees";
 import Jobs from "./Jobs";
 import Analysis from "./Analysis";
+import Pending from "./PendingEvents";
 import Cards from "../RetireeProfile/Cards";
 import AddEvent from "../RetireeProfile/AddEvents";
 import Settings from "../RetireeProfile/SettingsCards";
@@ -31,7 +32,9 @@ const icons = [
   { id: "notifications", label: "Notifications", icon: <FaBell /> },
   { id: "add", label: "Add Event", icon: <FaPlusCircle /> },
   { id: "calendar", label: "Calendar", icon: <FaCalendarAlt /> },
-  { id: "messages", label: "Messages", icon: <FaComments /> }
+  { id: "messages", label: "Messages", icon: <FaComments /> },
+  { id: "pending", label: "Pending Requests", icon: <FaClock /> }
+
 ];
 
 const Dashboard = () => {
@@ -191,6 +194,7 @@ const Dashboard = () => {
           {selected === "add" && <AddEvent />}
           {selected === "notifications" && <JobNotifications />}
           {selected === "support" && <Main />}
+          {selected === "pending" && <Pending />}
         </div>
       </div>
     </div>
