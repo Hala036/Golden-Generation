@@ -10,7 +10,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import Cards from "./Cards";
 import SettingsCards from "./SettingsCards";
-import Calendar from "./Calendar";
+import Calendar from "./RetireeCalendar";
 import Messages from "./Messages";
 import Notifications from "./Notifications";
 import AddEvents from "./AddEvents";
