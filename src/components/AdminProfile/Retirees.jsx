@@ -199,7 +199,7 @@ const Retirees = () => {
                 onChange={(e) => updateFilter(index, "value", e.target.value)}
               />
               <button
-                className="bg-[#FF4137] hover:bg-[#FF291E] text-white px-4 py-2 rounded"
+                className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded"
                 onClick={() => removeFilter(index)}
               >
                 {t("admin.retirees.filters.remove")}
