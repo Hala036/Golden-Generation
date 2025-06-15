@@ -16,7 +16,7 @@ import Analysis from "./Analysis";
 import Cards from "../RetireeProfile/Cards";
 import AddEvent from "../RetireeProfile/AddEvents";
 import Settings from "../RetireeProfile/SettingsCards";
-import Calendar from "../RetireeProfile/Calendar";
+import Calendar from "../RetireeProfile/RetireeCalendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
 import { useTranslation } from 'react-i18next';
