@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSignupStore from '../../store/signupStore';
 import IDVerification from './IDVerification';
@@ -7,7 +7,7 @@ import PersonalDetails from './PersonalDetails';
 import SignUpProgress from './SignUpProgress';
 import { toast } from 'react-hot-toast';
 import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { FaArrowLeft } from 'react-icons/fa';
 import WorkBackground from './WorkBackground';
@@ -30,6 +30,8 @@ const SignUp = () => {
     setStepValidation
   } = useSignupStore();
 
+  const [creating, setCreating] = useState(false);
+
   // Reset store when component mounts
   useEffect(() => {
     resetStore();
@@ -40,15 +42,16 @@ const SignUp = () => {
     setStepValidation(step, true);
 
     if (step === 5) {
+      setCreating(true); // Start loading
       try {
-        // Create user in Firebase Auth
+        // 1. Create user in Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           credentialsData.email,
           credentialsData.password
         );
 
-        // Prepare user data
+        // 2. Prepare user data
         const userData = {
           idVerification: idVerificationData,
           credentials: {
@@ -63,25 +66,31 @@ const SignUp = () => {
           createdAt: new Date().toISOString(),
         };
 
-        // Write to Firestore
-        await setDoc(doc(db, 'users', userCredential.user.uid), userData);
-        
-        // Create username document
+        // Clean undefined values before saving
+        const cleanedUserData = removeUndefined(userData);
+
+        // 3. Write to Firestore
+        await setDoc(doc(db, 'users', userCredential.user.uid), cleanedUserData);
+
+        // 4. Create username document
         await setDoc(doc(db, 'usernames', credentialsData.username.toLowerCase()), {
           uid: userCredential.user.uid
         });
 
-        // Success handling
+        // 5. Sign in the user (optional, for direct dashboard access)
+        await signInWithEmailAndPassword(auth, credentialsData.email, credentialsData.password);
+
+        // 6. Success handling
         resetStore();
         toast.success('Account created successfully!', { id: 'signup' });
-        
-        // Navigate to login after a delay
-        setTimeout(() => {
-          navigate('/login');
-        }, 1500);
+
+        // 7. Navigate to dashboard
+        navigate('/dashboard');
       } catch (error) {
         console.error('Signup error:', error);
         toast.error(error.message || 'Failed to create account. Please try again.', { id: 'signup' });
+      } finally {
+        setCreating(false); // End loading
       }
     } else {
       setCurrentStep(step + 1);
@@ -166,8 +175,33 @@ const SignUp = () => {
           </p>
         </div>
       </div>
+
+      {/* Loading Spinner */}
+      {creating && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+            <p className="text-lg font-medium">Creating your account...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+// Utility to recursively remove undefined fields from an object
+function removeUndefined(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefined);
+  } else if (obj && typeof obj === 'object') {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = removeUndefined(value);
+      }
+      return acc;
+    }, {});
+  }
+  return obj;
+}
 
 export default SignUp;
