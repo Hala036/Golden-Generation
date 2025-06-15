@@ -24,6 +24,7 @@ import {
 } from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { Star } from 'lucide-react';
 
 // Language code to country code mapping for flags
 const languageFlagMap = {
@@ -504,85 +505,114 @@ const PersonalDetails = memo(({ onComplete }) => {
   }, []);
 
   return (
-    <div className="max-w-2xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md mt-6">
-      <div className="text-center mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Personal Details</h2>
-        <p className="text-sm text-gray-600">Please provide your personal information to help us serve you better</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
+      {/* Floating background elements for visual consistency */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-32 h-32 top-10 left-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '0s' }} />
+        <div className="absolute w-24 h-24 top-1/3 right-20 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute w-40 h-40 bottom-20 left-1/4 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '4s' }} />
+        <div className="absolute w-20 h-20 bottom-1/3 right-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '6s' }} />
       </div>
 
-      {(apiError.settlements || apiError.languages) && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-300 rounded-md flex items-start gap-3">
-          <FaExclamationTriangle className="text-yellow-500 flex-shrink-0 mt-1" />
-          <div>
-            <h3 className="font-medium text-yellow-800">Connection Issues</h3>
-            <p className="text-sm text-yellow-700">
-              There was a problem connecting to our servers.
-              {apiError.settlements && ' Settlement data may be unavailable.'}
-              {apiError.languages && ' Language data may be limited.'}
-              <br />
-              <button
-                onClick={() => window.location.reload()}
-                className="text-yellow-800 underline hover:text-yellow-900 mt-1"
-              >
-                Refresh page
-              </button>
-            </p>
+      <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative z-10">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center mb-4">
+            <FaCheck className="w-12 h-12 text-yellow-500 mr-4" />
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Personal Details
+            </h2>
           </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Please provide your personal information to help us serve you better.
+          </p>
         </div>
-      )}
 
-      <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
-            <FaCheck className="text-green-500" />
-            <h3>Contact Information</h3>
+        {(apiError.settlements || apiError.languages) && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-300 rounded-md flex items-start gap-3">
+            <FaExclamationTriangle className="text-yellow-500 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="font-medium text-yellow-800">Connection Issues</h3>
+              <p className="text-sm text-yellow-700">
+                There was a problem connecting to our servers.
+                {apiError.settlements && ' Settlement data may be unavailable.'}
+                {apiError.languages && ' Language data may be limited.'}
+                <br />
+                <button
+                  onClick={() => window.location.reload()}
+                  className="text-yellow-800 underline hover:text-yellow-900 mt-1"
+                >
+                  Refresh page
+                </button>
+              </p>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <FormField
-              label="Phone Number"
-              name="phoneNumber"
-              id="phoneNumber"
-              type="text"
-              autoComplete="tel"
-              placeholder="05XXXXXXXX"
-              value={formData.phoneNumber}
-              onChange={e => {
-                // Only allow up to 10 digits, no letters or other characters
-                let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
-                if (val.length > 10) val = val.slice(0, 10);
-                handleInputChange({
-                  target: {
-                    name: 'phoneNumber',
-                    value: val
-                  }
-                });
-              }}
-              error={errors.phoneNumber}
-              getFieldIcon={() => getFieldIcon('phoneNumber')}
-              required
-              inputMode="numeric"
-              pattern="[0-9]{10}"
-            />
-            <FormField
-              label="Marital Status"
-              name="maritalStatus"
-              id="maritalStatus"
-              type="select"
-              autoComplete="marital-status"
-              options={maritalStatusOptions}
-              value={formData.maritalStatus}
-              onChange={handleInputChange}
-              error={errors.maritalStatus}
-              getFieldIcon={() => getFieldIcon('maritalStatus')}
-            />
+        )}
+
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-12">
+          {/* Contact Information */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <div className="flex items-center mb-6">
+              <FaCheck className="w-8 h-8 text-green-500 mr-3" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Contact Information
+                </h3>
+                <p className="text-gray-600 text-lg">How can we reach you?</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              {/* Phone Number */}
+              <FormField
+                label="Phone Number"
+                name="phoneNumber"
+                id="phoneNumber"
+                type="text"
+                autoComplete="tel"
+                placeholder="05XXXXXXXX"
+                value={formData.phoneNumber}
+                onChange={e => {
+                  let val = e.target.value.replace(/\D/g, '');
+                  if (val.length > 10) val = val.slice(0, 10);
+                  handleInputChange({
+                    target: {
+                      name: 'phoneNumber',
+                      value: val
+                    }
+                  });
+                }}
+                error={errors.phoneNumber}
+                getFieldIcon={() => getFieldIcon('phoneNumber')}
+                required
+                inputMode="numeric"
+                pattern="[0-9]{10}"
+              />
+              {/* Marital Status */}
+              <FormField
+                label="Marital Status"
+                name="maritalStatus"
+                id="maritalStatus"
+                type="select"
+                autoComplete="marital-status"
+                options={maritalStatusOptions}
+                value={formData.maritalStatus}
+                onChange={handleInputChange}
+                error={errors.maritalStatus}
+                getFieldIcon={() => getFieldIcon('maritalStatus')}
+              />
+            </div>
           </div>
-          
+
           {/* Address Section */}
-          <div className="space-y-4">
-            <h4 className="text-md font-medium text-gray-700 flex items-center gap-2">
-              <FaHome className="text-[#FFD966]" />
-              Address Information
-            </h4>
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <div className="flex items-center mb-6">
+              <FaHome className="w-8 h-8 text-yellow-500 mr-3" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Address Information
+                </h3>
+                <p className="text-gray-600 text-lg">Where do you live?</p>
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 label="House Number"
@@ -594,7 +624,6 @@ const PersonalDetails = memo(({ onComplete }) => {
                 placeholder="123"
                 value={formData.houseNumber}
                 onChange={e => {
-                  // Only allow 1-4 digits, optionally followed by a single letter (A-Z, a-z)
                   const val = e.target.value.toUpperCase();
                   if (val === '' || /^\d{1,4}[A-Z]?$/.test(val)) {
                     handleInputChange({
@@ -638,179 +667,204 @@ const PersonalDetails = memo(({ onComplete }) => {
               getFieldIcon={() => getFieldIcon('address')}
             />
           </div>
-        </section>
 
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
-            <FaCheck className="text-green-500" />
-            <h3>Language & Background</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <FormField
-              label="Native Language"
-              name="nativeLanguage"
-              id="nativeLanguage"
-              type="select"
-              autoComplete="language"
-              options={languages}
-              value={formData.nativeLanguage}
-              onChange={handleInputChange}
-              error={errors.nativeLanguage}
-              getFieldIcon={() => getFieldIcon('nativeLanguage')}
-              disabled={loading.languages}
-              isDropdownOpen={isDropdownOpen}
-              setIsDropdownOpen={setIsDropdownOpen}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              getLanguageIcon={getLanguageIcon}
-            />
-            <FormField
-              label="Hebrew Level"
-              name="hebrewLevel"
-              id="hebrewLevel"
-              type="select"
-              autoComplete="hebrew-level"
-              options={hebrewLevels.map(level => ({ value: level, label: level.charAt(0).toUpperCase() + level.slice(1) }))}
-              value={formData.hebrewLevel}
-              onChange={handleInputChange}
-              error={errors.hebrewLevel}
-              getFieldIcon={() => getFieldIcon('hebrewLevel')}
-            />
-          </div>
-          {/* New Immigrant Question - moved here, no highlight */}
-          <div className="mt-4">
-            <CheckboxField
-              label="I am a new immigrant to Israel"
-              name="isNewImmigrant"
-              id="isNewImmigrant"
-              checked={formData.isNewImmigrant}
-              onChange={handleInputChange}
-            />
-          </div>
-          {/* Conditional fields for new immigrants */}
-          {formData.isNewImmigrant && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+          {/* Language & Background */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <div className="flex items-center mb-6">
+              <FaLanguage className="w-8 h-8 text-blue-500 mr-3" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Language & Background
+                </h3>
+                <p className="text-gray-600 text-lg">Tell us about your language and background</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <FormField
-                label="Arrival Date"
-                name="arrivalDate"
-                id="arrivalDate"
-                type="date"
-                required={true}
-                autoComplete="bday"
-                value={formData.arrivalDate}
+                label="Native Language"
+                name="nativeLanguage"
+                id="nativeLanguage"
+                type="select"
+                autoComplete="language"
+                options={languages}
+                value={formData.nativeLanguage}
                 onChange={handleInputChange}
-                error={errors.arrivalDate}
-                getFieldIcon={() => getFieldIcon('arrivalDate')}
+                error={errors.nativeLanguage}
+                getFieldIcon={() => getFieldIcon('nativeLanguage')}
+                disabled={loading.languages}
+                isDropdownOpen={isDropdownOpen}
+                setIsDropdownOpen={setIsDropdownOpen}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                getLanguageIcon={getLanguageIcon}
               />
               <FormField
-                label="Origin Country"
-                name="originCountry"
-                id="originCountry"
+                label="Hebrew Level"
+                name="hebrewLevel"
+                id="hebrewLevel"
                 type="select"
-                required={true}
-                autoComplete="country"
-                options={countries}
-                value={formData.originCountry}
+                autoComplete="hebrew-level"
+                options={hebrewLevels.map(level => ({ value: level, label: level.charAt(0).toUpperCase() + level.slice(1) }))}
+                value={formData.hebrewLevel}
                 onChange={handleInputChange}
-                error={errors.originCountry}
-                getFieldIcon={() => getFieldIcon('originCountry')}
+                error={errors.hebrewLevel}
+                getFieldIcon={() => getFieldIcon('hebrewLevel')}
               />
             </div>
-          )}
-        </section>
-
-        {/* Additional Information */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
-            <FaCheck className="text-green-500" />
-            <h3>Additional Information</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-4">
-              <FormField
-                label="Health Condition"
-                name="healthCondition"
-                id="healthCondition"
-                type="textarea"
-                autoComplete="health-condition"
-                placeholder="Please describe any health conditions..."
-                value={formData.healthCondition}
+            {/* New Immigrant Question */}
+            <div className="mt-4">
+              <CheckboxField
+                label="I am a new immigrant to Israel"
+                name="isNewImmigrant"
+                id="isNewImmigrant"
+                checked={formData.isNewImmigrant}
                 onChange={handleInputChange}
-                error={errors.healthCondition}
-                getFieldIcon={() => getFieldIcon('healthCondition')}
-              />
-              <FormField
-                label="Military/National Service"
-                name="militaryService"
-                id="militaryService"
-                type="select"
-                autoComplete="military-service"
-                options={militaryOptions.map((option) => ({
-                  value: option,
-                  label: option === 'none' ? 'None' : option === 'military' ? 'Military Service' : 'National Service',
-                }))}
-                value={formData.militaryService}
-                onChange={handleInputChange}
-                error={errors.militaryService}
-                getFieldIcon={() => getFieldIcon('militaryService')}
               />
             </div>
-            <div className="space-y-3 sm:mt-0">
-              <div className="p-4 bg-gray-50 rounded-lg space-y-3">
-                <CheckboxField
-                  label="I have a car"
-                  name="hasCar"
-                  id="hasCar"
-                  checked={formData.hasCar}
+            {/* Conditional fields for new immigrants */}
+            {formData.isNewImmigrant && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+                <FormField
+                  label="Arrival Date"
+                  name="arrivalDate"
+                  id="arrivalDate"
+                  type="date"
+                  required={true}
+                  autoComplete="bday"
+                  value={formData.arrivalDate}
                   onChange={handleInputChange}
+                  error={errors.arrivalDate}
+                  getFieldIcon={() => getFieldIcon('arrivalDate')}
                 />
-                <CheckboxField
-                  label="Living alone"
-                  name="livingAlone"
-                  id="livingAlone"
-                  checked={formData.livingAlone}
+                <FormField
+                  label="Origin Country"
+                  name="originCountry"
+                  id="originCountry"
+                  type="select"
+                  required={true}
+                  autoComplete="country"
+                  options={countries}
+                  value={formData.originCountry}
                   onChange={handleInputChange}
+                  error={errors.originCountry}
+                  getFieldIcon={() => getFieldIcon('originCountry')}
                 />
-                <CheckboxField
-                  label="Family members in settlement"
-                  name="familyInSettlement"
-                  id="familyInSettlement"
-                  checked={formData.familyInSettlement}
+              </div>
+            )}
+          </div>
+
+          {/* Additional Information */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <div className="flex items-center mb-6">
+              <FaInfoCircle className="w-8 h-8 text-purple-500 mr-3" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Additional Information
+                </h3>
+                <p className="text-gray-600 text-lg">Anything else we should know?</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-4">
+                <FormField
+                  label="Health Condition"
+                  name="healthCondition"
+                  id="healthCondition"
+                  type="textarea"
+                  autoComplete="health-condition"
+                  placeholder="Please describe any health conditions..."
+                  value={formData.healthCondition}
                   onChange={handleInputChange}
+                  error={errors.healthCondition}
+                  getFieldIcon={() => getFieldIcon('healthCondition')}
                 />
-                <CheckboxField
-                  label="I carry a weapon"
-                  name="hasWeapon"
-                  id="hasWeapon"
-                  checked={formData.hasWeapon}
+                <FormField
+                  label="Military/National Service"
+                  name="militaryService"
+                  id="militaryService"
+                  type="select"
+                  autoComplete="military-service"
+                  options={militaryOptions.map((option) => ({
+                    value: option,
+                    label: option === 'none' ? 'None' : option === 'military' ? 'Military Service' : 'National Service',
+                  }))}
+                  value={formData.militaryService}
                   onChange={handleInputChange}
+                  error={errors.militaryService}
+                  getFieldIcon={() => getFieldIcon('militaryService')}
                 />
+              </div>
+              <div className="space-y-3 sm:mt-0">
+                <div className="p-4 bg-gray-50 rounded-lg space-y-3">
+                  <CheckboxField
+                    label="I have a car"
+                    name="hasCar"
+                    id="hasCar"
+                    checked={formData.hasCar}
+                    onChange={handleInputChange}
+                  />
+                  <CheckboxField
+                    label="Living alone"
+                    name="livingAlone"
+                    id="livingAlone"
+                    checked={formData.livingAlone}
+                    onChange={handleInputChange}
+                  />
+                  <CheckboxField
+                    label="Family members in settlement"
+                    name="familyInSettlement"
+                    id="familyInSettlement"
+                    checked={formData.familyInSettlement}
+                    onChange={handleInputChange}
+                  />
+                  <CheckboxField
+                    label="I carry a weapon"
+                    name="hasWeapon"
+                    id="hasWeapon"
+                    checked={formData.hasWeapon}
+                    onChange={handleInputChange}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </section>
-        <div className="flex justify-end pt-6">
-          <button
-            type="submit"
-            disabled={loading.settlements || loading.languages}
-            className={`w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform hover:scale-105 text-sm sm:text-base font-medium flex items-center justify-center gap-2 shadow-md ${
-              (loading.settlements || loading.languages) ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {loading.settlements || loading.languages ? (
-              <>
-                <FaSpinner className="animate-spin" />
-                <span>Loading...</span>
-              </>
-            ) : (
-              <>
-                <span>Continue</span>
-                <FaCheck className="text-lg" />
-              </>
-            )}
-          </button>
-        </div>
-      </form>
+
+          {/* Submit Button */}
+          <div className="text-center pt-8">
+            <button
+              type="submit"
+              disabled={loading.settlements || loading.languages}
+              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+            >
+              {loading.settlements || loading.languages ? (
+                <>
+                  <FaSpinner className="animate-spin" />
+                  <span>Loading...</span>
+                </>
+              ) : (
+                <>
+                  <Star className="w-6 h-6" />
+                  <span>Continue</span>
+                  <Star className="w-6 h-6" />
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 });

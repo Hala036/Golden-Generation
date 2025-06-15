@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Star, Users } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
+import Select from 'react-select';
 
 // Academic degrees list
 const academicDegrees = [
@@ -23,9 +25,7 @@ const categorizedJobs = {
       { label: "Dermatologist", icon: "🧬" },
       { label: "Emergency Physician", icon: "🚑" },
       { label: "Family Physician", icon: "👨‍👩‍👧‍👦" },
-
-      { label: "Gastroenterologist", icon: "🍽️" },
-
+      { label: "Gastroenterologist", icon: "�胃" },
       { label: "Neurologist", icon: "🧠" },
       { label: "Obstetrician", icon: "🤰" },
       { label: "Oncologist", icon: "🦠" },
@@ -198,41 +198,36 @@ const WorkBackground = ({ onComplete }) => {
   const { workData, setWorkData } = useSignupStore();
   const [formData, setFormData] = useState(workData || {
     retirementStatus: '',
-    retirementDate: '',
-    expectedRetirementDate: '',
     employmentDate: '',
     employmentType: '',
+    category: '',
+    jobTitle: '',
+    subspecialty: '',
+    otherJob: '',
+    academicDegrees: [], // <-- now an array
+    otherAcademicDegree: '',
     currentlyWorking: false,
     dischargeDate: '',
-    jobs: [{
-      category: '',
-      jobTitle: '',
-      subspecialty: '',
-      otherJob: '',
-      academicDegree: '',
-      otherAcademicDegree: '',
-    }]
   });
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
   const [showingAllCategories, setShowingAllCategories] = useState(true);
   const [flatJobList] = useState(createFlatJobList());
   const [filteredCategories, setFilteredCategories] = useState([]);
-  const [selectedJobs, setSelectedJobs] = useState([null]);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
     if (searchTerm) {
-      // Filter categories based on search term
       const filtered = Object.entries(categorizedJobs)
         .map(([category, jobs]) => {
-          const filteredJobs = jobs.filter(job => 
+          const filteredJobs = jobs.filter(job =>
             job.label.toLowerCase().includes(searchTerm.toLowerCase())
           );
           return filteredJobs.length > 0 ? { category, jobs: filteredJobs } : null;
         })
         .filter(Boolean);
-      
+
       setFilteredCategories(filtered);
       setShowingAllCategories(false);
     } else {
@@ -242,110 +237,63 @@ const WorkBackground = ({ onComplete }) => {
   }, [searchTerm]);
 
   useEffect(() => {
-    // Set the selected job based on formData
     if (formData.jobTitle) {
       const job = flatJobList.find(j => j.label === formData.jobTitle);
       if (job) {
-        const newSelectedJobs = [...selectedJobs];
-        newSelectedJobs[0] = job;
-        setSelectedJobs(newSelectedJobs);
+        setSelectedJob(job);
         setActiveCategory(job.category);
         setShowingAllCategories(false);
       }
     }
   }, [formData.jobTitle, flatJobList]);
 
-  // Clear retirement dates when status changes
-  const handleRetirementStatusChange = (status) => {
-    setFormData({
-      ...formData,
-      retirementStatus: status,
-      retirementDate: '',
-      expectedRetirementDate: ''
-    });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Clean the form data by removing undefined values or converting them to null
-    const cleanFormData = {
-      ...formData,
-      jobs: formData.jobs.map(job => {
-        const cleanJob = Object.entries(job).reduce((acc, [key, value]) => {
-          if (value === undefined) return acc;
-          acc[key] = value === '' ? null : value;
-          return acc;
-        }, {});
 
-        return {
-          ...cleanJob,
-          customJobInfo: {
-            isCustomJob: cleanJob.jobTitle === 'Other' || cleanJob.subspecialty === 'Other',
-            customJobTitle: cleanJob.otherJob || null,
-            originalSelection: {
-              category: cleanJob.category || null,
-              jobTitle: cleanJob.jobTitle || null,
-              subspecialty: cleanJob.subspecialty || null
-            }
-          },
-          customAcademicInfo: {
-            isCustomDegree: cleanJob.academicDegree === 'other',
-            customDegreeTitle: cleanJob.otherAcademicDegree || null,
-          }
-        };
-      })
+    const dataForFirebase = {
+      ...formData,
+      customJobInfo: {
+        isCustomJob: formData.jobTitle === 'Other' || formData.subspecialty === 'Other',
+        customJobTitle: formData.otherJob || null,
+        originalSelection: {
+          category: formData.category,
+          jobTitle: formData.jobTitle,
+          subspecialty: formData.subspecialty
+        }
+      },
+      customAcademicInfo: {
+        isCustomDegree: formData.academicDegrees.includes('other'),
+        customDegreeTitle: formData.otherAcademicDegree || null,
+      }
     };
-      
-    setWorkData(cleanFormData);
+
+    setWorkData(dataForFirebase);
     onComplete();
   };
 
-  const addNewJob = () => {
-    setFormData({
-      ...formData,
-      jobs: [...formData.jobs, {
-        category: '',
-        jobTitle: '',
-        subspecialty: '',
-        otherJob: '',
-        academicDegree: '',
-        otherAcademicDegree: '',
-      }]
-    });
-    setSelectedJobs([...selectedJobs, null]);
-  };
-
-  const handleCategoryClick = (category, jobIndex) => {
+  const handleCategoryClick = (category) => {
     setActiveCategory(category);
     setShowingAllCategories(false);
   };
 
-  const handleJobSelect = (job, category, jobIndex) => {
-    const newSelectedJobs = [...selectedJobs];
-    newSelectedJobs[jobIndex] = job;
-    setSelectedJobs(newSelectedJobs);
-
-    const newJobs = [...formData.jobs];
-    newJobs[jobIndex] = {
-      ...newJobs[jobIndex],
+  const handleJobSelect = (job, category) => {
+    setSelectedJob(job);
+    setFormData({
+      ...formData,
       category,
       jobTitle: job.label,
       subspecialty: '',
       otherJob: job.label === 'Other' ? '' : undefined
-    };
-    setFormData({ ...formData, jobs: newJobs });
+    });
     setSearchTerm(''); // Clear search term when job is selected
   };
 
-  const handleSubspecialtySelect = (subspecialty, jobIndex) => {
-    const newJobs = [...formData.jobs];
-    newJobs[jobIndex] = {
-      ...newJobs[jobIndex],
+  const handleSubspecialtySelect = (subspecialty) => {
+    setFormData({
+      ...formData,
       subspecialty: subspecialty.label,
       otherJob: subspecialty.label === 'Other' ? '' : undefined
-    };
-    setFormData({ ...formData, jobs: newJobs });
+    });
   };
 
   const handleBackToCategories = () => {
@@ -353,62 +301,54 @@ const WorkBackground = ({ onComplete }) => {
     setActiveCategory('');
   };
 
-  const handleBackToJobs = (jobIndex) => {
-    const newSelectedJobs = [...selectedJobs];
-    newSelectedJobs[jobIndex] = null;
-    setSelectedJobs(newSelectedJobs);
-
-    const newJobs = [...formData.jobs];
-    newJobs[jobIndex] = {
-      ...newJobs[jobIndex],
+  const handleBackToJobs = () => {
+    // Keep the category but reset job selection
+    setSelectedJob(null);
+    setFormData({
+      ...formData,
       jobTitle: '',
       subspecialty: '',
       otherJob: ''
-    };
-    setFormData({ ...formData, jobs: newJobs });
+    });
   };
   
-  const handleChangeJob = (jobIndex) => {
-    const newSelectedJobs = [...selectedJobs];
-    newSelectedJobs[jobIndex] = null;
-    setSelectedJobs(newSelectedJobs);
+  const handleChangeJob = () => {
+    // Complete reset of job selection to start fresh
+    setSelectedJob(null);
     setShowingAllCategories(true);
     setActiveCategory('');
-
-    const newJobs = [...formData.jobs];
-    newJobs[jobIndex] = {
-      ...newJobs[jobIndex],
+    setFormData({
+      ...formData,
       category: '',
       jobTitle: '',
       subspecialty: '',
       otherJob: ''
-    };
-    setFormData({ ...formData, jobs: newJobs });
+    });
   };
 
   const renderSubspecialties = () => {
-    if (!selectedJobs[0] || !selectedJobs[0].subspecialties || selectedJobs[0].subspecialties.length === 0) {
+    if (!selectedJob || !selectedJob.subspecialties || selectedJob.subspecialties.length === 0) {
       return null;
     }
 
     return (
       <div className="mt-4">
         <div className="flex justify-between items-center mb-2">
-          <h4 className="text-md font-medium text-gray-800">Sub-specialties for {selectedJobs[0].label}</h4>
+          <h4 className="text-md font-medium text-gray-800">Sub-specialties for {selectedJob.label}</h4>
           <button 
             type="button" 
-            onClick={() => handleBackToJobs(0)}
+            onClick={handleBackToJobs}
             className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
           >
             <span className="mr-1">←</span> Change Job
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {selectedJobs[0].subspecialties.map((sub) => (
+          {selectedJob.subspecialties.map((sub) => (
             <div
               key={sub.label}
-              onClick={() => handleSubspecialtySelect(sub, 0)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobs[0].subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
+              onClick={() => handleSubspecialtySelect(sub)}
+              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{sub.icon}</span>
               <span className="text-sm font-medium">{sub.label}</span>
@@ -427,7 +367,7 @@ const WorkBackground = ({ onComplete }) => {
           {!showingAllCategories && (
             <button 
               type="button" 
-              onClick={() => handleBackToCategories()}
+              onClick={handleBackToCategories}
               className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
             >
               <span className="mr-1">←</span> All Categories
@@ -438,8 +378,8 @@ const WorkBackground = ({ onComplete }) => {
           {jobs.map((job) => (
             <div
               key={job.label}
-              onClick={() => handleJobSelect(job, category, 0)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobs[0].jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
+              onClick={() => handleJobSelect(job, category)}
+              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{job.icon}</span>
               <span className="text-sm font-medium">{job.label}</span>
@@ -450,145 +390,8 @@ const WorkBackground = ({ onComplete }) => {
     );
   };
 
-  const renderJobSection = (jobIndex) => {
-    const job = formData.jobs[jobIndex];
-    const selectedJob = selectedJobs[jobIndex];
-    const isFirstJob = jobIndex === 0;
-
-    return (
-      <div key={jobIndex} className="border-2 border-green-500 rounded-lg p-6 mb-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
-          {isFirstJob ? 'Select Your Job' : `Select Your ${jobIndex === 1 ? 'Second' : jobIndex === 2 ? 'Third' : `${jobIndex + 1}th`} Job`}
-        </h3>
-
-        {/* Display selected job in a highlighted box */}
-        {selectedJob && (
-          <div className="mb-4">
-            <div className="flex items-center justify-between p-4 rounded-lg border bg-yellow-300">
-              <div className="flex items-center">
-                <span className="text-xl mr-2">{selectedJob.icon}</span>
-                <div>
-                  <span className="font-medium">{job.jobTitle}</span>
-                  {job.subspecialty && (
-                    <p className="text-sm text-gray-700">
-                      Subspecialty: {job.subspecialty === 'Other' ? job.otherJob : job.subspecialty}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleChangeJob(jobIndex)}
-                className="text-sm bg-white px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100"
-              >
-                Change Selection
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {/* Only show search bar if no job is selected */}
-        {!selectedJob && (
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search for a job..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border rounded-md p-2 pl-10"
-            />
-            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        )}
-
-        <div className="mt-4">
-          {renderSubspecialties()}
-        </div>
-
-        {/* Other Job Input */}
-        {((job.jobTitle === 'Other') || (job.subspecialty === 'Other')) && (
-          <div className="space-y-2 mt-4">
-            <label className="block text-sm font-medium text-gray-700">Please specify your job</label>
-            <input
-              type="text"
-              value={job.otherJob || ''}
-              onChange={(e) => {
-                const newJobs = [...formData.jobs];
-                newJobs[jobIndex] = { ...newJobs[jobIndex], otherJob: e.target.value };
-                setFormData({ ...formData, jobs: newJobs });
-              }}
-              className="w-full border rounded-md p-2"
-              placeholder="Enter your job title"
-              required
-            />
-          </div>
-        )}
-
-        {/* Academic Degrees */}
-        <div className="space-y-4 mt-6">
-          <label className="block text-sm font-medium text-gray-700">Academic Degree</label>
-          <div className="relative">
-            <select
-              value={job.academicDegree}
-              onChange={(e) => {
-                const newJobs = [...formData.jobs];
-                newJobs[jobIndex] = {
-                  ...newJobs[jobIndex],
-                  academicDegree: e.target.value,
-                  otherAcademicDegree: e.target.value === 'other' ? '' : newJobs[jobIndex].otherAcademicDegree
-                };
-                setFormData({ ...formData, jobs: newJobs });
-              }}
-              className="w-full border rounded-md p-2 pr-10 appearance-none bg-white"
-              required
-            >
-              <option value="" disabled>Select your highest academic degree</option>
-              {academicDegrees.map((degree) => (
-                <option key={degree.value} value={degree.value}>
-                  {degree.icon} {degree.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </div>
-          </div>
-          
-          {job.academicDegree === 'other' && (
-            <div className="mt-2">
-              <label className="block text-sm font-medium text-gray-700">Please specify your degree</label>
-              <input
-                type="text"
-                value={job.otherAcademicDegree || ''}
-                onChange={(e) => {
-                  const newJobs = [...formData.jobs];
-                  newJobs[jobIndex] = { ...newJobs[jobIndex], otherAcademicDegree: e.target.value };
-                  setFormData({ ...formData, jobs: newJobs });
-                }}
-                className="w-full border rounded-md p-2 mt-1"
-                placeholder="Enter your academic degree"
-                required
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderJobSelection = (jobIndex) => {
-    if (selectedJobs[jobIndex]) {
+  const renderJobSelection = () => {
+    if (selectedJob) {
       return renderSubspecialties();
     }
 
@@ -610,7 +413,7 @@ const WorkBackground = ({ onComplete }) => {
             {Object.keys(categorizedJobs).map((category) => (
               <div
                 key={category}
-                onClick={() => handleCategoryClick(category, jobIndex)}
+                onClick={() => handleCategoryClick(category)}
                 className="cursor-pointer flex items-center justify-center p-4 rounded-lg border bg-white hover:bg-gray-100 transition"
               >
                 <span className="text-sm font-medium">{category}</span>
@@ -624,85 +427,248 @@ const WorkBackground = ({ onComplete }) => {
     return null;
   };
 
+  // Academic Degree options for react-select
+  const academicDegreeOptions = academicDegrees.map(degree => ({
+    value: degree.value,
+    label: (
+      <span>
+        <span className="mr-2">{degree.icon}</span>
+        {degree.label}
+      </span>
+    ),
+    rawLabel: degree.label,
+    icon: degree.icon,
+  }));
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">Work Background</h3>
-        <p className="mt-1 text-sm text-gray-600">Tell us about your professional experience</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
+      {/* Floating background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-32 h-32 top-10 left-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '0s' }} />
+        <div className="absolute w-24 h-24 top-1/3 right-20 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute w-40 h-40 bottom-20 left-1/4 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '4s' }} />
+        <div className="absolute w-20 h-20 bottom-1/3 right-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '6s' }} />
       </div>
 
-      {/* Retirement Status */}
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">Retirement Status</label>
-        <div className="flex gap-4">
-          {['I didn\'t retire', 'Partially retired', 'Fully retired'].map((status) => (
-            <label key={status} className="flex items-center">
-              <input
-                type="radio"
-                name="retirementStatus"
-                value={status}
-                checked={formData.retirementStatus === status}
-                onChange={(e) => handleRetirementStatusChange(e.target.value)}
-                className="mr-2"
-              />
-              <span className="text-sm">{status}</span>
-            </label>
-          ))}
+      <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative z-10">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center mb-4">
+            <Users className="w-12 h-12 text-yellow-500 mr-4" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Work Background
+            </h1>
+          </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Tell us about your professional experience
+          </p>
         </div>
 
-        {/* Retirement Date Field */}
-        {(formData.retirementStatus === 'Partially retired' || formData.retirementStatus === 'Fully retired') && (
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              When did you retire?
+        <form onSubmit={handleSubmit} className="space-y-12">
+          {/* Retirement Status */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <label className="block text-lg font-bold text-gray-800 mb-4">
+              Retirement Status
             </label>
-            <input
-              type="date"
-              value={formData.retirementDate}
-              onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
-              className="w-full border rounded-md p-2"
-              required
-            />
+            <div className="flex gap-4">
+              {['I didn\'t retire', 'Partially retired', 'Fully retired'].map((status) => (
+                <label key={status} className="flex items-center">
+                  <input
+                    type="radio"
+                    name="retirementStatus"
+                    value={status}
+                    checked={formData.retirementStatus === status}
+                    onChange={(e) => setFormData({ ...formData, retirementStatus: e.target.value })}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">{status}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        )}
 
-        {/* Expected Retirement Date Field */}
-        {formData.retirementStatus === 'I didn\'t retire' && (
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Expected retirement date (optional)
+          {/* Employment Status */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <label className="block text-lg font-bold text-gray-800 mb-4">
+              Are you working today?
             </label>
-            <input
-              type="date"
-              value={formData.expectedRetirementDate}
-              onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
-              className="w-full border rounded-md p-2"
-            />
+            <div className="flex items-center gap-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.currentlyWorking}
+                  onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
+                  className="mr-2"
+                />
+                <span className="text-sm">Yes</span>
+              </label>
+              {formData.currentlyWorking && (
+                <input
+                  type="date"
+                  value={formData.dischargeDate}
+                  onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
+                  className="border rounded-md p-2 text-sm"
+                  placeholder="Expected discharge date"
+                />
+              )}
+            </div>
           </div>
-        )}
+
+          {/* Job Search and Selection */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <label className="block text-lg font-bold text-gray-800 mb-4">
+              {selectedJob ? 'Your Selected Job' : 'Select Your Job'}
+            </label>
+            {/* Display selected job in a highlighted box */}
+            {selectedJob && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between p-4 rounded-lg border bg-yellow-300">
+                  <div className="flex items-center">
+                    <span className="text-xl mr-2">{selectedJob.icon}</span>
+                    <div>
+                      <span className="font-medium">{formData.jobTitle}</span>
+                      {formData.subspecialty && (
+                        <p className="text-sm text-gray-700">
+                          Subspecialty: {formData.subspecialty === 'Other' ? formData.otherJob : formData.subspecialty}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleChangeJob}
+                    className="text-sm bg-white px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100"
+                  >
+                    Change Selection
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Only show search bar if no job is selected */}
+            {!selectedJob && (
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search for a job..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full border rounded-md p-2 pl-10"
+                />
+                <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="mt-4">
+              {renderJobSelection()}
+            </div>
+          </div>
+
+          {/* Other Job Input */}
+          {((formData.jobTitle === 'Other') || (formData.subspecialty === 'Other')) && (
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
+              <label className="block text-lg font-bold text-gray-800 mb-2">Please specify your job</label>
+              <input
+                type="text"
+                value={formData.otherJob || ''}
+                onChange={(e) => setFormData({ ...formData, otherJob: e.target.value })}
+                className="w-full border rounded-md p-2"
+                placeholder="Enter your job title"
+                required
+              />
+            </div>
+          )}
+
+          {/* Academic Degrees */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <label className="block text-lg font-bold text-gray-800 mb-4">Academic Degrees</label>
+            <Select
+              isMulti
+              options={academicDegreeOptions}
+              value={academicDegreeOptions.filter(opt =>
+                formData.academicDegrees?.includes(opt.value)
+              )}
+              onChange={selected => {
+                const values = selected ? selected.map(opt => opt.value) : [];
+                setFormData({
+                  ...formData,
+                  academicDegrees: values,
+                  otherAcademicDegree: values.includes('other') ? formData.otherAcademicDegree : ''
+                });
+              }}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              placeholder="Select your academic degrees..."
+              closeMenuOnSelect={false}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  borderColor: '#d1d5db',
+                  boxShadow: state.isFocused ? '0 0 0 1px #FFD966' : '',
+                  '&:hover': {
+                    borderColor: '#FFD966',
+                  },
+                  minHeight: 44,
+                  borderRadius: 12,
+                }),
+                multiValue: (base) => ({
+                  ...base,
+                  backgroundColor: '#fef3c7',
+                  borderRadius: 8,
+                  padding: '2px 6px',
+                }),
+              }}
+            />
+            {formData.academicDegrees?.includes('other') && (
+              <div className="mt-2">
+                <label className="block text-sm font-medium text-gray-700">Please specify your degree</label>
+                <input
+                  type="text"
+                  value={formData.otherAcademicDegree || ''}
+                  onChange={(e) => setFormData({ ...formData, otherAcademicDegree: e.target.value })}
+                  className="w-full border rounded-md p-2 mt-1"
+                  placeholder="Enter your academic degree"
+                  required
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="text-center pt-8">
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+            >
+              <Star className="w-6 h-6" />
+              <span>Continue</span>
+              <Star className="w-6 h-6" />
+            </button>
+          </div>
+        </form>
       </div>
 
-      {/* Render all job sections */}
-      {formData.jobs.map((_, index) => renderJobSection(index))}
-
-
-      {/* Add Another Job Button */}
-      <button
-        type="button"
-        onClick={addNewJob}
-        className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 mb-6"
-      >
-        Add Another Job
-      </button>
-
-
-      <button
-        type="submit"
-        className="w-full bg-[#FFD966] hover:bg-[#FFB800] text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
-      >
-        Continue
-      </button>
-    </form>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
   );
 };
 
