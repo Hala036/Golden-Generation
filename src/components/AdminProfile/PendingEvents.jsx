@@ -14,7 +14,7 @@ const PendingEvents = () => {
         if (user) {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists()) {
-            setAdminSettlement(userDoc.data().settlement); // Fetch admin's settlement
+            setAdminSettlement(userDoc.data().idVerification.settlement); // Fetch admin's settlement
           }
         }
       } catch (error) {
@@ -29,6 +29,7 @@ const PendingEvents = () => {
     const fetchPendingEvents = async () => {
       try {
         const eventsRef = collection(db, "events");
+        console.log("status", eventsRef.status);
         const q = query(eventsRef, where("status", "==", "pending"), where("settlement", "==", adminSettlement));
         const snapshot = await getDocs(q);
         const events = snapshot.docs.map((doc) => ({
@@ -83,17 +84,20 @@ const PendingEvents = () => {
               <p><strong>Start Date:</strong> {event.startDate}</p>
               <p><strong>End Date:</strong> {event.endDate}</p>
               <div className="flex space-x-4 mt-4">
+                {/* Accept Button */}
                 <button
-                  onClick={() => handleApprove(event.id)}
-                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+                    onClick={() => handleApprove(event.id)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md transition-colors duration-200"
                 >
-                  Approve
+                    Accept
                 </button>
+
+                {/* Reject Button */}
                 <button
-                  onClick={() => handleReject(event.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+                    onClick={() => handleReject(event.id)}
+                    className="bg-red-400 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-md transition-colors duration-200"
                 >
-                  Reject
+                    Reject
                 </button>
               </div>
             </li>

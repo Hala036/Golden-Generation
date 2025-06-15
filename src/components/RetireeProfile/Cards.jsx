@@ -49,10 +49,12 @@ const Cards = () => {
         // Fetch events
         const eventsRef = collection(db, "events");
         const eventsSnapshot = await getDocs(eventsRef);
-        const eventsData = eventsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const eventsData = eventsSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((event) => event.status == "active"); // Exclude pending and rejected events
         setEvents(eventsData);
         setFilteredEvents(eventsData); // Initially show all events
       } catch (error) {

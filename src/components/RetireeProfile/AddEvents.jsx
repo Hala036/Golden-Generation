@@ -88,7 +88,7 @@ const AddEvents = () => {
       }
 
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.exists() ? userDoc.data().settlement : "";
+      const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
 
       const formatDate = (date) => {
         const [year, month, day] = date.split("-");
