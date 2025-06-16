@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, MapPin, Bell, Plus, Edit, Trash2, Eye, Check, X, Filter, Search, Settings, Award, BarChart3 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const RetireeCalendar = () => {
+  const { theme } = useTheme();
   const [currentUser] = useState({
     id: 'admin1',
     role: 'admin', // Switch to 'retiree' to see retiree view
@@ -212,16 +214,16 @@ const RetireeCalendar = () => {
   const isAdmin = currentUser.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} p-6`}>
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-6 mb-6`}>
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+            <h1 className={`text-3xl font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
               <Calendar className="text-blue-600" />
               Retiree Activity Calendar
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mt-1`}>
               Welcome back, {currentUser.name} ({currentUser.role})
             </p>
           </div>
@@ -246,20 +248,28 @@ const RetireeCalendar = () => {
         {/* Filters & Search */}
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
-            <Search size={20} className="text-gray-400" />
+            <Search size={20} className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} />
             <input
               type="text"
               placeholder="Search events..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-64"
+              className={`border rounded-lg px-3 py-2 w-64 ${
+                theme === 'dark' 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300'
+              }`}
             />
           </div>
           
           <select 
             value={filter} 
             onChange={(e) => setFilter(e.target.value)}
-            className="border rounded-lg px-3 py-2"
+            className={`border rounded-lg px-3 py-2 ${
+              theme === 'dark' 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300'
+            }`}
           >
             <option value="all">All Events</option>
             {isAdmin ? (
@@ -282,13 +292,25 @@ const RetireeCalendar = () => {
           <div className="flex items-center gap-2 ml-auto">
             <button
               onClick={() => setViewMode('month')}
-              className={`px-3 py-1 rounded ${viewMode === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+              className={`px-3 py-1 rounded ${
+                viewMode === 'month' 
+                  ? 'bg-blue-600 text-white' 
+                  : theme === 'dark' 
+                    ? 'bg-gray-700 text-white' 
+                    : 'bg-gray-200'
+              }`}
             >
               Month
             </button>
             <button
               onClick={() => setViewMode('week')}
-              className={`px-3 py-1 rounded ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+              className={`px-3 py-1 rounded ${
+                viewMode === 'week' 
+                  ? 'bg-blue-600 text-white' 
+                  : theme === 'dark' 
+                    ? 'bg-gray-700 text-white' 
+                    : 'bg-gray-200'
+              }`}
             >
               Week
             </button>
@@ -297,20 +319,20 @@ const RetireeCalendar = () => {
       </div>
 
       {/* Calendar Navigation */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-4 mb-6`}>
         <div className="flex justify-between items-center">
           <button 
             onClick={() => navigateMonth(-1)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100'}`}
           >
             ←
           </button>
-          <h2 className="text-xl font-semibold">
+          <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h2>
           <button 
             onClick={() => navigateMonth(1)}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100'}`}
           >
             →
           </button>
@@ -318,11 +340,11 @@ const RetireeCalendar = () => {
       </div>
 
       {/* Calendar Grid */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm overflow-hidden`}>
         {/* Day Headers */}
-        <div className="grid grid-cols-7 bg-gray-100">
+        <div className={`grid grid-cols-7 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'}`}>
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-4 text-center font-semibold text-gray-700">
+            <div key={day} className={`p-4 text-center font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
               {day}
             </div>
           ))}
@@ -336,11 +358,15 @@ const RetireeCalendar = () => {
             return (
               <div
                 key={index}
-                className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50"
+                className={`min-h-32 p-2 border-b border-r ${
+                  theme === 'dark' 
+                    ? 'border-gray-700 bg-gray-800 hover:bg-gray-700' 
+                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                }`}
               >
                 {day && (
                   <>
-                    <div className="text-sm font-semibold text-gray-700 mb-2">
+                    <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
                       {day}
                     </div>
                     <div className="space-y-1">
@@ -360,7 +386,7 @@ const RetireeCalendar = () => {
                         </div>
                       ))}
                       {dayEvents.length > 3 && (
-                        <div className="text-xs text-gray-500 text-center">
+                        <div className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} text-center`}>
                           +{dayEvents.length - 3} more
                         </div>
                       )}
@@ -374,37 +400,37 @@ const RetireeCalendar = () => {
       </div>
 
       {/* Legend */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
-        <h3 className="font-semibold mb-3">Legend</h3>
+      <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm p-4 mt-6`}>
+        <h3 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Legend</h3>
         <div className="flex flex-wrap gap-4">
           {isAdmin ? (
             <>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                <span className="text-sm">Created by me</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Created by me</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Created by other admins</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Created by other admins</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span className="text-sm">Retiree submissions</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Retiree submissions</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Joined events</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Joined events</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                <span className="text-sm">Pending approval</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Pending approval</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-gray-400 rounded"></div>
-                <span className="text-sm">Past events</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Past events</span>
               </div>
             </>
           )}
@@ -414,31 +440,31 @@ const RetireeCalendar = () => {
       {/* Event Details Modal */}
       {showEventModal && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 max-w-md w-full mx-4`}>
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xl font-bold">{selectedEvent.title}</h3>
+              <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{selectedEvent.title}</h3>
               <button
                 onClick={() => setShowEventModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className={theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
               >
                 <X size={24} />
               </button>
             </div>
             
             <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                 <Clock size={16} />
                 {selectedEvent.date} at {selectedEvent.time} ({selectedEvent.duration} min)
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                 <MapPin size={16} />
                 {selectedEvent.location}
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                 <Users size={16} />
                 {selectedEvent.participants.length}/{selectedEvent.maxParticipants} participants
               </div>
-              <p className="text-gray-700">{selectedEvent.description}</p>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{selectedEvent.description}</p>
             </div>
 
             <div className="flex gap-2">
@@ -499,12 +525,12 @@ const RetireeCalendar = () => {
       {/* Create Event Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
+          <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto`}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Create New Event</h3>
+              <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Create New Event</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className={theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
               >
                 <X size={24} />
               </button>
@@ -516,7 +542,11 @@ const RetireeCalendar = () => {
                 placeholder="Event title"
                 value={newEvent.title}
                 onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2"
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
               
               <div className="grid grid-cols-2 gap-2">
@@ -524,13 +554,21 @@ const RetireeCalendar = () => {
                   type="date"
                   value={newEvent.date}
                   onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
-                  className="border rounded-lg px-3 py-2"
+                  className={`border rounded-lg px-3 py-2 ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300'
+                  }`}
                 />
                 <input
                   type="time"
                   value={newEvent.time}
                   onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
-                  className="border rounded-lg px-3 py-2"
+                  className={`border rounded-lg px-3 py-2 ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300'
+                  }`}
                 />
               </div>
 
@@ -539,21 +577,33 @@ const RetireeCalendar = () => {
                 placeholder="Location"
                 value={newEvent.location}
                 onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2"
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
 
               <textarea
                 placeholder="Description"
                 value={newEvent.description}
                 onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2 h-20"
+                className={`w-full border rounded-lg px-3 py-2 h-20 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
 
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={newEvent.category}
                   onChange={(e) => setNewEvent({...newEvent, category: e.target.value})}
-                  className="border rounded-lg px-3 py-2"
+                  className={`border rounded-lg px-3 py-2 ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300'
+                  }`}
                 >
                   <option value="social">Social</option>
                   <option value="fitness">Fitness</option>
@@ -566,14 +616,22 @@ const RetireeCalendar = () => {
                   placeholder="Max participants"
                   value={newEvent.maxParticipants}
                   onChange={(e) => setNewEvent({...newEvent, maxParticipants: parseInt(e.target.value)})}
-                  className="border rounded-lg px-3 py-2"
+                  className={`border rounded-lg px-3 py-2 ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300'
+                  }`}
                 />
               </div>
 
               <select
                 value={newEvent.recurring}
                 onChange={(e) => setNewEvent({...newEvent, recurring: e.target.value})}
-                className="w-full border rounded-lg px-3 py-2"
+                className={`w-full border rounded-lg px-3 py-2 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
               >
                 <option value="none">One-time event</option>
                 <option value="weekly">Weekly</option>

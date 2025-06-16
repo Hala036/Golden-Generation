@@ -1,8 +1,8 @@
 [
   {
-    "origin": ["http://localhost:5173"],
-    "method": ["GET", "POST", "PUT", "DELETE"],
+    "origin": ["http://localhost:5173", "https://golden-generation-de85d.web.app"],
+    "method": ["GET", "POST", "PUT", "DELETE", "HEAD"],
     "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Authorization", "x-goog-meta-custom"]
+    "responseHeader": ["Content-Type", "Authorization", "Content-Length", "User-Agent", "x-goog-resumable"]
   }
-]
+] 

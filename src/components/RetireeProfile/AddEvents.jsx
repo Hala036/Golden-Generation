@@ -4,10 +4,12 @@ import { db, auth, storage } from "../../firebase";
 import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import AddCategoryModal from "../AdminProfile/AddCategoryModal"; // Import the modal component
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
+import { useTheme } from "../../context/ThemeContext";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AddEvents = () => {
   const { language, t } = useLanguage(); // Access language and translation function
+  const { theme } = useTheme();
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false); // State for modal visibility
   const [categories, setCategories] = useState([]); // Categories fetched from Firebase
   const [imageFile, setImageFile] = useState(null);
@@ -99,26 +101,14 @@ const AddEvents = () => {
 
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
-
       const formatDate = (date) => {
         const [year, month, day] = date.split("-");
         return `${day}-${month}-${year}`;
       };
 
-      let eventStatus = "active"; // Default status
-      let eventColor = "yellow"; // Default color
-
-      if (userRole === "retiree") {
-        eventStatus = "pending"; // Retiree-created events are pending
-        eventColor = "green"; // Pending events are green
-      } else if (userRole === "admin" || userRole === "superadmin") {
-        eventColor = "blue"; // Admin-created events are blue
-      }
-
       const newEvent = {
         ...eventData,
         startDate: formatDate(eventData.startDate),
-        endDate: eventData.endDate ? formatDate(eventData.endDate) : "",
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         participants: [],
@@ -131,7 +121,6 @@ const AddEvents = () => {
       await addDoc(collection(db, "events"), newEvent);
       toast.success("Event created successfully!");
 
-      // Reset form
       setEventData({
         title: "",
         categoryId: categories.length > 0 ? categories[0].id : "",
@@ -151,13 +140,15 @@ const AddEvents = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">{t("admin.createEvent.title")}</h2>
+    <div className={`max-w-2xl mx-auto ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-sm`}>
+      <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+        {t("admin.createEvent.title")}
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.eventTitle")}
           </label>
           <input
@@ -166,13 +157,17 @@ const AddEvents = () => {
             value={eventData.title}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+              theme === 'dark' 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300'
+            }`}
           />
         </div>
 
         {/* Event Type */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.eventType")}
           </label>
           <select
@@ -180,19 +175,22 @@ const AddEvents = () => {
             value={eventData.categoryId}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+              theme === 'dark' 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300'
+            }`}
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.translations[language]} {/* Display translation based on current language */}
+                {category.translations[language]}
               </option>
             ))}
           </select>
-          {/* Conditionally render the "Add Category" button */}
           {(userRole === "admin" || userRole === "superadmin") && (
             <button
               type="button"
-              onClick={() => setShowAddCategoryModal(true)} // Open the modal
+              onClick={() => setShowAddCategoryModal(true)}
               className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-6 py-2 rounded-md mt-2"
             >
               {t("admin.createEvent.addCategory")}
@@ -202,7 +200,7 @@ const AddEvents = () => {
 
         {/* Date / Date Range */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.dateRange")}
           </label>
           <div className="grid grid-cols-2 gap-4">
@@ -213,9 +211,15 @@ const AddEvents = () => {
                 value={eventData.startDate}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
-              <span className="block text-xs text-gray-500 mt-1">{t("admin.createEvent.startDate")}</span>
+              <span className={`block text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                {t("admin.createEvent.startDate")}
+              </span>
             </div>
             <div>
               <input
@@ -223,39 +227,57 @@ const AddEvents = () => {
                 name="endDate"
                 value={eventData.endDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
-              <span className="block text-xs text-gray-500 mt-1">{t("admin.createEvent.endDate")}</span>
+              <span className={`block text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                {t("admin.createEvent.endDate")}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Time Range */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.timeRange")}
           </label>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{t("admin.createEvent.timeFrom")}</label>
+              <label className={`block text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mb-1`}>
+                {t("admin.createEvent.timeFrom")}
+              </label>
               <input
                 type="time"
                 name="timeFrom"
                 value={eventData.timeFrom}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">{t("admin.createEvent.timeTo")}</label>
+              <label className={`block text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mb-1`}>
+                {t("admin.createEvent.timeTo")}
+              </label>
               <input
                 type="time"
                 name="timeTo"
                 value={eventData.timeTo}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
             </div>
           </div>
@@ -263,7 +285,7 @@ const AddEvents = () => {
 
         {/* Location */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.location")}
           </label>
           <input
@@ -272,13 +294,17 @@ const AddEvents = () => {
             value={eventData.location}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+              theme === 'dark' 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300'
+            }`}
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.description")}
           </label>
           <textarea
@@ -287,14 +313,18 @@ const AddEvents = () => {
             onChange={handleChange}
             required
             rows="4"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+              theme === 'dark' 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300'
+            }`}
           />
         </div>
 
         {/* Capacity */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
               {t("admin.createEvent.capacity")}
             </label>
             <input
@@ -304,14 +334,18 @@ const AddEvents = () => {
               onChange={handleChange}
               min="1"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+                theme === 'dark' 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'bg-white border-gray-300'
+              }`}
             />
           </div>
         </div>
 
         {/* Special Requirements */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
             {t("admin.createEvent.requirements")}
           </label>
           <textarea
@@ -319,7 +353,11 @@ const AddEvents = () => {
             value={eventData.requirements}
             onChange={handleChange}
             rows="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-400 ${
+              theme === 'dark' 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300'
+            }`}
             placeholder={t("admin.createEvent.requirementsPlaceholder")}
           />
         </div>
@@ -374,7 +412,7 @@ const AddEvents = () => {
       {/* Add Category Modal */}
       {showAddCategoryModal && (
         <AddCategoryModal
-          onClose={() => setShowAddCategoryModal(false)} // Close the modal
+          onClose={() => setShowAddCategoryModal(false)}
         />
       )}
     </div>
