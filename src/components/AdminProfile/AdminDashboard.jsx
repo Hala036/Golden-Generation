@@ -181,7 +181,7 @@ const Dashboard = () => {
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
+        <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
           {selected === "upcoming" && <Cards setSelected={setSelected} />}
           {selected === "main" && <AdminHomepage />}
           {selected === "retirees" && <Retirees />}
