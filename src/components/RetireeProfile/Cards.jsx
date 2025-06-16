@@ -28,25 +28,25 @@ const EventCard = ({ event }) => {
   const { theme } = useTheme();
 
   return (
-    <div className={rounded-lg shadow-md overflow-hidden ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'} transition-colors duration-200}>
+    <div className={`rounded-lg shadow-md overflow-hidden ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'} transition-colors duration-200`}>
       <img
         src={event.imageUrl || 'https://via.placeholder.com/400x200'} // Placeholder image
         alt={event.title}
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
-        <h3 className={text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}}>
+        <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           {event.title}
         </h3>
-        <p className={text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}}>
+        <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           {event.description}
         </p>
         <div className="flex items-center text-sm mb-2">
-          <CalendarDays className={w-4 h-4 mr-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}} />
+          <CalendarDays className={`w-4 h-4 mr-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
           <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{event.date}</span>
         </div>
         <div className="flex items-center text-sm">
-          <MapPin className={w-4 h-4 mr-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}} />
+          <MapPin className={`w-4 h-4 mr-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
           <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{event.location}</span>
         </div>
       </div>
@@ -167,7 +167,7 @@ const Cards = () => {
         });
       }
 
-      alert(Successfully joined event: ${event.title});
+      alert(`Successfully joined event: ${event.title}`);
     } catch (error) {
       console.error("Error joining event:", error);
       alert("Failed to join event. Please try again.");
@@ -175,15 +175,15 @@ const Cards = () => {
   };
 
   return (
-    <div className={p-4 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}}>
+    <div className={`p-4 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
       {/* Check if an event is selected */}
       {selectedEvent ? (
         // Event Details View
-        <div className={p-4 rounded-lg shadow-md ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'}}>
+        <div className={`p-4 rounded-lg shadow-md ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'}`}>
           {/* Banner Image */}
           <div className="mb-4">
             <img
-              src={selectedEvent.imageUrl || categoryImages[selectedEvent.categoryId]}
+              src={selectedEvent.image || categoryImages[selectedEvent.categoryId]}
               alt={selectedEvent.title}
               className="w-full h-64 object-cover rounded-md"
             />
@@ -192,24 +192,24 @@ const Cards = () => {
           {/* Back to Events Button */}
           <button
             onClick={handleBackToEvents}
-            className={flex items-center ${theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-800'} mb-4}
+            className={`flex items-center ${theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-800'} mb-4`}
           >
-            <FaArrowLeft className={text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}} />
+            <FaArrowLeft className={`text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
             {t("dashboard.events.backToEvents")}
           </button>
 
-          <h2 className={text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}}>
+          <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {selectedEvent.title}
           </h2>
-          <p className={mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}}>
+          <p className={`mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
             <CalendarDays className="inline text-[#FFD966] mr-2" />
-            {selectedEvent.endDate ? ${selectedEvent.startDate} - ${selectedEvent.endDate} : selectedEvent.startDate}
+            {selectedEvent.endDate ? `${selectedEvent.startDate} - ${selectedEvent.endDate}` : selectedEvent.startDate}
           </p>
-          <p className={mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}}>
+          <p className={`mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
             <MapPin className="inline text-[#FFD966] mr-2" />
             {selectedEvent.location}
           </p>
-          <p className={mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}}>
+          <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
             {selectedEvent.description}
           </p>
           <button
@@ -260,60 +260,43 @@ const Cards = () => {
           {/* Events Grid */}
           {!loading && (
             <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
-            {filteredEvents.map((event) => {
-              const backgroundImage = event.imageUrl || categoryImages[event.categoryId];
-              return (
-                <div
-                  key={event.id}
-                  className={`rounded-lg shadow-md overflow-hidden p-4 ${
-                    theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'
-                  }`}
-                >
-                  {/* Event Title */}
-                  <h3 className={text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}}>
-                    {event.title}
-                  </h3>
-
-                  {/* Event Image */}
-                  <div className="mb-4">
-                    <img
-                      src={backgroundImage}
-                      alt={event.title}
-                      className="w-full h-48 object-cover rounded-md"
-                    />
+              {filteredEvents.map((event) => (
+                <div key={event.id} className={`rounded-lg shadow-md overflow-hidden ${
+                  theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-900'
+                }`}>
+                  <img
+                    src={event.image || categoryImages[event.categoryId]}
+                    alt={event.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {event.title}
+                    </h3>
+                    <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {event.description}
+                    </p>
+                    <div className="flex items-center text-sm mb-2">
+                      <FaCalendarAlt className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} />
+                      <span className={`ml-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {event.startDate}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-sm mb-4">
+                      <FaMapMarkerAlt className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} />
+                      <span className={`ml-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {event.location}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleMoreInfo(event)}
+                      className="bg-[#FFD966] hover:bg-yellow-500 text-gray-900 font-bold px-4 py-2 rounded-md transition-colors duration-200"
+                    >
+                      {t("dashboard.events.moreInfo")}
+                    </button>
                   </div>
-
-                  {/* Date */}
-                  <div className="flex items-center text-sm mb-2">
-                    <FaCalendarAlt className={theme === 'dark' ? 'text-gray-400' : 'text-[#FFD966]'} />
-                    <span className={ml-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}}>
-                      {event.endDate ? ${event.startDate} - ${event.endDate} : event.startDate}
-                    </span>
-                  </div>
-
-                  {/* Location */}
-                  <div className="flex items-center text-sm mb-4">
-                    <FaMapMarkerAlt className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} />
-                    <span className={ml-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}}>
-                      {event.location}
-                    </span>
-                  </div>
-
-                  {/* Description */}
-                  <p className={text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}}>
-                    {event.description}
-                  </p>
-
-                  {/* More Info Button */}
-                  <button
-                    onClick={() => handleMoreInfo(event)}
-                    className="bg-[#FFD966] hover:bg-yellow-500 text-gray-900 font-bold px-4 py-2 rounded-md transition-colors duration-200"
-                  >
-                    {t("dashboard.events.moreInfo")}
-                  </button>
                 </div>
-              );
-            })}
+              ))}
             </div>
           )}
         </>
