@@ -29,7 +29,6 @@ const PendingEvents = () => {
     const fetchPendingEvents = async () => {
       try {
         const eventsRef = collection(db, "events");
-        console.log("status", eventsRef.status);
         const q = query(eventsRef, where("status", "==", "pending"), where("settlement", "==", adminSettlement));
         const snapshot = await getDocs(q);
         const events = snapshot.docs.map((doc) => ({
