@@ -623,6 +623,7 @@
         "capacity": "Capacity",
         "requirements": "Special Requirements",
         "requirementsPlaceholder": "Enter any special requirements for the event",
+        "image": "Add Image",
         "submit": "Submit"
       }
     }

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { db, auth } from "../../firebase";
+import { db, auth, storage } from "../../firebase";
 import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import AddCategoryModal from "../AdminProfile/AddCategoryModal"; // Import the modal component
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AddEvents = () => {
   const { language, t } = useLanguage(); // Access language and translation function
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false); // State for modal visibility
   const [categories, setCategories] = useState([]); // Categories fetched from Firebase
+  const [imageFile, setImageFile] = useState(null);
   const [eventData, setEventData] = useState({
     title: "",
     categoryId: "",
@@ -87,6 +89,14 @@ const AddEvents = () => {
         return;
       }
 
+      let imageUrl = "";
+
+      if (imageFile) {
+        const imageRef = ref(storage, `eventImages/${Date.now()}_${imageFile.name}`);
+        const snapshot = await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
 
@@ -114,7 +124,8 @@ const AddEvents = () => {
         participants: [],
         status: eventStatus,
         color: eventColor,
-        settlement: userSettlement // Include the user's settlement
+        settlement: userSettlement, // Include the user's settlement
+        imageUrl: imageUrl
       };
 
       await addDoc(collection(db, "events"), newEvent);
@@ -312,6 +323,42 @@ const AddEvents = () => {
             placeholder={t("admin.createEvent.requirementsPlaceholder")}
           />
         </div>
+          
+        {/* Image Button */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("admin.createEvent.image")}
+          </label>
+
+          <div className="flex items-center space-x-4">
+            <label className="cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-md">
+              {imageFile ? "Change Image" : "Upload Image"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                className="hidden"
+              />
+            </label>
+
+            {imageFile && (
+              <span className="text-sm text-gray-600 truncate max-w-xs">
+                {imageFile.name}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        {/* Image Preview */}
+        {imageFile && (
+          <div className="mt-4">
+            <img
+              src={URL.createObjectURL(imageFile)}
+              alt="Event Preview"
+              className="w-full h-48 object-cover rounded-md border border-gray-300"
+            />
+          </div>
+        )}
 
         {/* Submit Button */}
         <div className="flex justify-end">
