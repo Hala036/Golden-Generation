@@ -518,6 +518,7 @@
       "volunteerRequests": "طلبات التطوع",
       "analytics": "تحليل",
       "contactUs": "خدمة الزبائن",
+      "pendingEvents": "الأحداث المعلقة",
       "events": {
         "upcomingEvents": "الأحداث القادمة",
         "addEvent": "إضافة حدث",

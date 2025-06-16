@@ -518,6 +518,7 @@
       "volunteerRequests": "Volunteer Requests",
       "analytics": "Analytics",
       "contactUs": "Customer Support",
+      "pendingEvents": "Pending Events",
       "events":{
         "upcomingEvents": "Upcoming Events",
         "addEvent": "Add Event",
