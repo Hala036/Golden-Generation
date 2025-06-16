@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { db, auth } from "../../firebase";
+import { db, auth, storage } from "../../firebase";
 import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import AddCategoryModal from "../AdminProfile/AddCategoryModal"; // Import the modal component
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 import { useTheme } from "../../context/ThemeContext";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AddEvents = () => {
   const { language, t } = useLanguage(); // Access language and translation function
   const { theme } = useTheme();
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false); // State for modal visibility
   const [categories, setCategories] = useState([]); // Categories fetched from Firebase
+  const [imageFile, setImageFile] = useState(null);
   const [eventData, setEventData] = useState({
     title: "",
     categoryId: "",
@@ -89,6 +91,16 @@ const AddEvents = () => {
         return;
       }
 
+      let imageUrl = "";
+
+      if (imageFile) {
+        const imageRef = ref(storage, `eventImages/${Date.now()}_${imageFile.name}`);
+        const snapshot = await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
       const formatDate = (date) => {
         const [year, month, day] = date.split("-");
         return `${day}-${month}-${year}`;
@@ -100,7 +112,10 @@ const AddEvents = () => {
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         participants: [],
-        status: "active"
+        status: eventStatus,
+        color: eventColor,
+        settlement: userSettlement, // Include the user's settlement
+        imageUrl: imageUrl
       };
 
       await addDoc(collection(db, "events"), newEvent);
@@ -346,6 +361,42 @@ const AddEvents = () => {
             placeholder={t("admin.createEvent.requirementsPlaceholder")}
           />
         </div>
+          
+        {/* Image Button */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("admin.createEvent.image")}
+          </label>
+
+          <div className="flex items-center space-x-4">
+            <label className="cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-md">
+              {imageFile ? "Change Image" : "Upload Image"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                className="hidden"
+              />
+            </label>
+
+            {imageFile && (
+              <span className="text-sm text-gray-600 truncate max-w-xs">
+                {imageFile.name}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        {/* Image Preview */}
+        {imageFile && (
+          <div className="mt-4">
+            <img
+              src={URL.createObjectURL(imageFile)}
+              alt="Event Preview"
+              className="w-full h-48 object-cover rounded-md border border-gray-300"
+            />
+          </div>
+        )}
 
         {/* Submit Button */}
         <div className="flex justify-end">
@@ -369,3 +420,96 @@ const AddEvents = () => {
 };
 
 export default AddEvents;
+
+// import React, { useState } from 'react';
+// import { storage } from '../../firebase'; // Adjust path as needed
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+// const AddEvents = () => {
+//   const [selectedFile, setSelectedFile] = useState(null);
+//   const [uploading, setUploading] = useState(false);
+//   const [downloadURL, setDownloadURL] = useState('');
+//   const [error, setError] = useState('');
+
+//   const handleFileSelect = (event) => {
+//     const file = event.target.files[0];
+//     if (file) {
+//       setSelectedFile(file);
+//       setError('');
+//     }
+//   };
+
+//   const handleUpload = async () => {
+//     if (!selectedFile) {
+//       setError('Please select a file first');
+//       return;
+//     }
+
+//     setUploading(true);
+//     setError('');
+
+//     try {
+//       // Create a unique filename
+//       const timestamp = Date.now();
+//       const fileName = `eventImages/${timestamp}_${selectedFile.name}`;
+      
+//       // Create a reference to the file location
+//       const storageRef = ref(storage, fileName);
+      
+//       // Upload the file
+//       const snapshot = await uploadBytes(storageRef, selectedFile);
+      
+//       // Get the download URL
+//       const url = await getDownloadURL(snapshot.ref);
+      
+//       setDownloadURL(url);
+//       console.log('File uploaded successfully:', url);
+      
+//     } catch (error) {
+//       console.error('Error uploading file:', error);
+//       setError(`Upload failed: ${error.message}`);
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="image-upload-container">
+//       <h3>Upload Image</h3>
+      
+//       <input
+//         type="file"
+//         accept="image/*"
+//         onChange={handleFileSelect}
+//         disabled={uploading}
+//       />
+      
+//       <button 
+//         onClick={handleUpload} 
+//         disabled={!selectedFile || uploading}
+//       >
+//         {uploading ? 'Uploading...' : 'Upload Image'}
+//       </button>
+      
+//       {error && (
+//         <div className="error" style={{ color: 'red', marginTop: '10px' }}>
+//           {error}
+//         </div>
+//       )}
+      
+//       {downloadURL && (
+//         <div className="success" style={{ marginTop: '10px' }}>
+//           <p>Upload successful!</p>
+//           <img 
+//             src={downloadURL} 
+//             alt="Uploaded" 
+//             style={{ maxWidth: '200px', height: 'auto' }}
+//           />
+//           <p>Download URL: <a href={downloadURL} target="_blank" rel="noopener noreferrer">{downloadURL}</a></p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default AddEvents;
