@@ -443,6 +443,7 @@
       "volunteerRequests": "בקשות התנדבות",
       "analytics": "ניתוח",
       "contactUs": "תמיכת לקוחות",
+      "pendingEvents": "אירועים ממתינים",
       "events": {
         "upcomingEvents": "אירועים קרובים",
         "addEvent": "הוסף אירוע",
@@ -542,6 +543,7 @@
         "capacity": "קיבולת",
         "requirements": "דרישות מיוחדות",
         "requirementsPlaceholder": "הזן דרישות מיוחדות לאירוע",
+        "image": "הוספת תמונה",
         "submit": "שלח"
       }
     }

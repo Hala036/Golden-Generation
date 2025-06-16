@@ -20,6 +20,7 @@ import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/Calendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
+import Support from "../RetireeProfile/Support";
 import { useTranslation } from 'react-i18next';
 
 
@@ -41,7 +42,7 @@ const Dashboard = () => {
     { id: "add", label: t('dashboard.events.addEvent'), icon: <FaPlusCircle /> },
     { id: "calendar", label: t('dashboard.calendar'), icon: <FaCalendarAlt /> },
     { id: "messages", label: t('dashboard.messages'), icon: <FaComments /> },
-    { id: "pending", label: "Pending Events", icon: <FaClock /> }
+    { id: "pending", label: t('dashboard.pendingEvents'), icon: <FaClock /> }
   ];
 
   useEffect(() => {
@@ -191,6 +192,7 @@ const Dashboard = () => {
           {selected === "messages" && <Messages />}
           {selected === "add" && <AddEvent />}
           {selected === "notifications" && <Notifications />}
+          {selected === "support" && <Support />}
           {selected === "pending" && <Pending />}
         </div>
       </div>

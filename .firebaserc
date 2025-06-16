@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "golden-generation-de85d"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt } from "react-icons/fa";
+import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaHeadset } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -14,6 +14,7 @@ import Calendar from "./Calendar";
 import Messages from "./Messages";
 import Notifications from "./Notifications";
 import AddEvents from "./AddEvents";
+import Support from "./Support";
 
 const icons = [
   { id: "upcoming", label: "Upcoming Events", icon: <FaCalendarCheck /> },
@@ -108,20 +109,14 @@ const Dashboard = () => {
 
         {/* Bottom Section */}
         <div className="absolute bottom-0 w-64 border-t border-gray-200 bg-gray-100 p-4">
-          <div className="flex items-center space-x-2 mb-4">
-            <MdLanguage className="text-xl text-gray-600" />
-            <Select
-              value={language}
-              onChange={changeLanguage}
-              className="w-24"
-              variant={false}
-            >
-              <Select.Option value="en">English</Select.Option>
-              <Select.Option value="he">עברית</Select.Option>
-              <Select.Option value="ru">Русский</Select.Option>
-              <Select.Option value="ar">العربية</Select.Option>
-            </Select>
-          </div>
+          <button
+            onClick={() => setSelected("support")}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full mb-4"
+          >
+            <FaHeadset className="text-xl" />
+            <span className="text-sm">Customer Support</span> {/* Add Customer Support button */}
+          </button>
+
           <button
             onClick={handleLogout}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 w-full"
@@ -159,6 +154,7 @@ const Dashboard = () => {
           {selected === "calendar" && <Calendar />}
           {selected === "messages" && <Messages />}
           {selected === "notifications" && <Notifications />}
+          {selected === "support" && <Support />} {/* Add Support component */}
         </div>
       </div>
     </div>
