@@ -518,6 +518,7 @@
       "volunteerRequests": "طلبات التطوع",
       "analytics": "تحليل",
       "contactUs": "خدمة الزبائن",
+      "pendingEvents": "الأحداث المعلقة",
       "events": {
         "upcomingEvents": "الأحداث القادمة",
         "addEvent": "إضافة حدث",
@@ -617,6 +618,7 @@
         "capacity": "السعة",
         "requirements": "متطلبات خاصة",
         "requirementsPlaceholder": "أدخل أي متطلبات خاصة للحدث",
+        "image": "إضافة صورة",
         "submit": "إرسال"
       }      
     }

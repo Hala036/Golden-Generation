@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
+import { FaClock, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -13,12 +13,14 @@ import AdminHomepage from "./MainPage";
 import Retirees from "./Retirees";
 import Jobs from "./Jobs";
 import Analysis from "./Analysis";
+import Pending from "./PendingEvents";
 import Cards from "../RetireeProfile/Cards";
 import AddEvent from "../RetireeProfile/AddEvents";
 import Settings from "../RetireeProfile/SettingsCards";
 import Calendar from "../RetireeProfile/RetireeCalendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
+import Support from "../RetireeProfile/Support";
 import { useTranslation } from 'react-i18next';
 
 
@@ -39,7 +41,8 @@ const Dashboard = () => {
     { id: "notifications", label: t('dashboard.notifications'), icon: <FaBell /> },
     { id: "add", label: t('dashboard.events.addEvent'), icon: <FaPlusCircle /> },
     { id: "calendar", label: t('dashboard.calendar'), icon: <FaCalendarAlt /> },
-    { id: "messages", label: t('dashboard.messages'), icon: <FaComments /> }
+    { id: "messages", label: t('dashboard.messages'), icon: <FaComments /> },
+    { id: "pending", label: t('dashboard.pendingEvents'), icon: <FaClock /> }
   ];
 
   useEffect(() => {
@@ -189,7 +192,8 @@ const Dashboard = () => {
           {selected === "messages" && <Messages />}
           {selected === "add" && <AddEvent />}
           {selected === "notifications" && <Notifications />}
-          {selected === "support" && <Main />}
+          {selected === "support" && <Support />}
+          {selected === "pending" && <Pending />}
         </div>
       </div>
     </div>

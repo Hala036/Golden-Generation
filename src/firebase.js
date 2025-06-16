@@ -20,13 +20,6 @@ const app = !getApps().length
   ? initializeApp(firebaseConfig)
   : getApp();
 
-// Now you can safely log to confirm
-console.log("FIREBASE CONFIG:", {
-  apiKey: firebaseConfig.apiKey,
-  authDomain: firebaseConfig.authDomain,
-  projectId: firebaseConfig.projectId
-});
-
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -65,7 +58,6 @@ const addSettlement = async (settlementName) => {
       available: true,
       createdAt: new Date().toISOString() 
     });
-    console.log(`Settlement "${settlementName}" added successfully`);
     return true;
   } catch (error) {
     console.error("Error adding settlement:", error);
@@ -99,11 +91,29 @@ const getAvailableSettlements = async () => {
 const removeSettlement = async (settlementName) => {
   try {
     await deleteDoc(doc(db, 'availableSettlements', settlementName));
-    console.log(`Settlement "${settlementName}" removed successfully`);
     return true;
   } catch (error) {
     console.error("Error removing settlement:", error);
     return false;
+  }
+};
+
+/**
+ * Fetch users by settlement
+ * @param {string} settlement - The settlement name
+ * @returns {Promise<Array>} - Array of user objects
+ */
+export const getUsersBySettlement = async (settlement) => {
+  try {
+    const usersRef = collection(db, "users"); // Use the Firestore instance `db`
+    const snapshot = await getDocs(usersRef);
+    const users = snapshot.docs
+      .map((doc) => doc.data())
+      .filter((user) => user.idVerification?.settlement === settlement); // Filter by settlement
+    return users;
+  } catch (error) {
+    console.error("Error fetching users by settlement:", error);
+    throw error;
   }
 };
 
