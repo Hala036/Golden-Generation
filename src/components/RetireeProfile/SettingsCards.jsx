@@ -16,12 +16,9 @@ import { toast } from "react-hot-toast";
 import { auth, storage, db } from "../../firebase";
 import { updateProfile, updateEmail, reauthenticateWithCredential, EmailAuthProvider, updatePassword, deleteUser } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { doc, updateDoc, getDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import { getUserData } from '../../firebase';
 import { useNavigate } from "react-router-dom";
-import profile from "../../assets/profile.jpeg";
-import { useTheme } from '../../context/ThemeContext';
-import Modal from '../Modal';
 
 const mockAnnouncements = [
   { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
@@ -49,17 +46,13 @@ const SettingsCards = () => {
   const [profileData, setProfileData] = useState({ name: "John Doe", username: "johndoe", phone: "", email: "john@example.com" });
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [fontSize, setFontSize] = useState(16);
+  const [theme, setTheme] = useState("light");
   const [notifications, setNotifications] = useState({ email: true, push: false });
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
-  const [uploadingProfilePic, setUploadingProfilePic] = useState(false);
-  const [currentProfilePic, setCurrentProfilePic] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const navigate = useNavigate();
   const [deletePassword, setDeletePassword] = useState("");
-  const [uploadProgress, setUploadProgress] = useState(0);
-
-  const { theme, setTheme } = useTheme();
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -70,6 +63,7 @@ const SettingsCards = () => {
         const userDoc = await getUserData(user.uid);
         const prefs = userDoc?.preferences || {};
         if (prefs.fontSize) setFontSize(Number(prefs.fontSize));
+        if (prefs.theme) setTheme(prefs.theme);
         if (prefs.notifications) setNotifications(prefs.notifications);
       } catch (err) {
         // ignore if not logged in
@@ -94,23 +88,6 @@ const SettingsCards = () => {
       document.body.style.background = "#f9fafb";
     }
   }, [theme]);
-
-  // Fetch current profile picture
-  useEffect(() => {
-    const fetchCurrentProfilePic = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      try {
-        const userDoc = await getUserData(user.uid);
-        if (userDoc?.personalDetails?.photoURL) {
-          setCurrentProfilePic(userDoc.personalDetails.photoURL);
-        }
-      } catch (err) {
-        console.error("Error fetching profile picture:", err);
-      }
-    };
-    fetchCurrentProfilePic();
-  }, []);
 
   // Handlers
   const handleOpenEditProfile = async () => {
@@ -174,88 +151,30 @@ const SettingsCards = () => {
   };
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPG, JPEG, PNG, or GIF)');
-      return;
-    }
-
-    // Validate file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-    if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
-      return;
-    }
-
     setProfilePic(file);
-    setProfilePicPreview(URL.createObjectURL(file));
+    setProfilePicPreview(file ? URL.createObjectURL(file) : null);
   };
-
-  const uploadToCloudinary = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
-    formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error('Error uploading to Cloudinary:', error);
-      throw error;
-    }
-  };
-
   const handleProfilePicSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
     if (!user) return toast.error("Not logged in");
     if (!profilePic) return toast.error("Please select a picture");
-
-    setUploadingProfilePic(true);
-    setUploadProgress(0);
-
     try {
-      // Upload to Cloudinary
-      const imageUrl = await uploadToCloudinary(profilePic);
-      
+      // Upload to Storage
+      const storageRef = ref(storage, `profilePictures/${user.uid}`);
+      await uploadBytes(storageRef, profilePic);
+      const downloadURL = await getDownloadURL(storageRef);
       // Update Auth
-      await updateProfile(user, { photoURL: imageUrl });
-
+      await updateProfile(user, { photoURL: downloadURL });
       // Update Firestore
       const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { 
-        "personalDetails.photoURL": imageUrl,
-        "personalDetails.lastProfileUpdate": Date.now()
-      });
-
-      // Update local state
-      setCurrentProfilePic(imageUrl);
-      toast.success("Profile picture updated successfully");
+      await updateDoc(userRef, { "personalDetails.photoURL": downloadURL });
+      toast.success("Profile picture updated");
       setShowProfilePicture(false);
       setProfilePic(null);
       setProfilePicPreview(null);
     } catch (err) {
-      console.error("Error updating profile picture:", err);
       toast.error(err.message || "Failed to update profile picture");
-    } finally {
-      setUploadingProfilePic(false);
-      setUploadProgress(0);
     }
   };
   const handleFontSizeChange = (size) => {
@@ -283,30 +202,27 @@ const SettingsCards = () => {
     if (!user) return toast.error("Not logged in");
     if (deleteConfirm !== "DELETE") return toast.error("Type DELETE to confirm");
     if (!deletePassword) return toast.error("Enter your password");
-    
     try {
       // Re-authenticate
       const cred = EmailAuthProvider.credential(user.email, deletePassword);
       await reauthenticateWithCredential(user, cred);
-
-      // Delete Firestore user document first
-      await deleteDoc(doc(db, "users", user.uid));
-      
+      // Delete profile picture from Storage
+      try {
+        const picRef = ref(storage, `profilePictures/${user.uid}`);
+        await deleteObject(picRef);
+      } catch {}
+      // Delete Firestore user document
+      await updateDoc(doc(db, "users", user.uid), { deleted: true }); // Optional: mark as deleted first
+      await import("firebase/firestore").then(({ deleteDoc, doc }) => deleteDoc(doc(db, "users", user.uid)));
       // Delete Auth user
       await deleteUser(user);
-      
-      toast.success("Account deleted successfully");
+      toast.success("Account deleted");
       setShowDeleteAccount(false);
       setDeleteConfirm("");
       setDeletePassword("");
       navigate("/login");
     } catch (err) {
-      console.error("Error deleting account:", err);
-      if (err.code === 'auth/requires-recent-login') {
-        toast.error("Please log out and log in again before deleting your account");
-      } else {
-        toast.error(err.message || "Failed to delete account");
-      }
+      toast.error(err.message || "Failed to delete account");
     }
   };
 
@@ -415,7 +331,7 @@ const SettingsCards = () => {
     {
       label: "Delete Account",
       description: "Permanently delete your account",
-      icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
+      icon: <FiTrash2 className="text-2xl text-red-500" />,
       onClick: () => setShowDeleteAccount(true),
     },
   ];
@@ -428,27 +344,12 @@ const SettingsCards = () => {
           <div
             key={index}
             onClick={option.onClick}
-            className={`flex flex-col items-start border rounded-xl p-4 sm:p-6 shadow-lg cursor-pointer hover:shadow-2xl transition-all min-h-[120px] group w-full h-full
-              ${theme === 'dark' 
-                ? 'bg-gray-800 border-gray-700 hover:border-yellow-500 text-white' 
-                : 'bg-white border-gray-200 hover:border-yellow-400 text-gray-900'}`}
+            className="flex flex-col items-start border border-gray-200 rounded-xl p-4 sm:p-6 shadow-lg bg-white cursor-pointer hover:shadow-2xl hover:border-yellow-400 transition-all min-h-[120px] group w-full h-full"
           >
-            <div className={`mb-3 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'} group-hover:scale-110 transition-transform`}>
-              {option.icon}
-            </div>
+            <div className="mb-3 text-yellow-500 group-hover:scale-110 transition-transform">{option.icon}</div>
             <div>
-              <h3 className={`font-semibold text-base sm:text-lg mb-1 transition-colors ${
-                theme === 'dark' 
-                  ? 'group-hover:text-yellow-400' 
-                  : 'group-hover:text-yellow-600'
-              }`}>
-                {option.label}
-              </h3>
-              <p className={`text-xs sm:text-sm ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-              }`}>
-                {option.description}
-              </p>
+              <h3 className="font-semibold text-base sm:text-lg mb-1 group-hover:text-yellow-600 transition-colors">{option.label}</h3>
+              <p className="text-xs sm:text-sm text-gray-500">{option.description}</p>
             </div>
           </div>
         ))}
@@ -464,106 +365,22 @@ const SettingsCards = () => {
           )}
           {showReauth && (
             <form onSubmit={handleReauthAndSave} className="space-y-4">
-              <input 
-                type="password" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Re-authenticate with current password" 
-                value={reauthPassword} 
-                onChange={e => setReauthPassword(e.target.value)} 
-                required 
-              />
+              <input type="password" className="w-full p-2 border rounded" placeholder="Re-authenticate with current password" value={reauthPassword} onChange={e => setReauthPassword(e.target.value)} required />
               <div className="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => setShowReauth(false)} 
-                  className={`px-4 py-2 rounded ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-                >
-                  Re-authenticate
-                </button>
+                <button type="button" onClick={() => setShowReauth(false)} className="px-4 py-2 rounded bg-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 rounded bg-yellow-500 text-white">Re-authenticate</button>
               </div>
             </form>
           )}
           {!showReauth && (
             <form onSubmit={handleProfileSave} className="space-y-4">
-              <input 
-                type="text" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Name" 
-                value={profileData.name} 
-                onChange={e => setProfileData({ ...profileData, name: e.target.value })} 
-                required 
-              />
-              <input 
-                type="text" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Username" 
-                value={profileData.username} 
-                onChange={e => setProfileData({ ...profileData, username: e.target.value })} 
-                required 
-              />
-              <input 
-                type="tel" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Phone" 
-                value={profileData.phone} 
-                onChange={e => setProfileData({ ...profileData, phone: e.target.value })} 
-              />
-              <input 
-                type="email" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Email" 
-                value={profileData.email} 
-                onChange={e => setProfileData({ ...profileData, email: e.target.value })} 
-                required 
-              />
+              <input type="text" className="w-full p-2 border rounded" placeholder="Name" value={profileData.name} onChange={e => setProfileData({ ...profileData, name: e.target.value })} required />
+              <input type="text" className="w-full p-2 border rounded" placeholder="Username" value={profileData.username} onChange={e => setProfileData({ ...profileData, username: e.target.value })} required />
+              <input type="tel" className="w-full p-2 border rounded" placeholder="Phone" value={profileData.phone} onChange={e => setProfileData({ ...profileData, phone: e.target.value })} />
+              <input type="email" className="w-full p-2 border rounded" placeholder="Email" value={profileData.email} onChange={e => setProfileData({ ...profileData, email: e.target.value })} required />
               <div className="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => setShowEditProfile(false)} 
-                  className={`px-4 py-2 rounded ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-                >
-                  Save
-                </button>
+                <button type="button" onClick={() => setShowEditProfile(false)} className="px-4 py-2 rounded bg-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 rounded bg-yellow-500 text-white">Save</button>
               </div>
             </form>
           )}
@@ -573,60 +390,12 @@ const SettingsCards = () => {
       {showChangePassword && (
         <Modal onClose={() => setShowChangePassword(false)} title="Change Password">
           <form onSubmit={handlePasswordSave} className="space-y-4">
-            <input 
-              type="password" 
-              className={`w-full p-2 border rounded ${
-                theme === 'dark' 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'bg-white border-gray-300'
-              }`}
-              placeholder="Current Password" 
-              value={passwordData.currentPassword} 
-              onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} 
-              required 
-            />
-            <input 
-              type="password" 
-              className={`w-full p-2 border rounded ${
-                theme === 'dark' 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'bg-white border-gray-300'
-              }`}
-              placeholder="New Password" 
-              value={passwordData.newPassword} 
-              onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} 
-              required 
-            />
-            <input 
-              type="password" 
-              className={`w-full p-2 border rounded ${
-                theme === 'dark' 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'bg-white border-gray-300'
-              }`}
-              placeholder="Confirm New Password" 
-              value={passwordData.confirmPassword} 
-              onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} 
-              required 
-            />
+            <input type="password" className="w-full p-2 border rounded" placeholder="Current Password" value={passwordData.currentPassword} onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} required />
+            <input type="password" className="w-full p-2 border rounded" placeholder="New Password" value={passwordData.newPassword} onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} required />
+            <input type="password" className="w-full p-2 border rounded" placeholder="Confirm New Password" value={passwordData.confirmPassword} onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} required />
             <div className="flex justify-end gap-2">
-              <button 
-                type="button" 
-                onClick={() => setShowChangePassword(false)} 
-                className={`px-4 py-2 rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                    : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit" 
-                className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-              >
-                Change
-              </button>
+              <button type="button" onClick={() => setShowChangePassword(false)} className="px-4 py-2 rounded bg-gray-200">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded bg-yellow-500 text-white">Change</button>
             </div>
           </form>
         </Modal>
@@ -634,104 +403,12 @@ const SettingsCards = () => {
       {/* Profile Picture Modal */}
       {showProfilePicture && (
         <Modal onClose={() => setShowProfilePicture(false)} title="Update Profile Picture">
-          <form onSubmit={handleProfilePicSave} className="space-y-6">
-            {/* Current Profile Picture */}
-            <div className="flex flex-col items-center">
-              <div className="relative w-32 h-32 mb-4">
-                <img 
-                  src={currentProfilePic || profile} 
-                  alt="Current Profile" 
-                  className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
-                />
-              </div>
-              <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                Current Profile Picture
-              </p>
-            </div>
-
-            {/* File Upload Section */}
-            <div className="space-y-4">
-              <div className="flex flex-col items-center justify-center w-full">
-                <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'border-gray-600 bg-gray-700 hover:bg-gray-600' 
-                    : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
-                }`}>
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <FiImage className={`w-8 h-8 mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
-                    <p className={`mb-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      <span className="font-semibold">Click to upload</span> or drag and drop
-                    </p>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      PNG, JPG, JPEG or GIF (MAX. 5MB)
-                    </p>
-                  </div>
-                  <input 
-                    type="file" 
-                    className="hidden" 
-                    accept="image/*" 
-                    onChange={handleProfilePicChange}
-                  />
-                </label>
-              </div>
-
-              {/* Upload Progress */}
-              {uploadingProfilePic && (
-                <div className={`w-full rounded-full h-2.5 ${
-                  theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
-                }`}>
-                  <div 
-                    className="bg-yellow-500 h-2.5 rounded-full transition-all duration-300" 
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
-                </div>
-              )}
-
-              {/* Preview Section */}
-              {profilePicPreview && (
-                <div className="flex flex-col items-center">
-                  <div className="relative w-32 h-32">
-                    <img 
-                      src={profilePicPreview} 
-                      alt="Preview" 
-                      className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
-                    />
-                  </div>
-                  <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    New Profile Picture Preview
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
+          <form onSubmit={handleProfilePicSave} className="space-y-4">
+            <input type="file" accept="image/*" onChange={handleProfilePicChange} />
+            {profilePicPreview && <img src={profilePicPreview} alt="Preview" className="w-24 h-24 rounded-full object-cover mx-auto" />}
             <div className="flex justify-end gap-2">
-              <button 
-                type="button" 
-                onClick={() => setShowProfilePicture(false)} 
-                className={`px-4 py-2 rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                    : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-                disabled={uploadingProfilePic}
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit" 
-                className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 flex items-center gap-2"
-                disabled={!profilePic || uploadingProfilePic}
-              >
-                {uploadingProfilePic ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Uploading...
-                  </>
-                ) : (
-                  'Save Changes'
-                )}
-              </button>
+              <button type="button" onClick={() => setShowProfilePicture(false)} className="px-4 py-2 rounded bg-gray-200">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded bg-yellow-500 text-white">Save</button>
             </div>
           </form>
         </Modal>
@@ -743,11 +420,7 @@ const SettingsCards = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleFontSizeChange(fontSize - 1)}
-                className={`px-3 py-1 rounded text-xl font-bold transition ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                    : 'bg-gray-200 hover:bg-yellow-400'
-                }`}
+                className="px-3 py-1 rounded bg-gray-200 text-xl font-bold hover:bg-yellow-400 transition"
                 disabled={fontSize <= 2}
               >
                 –
@@ -758,19 +431,11 @@ const SettingsCards = () => {
                 max={40}
                 value={fontSize}
                 onChange={e => handleFontSizeChange(Number(e.target.value))}
-                className={`w-16 text-center border rounded p-2 text-lg font-semibold ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
+                className="w-16 text-center border rounded p-2 text-lg font-semibold"
               />
               <button
                 onClick={() => handleFontSizeChange(fontSize + 1)}
-                className={`px-3 py-1 rounded text-xl font-bold transition ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                    : 'bg-gray-200 hover:bg-yellow-400'
-                }`}
+                className="px-3 py-1 rounded bg-gray-200 text-xl font-bold hover:bg-yellow-400 transition"
                 disabled={fontSize >= 40}
               >
                 +
@@ -781,19 +446,13 @@ const SettingsCards = () => {
                 <button
                   key={size}
                   onClick={() => handleFontSizeChange(size)}
-                  className={`px-3 py-1 rounded border ${
-                    fontSize === size 
-                      ? "bg-yellow-500 text-white border-yellow-500" 
-                      : theme === 'dark'
-                        ? "bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                        : "bg-white border-gray-300 hover:bg-yellow-100"
-                  }`}
+                  className={`px-3 py-1 rounded border ${fontSize === size ? "bg-yellow-500 text-white border-yellow-500" : "bg-white border-gray-300 hover:bg-yellow-100"}`}
                 >
                   {size}px
                 </button>
               ))}
             </div>
-            <div className={`mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`} style={{ fontSize: fontSize }}>
+            <div className="mt-4 text-gray-600" style={{ fontSize: fontSize }}>
               Live preview: The quick brown fox jumps over the lazy dog.
             </div>
           </div>
@@ -809,16 +468,10 @@ const SettingsCards = () => {
           ) : (
             <ul className="space-y-4">
               {announcements.map(a => (
-                <li key={a.id} className={`border-b pb-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                  <div className={`font-semibold ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'}`}>
-                    {a.title}
-                  </div>
-                  <div className={`text-xs mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
-                    {a.date}
-                  </div>
-                  <div className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {a.content}
-                  </div>
+                <li key={a.id} className="border-b pb-2">
+                  <div className="font-semibold text-yellow-700">{a.title}</div>
+                  <div className="text-xs text-gray-400 mb-1">{a.date}</div>
+                  <div className="text-gray-700 text-sm">{a.content}</div>
                 </li>
               ))}
             </ul>
@@ -829,22 +482,12 @@ const SettingsCards = () => {
       {showNotifications && (
         <Modal onClose={() => setShowNotifications(false)} title="Notifications">
           <div className="space-y-4">
-            <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-              <input 
-                type="checkbox" 
-                checked={notifications.email} 
-                onChange={() => handleNotificationsChange("email")} 
-                className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
-              />
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={notifications.email} onChange={() => handleNotificationsChange("email")} />
               Email Notifications
             </label>
-            <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-              <input 
-                type="checkbox" 
-                checked={notifications.push} 
-                onChange={() => handleNotificationsChange("push")} 
-                className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
-              />
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={notifications.push} onChange={() => handleNotificationsChange("push")} />
               Push Notifications
             </label>
           </div>
@@ -854,30 +497,8 @@ const SettingsCards = () => {
       {showTheme && (
         <Modal onClose={() => setShowTheme(false)} title="Theme">
           <div className="space-y-3">
-            <button 
-              onClick={() => handleThemeChange("light")} 
-              className={`w-full p-2 rounded transition-colors ${
-                theme === "light" 
-                  ? "bg-yellow-500 text-white" 
-                  : theme === "dark" 
-                    ? "bg-gray-700 text-white hover:bg-gray-600" 
-                    : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              Light
-            </button>
-            <button 
-              onClick={() => handleThemeChange("dark")} 
-              className={`w-full p-2 rounded transition-colors ${
-                theme === "dark" 
-                  ? "bg-yellow-500 text-white" 
-                  : theme === "light" 
-                    ? "bg-gray-700 text-white hover:bg-gray-600" 
-                    : "bg-gray-100 hover:bg-gray-200"
-              }`}
-            >
-              Dark
-            </button>
+            <button onClick={() => handleThemeChange("light")} className={`w-full p-2 rounded ${theme === "light" ? "bg-yellow-500 text-white" : "bg-gray-100"}`}>Light</button>
+            <button onClick={() => handleThemeChange("dark")} className={`w-full p-2 rounded ${theme === "dark" ? "bg-yellow-500 text-white" : "bg-gray-100"}`}>Dark</button>
           </div>
         </Modal>
       )}
@@ -885,42 +506,11 @@ const SettingsCards = () => {
       {showDeleteAccount && (
         <Modal onClose={() => setShowDeleteAccount(false)} title="Delete Account">
           <form onSubmit={handleDeleteAccount} className="space-y-4">
-            <div className={`text-red-600 font-semibold ${theme === 'dark' ? 'text-red-400' : ''}`}>
-              This action is irreversible. Type <b>DELETE</b> to confirm.
-            </div>
-            <input 
-              type="text"
-              className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Type DELETE to confirm"
-              value={deleteConfirm}
-              onChange={e => setDeleteConfirm(e.target.value)}
-              required
-            />
-            <input 
-              type="password" 
-              className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your password" 
-              value={deletePassword} 
-              onChange={e => setDeletePassword(e.target.value)} 
-            />
+            <div className="text-red-600 font-semibold">This action is irreversible. Type <b>DELETE</b> to confirm.</div>
+            <input type="password" className="w-full p-2 border rounded" placeholder="Enter your password" value={deletePassword} onChange={e => setDeletePassword(e.target.value)} />
             <div className="flex justify-end gap-2">
-              <button 
-                type="button" 
-                onClick={() => setShowDeleteAccount(false)} 
-                className={`px-4 py-2 rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                    : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit" 
-                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-              >
-                Delete
-              </button>
+              <button type="button" onClick={() => setShowDeleteAccount(false)} className="px-4 py-2 rounded bg-gray-200">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded bg-red-500 text-white">Delete</button>
             </div>
           </form>
         </Modal>
@@ -928,5 +518,22 @@ const SettingsCards = () => {
     </div>
   );
 };
+
+// Simple Modal Component
+const Modal = ({ children, onClose, title }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
+    <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md relative animate-fadeIn">
+      <button
+        onClick={onClose}
+        className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
+        aria-label="Close"
+      >
+        ×
+      </button>
+      <h2 className="text-xl font-bold mb-4 text-yellow-600">{title}</h2>
+      {children}
+    </div>
+  </div>
+);
 
 export default SettingsCards;
