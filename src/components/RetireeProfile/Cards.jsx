@@ -161,7 +161,7 @@ const Cards = () => {
           {/* Banner Image */}
           <div className="mb-4">
             <img
-              src={selectedEvent.image || categoryImages[selectedEvent.categoryId]}
+              src={selectedEvent.imageUrl || categoryImages[selectedEvent.categoryId]}
               alt={selectedEvent.title}
               className="w-full h-64 object-cover rounded-md"
             />
@@ -218,7 +218,7 @@ const Cards = () => {
           {!loading && (
             <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
               {filteredEvents.map((event) => {
-                const backgroundImage = event.image || categoryImages[event.categoryId];
+                const backgroundImage = event.imageUrl || categoryImages[event.categoryId];
                 return (
                   <div
                     key={event.id}
