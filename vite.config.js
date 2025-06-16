@@ -5,8 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    react(), // Place react() before tailwindcss()
     tailwindcss(),
-    react() // Let Vite handle React transformations automatically
   ],
   server: {
     proxy: {
@@ -24,10 +24,10 @@ export default defineConfig({
             proxyRes.headers['Cache-Control'] = 'no-store';
           });
         },
-      }
+      },
     },
     hmr: {
-      overlay: false
-    }
-  }
+      overlay: false,
+    },
+  },
 });
