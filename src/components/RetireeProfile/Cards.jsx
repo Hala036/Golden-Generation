@@ -37,6 +37,10 @@ const Cards = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const user = auth.currentUser;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+        console.log("User Settlement:", userSettlement);
         // Fetch categories
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await getDocs(categoriesRef);
@@ -56,7 +60,10 @@ const Cards = () => {
           }))
           .filter((event) => event.status == "active"); // Exclude pending and rejected events
         setEvents(eventsData);
-        setFilteredEvents(eventsData); // Initially show all events
+        setFilteredEvents(
+          eventsData.filter((event) => event.settlement === userSettlement)
+        );
+        console.log("Filtered Events:", filteredEvents);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
