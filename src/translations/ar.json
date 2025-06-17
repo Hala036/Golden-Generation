@@ -625,5 +625,38 @@
         "image": "إضافة صورة",
         "submit": "إرسال"
       }      
+    },
+    "retiree": {
+      "admin": {
+        "infoTitle": "معلومات المسؤول",
+        "username": "اسم المستخدم",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "phone": "رقم الهاتف",
+        "loadingInfo": "جاري تحميل معلومات المسؤول...",
+        "defaultUsername": "المسؤول",
+        "defaultFirstName": "غير متوفر",
+        "defaultLastName": "غير متوفر",
+        "defaultEmail": "غير متوفر",
+        "defaultPhone": "غير متوفر"
+      },
+      "support": {
+        "title": "الدعم الفني",
+        "description": "إذا كانت لديك أي أسئلة أو تحتاج إلى مساعدة، يمكنك التواصل معنا عن طريق إرسال رسالة أدناه.",
+        "placeholder": "اكتب رسالتك هنا...",
+        "sendButton": "إرسال الرسالة"
+      },
+      "errors": {
+        "noUserLoggedIn": "لم يتم تسجيل دخول أي مستخدم.",
+        "noUserData": "فشل في تحميل بيانات المستخدم.",
+        "missingSettlement": "معلومات المستوطنة مفقودة.",
+        "noUsersInSettlement": "لم يتم العثور على مستخدمين في المستوطنة.",
+        "noAdminFound": "لم يتم العثور على مسؤول في المستوطنة.",
+        "fetchAdminError": "فشل في تحميل بيانات المسؤول.",
+        "emptyMessage": "يرجى إدخال رسالة قبل الإرسال."
+      },
+      "success": {
+        "messageSent": "تم إرسال رسالتك بنجاح!"
+      }
     }
   } 

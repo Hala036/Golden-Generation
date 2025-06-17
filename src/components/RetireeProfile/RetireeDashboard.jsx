@@ -1,5 +1,6 @@
 import { FaHeadset } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
+import { useTranslation } from 'react-i18next';
 
 import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
@@ -12,11 +13,12 @@ import CustomerSupport from "./Support";
 
 const RetireeDashboard = () => {
   const customIcons = [];
+  const { t } = useTranslation();
 
   const customButtons = [
     {
       id: "support",
-      label: "Customer Support",
+      label: t("retiree.support.title"),
       icon: <FaHeadset />,
     },
   ];

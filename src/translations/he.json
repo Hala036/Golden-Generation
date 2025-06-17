@@ -550,5 +550,38 @@
         "image": "הוספת תמונה",
         "submit": "שלח"
       }
+    },
+    "retiree": {
+      "admin": {
+        "infoTitle": "מידע על מנהל",
+        "username": "שם משתמש",
+        "name": "שם",
+        "email": "אימייל",
+        "phone": "טלפון",
+        "loadingInfo": "טוען מידע על מנהל...",
+        "defaultUsername": "מנהל",
+        "defaultFirstName": "לא זמין",
+        "defaultLastName": "לא זמין",
+        "defaultEmail": "לא זמין",
+        "defaultPhone": "לא זמין"
+      },
+      "support": {
+        "title": "תמיכה ללקוח",
+        "description": "אם יש לך שאלות או שאתה זקוק לעזרה, אל תהסס לפנות אלינו על ידי שליחת הודעה למטה.",
+        "placeholder": "הקלד את ההודעה שלך כאן...",
+        "sendButton": "שלח הודעה"
+      },
+      "errors": {
+        "noUserLoggedIn": "לא נכנס משתמש.",
+        "noUserData": "טעינת נתוני המשתמש נכשלה.",
+        "missingSettlement": "מידע על ההתיישבות חסר.",
+        "noUsersInSettlement": "לא נמצאו משתמשים בהתיישבות.",
+        "noAdminFound": "לא נמצא מנהל בהתיישבות.",
+        "fetchAdminError": "טעינת נתוני המנהל נכשלה.",
+        "emptyMessage": "אנא הזן הודעה לפני השליחה."
+      },
+      "success": {
+        "messageSent": "ההודעה שלך נשלחה בהצלחה!"
+      }
     }
   } 

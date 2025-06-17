@@ -550,7 +550,7 @@
         "vacation": "Vacation",
         "workshop": "Workshop",
         "lecture": "Lecture",
-        "homegroup": "Home Group",
+        "houseparty": "House Party",
         "socialevent": "Social Event"
       },
       "search": {
@@ -630,6 +630,39 @@
         "requirementsPlaceholder": "Enter any special requirements for the event",
         "image": "Add Image",
         "submit": "Submit"
+      }
+    },
+    "retiree": {
+      "admin": {
+        "infoTitle": "Admin Information",
+        "username": "Username",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "loadingInfo": "Loading admin information...",
+        "defaultUsername": "Admin",
+        "defaultFirstName": "N/A",
+        "defaultLastName": "N/A",
+        "defaultEmail": "N/A",
+        "defaultPhone": "N/A"
+      },
+      "support": {
+        "title": "Customer Support",
+        "description": "If you have any questions or need assistance, feel free to reach out to us by sending a message below.",
+        "placeholder": "Type your message here...",
+        "sendButton": "Send Message"
+      },
+      "errors": {
+        "noUserLoggedIn": "No user is logged in.",
+        "noUserData": "Failed to load user data.",
+        "missingSettlement": "Settlement information is missing.",
+        "noUsersInSettlement": "No users found in the settlement.",
+        "noAdminFound": "No admin found in the settlement.",
+        "fetchAdminError": "Failed to load admin data.",
+        "emptyMessage": "Please enter a message before sending."
+      },
+      "success": {
+        "messageSent": "Your message has been sent successfully!"
       }
     }
   } 
