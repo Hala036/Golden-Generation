@@ -24,8 +24,9 @@ const categoryImages = {
 
 const Cards = () => {
   const { language, t } = useLanguage(); // Access language and translation function
-  const [events, setEvents] = useState([]); // Store all events
-  const [filteredEvents, setFilteredEvents] = useState([]); // Store filtered events
+  const [events, setEvents] = useState([]);
+  const [baseEvents, setBaseEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [categories, setCategories] = useState([]); // Store categories
   const [selectedCategory, setSelectedCategory] = useState("all"); // Track selected category
   const [searchQuery, setSearchQuery] = useState(""); // Track search input
@@ -58,12 +59,13 @@ const Cards = () => {
             id: doc.id,
             ...doc.data(),
           }))
-          .filter((event) => event.status == "active"); // Exclude pending and rejected events
+          .filter((event) => event.status == "active"); // only include active events
         setEvents(eventsData);
-        setFilteredEvents(
-          eventsData.filter((event) => event.settlement === userSettlement)
-        );
-        console.log("Filtered Events:", filteredEvents);
+
+        const settlementFiltered = eventsData.filter((event) => event.settlement === userSettlement);
+        setBaseEvents(settlementFiltered);
+
+        console.log("Base Events:", settlementFiltered);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -74,33 +76,27 @@ const Cards = () => {
     fetchData();
   }, []);
 
+  const applySearchAndCategory = (base) => {
+    const filtered = base.filter((event) => {
+      const matchesCategory = selectedCategory === "all" || event.categoryId === selectedCategory;
+      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+    setFilteredEvents(filtered);
+  };
+
+  useEffect(() => {
+    applySearchAndCategory(baseEvents);
+  }, [baseEvents, selectedCategory, searchQuery]);
+
   // Handle category filter
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    if (category === "all") {
-      setFilteredEvents(events.filter((event) => event.title.toLowerCase().includes(searchQuery.toLowerCase())));
-    } else {
-      setFilteredEvents(
-        events.filter(
-          (event) =>
-            event.categoryId === category &&
-            event.title.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
   };
 
   // Handle search input
   const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-    setFilteredEvents(
-      events.filter(
-        (event) =>
-          (selectedCategory === "all" || event.categoryId === selectedCategory) &&
-          event.title.toLowerCase().includes(query)
-      )
-    );
+    setSearchQuery(e.target.value.toLowerCase());
   };
 
   // Handle "More Info" button click
@@ -260,9 +256,15 @@ const Cards = () => {
                     </div>
 
                     {/* Location with Pin Icon */}
-                    <div className="flex items-center mb-3">
-                      <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
-                      <p className="text-gray-700 font-medium">{event.location}</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                        <p className="text-gray-700 font-medium">{event.location}</p>
+                      </div>
+                      {/* Number of Participants */}
+                      <p className="text-gray-500 text-sm">
+                        {event.participants ? `${event.participants.length} ${t("dashboard.events.participants")}` : `${t("dashboard.events.noParticipants")}`}
+                      </p>
                     </div>
 
                     {/* Description */}
