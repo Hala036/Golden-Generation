@@ -519,6 +519,8 @@
       "analytics": "Analytics",
       "contactUs": "Customer Support",
       "pendingEvents": "Pending Events",
+      "arrowClose": "←",
+      "arrowOpen": "→",
       "events":{
         "upcomingEvents": "Upcoming Events",
         "addEvent": "Add Event",

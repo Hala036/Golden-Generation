@@ -519,6 +519,8 @@
       "analytics": "تحليل",
       "contactUs": "خدمة الزبائن",
       "pendingEvents": "الأحداث المعلقة",
+      "arrowClose": "→",
+      "arrowOpen": "←",
       "events": {
         "upcomingEvents": "الأحداث القادمة",
         "addEvent": "إضافة حدث",

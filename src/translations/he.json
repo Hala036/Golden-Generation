@@ -444,6 +444,8 @@
       "analytics": "ניתוח",
       "contactUs": "תמיכת לקוחות",
       "pendingEvents": "אירועים ממתינים",
+      "arrowClose": "→",
+      "arrowOpen": "←",
       "events": {
         "upcomingEvents": "אירועים קרובים",
         "addEvent": "הוסף אירוע",

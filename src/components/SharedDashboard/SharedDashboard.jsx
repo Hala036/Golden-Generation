@@ -66,7 +66,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
       {/* Sidebar */}
       <div
         className={`transition-all duration-300 ${
-          isSidebarExpanded ? "w-70" : "w-20"
+          isSidebarExpanded ? "w-60" : "w-15"
         } bg-gray-100 shadow-lg h-[calc(100vh-60px)] mt-15`}
       >
         {/* Toggle Button */}
@@ -74,7 +74,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
           onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
           className="absolute text-gray-600 hover:text-gray-800"
         >
-          {isSidebarExpanded ? "←" : "→"}
+          {isSidebarExpanded ? t('dashboard.arrowClose') : t('dashboard.arrowOpen')}
         </button>
 
         {/* Profile Section */}
