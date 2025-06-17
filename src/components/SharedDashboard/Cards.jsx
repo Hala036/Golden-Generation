@@ -37,6 +37,10 @@ const Cards = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const user = auth.currentUser;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+        console.log("User Settlement:", userSettlement);
         // Fetch categories
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await getDocs(categoriesRef);
@@ -56,7 +60,10 @@ const Cards = () => {
           }))
           .filter((event) => event.status == "active"); // Exclude pending and rejected events
         setEvents(eventsData);
-        setFilteredEvents(eventsData); // Initially show all events
+        setFilteredEvents(
+          eventsData.filter((event) => event.settlement === userSettlement)
+        );
+        console.log("Filtered Events:", filteredEvents);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -144,7 +151,7 @@ const Cards = () => {
   };
 
   return (
-    <div className="bg-white p-4">
+    <div className="bg-white">
       {/* Check if an event is selected */}
       {selectedEvent ? (
         // Event Details View
@@ -236,11 +243,20 @@ const Cards = () => {
                       />
                     </div>
                     {/* Date with Calendar Icon */}
-                    <div className="flex items-center mb-2">
-                      <FaCalendarAlt className="text-[#FFD966] mr-2" />
-                      <p className="text-gray-700 font-medium">
-                        {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                      </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                        <p className="text-gray-700 font-medium">
+                          {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
+                        </p>
+                      </div>
+                      {/* More Details Button */}
+                      <button
+                        className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
+                        onClick={() => handleMoreInfo(event)}
+                      >
+                        {t("dashboard.events.moreDetails")}
+                      </button>
                     </div>
 
                     {/* Location with Pin Icon */}
@@ -251,15 +267,6 @@ const Cards = () => {
 
                     {/* Description */}
                     <p className="text-gray-500 text-sm">{event.description}</p>
-                    {/* More Details Button */}
-                    <div className="mt-auto flex justify-end py-2">
-                      <button
-                        className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-                        onClick={() => handleMoreInfo(event)}
-                      >
-                        {t("dashboard.events.moreDetails")}
-                      </button>
-                    </div>
                   </div>
                 );
               })}
