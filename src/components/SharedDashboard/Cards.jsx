@@ -3,13 +3,14 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaArrowLeft } from "react-icon
 import { db, auth } from "../../firebase"; // Import Firebase configuration
 import { collection, getDocs, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
+import { toast } from 'react-hot-toast';
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
 import VacationImg from "../../assets/Vacation.png";
 import WorkshopImg from "../../assets/Workshop.png";
 import LectureImg from "../../assets/Lecture.png";
-import HomeGroupImg from "../../assets/HomeGroup.png";
+import HousePartyImg from "../../assets/HouseParty.png";
 import SocialEventImg from "../../assets/SocialEvent.png";
 
 // Map local images to categories
@@ -18,14 +19,15 @@ const categoryImages = {
   vacation: VacationImg,
   workshop: WorkshopImg,
   lecture: LectureImg,
-  homegroup: HomeGroupImg,
+  houseparty: HousePartyImg,
   socialevent: SocialEventImg,
 };
 
 const Cards = () => {
   const { language, t } = useLanguage(); // Access language and translation function
-  const [events, setEvents] = useState([]); // Store all events
-  const [filteredEvents, setFilteredEvents] = useState([]); // Store filtered events
+  const [events, setEvents] = useState([]);
+  const [baseEvents, setBaseEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [categories, setCategories] = useState([]); // Store categories
   const [selectedCategory, setSelectedCategory] = useState("all"); // Track selected category
   const [searchQuery, setSearchQuery] = useState(""); // Track search input
@@ -37,6 +39,9 @@ const Cards = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const user = auth.currentUser;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
         // Fetch categories
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await getDocs(categoriesRef);
@@ -54,9 +59,11 @@ const Cards = () => {
             id: doc.id,
             ...doc.data(),
           }))
-          .filter((event) => event.status == "active"); // Exclude pending and rejected events
+          .filter((event) => event.status == "active"); // only include active events
         setEvents(eventsData);
-        setFilteredEvents(eventsData); // Initially show all events
+
+        const settlementFiltered = eventsData.filter((event) => event.settlement === userSettlement);
+        setBaseEvents(settlementFiltered);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -67,33 +74,27 @@ const Cards = () => {
     fetchData();
   }, []);
 
+  const applySearchAndCategory = (base) => {
+    const filtered = base.filter((event) => {
+      const matchesCategory = selectedCategory === "all" || event.categoryId === selectedCategory;
+      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+    setFilteredEvents(filtered);
+  };
+
+  useEffect(() => {
+    applySearchAndCategory(baseEvents);
+  }, [baseEvents, selectedCategory, searchQuery]);
+
   // Handle category filter
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    if (category === "all") {
-      setFilteredEvents(events.filter((event) => event.title.toLowerCase().includes(searchQuery.toLowerCase())));
-    } else {
-      setFilteredEvents(
-        events.filter(
-          (event) =>
-            event.categoryId === category &&
-            event.title.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
   };
 
   // Handle search input
   const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-    setFilteredEvents(
-      events.filter(
-        (event) =>
-          (selectedCategory === "all" || event.categoryId === selectedCategory) &&
-          event.title.toLowerCase().includes(query)
-      )
-    );
+    setSearchQuery(e.target.value.toLowerCase());
   };
 
   // Handle "More Info" button click
@@ -136,19 +137,19 @@ const Cards = () => {
         });
       }
 
-      alert(`Successfully joined event: ${event.title}`);
+      toast.success(`Successfully joined event: ${event.title}`);
     } catch (error) {
       console.error("Error joining event:", error);
-      alert("Failed to join event. Please try again.");
+      toast.error("Failed to join event. Please try again.");
     }
   };
 
   return (
-    <div className="bg-white p-4">
+    <div className="bg-white">
       {/* Check if an event is selected */}
       {selectedEvent ? (
         // Event Details View
-        <div>
+        <div class="p-2">
           {/* Back to Events Button */}
           <button
             onClick={handleBackToEvents}
@@ -236,23 +237,14 @@ const Cards = () => {
                       />
                     </div>
                     {/* Date with Calendar Icon */}
-                    <div className="flex items-center mb-2">
-                      <FaCalendarAlt className="text-[#FFD966] mr-2" />
-                      <p className="text-gray-700 font-medium">
-                        {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                      </p>
-                    </div>
-
-                    {/* Location with Pin Icon */}
-                    <div className="flex items-center mb-3">
-                      <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
-                      <p className="text-gray-700 font-medium">{event.location}</p>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-gray-500 text-sm">{event.description}</p>
-                    {/* More Details Button */}
-                    <div className="mt-auto flex justify-end py-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                        <p className="text-gray-700 font-medium">
+                          {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
+                        </p>
+                      </div>
+                      {/* More Details Button */}
                       <button
                         className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
                         onClick={() => handleMoreInfo(event)}
@@ -260,6 +252,21 @@ const Cards = () => {
                         {t("dashboard.events.moreDetails")}
                       </button>
                     </div>
+
+                    {/* Location with Pin Icon */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                        <p className="text-gray-700 font-medium">{event.location}</p>
+                      </div>
+                      {/* Number of Participants */}
+                      <p className="text-gray-500 text-sm">
+                        {event.participants ? `${event.participants.length} ${t("dashboard.events.participants")}` : `${t("dashboard.events.noParticipants")}`}
+                      </p>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-gray-500 text-sm">{event.description}</p>
                   </div>
                 );
               })}

@@ -519,6 +519,8 @@
       "analytics": "تحليل",
       "contactUs": "خدمة الزبائن",
       "pendingEvents": "الأحداث المعلقة",
+      "arrowClose": "→",
+      "arrowOpen": "←",
       "events": {
         "upcomingEvents": "الأحداث القادمة",
         "addEvent": "إضافة حدث",
@@ -538,7 +540,9 @@
         "backToEvents": "العودة إلى الأحداث",
         "join": "انضم إلى الحدث",
         "leave": "غادر الحدث",
-        "moreDetails": "مزيد من المعلومات"
+        "moreDetails": "مزيد من المعلومات",
+        "participants": "مشاركون",
+        "noParticipants": "لا يوجد مشاركون"
       },
       "filter": {
         "allCategories": "جميع الفئات"
@@ -558,9 +562,29 @@
         "title": "جيل الذهب",
         "logout": "الخروج"
       },
+      "messages": {
+        "title": "الرسائل",
+        "search": "ابحث عن المستخدمين...",
+        "noMessages": "لا توجد رسائل حتى الآن.",
+        "typeMessage": "اكتب رسالتك...",
+        "selectChat": "اختر محادثة لبدء إرسال الرسائل.",
+        "friendRequestSent": "تم إرسال طلب الصداقة بنجاح.",
+        "friendRequestExists": "طلب الصداقة موجود بالفعل.",
+        "friendRequestAccepted": "تم قبول طلب الصداقة.",
+        "friendRequestRejected": "تم رفض طلب الصداقة.",
+        "incomingCall": "مكالمة واردة",
+        "calling": "جارٍ الاتصال...",
+        "audioCallError": "فشل بدء مكالمة الصوت.",
+        "leaveCall": "إنهاء المكالمة",
+        "mute": "كتم الصوت",
+        "unmute": "إلغاء كتم الصوت",
+        "noUserSelected": "لم يتم اختيار مستخدم للمكالمة.",
+        "mustBeLoggedIn": "يجب أن تكون مسجلاً للدخول لبدء المكالمة.",
+        "loadingMessages": "جارٍ تحميل الرسائل...",
+        "isTyping": "يكتب..."
+      },
       "notifications": "الإشعارات",
-      "calendar": "التقويم",
-      "messages": "الرسائل"
+      "calendar": "التقويم"
     },
     "errors": {
       "required": "هذا الحقل مطلوب",
@@ -621,5 +645,38 @@
         "image": "إضافة صورة",
         "submit": "إرسال"
       }      
+    },
+    "retiree": {
+      "admin": {
+        "infoTitle": "معلومات المسؤول",
+        "username": "اسم المستخدم",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "phone": "رقم الهاتف",
+        "loadingInfo": "جاري تحميل معلومات المسؤول...",
+        "defaultUsername": "المسؤول",
+        "defaultFirstName": "غير متوفر",
+        "defaultLastName": "غير متوفر",
+        "defaultEmail": "غير متوفر",
+        "defaultPhone": "غير متوفر"
+      },
+      "support": {
+        "title": "الدعم الفني",
+        "description": "إذا كانت لديك أي أسئلة أو تحتاج إلى مساعدة، يمكنك التواصل معنا عن طريق إرسال رسالة أدناه.",
+        "placeholder": "اكتب رسالتك هنا...",
+        "sendButton": "إرسال الرسالة"
+      },
+      "errors": {
+        "noUserLoggedIn": "لم يتم تسجيل دخول أي مستخدم.",
+        "noUserData": "فشل في تحميل بيانات المستخدم.",
+        "missingSettlement": "معلومات المستوطنة مفقودة.",
+        "noUsersInSettlement": "لم يتم العثور على مستخدمين في المستوطنة.",
+        "noAdminFound": "لم يتم العثور على مسؤول في المستوطنة.",
+        "fetchAdminError": "فشل في تحميل بيانات المسؤول.",
+        "emptyMessage": "يرجى إدخال رسالة قبل الإرسال."
+      },
+      "success": {
+        "messageSent": "تم إرسال رسالتك بنجاح!"
+      }
     }
   } 

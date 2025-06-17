@@ -519,6 +519,8 @@
       "analytics": "Analytics",
       "contactUs": "Customer Support",
       "pendingEvents": "Pending Events",
+      "arrowClose": "←",
+      "arrowOpen": "→",
       "events":{
         "upcomingEvents": "Upcoming Events",
         "addEvent": "Add Event",
@@ -538,7 +540,9 @@
         "backToEvents": "Back to Events",
         "join": "Join Event",
         "leave": "Leave Event",
-        "moreDetails": "More Info"
+        "moreDetails": "More Info",
+        "participants": "Participants",
+        "noParticipants": "No participants yet"
       },
       "filter": {
         "allCategories": "All Categories",
@@ -546,7 +550,7 @@
         "vacation": "Vacation",
         "workshop": "Workshop",
         "lecture": "Lecture",
-        "homegroup": "Home Group",
+        "houseparty": "House Party",
         "socialevent": "Social Event"
       },
       "search": {
@@ -564,9 +568,29 @@
         "title": "Golden Generation",
         "logout": "Logout"
       },
+      "messages": {
+        "title": "Messages",
+        "search": "Search for users...",
+        "noMessages": "No messages yet.",
+        "typeMessage": "Type your message...",
+        "selectChat": "Select a chat to start messaging.",
+        "friendRequestSent": "Friend request sent successfully.",
+        "friendRequestExists": "A friend request already exists.",
+        "friendRequestAccepted": "Friend request accepted.",
+        "friendRequestRejected": "Friend request rejected.",
+        "incomingCall": "Incoming Call",
+        "calling": "Calling...",
+        "audioCallError": "Failed to start audio call.",
+        "leaveCall": "Leave Call",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "noUserSelected": "No user selected for the call.",
+        "mustBeLoggedIn": "You must be logged in to start a call.",
+        "loadingMessages": "Loading messages...",
+        "isTyping": "is typing..."
+      },
       "notifications": "Notifications",
-      "calendar": "Calendar",
-      "messages": "Messages"
+      "calendar": "Calendar"
     },
     "errors": {
       "required": "This field is required",
@@ -626,6 +650,39 @@
         "requirementsPlaceholder": "Enter any special requirements for the event",
         "image": "Add Image",
         "submit": "Submit"
+      }
+    },
+    "retiree": {
+      "admin": {
+        "infoTitle": "Admin Information",
+        "username": "Username",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "loadingInfo": "Loading admin information...",
+        "defaultUsername": "Admin",
+        "defaultFirstName": "N/A",
+        "defaultLastName": "N/A",
+        "defaultEmail": "N/A",
+        "defaultPhone": "N/A"
+      },
+      "support": {
+        "title": "Customer Support",
+        "description": "If you have any questions or need assistance, feel free to reach out to us by sending a message below.",
+        "placeholder": "Type your message here...",
+        "sendButton": "Send Message"
+      },
+      "errors": {
+        "noUserLoggedIn": "No user is logged in.",
+        "noUserData": "Failed to load user data.",
+        "missingSettlement": "Settlement information is missing.",
+        "noUsersInSettlement": "No users found in the settlement.",
+        "noAdminFound": "No admin found in the settlement.",
+        "fetchAdminError": "Failed to load admin data.",
+        "emptyMessage": "Please enter a message before sending."
+      },
+      "success": {
+        "messageSent": "Your message has been sent successfully!"
       }
     }
   } 
