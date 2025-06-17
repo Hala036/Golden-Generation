@@ -519,6 +519,8 @@
       "analytics": "تحليل",
       "contactUs": "خدمة الزبائن",
       "pendingEvents": "الأحداث المعلقة",
+      "arrowClose": "→",
+      "arrowOpen": "←",
       "events": {
         "upcomingEvents": "الأحداث القادمة",
         "addEvent": "إضافة حدث",
@@ -538,7 +540,9 @@
         "backToEvents": "العودة إلى الأحداث",
         "join": "انضم إلى الحدث",
         "leave": "غادر الحدث",
-        "moreDetails": "مزيد من المعلومات"
+        "moreDetails": "مزيد من المعلومات",
+        "participants": "مشاركون",
+        "noParticipants": "لا يوجد مشاركون"
       },
       "filter": {
         "allCategories": "جميع الفئات"
