@@ -562,9 +562,29 @@
         "title": "جيل الذهب",
         "logout": "الخروج"
       },
+      "messages": {
+        "title": "الرسائل",
+        "search": "ابحث عن المستخدمين...",
+        "noMessages": "لا توجد رسائل حتى الآن.",
+        "typeMessage": "اكتب رسالتك...",
+        "selectChat": "اختر محادثة لبدء إرسال الرسائل.",
+        "friendRequestSent": "تم إرسال طلب الصداقة بنجاح.",
+        "friendRequestExists": "طلب الصداقة موجود بالفعل.",
+        "friendRequestAccepted": "تم قبول طلب الصداقة.",
+        "friendRequestRejected": "تم رفض طلب الصداقة.",
+        "incomingCall": "مكالمة واردة",
+        "calling": "جارٍ الاتصال...",
+        "audioCallError": "فشل بدء مكالمة الصوت.",
+        "leaveCall": "إنهاء المكالمة",
+        "mute": "كتم الصوت",
+        "unmute": "إلغاء كتم الصوت",
+        "noUserSelected": "لم يتم اختيار مستخدم للمكالمة.",
+        "mustBeLoggedIn": "يجب أن تكون مسجلاً للدخول لبدء المكالمة.",
+        "loadingMessages": "جارٍ تحميل الرسائل...",
+        "isTyping": "يكتب..."
+      },
       "notifications": "الإشعارات",
-      "calendar": "التقويم",
-      "messages": "الرسائل"
+      "calendar": "التقويم"
     },
     "errors": {
       "required": "هذا الحقل مطلوب",

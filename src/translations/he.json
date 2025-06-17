@@ -487,9 +487,29 @@
         "title": "דור הזהב",
         "logout": "התנתק"
       },
+      "messages": {
+        "title": "הודעות",
+        "search": "חפש משתמשים...",
+        "noMessages": "אין הודעות עדיין.",
+        "typeMessage": "הקלד את ההודעה שלך...",
+        "selectChat": "בחר שיחה כדי להתחיל לשלוח הודעות.",
+        "friendRequestSent": "בקשת חברות נשלחה בהצלחה.",
+        "friendRequestExists": "בקשת חברות כבר קיימת.",
+        "friendRequestAccepted": "בקשת חברות התקבלה.",
+        "friendRequestRejected": "בקשת חברות נדחתה.",
+        "incomingCall": "שיחה נכנסת",
+        "calling": "מתקשר...",
+        "audioCallError": "נכשל להתחיל שיחת שמע.",
+        "leaveCall": "סיים שיחה",
+        "mute": "השתק",
+        "unmute": "בטל השתקה",
+        "noUserSelected": "לא נבחר משתמש לשיחה.",
+        "mustBeLoggedIn": "עליך להיות מחובר כדי להתחיל שיחה.",
+        "loadingMessages": "טוען הודעות...",
+        "isTyping": "מקליד..."
+      },
       "notifications": "התראות",
-      "calendar": "לוח שנה",
-      "messages": "הודעות"
+      "calendar": "לוח שנה"
     },
     "errors": {
       "required": "שדה זה נדרש",

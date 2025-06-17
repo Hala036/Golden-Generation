@@ -568,9 +568,29 @@
         "title": "Golden Generation",
         "logout": "Logout"
       },
+      "messages": {
+        "title": "Messages",
+        "search": "Search for users...",
+        "noMessages": "No messages yet.",
+        "typeMessage": "Type your message...",
+        "selectChat": "Select a chat to start messaging.",
+        "friendRequestSent": "Friend request sent successfully.",
+        "friendRequestExists": "A friend request already exists.",
+        "friendRequestAccepted": "Friend request accepted.",
+        "friendRequestRejected": "Friend request rejected.",
+        "incomingCall": "Incoming Call",
+        "calling": "Calling...",
+        "audioCallError": "Failed to start audio call.",
+        "leaveCall": "Leave Call",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "noUserSelected": "No user selected for the call.",
+        "mustBeLoggedIn": "You must be logged in to start a call.",
+        "loadingMessages": "Loading messages...",
+        "isTyping": "is typing..."
+      },
       "notifications": "Notifications",
-      "calendar": "Calendar",
-      "messages": "Messages"
+      "calendar": "Calendar"
     },
     "errors": {
       "required": "This field is required",
