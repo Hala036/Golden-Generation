@@ -140,7 +140,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
         </div>
 
         {/* Scrollable Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
+        <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
           {componentsById[selected] || <div>dashboard.No Component Found</div>}
         </div>
       </div>
