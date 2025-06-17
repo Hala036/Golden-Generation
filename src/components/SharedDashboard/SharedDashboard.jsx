@@ -14,12 +14,12 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
-  const [selected, setSelected] = useState("upcoming");
+  const [selected, setSelected] = useState("main");
   const [userData, setUserData] = useState(null);
 
   const baseIcons = [
-    { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "main", label: t('dashboard.homePage'), icon: <FaHome /> },
+    { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
     { id: "notifications", label: t('dashboard.notifications'), icon: <FaBell /> },
     { id: "add", label: t('dashboard.events.addEvent'), icon: <FaPlusCircle /> },
