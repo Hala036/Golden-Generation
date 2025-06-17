@@ -3,6 +3,7 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaArrowLeft } from "react-icon
 import { db, auth } from "../../firebase"; // Import Firebase configuration
 import { collection, getDocs, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
+import { toast } from 'react-hot-toast';
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -41,7 +42,6 @@ const Cards = () => {
         const user = auth.currentUser;
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
-        console.log("User Settlement:", userSettlement);
         // Fetch categories
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await getDocs(categoriesRef);
@@ -64,8 +64,6 @@ const Cards = () => {
 
         const settlementFiltered = eventsData.filter((event) => event.settlement === userSettlement);
         setBaseEvents(settlementFiltered);
-
-        console.log("Base Events:", settlementFiltered);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -139,10 +137,10 @@ const Cards = () => {
         });
       }
 
-      alert(`Successfully joined event: ${event.title}`);
+      toast.success(`Successfully joined event: ${event.title}`);
     } catch (error) {
       console.error("Error joining event:", error);
-      alert("Failed to join event. Please try again.");
+      toast.error("Failed to join event. Please try again.");
     }
   };
 
@@ -151,7 +149,7 @@ const Cards = () => {
       {/* Check if an event is selected */}
       {selectedEvent ? (
         // Event Details View
-        <div>
+        <div class="p-2">
           {/* Back to Events Button */}
           <button
             onClick={handleBackToEvents}
