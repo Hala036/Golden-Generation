@@ -3,7 +3,8 @@ import { auth, db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
-import Dashboard from './components/RetireeProfile/Dashboard';
+import Dashboard from './components/RetireeProfile/RetireeDashboard';
+import Shared from './components/SharedDashboard/SharedDashboard';
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
 import Login from './components/Login';

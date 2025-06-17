@@ -7,7 +7,7 @@ import { LanguageProvider } from './context/LanguageContext';
 
 import Login from './components/Login';
 import SignUp from './components/SignUp/SignUp';
-import Dashboard from './components/RetireeProfile/Dashboard';
+import Dashboard from './components/RetireeProfile/RetireeDashboard';
 import ForgotPassword from './components/ForgotPassword';
 
 import './App.css';

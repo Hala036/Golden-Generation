@@ -105,7 +105,6 @@ const ViewProfileDashboard = () => {
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ru">Русский</Select.Option>
                 <Select.Option value="ar">العربية</Select.Option>
               </Select>
             </div>
