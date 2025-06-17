@@ -538,7 +538,9 @@
         "backToEvents": "العودة إلى الأحداث",
         "join": "انضم إلى الحدث",
         "leave": "غادر الحدث",
-        "moreDetails": "مزيد من المعلومات"
+        "moreDetails": "مزيد من المعلومات",
+        "participants": "مشاركون",
+        "noParticipants": "لا يوجد مشاركون"
       },
       "filter": {
         "allCategories": "جميع الفئات"

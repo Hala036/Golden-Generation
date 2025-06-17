@@ -538,7 +538,9 @@
         "backToEvents": "Back to Events",
         "join": "Join Event",
         "leave": "Leave Event",
-        "moreDetails": "More Info"
+        "moreDetails": "More Info",
+        "participants": "Participants",
+        "noParticipants": "No participants yet"
       },
       "filter": {
         "allCategories": "All Categories",

@@ -463,7 +463,9 @@
         "backToEvents": "חזור לאירועים",
         "join": "הצטרף לאירוע",
         "leave": "עזוב את האירוע",
-        "moreDetails": "מידע נוסף"
+        "moreDetails": "מידע נוסף",
+        "participants": "משתתפים",
+        "noParticipants": "עדיין אין משתתפים"
       },
       "filter": {
         "allCategories": "כל הקטגוריות"
