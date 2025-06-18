@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../../firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaVideo, FaComments, FaMicrophone, FaMicrophoneSlash, FaPhoneSlash } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
@@ -9,7 +9,7 @@ import AgoraRTC from 'agora-rtc-sdk-ng';
 import { useTheme } from '../../context/ThemeContext';
 
 // Ringtone audio URL
-const RINGTONE_URL = '/ringtone.mp3';
+const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
 
 // Agora audio call hook (in this file for simplicity)
 function useAgoraAudioCall() {
@@ -19,30 +19,6 @@ function useAgoraAudioCall() {
   const [incomingCall, setIncomingCall] = useState(null);
   const clientRef = useRef(null);
   const localAudioTrackRef = useRef(null);
-  const ringtoneRef = useRef(null);
-
-  // Initialize ringtone
-  useEffect(() => {
-    ringtoneRef.current = new Audio(RINGTONE_URL);
-    ringtoneRef.current.loop = true;
-    
-    return () => {
-      if (ringtoneRef.current) {
-        ringtoneRef.current.pause();
-        ringtoneRef.current = null;
-      }
-    };
-  }, []);
-
-  // Play/stop ringtone based on incoming call state
-  useEffect(() => {
-    if (incomingCall && ringtoneRef.current) {
-      ringtoneRef.current.play().catch(err => console.error('Error playing ringtone:', err));
-    } else if (ringtoneRef.current) {
-      ringtoneRef.current.pause();
-      ringtoneRef.current.currentTime = 0;
-    }
-  }, [incomingCall]);
 
   const startCall = async ({ channelName, uid }) => {
     setCallError(null);
@@ -89,7 +65,6 @@ function useAgoraAudioCall() {
 
   const acceptCall = async () => {
     if (!incomingCall) return;
-    
     try {
       const { channelName, uid } = incomingCall;
       await startCall({ channelName, uid });
@@ -102,7 +77,6 @@ function useAgoraAudioCall() {
 
   const rejectCall = async () => {
     if (!incomingCall) return;
-    
     try {
       if (clientRef.current) {
         await clientRef.current.leave();
@@ -142,6 +116,102 @@ function useAgoraAudioCall() {
   return { inCall, startCall, leaveCall, isMuted, toggleMute, callError, incomingCall, acceptCall, rejectCall };
 }
 
+// Firestore Call State Management
+const CALLS_COLLECTION = 'calls';
+
+function useCallSignaling({ currentUser, otherUser }) {
+  const [callState, setCallState] = useState(null); // { id, status, caller, callee, channelName, startedAt, ... }
+  const [callDocId, setCallDocId] = useState(null);
+
+  // Listen for incoming/outgoing call state
+  useEffect(() => {
+    if (!currentUser) return;
+    const q = query(
+      collection(db, CALLS_COLLECTION),
+      where('participants', 'array-contains', currentUser.uid),
+      where('status', 'in', ['calling', 'ringing', 'active'])
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const callDoc = snapshot.docs[0];
+        setCallState({ id: callDoc.id, ...callDoc.data() });
+        setCallDocId(callDoc.id);
+      } else {
+        setCallState(null);
+        setCallDocId(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  // Initiate a call (caller)
+  const initiateCall = async () => {
+    if (!currentUser || !otherUser) return;
+    const channelName = [currentUser.uid, otherUser.id].sort().join('_');
+    const callDoc = {
+      participants: [currentUser.uid, otherUser.id],
+      caller: {
+        uid: currentUser.uid,
+        username: currentUser.displayName || currentUser.email,
+        avatarUrl: currentUser.photoURL || '',
+      },
+      callee: {
+        uid: otherUser.id,
+        username: otherUser.username,
+        avatarUrl: otherUser.avatarUrl || '',
+      },
+      channelName,
+      status: 'calling', // 'calling', 'ringing', 'active', 'ended', 'rejected', 'missed'
+      startedAt: serverTimestamp(),
+      acceptedAt: null,
+      endedAt: null,
+    };
+    const docRef = await addDoc(collection(db, CALLS_COLLECTION), callDoc);
+    setCallDocId(docRef.id);
+    setCallState({ id: docRef.id, ...callDoc });
+    return docRef.id;
+  };
+
+  // Accept call (callee)
+  const acceptCall = async () => {
+    if (!callDocId) return;
+    await updateDoc(doc(db, CALLS_COLLECTION, callDocId), {
+      status: 'active',
+      acceptedAt: serverTimestamp(),
+    });
+  };
+
+  // Reject call (callee)
+  const rejectCall = async () => {
+    if (!callDocId) return;
+    await updateDoc(doc(db, CALLS_COLLECTION, callDocId), {
+      status: 'rejected',
+      endedAt: serverTimestamp(),
+    });
+  };
+
+  // End call (either side)
+  const endCall = async () => {
+    if (!callDocId) return;
+    await updateDoc(doc(db, CALLS_COLLECTION, callDocId), {
+      status: 'ended',
+      endedAt: serverTimestamp(),
+    });
+  };
+
+  // Cleanup call doc if ended
+  useEffect(() => {
+    if (callState && ['ended', 'rejected', 'missed'].includes(callState.status) && callDocId) {
+      // Optionally delete the call doc after a delay
+      setTimeout(() => {
+        deleteDoc(doc(db, CALLS_COLLECTION, callDocId));
+      }, 10000);
+    }
+  }, [callState, callDocId]);
+
+  return { callState, initiateCall, acceptCall, rejectCall, endCall };
+}
+
 const Messages = () => {
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -160,6 +230,7 @@ const Messages = () => {
   const [callModalOpen, setCallModalOpen] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [typing, setTyping] = useState(false);
+  const ringtoneRef = useRef(null);
 
   // Fetch friend requests
   useEffect(() => {
@@ -368,7 +439,7 @@ const Messages = () => {
       
       if (!isFriend) {
         if (hasPendingRequest) {
-          toast.info('A friend request is already pending');
+          toast('A friend request is already pending');
           return;
         }
         setSelectedUser(users.find(u => u.id === userId));
@@ -411,47 +482,143 @@ const Messages = () => {
   // Find the other user in the selected chat
   const otherUser = selectedChat && users.find(u => u.id === selectedChat.participants.find(p => p !== auth.currentUser?.uid));
 
-  // Start audio call handler
-  const handleStartAudioCall = async () => {
-    if (!auth.currentUser) {
-      toast.error('You must be logged in to start a call');
-      return;
+  // --- Call Signaling Integration ---
+  const currentUser = auth.currentUser;
+  const {
+    callState,
+    initiateCall,
+    acceptCall: acceptSignalingCall,
+    rejectCall: rejectSignalingCall,
+    endCall: endSignalingCall
+  } = useCallSignaling({ currentUser, otherUser });
+
+  // --- Agora Audio Call Integration ---
+  const {
+    inCall: agoraInCall,
+    startCall: agoraStartCall,
+    leaveCall: agoraLeaveCall,
+    isMuted: agoraIsMuted,
+    toggleMute: agoraToggleMute,
+    callError: agoraCallError
+  } = useAgoraAudioCall();
+
+  // Speaker toggle state
+  const [isSpeaker, setIsSpeaker] = useState(false);
+  // Call duration state
+  const [callDuration, setCallDuration] = useState(0);
+  const callTimerRef = useRef(null);
+
+  // Start/stop call timer
+  useEffect(() => {
+    if (callState && callState.status === 'active') {
+      setCallDuration(0);
+      callTimerRef.current = setInterval(() => {
+        setCallDuration((d) => d + 1);
+      }, 1000);
+    } else {
+      clearInterval(callTimerRef.current);
+      setCallDuration(0);
     }
-    if (!otherUser) {
-      toast.error('No user selected for the call');
-      return;
+    return () => clearInterval(callTimerRef.current);
+  }, [callState && callState.status === 'active']);
+
+  // Join/leave Agora channel based on call state
+  useEffect(() => {
+    if (callState && callState.status === 'active') {
+      // Only join if not already in call
+      if (!agoraInCall) {
+        agoraStartCall({ channelName: callState.channelName, uid: Number(currentUser.uid) });
+      }
+    } else if (agoraInCall && (!callState || ['ended', 'rejected', 'missed'].includes(callState.status))) {
+      agoraLeaveCall();
     }
-    const channelName = [auth.currentUser.uid, otherUser.id].sort().join('_');
-    const uid = Number(auth.currentUser.uid);
-    await startCall({ channelName, uid });
-    setCallModalOpen(true);
+    // eslint-disable-next-line
+  }, [callState && callState.status, agoraInCall]);
+
+  // Speaker toggle (if supported by Agora/browser)
+  const handleToggleSpeaker = () => {
+    // This is a placeholder: Agora Web SDK does not support speaker/earpiece switching on desktop browsers.
+    setIsSpeaker((s) => !s);
+    // Optionally, show a toast or info if not supported
+    toast('Speaker toggle is not supported on this device/browser.');
   };
 
-  // Leave call handler
-  const handleLeaveCall = async () => {
-    await leaveCall();
-    setCallModalOpen(false);
+  // Format call duration
+  const formatDuration = (seconds) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
   };
 
-  // Typing indicator (mock)
-  const handleInputChange = (e) => {
-    setNewMessage(e.target.value);
-    if (!typing) {
-      setTyping(true);
-      setTimeout(() => setTyping(false), 1200); // mock typing for 1.2s
+  // --- WhatsApp-like Call UI Components ---
+  const CallScreen = () => {
+    if (!callState) return null;
+    const isCaller = callState.caller.uid === currentUser.uid;
+    const peer = isCaller ? callState.callee : callState.caller;
+    // Outgoing call (caller)
+    if (callState.status === 'calling' && isCaller) {
+      return (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+          <img src={peer.avatarUrl || profile} alt={peer.username} className="w-32 h-32 rounded-full mb-6 object-cover border-4 border-orange-500" />
+          <div className="text-2xl font-bold mb-2 text-white">{peer.username}</div>
+          <div className="text-lg text-gray-300 mb-8">Calling...</div>
+          <div className="flex gap-8">
+            <button onClick={endSignalingCall} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-white text-3xl shadow-lg">
+              <FaPhoneSlash />
+            </button>
+          </div>
+        </div>
+      );
     }
+    // Incoming call (callee)
+    if (callState.status === 'calling' && !isCaller) {
+      return (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+          <img src={peer.avatarUrl || profile} alt={peer.username} className="w-32 h-32 rounded-full mb-6 object-cover border-4 border-orange-500" />
+          <div className="text-2xl font-bold mb-2 text-white">{peer.username}</div>
+          <div className="text-lg text-gray-300 mb-8">is calling you...</div>
+          <div className="flex gap-8">
+            <button onClick={acceptSignalingCall} className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-white text-3xl shadow-lg">
+              <FaPhone />
+            </button>
+            <button onClick={rejectSignalingCall} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-white text-3xl shadow-lg">
+              <FaPhoneSlash />
+            </button>
+          </div>
+        </div>
+      );
+    }
+    // Active call (both sides)
+    if (callState.status === 'active') {
+      return (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+          <img src={peer.avatarUrl || profile} alt={peer.username} className="w-32 h-32 rounded-full mb-6 object-cover border-4 border-orange-500" />
+          <div className="text-2xl font-bold mb-2 text-white">{peer.username}</div>
+          <div className="text-lg text-gray-300 mb-2">{formatDuration(callDuration)}</div>
+          <div className="flex gap-8 mt-6">
+            <button onClick={agoraToggleMute} className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg ${agoraIsMuted ? 'bg-gray-400 text-white' : 'bg-orange-500 text-white'}`}>{agoraIsMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}</button>
+            <button onClick={handleToggleSpeaker} className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg ${isSpeaker ? 'bg-orange-400 text-white' : 'bg-gray-300 text-gray-700'}`}>🔊</button>
+            <button onClick={endSignalingCall} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-white text-3xl shadow-lg">
+              <FaPhoneSlash />
+            </button>
+          </div>
+          {agoraCallError && <div className="text-red-400 mt-4">{agoraCallError}</div>}
+        </div>
+      );
+    }
+    // Ended/rejected/missed: no overlay
+    return null;
   };
 
-  // Friend Request Modal
+  // --- Friend Request Modal ---
   const FriendRequestModal = () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop with blur */}
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowRequestModal(false)} />
-      
       {/* Modal content */}
       <div className={`relative w-full max-w-md mx-4 transform transition-all duration-300 ease-out ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-2xl overflow-hidden`}>
         {/* Modal header */}
-        <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}> 
           <div className="flex items-center space-x-4">
             <div className="relative">
               <img 
@@ -462,29 +629,18 @@ const Messages = () => {
               <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
             <div>
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                {selectedUser?.username}
-              </h2>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                {selectedUser?.email}
-              </p>
+              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{selectedUser?.username}</h2>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{selectedUser?.email}</p>
             </div>
           </div>
         </div>
-
         {/* Modal body */}
         <div className="p-6">
-          <p className={`text-center mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-            You need to be friends with {selectedUser?.username} to start a conversation.
-          </p>
+          <p className={`text-center mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>You need to be friends with {selectedUser?.username} to start a conversation.</p>
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowRequestModal(false)}
-              className={`px-6 py-2.5 rounded-lg transition-colors ${
-                theme === 'dark' 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-              }`}
+              className={`px-6 py-2.5 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
             >
               Cancel
             </button>
@@ -503,67 +659,63 @@ const Messages = () => {
     </div>
   );
 
-  // Friend Requests List
+  // Play/stop ringtone for incoming calls
+  useEffect(() => {
+    if (!ringtoneRef.current) {
+      ringtoneRef.current = new Audio(RINGTONE_URL);
+      ringtoneRef.current.loop = true;
+    }
+    // Play ringtone only if incoming call, status is 'calling', and not in an active call
+    const isIncoming = callState && callState.status === 'calling' && callState.callee && callState.callee.uid === currentUser?.uid && !agoraInCall;
+    if (isIncoming) {
+      ringtoneRef.current.play().catch(() => {});
+    } else {
+      ringtoneRef.current.pause();
+      ringtoneRef.current.currentTime = 0;
+    }
+    return () => {
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current.currentTime = 0;
+      }
+    };
+  }, [callState?.status, callState?.callee?.uid, currentUser?.uid, agoraInCall]);
+
+  // --- Friend Requests List ---
   const FriendRequestsList = () => (
     <div className={`absolute top-12 right-2 w-80 rounded-xl shadow-2xl transform transition-all duration-300 ease-out ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
       {/* Header */}
       <div className={`p-4 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="flex items-center justify-between">
-          <h3 className={`font-semibold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-            Friend Requests
-          </h3>
-          <span className={`px-2.5 py-1 rounded-full text-sm font-medium ${
-            theme === 'dark' 
-              ? 'bg-orange-500/20 text-orange-400' 
-              : 'bg-orange-100 text-orange-600'
-          }`}>
-            {friendRequests.length} new
-          </span>
+          <h3 className={`font-semibold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Friend Requests</h3>
+          <span className={`px-2.5 py-1 rounded-full text-sm font-medium ${theme === 'dark' ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-600'}`}>{friendRequests.length} new</span>
         </div>
       </div>
-
       {/* Requests list */}
       <div className="max-h-96 overflow-y-auto">
         {friendRequests.map(request => {
           const sender = users.find(u => u.id === request.senderId);
           return (
-            <div 
-              key={request.id} 
-              className={`p-4 border-b last:border-b-0 ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'} transition-colors`}
-            >
+            <div key={request.id} className={`p-4 border-b last:border-b-0 ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'} transition-colors`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="relative">
-                    <img 
-                      src={sender?.avatarUrl || profile} 
-                      alt={sender?.username} 
-                      className="w-12 h-12 rounded-full object-cover border-2 border-orange-500"
-                    />
+                    <img src={sender?.avatarUrl || profile} alt={sender?.username} className="w-12 h-12 rounded-full object-cover border-2 border-orange-500" />
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
                   <div>
-                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                      {sender?.username}
-                    </p>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {sender?.email}
-                    </p>
+                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{sender?.username}</p>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{sender?.email}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => acceptFriendRequest(request.id, request.senderId)}
-                    className="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors flex items-center gap-1.5"
-                  >
+                  <button onClick={() => acceptFriendRequest(request.id, request.senderId)} className="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors flex items-center gap-1.5">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                     <span>Accept</span>
                   </button>
-                  <button
-                    onClick={() => rejectFriendRequest(request.id)}
-                    className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center gap-1.5"
-                  >
+                  <button onClick={() => rejectFriendRequest(request.id)} className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center gap-1.5">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -578,39 +730,10 @@ const Messages = () => {
     </div>
   );
 
-  // Incoming Call Notification Component
-  const IncomingCallNotification = () => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className={`rounded-xl shadow-2xl p-8 w-full max-w-xs relative animate-fadeIn flex flex-col items-center ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-white'}`}>
-        <div className="animate-pulse mb-4">
-          <FaPhone className={`text-4xl ${theme === 'dark' ? 'text-[#FFD966]' : 'text-orange-500'}`} />
-        </div>
-        <h2 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-[#FFD966]' : 'text-orange-600'}`}>Incoming Call</h2>
-        <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-          {otherUser?.username} is calling...
-        </p>
-        <div className="flex gap-4">
-          <button
-            onClick={acceptCall}
-            className="px-6 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors flex items-center gap-2"
-          >
-            <FaPhone className="transform rotate-90" />
-            <span>Accept</span>
-          </button>
-          <button
-            onClick={rejectCall}
-            className="px-6 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center gap-2"
-          >
-            <FaPhoneSlash />
-            <span>Reject</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className={`flex h-[calc(100vh-200px)] rounded-lg shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'}`}>
+      {/* WhatsApp-like Call Overlay */}
+      {callState && ['calling', 'active'].includes(callState.status) && <CallScreen />}
       {/* Friend Requests Badge */}
       {friendRequests.length > 0 && (
         <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium shadow-lg animate-bounce">
@@ -623,9 +746,6 @@ const Messages = () => {
 
       {/* Friend Requests List */}
       {friendRequests.length > 0 && <FriendRequestsList />}
-
-      {/* Incoming Call Notification */}
-      {incomingCall && <IncomingCallNotification />}
 
       {/* Chat List */}
       <div className={`w-full md:w-1/3 lg:w-1/4 border-r ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'bg-gray-50'}`}>
@@ -732,11 +852,8 @@ const Messages = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <button className={`p-2 transition-colors ${theme === 'dark' ? 'text-gray-400 hover:text-[#FFD966]' : 'text-gray-600 hover:text-orange-500'}`} onClick={handleStartAudioCall} disabled={inCall} title="Start Audio Call">
+                <button className={`p-2 transition-colors ${theme === 'dark' ? 'text-gray-400 hover:text-[#FFD966]' : 'text-gray-600 hover:text-orange-500'}`} onClick={initiateCall} disabled={inCall} title="Start Audio Call">
                   <FaPhone />
-                </button>
-                <button className={`p-2 transition-colors ${theme === 'dark' ? 'text-gray-400 hover:text-[#FFD966]' : 'text-gray-600 hover:text-orange-500'}`}>
-                  <FaVideo />
                 </button>
                 <button className={`p-2 transition-colors ${theme === 'dark' ? 'text-gray-400 hover:text-[#FFD966]' : 'text-gray-600 hover:text-orange-500'}`}>
                   <FaEllipsisV />
@@ -799,7 +916,7 @@ const Messages = () => {
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={handleInputChange}
+                  onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={t('dashboard.messages.typeMessage')}
                   className={`flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
                     theme === 'dark' 
@@ -817,21 +934,6 @@ const Messages = () => {
                 </button>
               </div>
             </form>
-
-            {/* Audio Call Modal */}
-            {callModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                <div className={`rounded-xl shadow-2xl p-8 w-full max-w-xs relative animate-fadeIn flex flex-col items-center ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-white'}`}>
-                  <h2 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-[#FFD966]' : 'text-orange-600'}`}>Audio Call</h2>
-                  {callError && <div className="text-red-500 mb-2">{callError}</div>}
-                  <div className="flex gap-4 my-4">
-                    <button onClick={toggleMute} className={`px-4 py-2 rounded ${isMuted ? 'bg-gray-300' : 'bg-orange-500 text-white'}`}>{isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />} {isMuted ? 'Unmute' : 'Mute'}</button>
-                    <button onClick={handleLeaveCall} className="px-4 py-2 rounded bg-red-500 text-white flex items-center gap-2"><FaPhoneSlash /> Leave</button>
-                  </div>
-                  <div className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>You are in a call with <b>{otherUser?.username}</b></div>
-                </div>
-              </div>
-            )}
           </>
         ) : (
           <div className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
