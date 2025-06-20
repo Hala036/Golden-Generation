@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getDoc } from "firebase/firestore";
 
@@ -22,8 +22,13 @@ const app = !getApps().length
 
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
-const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Initialize Firestore with long polling to prevent network errors
+const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
 
 // User Management Functions
 /**
