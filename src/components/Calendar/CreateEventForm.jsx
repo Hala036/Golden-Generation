@@ -6,6 +6,9 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-hot-toast';
 import AddCategoryModal from "../AdminProfile/AddCategoryModal";
 import { useAuth } from '../../hooks/useAuth';
+import CustomTimePickerWrapper from './CustomTimePicker';
+import SearchableDropdown from '../SearchableDropdown';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, isEditing = false }) => {
   const [categories, setCategories] = useState([]);
@@ -26,8 +29,25 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     location: "",
     description: "",
     capacity: "",
-    requirements: ""
+    requirements: "",
+    isRecurring: false,
+    recurringType: "daily",
+    recurringEndDate: ""
   });
+
+  const generateTimeSlots = (interval) => {
+    const slots = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += interval) {
+        const h = String(hour).padStart(2, '0');
+        const m = String(minute).padStart(2, '0');
+        slots.push(`${h}:${m}`);
+      }
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots(30); // 30-minute intervals
 
   // Validation rules
   const validationRules = {
@@ -467,10 +487,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
   // Get minimum time based on selected date
   const getMinTime = () => {
-    if (isToday(eventData.startDate)) {
-      return getCurrentTime();
-    }
-    return "00:00";
+    return isToday(eventData.startDate) ? getCurrentTime() : "00:00";
   };
 
   // Get minimum end time based on start time
@@ -483,199 +500,220 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     return minEndTime.toTimeString().slice(0, 5);
   };
 
+  const getStartTimeDisabledStatus = (time) => {
+    return isToday(eventData.startDate) && time < getCurrentTime();
+  };
+
+  const getEndTimeDisabledStatus = (time) => {
+    const isSameDay = !eventData.endDate || eventData.startDate === eventData.endDate;
+    return isSameDay && eventData.timeFrom && time <= eventData.timeFrom;
+  };
+
+  const categoryOptions = categories.map(cat => ({
+    value: cat.id,
+    label: cat.name,
+  }));
+
   return (
     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold">{isEditing ? 'Edit Event' : 'Create New Event'}</h3>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600"
-        >
-          <X size={24} />
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{isEditing ? 'Edit Event' : 'Create New Event'}</h2>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Event Title <span className="text-red-500">*</span>
           </label>
-          {renderInput("title", "text", "Event title", { required: true }, true)}
+          {renderInput("title", "text", "e.g., Morning Yoga Session", { required: true, minLength: 3 })}
         </div>
-        
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category <span className="text-red-500">*</span>
-          </label>
-          <select
-            name="categoryId"
-            value={eventData.categoryId}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full border rounded-lg px-3 py-2 ${
-              touched.categoryId && validationErrors.categoryId ? 'border-red-500 bg-red-50' : 
-              touched.categoryId && eventData.categoryId ? 'border-green-500 bg-green-50' : 
-              'border-gray-300'
-            }`}
-            required
-          >
-            <option value="">Select a category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name || cat.translations?.en || cat.id}
-              </option>
-            ))}
-          </select>
-          {touched.categoryId && validationErrors.categoryId && (
-            <p className="text-red-500 text-xs">{validationErrors.categoryId}</p>
-          )}
-          {/* Add Category Button - Only for admin/superadmin */}
-          {(actualUserRole === "admin" || actualUserRole === "superadmin") && (
-            <button
-              type="button"
-              onClick={() => setShowAddCategoryModal(true)}
-              className="w-full bg-[#FFD966] hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg"
-            >
-              Add Category
-            </button>
-          )}
-        </div>
-        
-        {/* Date Range */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
+
+        <div className="flex items-end">
+          <div className="flex-grow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date <span className="text-red-500">*</span>
+              Category <span className="text-red-500">*</span>
             </label>
-            {renderInput("startDate", "date", "", { required: true, min: getTodayDate() }, true)}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            {renderInput("endDate", "date", "", { min: eventData.startDate || getTodayDate() })}
-          </div>
-        </div>
-
-        {/* Time Range */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Time <span className="text-red-500">*</span>
-            </label>
-            {renderInput("timeFrom", "time", "", { required: true, min: getMinTime() }, true)}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Time <span className="text-red-500">*</span>
-            </label>
-            {renderInput("timeTo", "time", "", { required: true, min: getMinEndTime() }, true)}
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Location <span className="text-red-500">*</span>
-          </label>
-          {renderInput("location", "text", "Location", { required: true }, true)}
-        </div>
-
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={eventData.description}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full border rounded-lg px-3 py-2 h-20 pr-10 ${
-              touched.description && validationErrors.description ? 'border-red-500 bg-red-50' : 
-              touched.description && eventData.description && !validationErrors.description ? 'border-green-500 bg-green-50' : 
-              'border-gray-300'
-            }`}
-            required
-          />
-          {touched.description && validationErrors.description && (
-            <AlertCircle className="absolute right-3 top-8 text-red-500" size={16} />
-          )}
-          {touched.description && eventData.description && !validationErrors.description && (
-            <CheckCircle className="absolute right-3 top-8 text-green-500" size={16} />
-          )}
-          {touched.description && validationErrors.description && (
-            <p className="text-red-500 text-xs mt-1">{validationErrors.description}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Max Participants <span className="text-red-500">*</span>
-          </label>
-          {renderInput("capacity", "number", "", { min: 1, max: 1000, required: true }, true)}
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Special Requirements
-          </label>
-          <textarea
-            name="requirements"
-            placeholder="Special requirements (optional)"
-            value={eventData.requirements}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`w-full border rounded-lg px-3 py-2 h-12 ${
-              touched.requirements && validationErrors.requirements ? 'border-red-500 bg-red-50' : 'border-gray-300'
-            }`}
-          />
-          {touched.requirements && validationErrors.requirements && (
-            <p className="text-red-500 text-xs mt-1">{validationErrors.requirements}</p>
-          )}
-        </div>
-
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Event Image
-          </label>
-
-          <div className="flex items-center space-x-4">
-            <label className={`cursor-pointer font-bold py-2 px-4 rounded-md ${
-              touched.imageFile && validationErrors.imageFile ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
-            } text-white`}>
-              {imageFile ? "Change Image" : "Upload Image"}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
-
-            {imageFile && (
-              <span className="text-sm text-gray-600 truncate max-w-xs">
-                {imageFile.name}
-              </span>
+             <SearchableDropdown
+                name="category"
+                options={categoryOptions}
+                value={eventData.category}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                touched={touched.category}
+                error={validationErrors.category}
+                placeholder="Select a category"
+            />
+            {touched.category && validationErrors.category && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.category}</p>
             )}
           </div>
-          {touched.imageFile && validationErrors.imageFile && (
-            <p className="text-red-500 text-xs mt-1">{validationErrors.imageFile}</p>
-          )}
+          <div className="ml-2">
+            {(actualUserRole === "admin" || actualUserRole === "superadmin") && (
+              <button
+                type="button"
+                onClick={() => setShowAddCategoryModal(true)}
+                className="p-2.5 border rounded-lg hover:bg-gray-100"
+                title="Add New Category"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Time and Date Section */}
+        <div className="border-t border-gray-200 pt-6">
+          <h3 className="text-lg font-medium text-gray-800 mb-4">Time & Date</h3>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date <span className="text-red-500">*</span>
+                </label>
+                {renderInput("startDate", "date", "", { required: true, min: getTodayDate() }, true)}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                {renderInput("endDate", "date", "", { min: eventData.startDate || getTodayDate() })}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start Time <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <CustomTimePickerWrapper
+                  name="timeFrom"
+                  value={eventData.timeFrom}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  timeSlots={timeSlots}
+                  getIsDisabled={getStartTimeDisabledStatus}
+                  touched={touched.timeFrom}
+                  error={validationErrors.timeFrom}
+                />
+                {touched.timeFrom && validationErrors.timeFrom && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.timeFrom}</p>
+                )}
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    End Time <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <CustomTimePickerWrapper
+                  name="timeTo"
+                  value={eventData.timeTo}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  timeSlots={timeSlots}
+                  getIsDisabled={getEndTimeDisabledStatus}
+                  touched={touched.timeTo}
+                  error={validationErrors.timeTo}
+                />
+                {touched.timeTo && validationErrors.timeTo && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.timeTo}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Details Section */}
+        <div className="border-t border-gray-200 pt-6">
+          <h3 className="text-lg font-medium text-gray-800 mb-4">Additional Details</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              {renderInput("description", "textarea", "Provide details about the event...")}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Location
+                </label>
+                {renderInput("location", "text", "e.g., Community Hall")}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Participants
+                </label>
+                {renderInput("capacity", "number", "e.g., 10", { min: 1 })}
+              </div>
+            </div>
+          </div>
         </div>
         
-        {/* Image Preview */}
-        {imageFile && (
-          <div className="mt-4">
-            <img
-              src={URL.createObjectURL(imageFile)}
-              alt="Event Preview"
-              className="w-full h-48 object-cover rounded-md border border-gray-300"
+        {/* Recurring Options Section */}
+        <div className="border-t border-gray-200 pt-6">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="isRecurring"
+              id="isRecurring"
+              checked={eventData.isRecurring}
+              onChange={handleChange}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
+            <label htmlFor="isRecurring" className="ml-2 block text-sm text-gray-900">
+              Repeat Event
+            </label>
           </div>
-        )}
-
-        <div className="flex gap-2 pt-4">
+          
+          <AnimatePresence>
+            {eventData.isRecurring && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Repeats
+                    </label>
+                    <select
+                      name="recurringType"
+                      value={eventData.recurringType}
+                      onChange={handleChange}
+                      className="w-full border rounded-lg px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Repeat Until <span className="text-red-500">*</span>
+                    </label>
+                    {renderInput("recurringEndDate", "date", "", { required: eventData.isRecurring, min: eventData.startDate })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        <div className="flex justify-end pt-6 border-t border-gray-200">
+          <button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-2 hover:bg-gray-300">
+            Cancel
+          </button>
           <button
             type="submit"
             disabled={isSubmitting}
@@ -686,13 +724,6 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
             }`}
           >
             {isSubmitting ? 'Submitting...' : (isEditing ? 'Update Event' : 'Create Event')}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="bg-gray-500 text-white px-4 py-2 rounded-lg"
-          >
-            Cancel
           </button>
         </div>
       </form>
