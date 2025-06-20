@@ -1,87 +1,52 @@
 //AdminEventDetails.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { db } from '../../firebase';
 import { leaveEvent } from '../../utils/participants';
-import { updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc, writeBatch, collection, getDocs } from 'firebase/firestore';
 import { FaCheck, FaTimes, FaUser, FaTrash, FaEdit } from 'react-icons/fa';
 import BaseEventDetails from '../Calendar/BaseEventDetails';
 import CreateEventForm from '../Calendar/CreateEventForm';
 
 const AdminEventDetails = ({ event, onClose }) => {
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editData, setEditData] = useState(event);
 
-  const handleApprove = async (uid) => {
-    await updateDoc(doc(db, `events/${event.id}/participants`, uid), {
-      status: 'confirmed',
-    });
+  // Helper function to convert DD-MM-YYYY to YYYY-MM-DD
+  const formatToYyyyMmDd = (dateStr) => {
+    if (!dateStr || typeof dateStr !== 'string' || !dateStr.includes('-')) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return '';
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
   };
 
-  const handleReject = async (uid) => {
-    await leaveEvent(event.id, uid);
+  const handleEdit = () => {
+    setShowEditModal(true);
   };
 
   const handleDeleteEvent = async () => {
-    const confirmed = window.confirm('Are you sure you want to delete this event?');
-    if (!confirmed) return;
+    if (window.confirm('Are you sure you want to permanently delete this event? This action cannot be undone.')) {
+      try {
+        // First, we need to delete the participants subcollection.
+        // (This is a simplified version; for very large numbers of participants,
+        // a Cloud Function would be more robust).
+        const participantsSnapshot = await getDocs(collection(db, `events/${event.id}/participants`));
+        const batch = writeBatch(db);
+        participantsSnapshot.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+        
+        // Then, delete the main event document.
+        const eventRef = doc(db, 'events', event.id);
+        batch.delete(eventRef);
 
-    try {
-      await deleteDoc(doc(db, 'events', event.id));
-      onClose(); // Close modal
-    } catch (error) {
-      console.error('Failed to delete event:', error);
+        await batch.commit();
+        onClose(); // Close the modal
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Failed to delete event.');
+      }
     }
   };
-
-  const handleEditChange = (field, value) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSaveEdit = async () => {
-    try {
-      const ref = doc(db, 'events', event.id);
-      // Only update fields that are editable by the admin
-      const {
-        title,
-        description,
-        date,
-        time,
-        duration,
-        location,
-        category,
-        recurring,
-        maxParticipants,
-        status,
-        color
-      } = editData;
-      await updateDoc(ref, {
-        title,
-        description,
-        date,
-        time,
-        duration,
-        location,
-        category,
-        recurring,
-        maxParticipants,
-        status,
-        color
-      });
-      setShowEditModal(false);
-      onClose(); // Refresh calendar
-    } catch (err) {
-      alert('Failed to update event: ' + err.message);
-      console.error('Failed to update event:', err);
-    }
-  };
-
-  // Keep editData in sync with event when modal opens
-  useEffect(() => {
-    if (showEditModal) {
-      setEditData(event);
-    }
-  }, [showEditModal, event]);
 
   return (
     <>
@@ -91,13 +56,16 @@ const AdminEventDetails = ({ event, onClose }) => {
         userRole="admin"
         showParticipants={true}
         showJoinLeave={false}
-        onApproveParticipant={handleApprove}
-        onRejectParticipant={handleReject}
+        onApproveParticipant={async (uid) => {
+          const participantRef = doc(db, `events/${event.id}/participants`, uid);
+          await updateDoc(participantRef, { status: 'confirmed' });
+        }}
+        onRejectParticipant={leaveEvent}
       >
         {/* Admin Controls */}
         <div className="flex gap-3">
           <button
-            onClick={() => setShowEditModal(true)}
+            onClick={handleEdit}
             className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-2"
           >
             <FaEdit /> Edit
@@ -118,9 +86,12 @@ const AdminEventDetails = ({ event, onClose }) => {
             <CreateEventForm
               onClose={() => setShowEditModal(false)}
               userRole="admin"
-              initialData={editData}
+              initialData={{
+                ...event,
+                startDate: formatToYyyyMmDd(event.startDate),
+                endDate: formatToYyyyMmDd(event.endDate),
+              }}
               isEditing={true}
-              eventId={event.id}
             />
           </div>
         </div>
