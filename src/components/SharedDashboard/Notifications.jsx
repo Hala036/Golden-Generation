@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
 import { collection, query, where, orderBy, getDocs, updateDoc, doc } from "firebase/firestore";
-import { db } from '../../firebase';
+import { db, getUserData } from '../../firebase'; // Import getUserData
 import { useAuth } from '../../hooks/useAuth';
+import SendNotification from './SendNotification';
 
 const iconMap = {
   info: <FaInfoCircle className="text-blue-400 text-xl" />,
@@ -13,30 +14,69 @@ const iconMap = {
 
 const Notifications = () => {
   const { currentUser } = useAuth();
+  const [userRole, setUserRole] = useState(null); // Local state for role
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
 
-  // Fetch notifications from Firestore
+  // Fetch user role
   useEffect(() => {
-    if (!currentUser) return;
-    console.log("Retiree UID for notifications:", currentUser.uid);
+    const fetchUserRole = async () => {
+      if (!currentUser?.uid) return;
+      
+      try {
+        const userData = await getUserData(currentUser.uid); // Use getUserData to fetch user data
+        if (userData?.role) {
+          setUserRole(userData.role); // Set role in local state
+        } else {
+          console.error("User role not found for UID:", currentUser.uid);
+        }
+      } catch (err) {
+        console.error("Error fetching user role:", err);
+      }
+    };
+
+    fetchUserRole();
+  }, [currentUser]);
+
+  // Fetch notifications
+  useEffect(() => {
+    if (!currentUser || !userRole) return;
+
     const fetchNotifications = async () => {
       setLoading(true);
-      const q = query(
-        collection(db, "notifications"),
-        where("recipientId", "==", currentUser.uid),
-        orderBy("createdAt", "desc")
-      );
-      const snapshot = await getDocs(q);
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setNotifications(data);
-      setLoading(false);
+
+      try {
+        const q = query(
+          collection(db, "notifications"),
+          where("target", "array-contains-any", [currentUser.uid, userRole])
+        );
+
+        const snapshot = await getDocs(q);
+
+        const data = snapshot.docs.map(doc => {
+          const notification = doc.data();
+          return {
+            id: doc.id,
+            ...notification,
+            target: notification.target || "unknown", // Default target
+            createdAt: notification.createdAt || null, // Handle missing createdAt
+          };
+        })
+        .filter(n => n.createdBy !== currentUser.uid);
+
+        console.log("Mapped notifications data:", data);
+
+        setNotifications(data);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchNotifications();
-  }, [currentUser]);
+  }, [currentUser, userRole]);
 
   const handleMarkAsRead = async (id) => {
     setNotifications((prev) =>
@@ -57,18 +97,28 @@ const Notifications = () => {
     <div className="w-full max-w-2xl mx-auto p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Notifications</h2>
-        <button
-          className="text-sm text-blue-500 hover:underline"
-          onClick={handleMarkAllAsRead}
-        >
-          Mark all as read
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            className="text-sm text-blue-500 hover:underline"
+            onClick={handleMarkAllAsRead}
+          >
+            Mark all as read
+          </button>
+          {userRole !== "retiree" && (
+            <button
+              className="text-sm text-green-500 hover:underline"
+              onClick={() => setShowModal(true)} // Show the modal
+            >
+              Create Notification
+            </button>
+          )}
+        </div>
       </div>
       <div className="bg-white rounded-xl shadow-lg divide-y">
-        {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
-        ) : notifications.length === 0 ? (
+        {notifications.length === 0 ? (
           <div className="p-8 text-center text-gray-400">No notifications</div>
+        ) : loading ? (
+          <div className="p-8 text-center text-gray-400">Loading...</div>
         ) : (
           notifications.map((n) => (
             <div
@@ -97,6 +147,24 @@ const Notifications = () => {
           ))
         )}
       </div>
+
+      {/* Modal for SendNotification */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">Create Notification</h3>
+              <button
+                className="text-red-500 hover:text-red-700"
+                onClick={() => setShowModal(false)} // Close the modal
+              >
+                &times;
+              </button>
+            </div>
+            <SendNotification />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
