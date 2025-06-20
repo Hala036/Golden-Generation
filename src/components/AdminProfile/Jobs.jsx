@@ -12,8 +12,12 @@ import {
 import { getAvailableSettlements } from "../../firebase";
 import MatchDetails from "./matchDetails";
 import StatusHistory from "./StatusHistory";
+import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification
+import { useAuth } from "../../hooks/useAuth"; // Import useAuth hook
 
 const Jobs = () => {
+  const { currentUser } = useAuth(); // Access currentUser from useAuth
+
   // State for job requests
   const [jobRequests, setJobRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -181,6 +185,17 @@ const Jobs = () => {
     try {
       setLoading(true);
       await inviteSeniorToJobRequest(jobRequestId, seniorId);
+
+      // Send notification to the invited senior
+      const jobRequest = jobRequests.find((jr) => jr.id === jobRequestId);
+      await triggerNotification({
+        message: `You have been invited to volunteer for the job: "${jobRequest.title}".`,
+        target: [seniorId], // Target specific senior
+        type: "invite", // Notification type
+        link: `/jobs/${jobRequestId}`, // Link to job details
+        createdBy: currentUser.uid // Admin who invited
+      });
+
       toast.success("Senior invited successfully");
 
       const updatedJobRequests = await getJobRequests();
