@@ -3,7 +3,8 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
 import { db } from "../../firebase"; // Import Firebase configuration
 import { collection, onSnapshot } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
-import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import the centralized event details component
+import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Admin modal
+import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -23,7 +24,7 @@ const categoryImages = {
   socialevent: SocialEventImg,
 };
 
-const Cards = () => {
+const Cards = ({ userRole = 'retiree' }) => {
   const { language, t } = useLanguage();
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -31,7 +32,7 @@ const Cards = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedEvent, setSelectedEvent] = useState(null); // Used to show the modal
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   // Fetch categories and events from Firestore in real-time
   useEffect(() => {
@@ -48,11 +49,15 @@ const Cards = () => {
         setLoading(true);
         const eventsRef = collection(db, "events");
         const unsubscribe = onSnapshot(eventsRef, (snapshot) => {
-            const eventsData = snapshot.docs
-                .map((doc) => ({ id: doc.id, ...doc.data() }))
-                .filter((event) => event.status === "active");
-            setEvents(eventsData);
-            setFilteredEvents(eventsData);
+            const eventsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            
+            // Filter events based on role
+            const roleBasedEvents = userRole === 'admin'
+                ? eventsData.filter(event => event.status === 'active' || event.status === 'pending')
+                : eventsData.filter(event => event.status === 'active');
+            
+            setEvents(roleBasedEvents);
+            setFilteredEvents(roleBasedEvents);
             setLoading(false);
         }, (error) => {
             console.error("Error fetching events in real-time:", error);
@@ -68,7 +73,7 @@ const Cards = () => {
       // Unsubscribe from listeners when component unmounts
       unsubscribeEvents();
     };
-  }, []);
+  }, [userRole]);
 
   // Handle category filter
   const handleCategoryChange = (category) => {
@@ -97,6 +102,21 @@ const Cards = () => {
           event.title.toLowerCase().includes(query)
       )
     );
+  };
+
+  // Conditionally render the correct modal based on the user's role
+  const renderEventDetailsModal = () => {
+    if (!selectedEvent) return null;
+
+    const modalProps = {
+      event: selectedEvent,
+      onClose: () => setSelectedEvent(null),
+    };
+
+    if (userRole === 'admin') {
+      return <AdminEventDetails {...modalProps} />;
+    }
+    return <RetireeEventDetails {...modalProps} />;
   };
 
   return (
@@ -177,12 +197,7 @@ const Cards = () => {
       )}
 
       {/* Centralized Event Details Modal */}
-      {selectedEvent && (
-        <RetireeEventDetails
-          event={selectedEvent}
-          onClose={() => setSelectedEvent(null)}
-        />
-      )}
+      {renderEventDetailsModal()}
     </div>
   );
 };
