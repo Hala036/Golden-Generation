@@ -415,7 +415,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         console.log('Creating new event...');
         const docRef = await addDoc(collection(db, "events"), newEvent);
         console.log('Event created successfully with ID:', docRef.id);
-        toast.success('Event created successfully');
+      toast.success('Event created successfully');
       }
       onClose();
     } catch (error) {
@@ -540,7 +540,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 name="category"
                 options={categoryOptions}
                 value={eventData.category}
-                onChange={handleChange}
+          onChange={handleChange}
                 onBlur={handleBlur}
                 touched={touched.category}
                 error={validationErrors.category}
@@ -594,7 +594,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 <CustomTimePickerWrapper
                   name="timeFrom"
                   value={eventData.timeFrom}
-                  onChange={handleChange}
+            onChange={handleChange}
                   onBlur={handleBlur}
                   timeSlots={timeSlots}
                   getIsDisabled={getStartTimeDisabledStatus}
@@ -614,7 +614,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 <CustomTimePickerWrapper
                   name="timeTo"
                   value={eventData.timeTo}
-                  onChange={handleChange}
+            onChange={handleChange}
                   onBlur={handleBlur}
                   timeSlots={timeSlots}
                   getIsDisabled={getEndTimeDisabledStatus}
@@ -660,19 +660,19 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         {/* Recurring Options Section */}
         <div className="border-t border-gray-200 pt-6">
           <div className="flex items-center">
-            <input
+        <input
               type="checkbox"
               name="isRecurring"
               id="isRecurring"
               checked={eventData.isRecurring}
-              onChange={handleChange}
+          onChange={handleChange}
               className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="isRecurring" className="ml-2 block text-sm text-gray-900">
               Repeat Event
             </label>
           </div>
-          
+
           <AnimatePresence>
             {eventData.isRecurring && (
               <motion.div
@@ -690,7 +690,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                     <select
                       name="recurringType"
                       value={eventData.recurringType}
-                      onChange={handleChange}
+          onChange={handleChange}
                       className="w-full border rounded-lg px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="daily">Daily</option>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaClock, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar } from "react-icons/fa";
+import { FaClock, FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaUser, FaHeadset, FaBriefcase, FaHome, FaChartBar, FaTags } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -17,10 +17,11 @@ import Pending from "./PendingEvents";
 import Cards from "../RetireeProfile/Cards";
 import AddEvent from "../RetireeProfile/AddEvents";
 import Settings from "../RetireeProfile/SettingsCards";
-import Calendar from "../RetireeProfile/RetireeCalendar";
+import AdminCalendar from "../Calendar/AdminCalendar";
 import Messages from "../RetireeProfile/Messages";
 import Notifications from "../RetireeProfile/Notifications";
 import Support from "../RetireeProfile/Support";
+import CategoryManagement from "./CategoryManagement";
 import { useTranslation } from 'react-i18next';
 
 
@@ -37,6 +38,7 @@ const Dashboard = () => {
     { id: "retirees", label: t('dashboard.retirees'), icon: <FaUser /> },
     { id: "jobs", label: t('dashboard.volunteerRequests'), icon: <FaBriefcase /> },
     { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
+    { id: "categories", label: "Category Management", icon: <FaTags /> },
     { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
     { id: "notifications", label: t('dashboard.notifications'), icon: <FaBell /> },
     { id: "add", label: t('dashboard.events.addEvent'), icon: <FaPlusCircle /> },
@@ -182,13 +184,14 @@ const Dashboard = () => {
 
         {/* Scrollable Content Area */}
         <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
-          {selected === "upcoming" && <Cards setSelected={setSelected} />}
+          {selected === "upcoming" && <Cards userRole="admin" />}
           {selected === "main" && <AdminHomepage />}
           {selected === "retirees" && <Retirees />}
           {selected === "jobs" && <Jobs />}
           {selected === "analysis" && <Analysis />}
+          {selected === "categories" && <CategoryManagement />}
           {selected === "settings" && <Settings />}
-          {selected === "calendar" && <Calendar />}
+          {selected === "calendar" && <AdminCalendar />}
           {selected === "messages" && <Messages />}
           {selected === "add" && <AddEvent />}
           {selected === "notifications" && <Notifications />}

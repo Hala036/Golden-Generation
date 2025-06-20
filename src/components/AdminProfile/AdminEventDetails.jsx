@@ -41,10 +41,10 @@ const AdminEventDetails = ({ event, onClose }) => {
 
         await batch.commit();
         onClose(); // Close the modal
-      } catch (error) {
+    } catch (error) {
         console.error('Error deleting event:', error);
         alert('Failed to delete event.');
-      }
+    }
     }
   };
 
