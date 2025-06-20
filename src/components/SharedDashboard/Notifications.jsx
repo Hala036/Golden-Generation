@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope } from 'react-icons/fa'; // Added FaEnvelope for "message"
-import { collection, query, where, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
-import { db, getUserData } from '../../firebase'; // Import getUserData
+import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope } from 'react-icons/fa';
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db, getUserData } from '../../firebase';
 import { useAuth } from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
 
@@ -9,15 +9,16 @@ const iconMap = {
   info: <FaInfoCircle className="text-blue-400 text-xl" />,
   alert: <FaExclamationTriangle className="text-yellow-500 text-xl" />,
   success: <FaCheckCircle className="text-green-500 text-xl" />,
-  message: <FaEnvelope className="text-gray-500 text-xl" />, // Added icon for "message"
+  message: <FaEnvelope className="text-gray-500 text-xl" />,
 };
 
 const Notifications = () => {
   const { currentUser } = useAuth();
-  const [userRole, setUserRole] = useState(null); // Local state for role
+  const [userRole, setUserRole] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [showModal, setShowModal] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null); // State for selected notification
 
   // Fetch user role
   useEffect(() => {
@@ -25,9 +26,9 @@ const Notifications = () => {
       if (!currentUser?.uid) return;
 
       try {
-        const userData = await getUserData(currentUser.uid); // Use getUserData to fetch user data
+        const userData = await getUserData(currentUser.uid);
         if (userData?.role) {
-          setUserRole(userData.role); // Set role in local state
+          setUserRole(userData.role);
         } else {
           console.error("User role not found for UID:", currentUser.uid);
         }
@@ -41,31 +42,28 @@ const Notifications = () => {
 
   // Fetch notifications
   useEffect(() => {
-    if (!currentUser || !userRole) return;
+    if (!currentUser) return;
 
     const fetchNotifications = async () => {
       setLoading(true);
 
       try {
-        const q = query(
-          collection(db, "notifications"),
-          where("target", "array-contains-any", [currentUser.uid, userRole])
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        const userData = userDoc.data();
+        const userNotifications = userData?.notifs || [];
+
+        const enrichedNotifications = await Promise.all(
+          userNotifications.map(async (notif) => {
+            const notifDoc = await getDoc(doc(db, "notifications", notif.id));
+            return {
+              id: notif.id,
+              ...notifDoc.data(),
+              read: notif.read,
+            };
+          })
         );
 
-        const snapshot = await getDocs(q);
-
-        const data = snapshot.docs.map(doc => {
-          const notification = doc.data();
-          return {
-            id: doc.id,
-            ...notification,
-            target: notification.target || "unknown", // Default target
-            createdAt: notification.createdAt || null, // Handle missing createdAt
-          };
-        })
-        .filter(n => n.createdBy !== currentUser.uid);
-
-        setNotifications(data);
+        setNotifications(enrichedNotifications);
       } catch (err) {
         console.error("Error fetching notifications:", err);
       } finally {
@@ -74,38 +72,51 @@ const Notifications = () => {
     };
 
     fetchNotifications();
-  }, [currentUser, userRole]);
+  }, [currentUser]);
 
-  const handleMarkAsRead = async (id) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-    await updateDoc(doc(db, "notifications", id), { read: true });
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      const userData = userDoc.data();
+      const updatedNotifs = userData.notifs.map((notif) =>
+        notif.id === notificationId ? { ...notif, read: true } : notif
+      );
+
+      await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
+
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === notificationId ? { ...notif, read: true } : notif
+        )
+      );
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+    }
   };
 
   const handleMarkAllAsRead = async () => {
-    const updates = notifications
-      .filter((n) => !n.read)
-      .map((n) => updateDoc(doc(db, "notifications", n.id), { read: true }));
-    await Promise.all(updates);
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      const userData = userDoc.data();
+      const updatedNotifs = userData.notifs.map((notif) => ({
+        ...notif,
+        read: true,
+      }));
+
+      await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
+
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, read: true }))
+      );
+    } catch (err) {
+      console.error("Error marking all notifications as read:", err);
+    }
   };
 
-  const deleteOldNotifications = async () => {
-    const snapshot = await getDocs(collection(db, "notifications"));
-    const now = new Date();
-    const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30)); // Calculate 30 days ago
-
-    snapshot.forEach(async (docSnapshot) => {
-      const data = docSnapshot.data();
-      if (data.createdAt && data.createdAt.toDate() < thirtyDaysAgo) {
-        console.log("Deleting old notification:", docSnapshot.id);
-        await deleteDoc(doc(db, "notifications", docSnapshot.id));
-      }
-    });
+  const handleNotificationClick = (notification) => {
+    setSelectedNotification(notification);
+    setShowModal(true);
   };
-
-  // Call deleteOldNotifications function periodically (e.g., via a cron job or manually)
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 md:p-8">
@@ -120,7 +131,7 @@ const Notifications = () => {
           {userRole !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
-              onClick={() => setShowModal(true)} // Show the modal
+              onClick={() => setShowModal(true)}
             >
               Create Notification
             </button>
@@ -139,11 +150,13 @@ const Notifications = () => {
               className={`flex items-start gap-4 px-6 py-5 cursor-pointer hover:bg-gray-50 transition ${
                 n.read ? 'opacity-60' : ''
               }`}
-              onClick={() => handleMarkAsRead(n.id)}
+              onClick={() => {
+                handleNotificationClick(n); 
+                handleMarkAsRead(n.id);
+              }}
             >
-              {/* Check for type and assign appropriate icon */}
               <div className="mt-1">
-                {iconMap[n.type] || iconMap.info} {/* Default to info icon */}
+                {iconMap[n.type] || iconMap.info}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-gray-800 truncate">{n.title || "Notification"}</div>
@@ -164,22 +177,21 @@ const Notifications = () => {
         )}
       </div>
 
-      {/* Modal for SendNotification */}
-      {showModal && (
+      {/* Modal for Notification Details */}
+      {showModal && selectedNotification && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          {/* Shadowed background */}
-          <div className="absolute inset-0 bg-gray-200"></div>
+          <div className="absolute inset-0 bg-gray-800 opacity-50"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Create Notification</h3>
+              <h3 className="text-xl font-bold">{selectedNotification.title || "Notification"}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
-                onClick={() => setShowModal(false)} // Close the modal
+                onClick={() => setShowModal(false)}
               >
                 &times;
               </button>
             </div>
-            <SendNotification onClose={() => setShowModal(false)} /> {/* Pass onClose callback */}
+            <p className="text-gray-700">{selectedNotification.message}</p>
           </div>
         </div>
       )}
