@@ -17,6 +17,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
   const [userRole, setUserRole] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateNotificationModal, setShowCreateNotificationModal] = useState(false); // Modal for creating notifications
   const [showModal, setShowModal] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
 
@@ -141,7 +142,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
           {userRole !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowCreateNotificationModal(true)}
             >
               Create Notification
             </button>
@@ -199,6 +200,25 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
               </button>
             </div>
             <p className="text-gray-700">{selectedNotification.message}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for SendNotification */}
+      {showCreateNotificationModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-gray-200"></div>
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">Create Notification</h3>
+              <button
+                className="text-red-500 hover:text-red-700"
+                onClick={() => setShowCreateNotificationModal(false)} // Close the modal
+              >
+                &times;
+              </button>
+            </div>
+            <SendNotification onClose={() => setShowCreateNotificationModal(false)} /> {/* Pass onClose callback */}
           </div>
         </div>
       )}
