@@ -100,4 +100,29 @@ export const parseDDMMYYYY = (dateStr) => {
   if (!dateStr) return null;
   const [day, month, year] = dateStr.split('-').map(Number);
   return new Date(year, month - 1, day);
+};
+
+/**
+ * Returns an array of dates representing the days in the week of the given date (Sunday to Saturday).
+ * @param {Date} date - Any date within the desired week.
+ * @returns {Date[]} Array of 7 Date objects for the week.
+ */
+export const getWeekDays = (date) => {
+  const startOfWeek = new Date(date);
+  startOfWeek.setDate(date.getDate() - date.getDay()); // Sunday
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    days.push(d);
+  }
+  return days;
+};
+
+/**
+ * Returns an array of hour labels for a day view (e.g., '00:00', '01:00', ... '23:00').
+ * @returns {string[]} Array of hour strings.
+ */
+export const getDayHours = () => {
+  return Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
 }; 
