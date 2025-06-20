@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Calendar, Clock, Search } from 'lucide-react';
-import { getDaysInMonth, dayNames, monthNames, getEventColor } from '../../utils/calendarUtils';
+import { getDaysInMonth, dayNames, monthNames } from '../../utils/calendarUtils';
 import { useCalendarEvents } from '../../hooks/useCalendarEvents';
+import { getCategoryAppearance } from '../../utils/categoryColors';
 
 const BaseCalendar = ({
   userRole,
@@ -168,22 +169,27 @@ const BaseCalendar = ({
                       {day}
                     </div>
                     <div className="space-y-1">
-                      {eventsForDay.slice(0, 3).map(event => (
-                        <div
-                          key={event.id}
-                          onClick={() => handleEventClick(event)}
-                          className={`${getEventColor(event, userRole)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity`}
-                          style={{ minHeight: '40px' }}
-                        >
-                          <div className="flex items-center gap-1">
-                            <Clock size={10} />
-                            {event.time}
+                      {eventsForDay.slice(0, 3).map(event => {
+                        const appearance = getCategoryAppearance(event.category);
+                        const isPending = event.status === 'pending';
+                        
+                        return (
+                          <div
+                            key={event.id}
+                            onClick={() => handleEventClick(event)}
+                            className={`text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
+                            style={{ ...appearance.style, minHeight: '40px' }}
+                          >
+                            <div className="flex items-center gap-1">
+                              <Clock size={10} />
+                              {event.timeFrom || event.time}
+                            </div>
+                            <div className="truncate font-medium">
+                              {event.title}
+                            </div>
                           </div>
-                          <div className="truncate font-medium">
-                            {event.title}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {eventsForDay.length > 3 && (
                         <div className="text-xs text-gray-500 text-center">
                           +{eventsForDay.length - 3} more
