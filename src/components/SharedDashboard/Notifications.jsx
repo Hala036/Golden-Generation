@@ -12,13 +12,13 @@ const iconMap = {
   message: <FaEnvelope className="text-gray-500 text-xl" />,
 };
 
-const Notifications = () => {
+const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Add setShowNotificationsPopup as a prop
   const { currentUser } = useAuth();
   const [userRole, setUserRole] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState(null); // State for selected notification
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   // Fetch user role
   useEffect(() => {
@@ -114,8 +114,18 @@ const Notifications = () => {
   };
 
   const handleNotificationClick = (notification) => {
-    setSelectedNotification(notification);
-    setShowModal(true);
+    // Mark the notification as read
+    handleMarkAsRead(notification.id);
+
+    // Switch to "messages" tab if the notification type is "message"
+    if (notification.type === "message" && setSelectedTab) {
+      setSelectedTab("messages");
+      setShowNotificationsPopup(false); // Close the notifications popup
+      setShowModal(false); // Close the notification modal
+    } else {
+      setSelectedNotification(notification);
+      setShowModal(true);
+    }
   };
 
   return (
@@ -150,10 +160,7 @@ const Notifications = () => {
               className={`flex items-start gap-4 px-6 py-5 cursor-pointer hover:bg-gray-50 transition ${
                 n.read ? 'opacity-60' : ''
               }`}
-              onClick={() => {
-                handleNotificationClick(n); 
-                handleMarkAsRead(n.id);
-              }}
+              onClick={() => handleNotificationClick(n)}
             >
               <div className="mt-1">
                 {iconMap[n.type] || iconMap.info}

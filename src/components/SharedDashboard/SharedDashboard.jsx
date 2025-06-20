@@ -200,7 +200,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
             </div>
             {/* Scrollable Notifications List */}
             <div className="max-h-96 overflow-y-auto">
-              <Notifications /> {/* Render the Notifications component */}
+              <Notifications setSelectedTab={setSelected} setShowNotificationsPopup={setShowNotificationsPopup} />
             </div>
           </div>
         )}
