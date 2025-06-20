@@ -2,7 +2,7 @@ import { useState } from "react";
 import { triggerNotification } from "./TriggerNotifications"; // Import the helper function
 import { db } from "../../firebase";
 import { useAuth } from "../../hooks/useAuth"; // if you track current user
-import { toast } from "react-toastify";
+import { toast, Toaster } from "react-hot-toast";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 const SendNotification = () => {
@@ -29,6 +29,7 @@ const SendNotification = () => {
         message,
         target,
         createdBy: currentUser?.uid || "system",
+        type: "info", 
       });
       toast.success("Notification sent successfully");
       setMessage("");
@@ -52,6 +53,7 @@ const SendNotification = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+        <Toaster position="top-right" />
 
       <textarea
         className="w-full border p-2 rounded"

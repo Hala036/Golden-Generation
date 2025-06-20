@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
-import { collection, query, where, orderBy, getDocs, updateDoc, doc } from "firebase/firestore";
+import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope } from 'react-icons/fa'; // Added FaEnvelope for "message"
+import { collection, query, where, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { db, getUserData } from '../../firebase'; // Import getUserData
 import { useAuth } from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
@@ -9,7 +9,7 @@ const iconMap = {
   info: <FaInfoCircle className="text-blue-400 text-xl" />,
   alert: <FaExclamationTriangle className="text-yellow-500 text-xl" />,
   success: <FaCheckCircle className="text-green-500 text-xl" />,
-  job_invitation: <FaInfoCircle className="text-blue-400 text-xl" />,
+  message: <FaEnvelope className="text-gray-500 text-xl" />, // Added icon for "message"
 };
 
 const Notifications = () => {
@@ -23,7 +23,7 @@ const Notifications = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (!currentUser?.uid) return;
-      
+
       try {
         const userData = await getUserData(currentUser.uid); // Use getUserData to fetch user data
         if (userData?.role) {
@@ -93,6 +93,22 @@ const Notifications = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  const deleteOldNotifications = async () => {
+    const snapshot = await getDocs(collection(db, "notifications"));
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30)); // Calculate 30 days ago
+
+    snapshot.forEach(async (docSnapshot) => {
+      const data = docSnapshot.data();
+      if (data.createdAt && data.createdAt.toDate() < thirtyDaysAgo) {
+        console.log("Deleting old notification:", docSnapshot.id);
+        await deleteDoc(doc(db, "notifications", docSnapshot.id));
+      }
+    });
+  };
+
+  // Call deleteOldNotifications function periodically (e.g., via a cron job or manually)
+
   return (
     <div className="w-full max-w-2xl mx-auto p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
@@ -128,7 +144,10 @@ const Notifications = () => {
               }`}
               onClick={() => handleMarkAsRead(n.id)}
             >
-              <div className="mt-1">{iconMap[n.type] || iconMap.info}</div>
+              {/* Check for type and assign appropriate icon */}
+              <div className="mt-1">
+                {iconMap[n.type] || iconMap.info} {/* Default to info icon */}
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-gray-800 truncate">{n.title || "Notification"}</div>
                 <div className="text-sm text-gray-600 truncate">{n.message}</div>
