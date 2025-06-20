@@ -65,8 +65,6 @@ const Notifications = () => {
         })
         .filter(n => n.createdBy !== currentUser.uid);
 
-        console.log("Mapped notifications data:", data);
-
         setNotifications(data);
       } catch (err) {
         console.error("Error fetching notifications:", err);
@@ -112,7 +110,6 @@ const Notifications = () => {
   return (
     <div className="w-full max-w-2xl mx-auto p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Notifications</h2>
         <div className="flex items-center gap-4">
           <button
             className="text-sm text-blue-500 hover:underline"
@@ -131,10 +128,10 @@ const Notifications = () => {
         </div>
       </div>
       <div className="bg-white rounded-xl shadow-lg divide-y">
-        {notifications.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No notifications</div>
-        ) : loading ? (
+        {loading ? (
           <div className="p-8 text-center text-gray-400">Loading...</div>
+        ) : notifications.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">No notifications</div>
         ) : (
           notifications.map((n) => (
             <div
@@ -169,8 +166,10 @@ const Notifications = () => {
 
       {/* Modal for SendNotification */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          {/* Shadowed background */}
+          <div className="absolute inset-0 bg-gray-200"></div>
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">Create Notification</h3>
               <button
@@ -180,7 +179,7 @@ const Notifications = () => {
                 &times;
               </button>
             </div>
-            <SendNotification />
+            <SendNotification onClose={() => setShowModal(false)} /> {/* Pass onClose callback */}
           </div>
         </div>
       )}
