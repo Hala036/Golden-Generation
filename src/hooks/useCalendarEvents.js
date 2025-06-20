@@ -28,43 +28,57 @@ export const useCalendarEvents = (userRole) => {
     fetchUserSettlement();
   }, []);
 
-  // Real-time fetch events from Firestore
   useEffect(() => {
     setLoading(true);
-    const unsub = onSnapshot(collection(db, 'events'), (querySnapshot) => {
-      const eventsFromDb = [];
-      querySnapshot.forEach((doc) => {
-        const eventData = doc.data();
-        let eventDate = eventData.date || eventData.startDate;
-        
-        // Try to use createdAt if no date/startDate
-        if (!eventDate && eventData.createdAt && eventData.createdAt.toDate) {
-          const d = eventData.createdAt.toDate();
-          eventDate = formatDateToDDMMYYYY(d);
-        } else {
-          eventDate = formatDateToDDMMYYYY(eventDate);
-        }
 
-        // Only push events with a valid date
-        if (eventDate) {
-          eventsFromDb.push({
-            id: doc.id,
-            ...eventData,
-            date: eventDate,
-            startDate: eventData.startDate ? formatDateToDDMMYYYY(eventData.startDate) : eventDate,
-            endDate: eventData.endDate ? formatDateToDDMMYYYY(eventData.endDate) : eventDate
-          });
-        }
+    // 1. Fetch all categories first and create a map for easy lookup.
+    const categoriesRef = collection(db, 'categories');
+    onSnapshot(categoriesRef, (categorySnapshot) => {
+      const categoryMap = new Map();
+      categorySnapshot.forEach(doc => {
+        categoryMap.set(doc.id, { id: doc.id, ...doc.data() });
       });
-      setEvents(eventsFromDb);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching events:', error);
-      toast.error('Failed to load events');
-      setLoading(false);
+
+      // 2. Fetch all events and "join" them with their category data.
+      const eventsRef = collection(db, 'events');
+      const unsubEvents = onSnapshot(eventsRef, (querySnapshot) => {
+        const eventsFromDb = [];
+        querySnapshot.forEach((doc) => {
+          const eventData = doc.data();
+          const category = categoryMap.get(eventData.categoryId);
+          let eventDate = eventData.date || eventData.startDate;
+          
+          // Try to use createdAt if no date/startDate
+          if (!eventDate && eventData.createdAt && eventData.createdAt.toDate) {
+            const d = eventData.createdAt.toDate();
+            eventDate = formatDateToDDMMYYYY(d);
+          } else {
+            eventDate = formatDateToDDMMYYYY(eventDate);
+          }
+
+          // Only push events with a valid date
+          if (eventDate) {
+            eventsFromDb.push({
+              id: doc.id,
+              ...eventData,
+              date: eventDate,
+              startDate: eventData.startDate ? formatDateToDDMMYYYY(eventData.startDate) : eventDate,
+              endDate: eventData.endDate ? formatDateToDDMMYYYY(eventData.endDate) : eventDate,
+              category: category || { id: eventData.categoryId }
+            });
+          }
+        });
+        setEvents(eventsFromDb);
+        setLoading(false);
+      }, (error) => {
+        console.error('Error fetching events:', error);
+        toast.error('Failed to load events');
+        setLoading(false);
+      });
+
+      return () => unsubEvents();
     });
 
-    return () => unsub();
   }, []);
 
   // Filter events based on user role and settlement
