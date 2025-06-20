@@ -13,6 +13,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import WorkBackground from './WorkBackground';
 import Lifestyle from './Lifestyle';
 import VeteransCommunity from './VeteransCommunity';
+import { triggerNotification } from '../SharedDashboard/TriggerNotifications'; // Import the triggerNotification function
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -77,14 +78,23 @@ const SignUp = () => {
           uid: userCredential.user.uid
         });
 
-        // 5. Sign in the user (optional, for direct dashboard access)
+        // 5. Send welcome notification
+        await triggerNotification({
+          message: `Welcome to Golden Generation, ${credentialsData.username}! We're excited to have you onboard.`,
+          target: [userCredential.user.uid], // Send notification to the newly created user
+          link: '/dashboard', // Link to the dashboard
+          createdBy: 'system', // System-generated notification
+          type: 'info' // Notification type
+        });
+
+        // 6. Sign in the user (optional, for direct dashboard access)
         await signInWithEmailAndPassword(auth, credentialsData.email, credentialsData.password);
 
-        // 6. Success handling
+        // 7. Success handling
         resetStore();
         toast.success('Account created successfully!', { id: 'signup' });
 
-        // 7. Navigate to dashboard
+        // 8. Navigate to dashboard
         navigate('/dashboard');
       } catch (error) {
         console.error('Signup error:', error);
