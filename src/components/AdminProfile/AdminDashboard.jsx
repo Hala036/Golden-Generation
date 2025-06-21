@@ -6,7 +6,7 @@ import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Settings from "../SharedDashboard/SettingsCards";
-import Calendar from "../SharedDashboard/Calendar";
+import Calendar from "../Calendar/AdminCalendar";
 import Messages from "../SharedDashboard/Messages";
 import Notifications from "../SharedDashboard/Notifications";
 import Pending from "./PendingEvents";
