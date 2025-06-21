@@ -70,6 +70,7 @@ const SettingsCards = () => {
         const userDoc = await getUserData(user.uid);
         const prefs = userDoc?.preferences || {};
         if (prefs.fontSize) setFontSize(Number(prefs.fontSize));
+        if (prefs.theme) setTheme(prefs.theme);
         if (prefs.notifications) setNotifications(prefs.notifications);
       } catch (err) {
         // ignore if not logged in
@@ -283,7 +284,6 @@ const SettingsCards = () => {
     if (!user) return toast.error("Not logged in");
     if (deleteConfirm !== "DELETE") return toast.error("Type DELETE to confirm");
     if (!deletePassword) return toast.error("Enter your password");
-    
     try {
       // Re-authenticate
       const cred = EmailAuthProvider.credential(user.email, deletePassword);

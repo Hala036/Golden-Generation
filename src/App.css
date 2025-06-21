@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+.pending-event-pattern {
+  /* The diagonal stripes are created using a repeating linear gradient. */
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.25) 0,
+    rgba(255, 255, 255, 0.25) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}

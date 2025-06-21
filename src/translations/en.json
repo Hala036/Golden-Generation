@@ -519,6 +519,7 @@
       "analytics": "Analytics",
       "contactUs": "Customer Support",
       "pendingEvents": "Pending Events",
+      "categoryManagement": "Category Management",
       "arrowClose": "←",
       "arrowOpen": "→",
       "events":{

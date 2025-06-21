@@ -24,6 +24,12 @@ function useAgoraAudioCall() {
     setCallError(null);
     clientRef.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
     try {
+      // *** DEBUGGING LOGS START ***
+      console.log("Frontend: Preparing to send token request.");
+      console.log("Frontend: channelName ->", channelName);
+      console.log("Frontend: uid ->", uid, typeof uid);
+      // *** DEBUGGING LOGS END ***
+
       // Get token from backend
       const res = await fetch('/api/agora/token', {
         method: 'POST',
@@ -31,6 +37,10 @@ function useAgoraAudioCall() {
         body: JSON.stringify({ channelName, uid }),
       });
       const data = await res.json();
+
+      // *** DEBUGGING LOGS START ***
+      console.log("Frontend: Received response from token endpoint:", data);
+      // *** DEBUGGING LOGS END ***
 
       if (!data.token || !data.appId) {
         throw new Error(data.error || 'Failed to get Agora token from backend');
