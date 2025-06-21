@@ -55,12 +55,8 @@ const LoginPage = () => {
       toast.success('Login successful!');
       console.log('Login successful, navigating to dashboard...');
       
-      // Navigate to appropriate dashboard based on role
-      if (userData.role === 'admin' || userData.role === 'superadmin') {
-        navigate('/admin-dashboard');
-      } else {
-        navigate('/dashboard');
-      }
+      // Navigate all roles to the main dashboard entry point
+      navigate('/dashboard');
       
     } catch (error) {
       console.error('Login error:', error);
