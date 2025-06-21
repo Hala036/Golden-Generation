@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -6,11 +6,6 @@ import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
 import useSignupStore from '../store/signupStore';
 import { useTranslation } from 'react-i18next';
-
-const roleMap = {
-  user: 'retiree',
-  admin: 'admin'
-};
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -34,10 +29,16 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log('Login attempt started with:', { email: formData.email, loginType: selectedLoginType });
 
     try {
+      console.log('Attempting Firebase sign in...');
       const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      console.log('Firebase sign in successful:', userCredential.user.uid);
+      
+      console.log('Fetching user data...');
       const userData = await getUserData(userCredential.user.uid);
+      console.log('User data fetched:', userData);
       
       if (!userData?.role) {
         throw new Error('User role not found');
@@ -52,6 +53,14 @@ const LoginPage = () => {
 
       setRole(userData.role); // Set global role state
       toast.success('Login successful!');
+      console.log('Login successful, navigating to dashboard...');
+      
+      // Navigate to appropriate dashboard based on role
+      if (userData.role === 'admin' || userData.role === 'superadmin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
       
     } catch (error) {
       console.error('Login error:', error);
@@ -65,16 +74,6 @@ const LoginPage = () => {
     e.preventDefault();
     navigate('/signup', { replace: true });
   };
-
-  // After successful login and getting user data:
-const handleLogin = async () => {
-  try {
-    const userDoc = await getUserData(user.uid);
-    setRole(userDoc.role); // Set the role in the store
-  } catch (error) {
-    console.error('Error during login:', error);
-  }
-};
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-b from-gray-100 to-gray-200">
@@ -124,6 +123,7 @@ const handleLogin = async () => {
                 <input
                   type="email"
                   name="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder={t('auth.login.email')}
@@ -135,6 +135,7 @@ const handleLogin = async () => {
                 <input
                   type="password"
                   name="password"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder={t('auth.login.password')}

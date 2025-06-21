@@ -1,4 +1,5 @@
-import { useAuth } from './hooks/useAuth';
+import useSignupStore from './store/signupStore';
+import { useAuth } from './context/AuthContext'; // Use context for user session
 import { useNavigate } from 'react-router-dom';
 
 import Dashboard from './components/RetireeProfile/Dashboard';
@@ -7,35 +8,18 @@ import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashbo
 import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
-  const { user, role, loading, error, retryFetchRole } = useAuth();
+  const { currentUser, loading } = useAuth(); // from AuthContext
+  const { role } = useSignupStore(); // from Zustand store
   const navigate = useNavigate();
-
-  // Redirect to login if no user
-  if (!user && !loading) {
-    navigate('/login');
-    return null;
-  }
-
-  // Show error message if there's an error
-  if (error) {
-    return (
-      <div className="p-4 text-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p className="font-bold">Connection Error</p>
-          <p>{error}</p>
-          <button 
-            onClick={retryFetchRole} 
-            className="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 
+  // Redirect to login if no user
+  if (!currentUser) {
+    navigate('/login');
+    return null;
+  }
+  
   switch (role) {
     case 'superadmin':
       return <SuperAdminDashboard />;
@@ -43,10 +27,10 @@ const RoleBasedDashboard = () => {
       return <AdminDashboard />;
     case 'retiree':
       return <Dashboard />;
-    case undefined:
-      return <Login />;
     default:
-      return <div className="p-4">Unauthorized or unknown role.</div>;
+      // If role is not set, it might be a new login.
+      // We could wait or redirect. For now, showing unauthorized.
+      return <div className="p-4">Unauthorized or role not found.</div>;
   }
 };
 

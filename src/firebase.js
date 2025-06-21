@@ -24,28 +24,10 @@ const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// Initialize Firestore with better offline handling
+// Initialize Firestore
 const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
   useFetchStreams: false,
-  // Add offline persistence settings
-  cacheSizeBytes: 50 * 1024 * 1024, // 50MB cache
-});
-
-// Network state management
-let isOnline = navigator.onLine;
-
-// Listen for online/offline events
-window.addEventListener('online', () => {
-  isOnline = true;
-  console.log('App is online');
-  enableNetwork(db);
-});
-
-window.addEventListener('offline', () => {
-  isOnline = false;
-  console.log('App is offline');
-  disableNetwork(db);
 });
 
 // User Management Functions
@@ -64,14 +46,7 @@ const getUserData = async (uid) => {
     return null;
   } catch (error) {
     console.error("Error fetching user data:", error);
-    
-    // Check if it's an offline error
-    if (error.message && error.message.includes('offline')) {
-      console.warn("User is offline, cannot fetch data");
-      return null;
-    }
-    
-    return null;
+    return null; // Simply return null on any error
   }
 };
 
