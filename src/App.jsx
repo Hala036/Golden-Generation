@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
+import NetworkStatus from './components/NetworkStatus';
 
 import Login from './components/Login';
 import SignUp from './components/SignUp/SignUp';
@@ -40,6 +41,7 @@ const App = () => {
     <AuthProvider>
       <LanguageProvider>
         <Router>
+          <NetworkStatus />
           <Toaster position="top-right" />
           <AppRoutes />
         </Router>

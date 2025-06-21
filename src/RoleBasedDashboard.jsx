@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { auth, db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { useAuth } from './hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 import Dashboard from './components/RetireeProfile/Dashboard';
@@ -9,36 +7,32 @@ import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashbo
 import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, role, loading, error, retryFetchRole } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        navigate('/login');
-        return;
-      }
+  // Redirect to login if no user
+  if (!user && !loading) {
+    navigate('/login');
+    return null;
+  }
 
-      try {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-          setRole(userDoc.data().role);
-        } else {
-          console.error('User doc not found');
-          navigate('/login');
-        }
-      } catch (error) {
-        console.error('Failed to fetch user role:', error);
-        navigate('/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserRole();
-  }, [navigate]);
+  // Show error message if there's an error
+  if (error) {
+    return (
+      <div className="p-4 text-center">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <p className="font-bold">Connection Error</p>
+          <p>{error}</p>
+          <button 
+            onClick={retryFetchRole} 
+            className="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 
