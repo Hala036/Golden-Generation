@@ -1,4 +1,4 @@
-import { FaUser, FaBriefcase, FaChartBar, FaClock } from "react-icons/fa";
+import { FaUser, FaBriefcase, FaChartBar, FaClock, FaSearch } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -13,10 +13,12 @@ import Pending from "./PendingEvents";
 import Retirees from "./Retirees";
 import Jobs from "./Jobs";
 import Analysis from "./Analysis";
+import CategoryManagement from "./CategoryManagement";
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const customIcons = [
+    { id: "categoryManagement", label: t('dashboard.categoryManagement'), icon: <FaSearch /> },
     { id: "retirees", label: t('dashboard.retirees'), icon: <FaUser /> },
     { id: "jobs", label: t('dashboard.volunteerRequests'), icon: <FaBriefcase /> },
     { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
@@ -36,7 +38,8 @@ const AdminDashboard = () => {
     retirees: <Retirees />,
     jobs: <Jobs />,
     analysis: <Analysis />,
-    pending: <Pending />
+    pending: <Pending />,
+    categoryManagement: <CategoryManagement />
   };
 
   return (
