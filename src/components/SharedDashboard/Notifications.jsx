@@ -43,11 +43,14 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
 
   // Fetch notifications
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      console.log("currentUser is null or undefined");
+      return;
+    }
 
+    console.log("currentUser:", currentUser);
     const fetchNotifications = async () => {
       setLoading(true);
-
       try {
         const userDoc = await getDoc(doc(db, "users", currentUser.uid));
         const userData = userDoc.data();
