@@ -10,6 +10,7 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
 import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard';
+import AdminDashboard from './components/AdminProfile/AdminDashboard';
 
 const AppRoutes = () => {
   const { language } = useLanguage();

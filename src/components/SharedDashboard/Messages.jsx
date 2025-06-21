@@ -6,9 +6,125 @@ import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaVideo, FaComments, FaMi
 import { toast } from 'react-hot-toast';
 import profile from '../../assets/profile.jpeg';
 import { useTheme } from '../../context/ThemeContext';
+import { triggerNotification } from './TriggerNotifications'; // Import the triggerNotification function
 
 // Ringtone audio URL
-const RINGTONE_URL = '/ringtone.mp3';
+const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
+
+// Agora audio call hook (in this file for simplicity)
+function useAgoraAudioCall() {
+  const [inCall, setInCall] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [callError, setCallError] = useState(null);
+  const [incomingCall, setIncomingCall] = useState(null);
+  const clientRef = useRef(null);
+  const localAudioTrackRef = useRef(null);
+
+  const startCall = async ({ channelName, uid }) => {
+    setCallError(null);
+    clientRef.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+    try {
+      // *** DEBUGGING LOGS START ***
+      console.log("Frontend: Preparing to send token request.");
+      console.log("Frontend: channelName ->", channelName);
+      console.log("Frontend: uid ->", uid, typeof uid);
+      // *** DEBUGGING LOGS END ***
+
+      // Get token from backend
+      const res = await fetch('/api/agora/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelName, uid }),
+      });
+      const data = await res.json();
+
+      // *** DEBUGGING LOGS START ***
+      console.log("Frontend: Received response from token endpoint:", data);
+      // *** DEBUGGING LOGS END ***
+
+      if (!data.token || !data.appId) {
+        throw new Error(data.error || 'Failed to get Agora token from backend');
+      }
+
+      await clientRef.current.join(data.appId, channelName, data.token, uid);
+      localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
+      await clientRef.current.publish([localAudioTrackRef.current]);
+
+      // Listen for user joining (incoming call)
+      clientRef.current.on('user-joined', (user) => {
+        setIncomingCall({
+          uid: user.uid,
+          channelName,
+        });
+      });
+
+      clientRef.current.on('user-published', async (user, mediaType) => {
+        await clientRef.current.subscribe(user, mediaType);
+        if (mediaType === 'audio') {
+          user.audioTrack.play();
+        }
+      });
+
+      setInCall(true);
+    } catch (err) {
+      console.error('Error starting call:', err);
+      setCallError(err.message || 'Failed to start call');
+      setInCall(false);
+    }
+  };
+
+  const acceptCall = async () => {
+    if (!incomingCall) return;
+    try {
+      const { channelName, uid } = incomingCall;
+      await startCall({ channelName, uid });
+      setIncomingCall(null);
+    } catch (err) {
+      console.error('Error accepting call:', err);
+      setCallError(err.message || 'Failed to accept call');
+    }
+  };
+
+  const rejectCall = async () => {
+    if (!incomingCall) return;
+    try {
+      if (clientRef.current) {
+        await clientRef.current.leave();
+      }
+      setIncomingCall(null);
+    } catch (err) {
+      console.error('Error rejecting call:', err);
+    }
+  };
+
+  const leaveCall = async () => {
+    try {
+      if (localAudioTrackRef.current) {
+        localAudioTrackRef.current.close();
+      }
+      if (clientRef.current) {
+        await clientRef.current.leave();
+      }
+    } catch {}
+    setInCall(false);
+    setIsMuted(false);
+    setIncomingCall(null);
+  };
+
+  const toggleMute = async () => {
+    if (localAudioTrackRef.current) {
+      if (isMuted) {
+        await localAudioTrackRef.current.setEnabled(true);
+        setIsMuted(false);
+      } else {
+        await localAudioTrackRef.current.setEnabled(false);
+        setIsMuted(true);
+      }
+    }
+  };
+
+  return { inCall, startCall, leaveCall, isMuted, toggleMute, callError, incomingCall, acceptCall, rejectCall };
+}
 
 // Firestore Call State Management
 const CALLS_COLLECTION = 'calls';
@@ -248,10 +364,23 @@ const Messages = () => {
         timestamp: serverTimestamp()
       };
 
+      // Add the message to Firestore
       await addDoc(collection(db, 'messages'), messageData);
+
+      // Trigger a notification for the recipient
+      const recipientId = selectedChat.participants.find((p) => p !== auth.currentUser.uid);
+      await triggerNotification({
+        message: `New message from ${auth.currentUser.displayName || 'a user'}`,
+        target: [recipientId], // Send notification to the recipient
+        link: `/messages/${selectedChat.id}`, // Link to the conversation
+        createdBy: auth.currentUser.uid,
+        type: 'message'
+      });
+
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
+      toast.error('Failed to send message');
     }
   };
 

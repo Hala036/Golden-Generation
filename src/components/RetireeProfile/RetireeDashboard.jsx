@@ -1,4 +1,4 @@
-import { FaHeadset } from "react-icons/fa";
+import { FaHeadset, FaCalendarAlt } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -6,14 +6,18 @@ import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Settings from "../SharedDashboard/SettingsCards";
-import Calendar from "../SharedDashboard/Calendar";
+import RetireeCalendar from "../Calendar/RetireeCalendar";
 import Messages from "../SharedDashboard/Messages";
 import Notifications from "../SharedDashboard/Notifications";
 import CustomerSupport from "./Support";
+import Volunteer from "./Volunteer";
 
 const RetireeDashboard = () => {
-  const customIcons = [];
   const { t } = useTranslation();
+
+  const customIcons = [
+    { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaCalendarAlt /> }, // Add Volunteer icon
+  ];
 
   const customButtons = [
     {
@@ -27,11 +31,12 @@ const RetireeDashboard = () => {
     upcoming: <Cards />,
     main: <AdminHomepage />,
     settings: <Settings />,
-    calendar: <Calendar />,
+    calendar: <RetireeCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
     notifications: <Notifications />,
     support: <CustomerSupport />,
+    volunteer: <Volunteer />,
   };
 
   return (
