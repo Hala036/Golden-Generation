@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Calendar, Clock, Search } from 'lucide-react';
-import { getDaysInMonth, dayNames, monthNames, getWeekDays, getDayHours, getEventDateRange } from '../../utils/calendarUtils';
+import { getDaysInMonth, dayNames, monthNames, getWeekDays, getDayHours } from '../../utils/calendarUtils';
 import { useCalendarEvents } from '../../hooks/useCalendarEvents';
 import { getCategoryAppearance } from '../../utils/categoryColors';
 
@@ -36,74 +36,32 @@ const BaseCalendar = ({
 
   const days = getDaysInMonth(currentDate);
 
-  // Helper: map date string (DD-MM-YYYY) to events for that day
-  const eventsByDate = useMemo(() => {
-    const map = {};
-    events.forEach(event => {
-      const dates = getEventDateRange(event);
-      dates.forEach(dateStr => {
-        if (!map[dateStr]) map[dateStr] = [];
-        map[dateStr].push(event);
-      });
-    });
-    return map;
-  }, [events]);
-
-  // For month view: get events for each day in the month
   const dayEvents = useMemo(() => {
-    return days.map((day) => {
-      if (!day) return [];
-      const d = day.toString().padStart(2, '0');
-      const m = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-      const y = currentDate.getFullYear();
-      const dateStr = `${d}-${m}-${y}`;
-      return (eventsByDate[dateStr] || []).filter(event => {
-        // Apply filter and search
-        return getFilteredEvents(
-          new Date(y, m - 1, d),
-          filter,
-          searchTerm
-        ).some(e => e.id === event.id);
-      });
-    });
-  }, [days, eventsByDate, filter, searchTerm, getFilteredEvents, currentDate]);
+    return days.map((day) =>
+      getFilteredEvents(
+        day ? new Date(currentDate.getFullYear(), currentDate.getMonth(), day) : null,
+        filter,
+        searchTerm
+      )
+    );
+  }, [days, events, filter, searchTerm, getFilteredEvents, currentDate]);
 
   // For week view
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
   // For day view
   const dayHours = useMemo(() => getDayHours(), []);
 
-  // For week view: get events for each day in the week
+  // Events for week view
   const weekEvents = useMemo(() => {
-    return weekDays.map((date) => {
-      const d = date.getDate().toString().padStart(2, '0');
-      const m = (date.getMonth() + 1).toString().padStart(2, '0');
-      const y = date.getFullYear();
-      const dateStr = `${d}-${m}-${y}`;
-      return (eventsByDate[dateStr] || []).filter(event => {
-        return getFilteredEvents(
-          date,
-          filter,
-          searchTerm
-        ).some(e => e.id === event.id);
-      });
-    });
-  }, [weekDays, eventsByDate, filter, searchTerm, getFilteredEvents]);
+    return weekDays.map((date) =>
+      getFilteredEvents(date, filter, searchTerm)
+    );
+  }, [weekDays, events, filter, searchTerm, getFilteredEvents]);
 
-  // For day view: get all events for the current day
+  // Events for day view
   const dayViewEvents = useMemo(() => {
-    const d = currentDate.getDate().toString().padStart(2, '0');
-    const m = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const y = currentDate.getFullYear();
-    const dateStr = `${d}-${m}-${y}`;
-    return (eventsByDate[dateStr] || []).filter(event => {
-      return getFilteredEvents(
-        currentDate,
-        filter,
-        searchTerm
-      ).some(e => e.id === event.id);
-    });
-  }, [currentDate, eventsByDate, filter, searchTerm, getFilteredEvents]);
+    return getFilteredEvents(currentDate, filter, searchTerm);
+  }, [currentDate, events, filter, searchTerm, getFilteredEvents]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
