@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@tailwindcss/vite": "^4.1.2",
     "agora-access-token": "^2.0.4",
     "agora-rtc-sdk-ng": "^4.23.4",
