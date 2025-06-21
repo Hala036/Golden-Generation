@@ -10,6 +10,7 @@ import CreateEventForm from '../Calendar/CreateEventForm';
 
 const AdminEventDetails = ({ event, onClose }) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   // Helper function to convert DD-MM-YYYY to YYYY-MM-DD
   const formatToYyyyMmDd = (dateStr) => {
@@ -24,28 +25,31 @@ const AdminEventDetails = ({ event, onClose }) => {
   };
 
   const handleDeleteEvent = async () => {
-    if (window.confirm('Are you sure you want to permanently delete this event? This action cannot be undone.')) {
-      try {
-        // First, we need to delete the participants subcollection.
-        // (This is a simplified version; for very large numbers of participants,
-        // a Cloud Function would be more robust).
-        const participantsSnapshot = await getDocs(collection(db, `events/${event.id}/participants`));
-        const batch = writeBatch(db);
-        participantsSnapshot.forEach(doc => {
-          batch.delete(doc.ref);
-        });
-        
-        // Then, delete the main event document.
-        const eventRef = doc(db, 'events', event.id);
-        batch.delete(eventRef);
+    // This function is now only for the final deletion
+    try {
+      const participantsSnapshot = await getDocs(collection(db, `events/${event.id}/participants`));
+      const batch = writeBatch(db);
+      participantsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      
+      const eventRef = doc(db, 'events', event.id);
+      batch.delete(eventRef);
 
-        await batch.commit();
-        onClose(); // Close the modal
+      await batch.commit();
+      onClose();
     } catch (error) {
-        console.error('Error deleting event:', error);
-        alert('Failed to delete event.');
+      console.error('Error deleting event:', error);
+      alert('Failed to delete event.');
     }
-    }
+  };
+
+  const handleInitialDeleteClick = () => {
+    setIsConfirmingDelete(true);
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmingDelete(false);
   };
 
   return (
@@ -63,19 +67,38 @@ const AdminEventDetails = ({ event, onClose }) => {
         onRejectParticipant={leaveEvent}
       >
         {/* Admin Controls */}
-        <div className="flex gap-3">
-          <button
-            onClick={handleEdit}
-            className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-2"
-          >
-            <FaEdit /> Edit
-          </button>
-          <button
-            onClick={handleDeleteEvent}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2"
-          >
-            <FaTrash /> Delete
-          </button>
+        <div className="flex w-full gap-3">
+          {isConfirmingDelete ? (
+            <>
+              <button
+                onClick={handleDeleteEvent}
+                className="flex-grow bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
+              >
+                Confirm Delete
+              </button>
+              <button
+                onClick={handleCancelDelete}
+                className="flex-grow bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleEdit}
+                className="flex-grow bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out flex items-center justify-center gap-2"
+              >
+                <FaEdit /> Edit
+              </button>
+              <button
+                onClick={handleInitialDeleteClick}
+                className="flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out flex items-center justify-center gap-2"
+              >
+                <FaTrash /> Delete
+              </button>
+            </>
+          )}
         </div>
       </BaseEventDetails>
 
