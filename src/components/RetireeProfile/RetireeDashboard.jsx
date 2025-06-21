@@ -6,7 +6,7 @@ import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Settings from "../SharedDashboard/SettingsCards";
-import Calendar from "../SharedDashboard/Calendar";
+import RetireeCalendar from "../Calendar/RetireeCalendar";
 import Messages from "../SharedDashboard/Messages";
 import Notifications from "../SharedDashboard/Notifications";
 import CustomerSupport from "./Support";
@@ -27,7 +27,7 @@ const RetireeDashboard = () => {
     upcoming: <Cards />,
     main: <AdminHomepage />,
     settings: <Settings />,
-    calendar: <Calendar />,
+    calendar: <RetireeCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
     notifications: <Notifications />,

@@ -6,7 +6,7 @@ import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Settings from "../SharedDashboard/SettingsCards";
-import Calendar from "../Calendar/AdminCalendar";
+import AdminCalendar from "../Calendar/AdminCalendar";
 import Messages from "../SharedDashboard/Messages";
 import Notifications from "../SharedDashboard/Notifications";
 import Pending from "./PendingEvents";
@@ -29,7 +29,7 @@ const AdminDashboard = () => {
     upcoming: <Cards />,
     main: <AdminHomepage />,
     settings: <Settings />,
-    calendar: <Calendar />,
+    calendar: <AdminCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
     notifications: <Notifications />,
