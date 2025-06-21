@@ -40,11 +40,11 @@ const Cards = ({ userRole = 'retiree' }) => {
         const categoriesRef = collection(db, "categories");
         const categoriesSnapshot = await onSnapshot(categoriesRef, (snapshot) => {
             const categoriesData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-            setCategories(categoriesData);
+        setCategories(categoriesData);
         });
         return categoriesSnapshot;
     };
-    
+
     const fetchEvents = () => {
         setLoading(true);
         const eventsRef = collection(db, "events");
@@ -61,7 +61,7 @@ const Cards = ({ userRole = 'retiree' }) => {
             setLoading(false);
         }, (error) => {
             console.error("Error fetching events in real-time:", error);
-            setLoading(false);
+        setLoading(false);
         });
         return unsubscribe;
     };
@@ -115,86 +115,86 @@ const Cards = ({ userRole = 'retiree' }) => {
 
     if (userRole === 'admin') {
       return <AdminEventDetails {...modalProps} />;
-    }
+      }
     return <RetireeEventDetails {...modalProps} />;
   };
 
   return (
     <div className="bg-white p-4">
-      {/* Search Bar and Filter */}
-      <div className="sticky top-0 bg-white z-10 flex items-center justify-between mb-4 p-1 shadow-sm w-full">
-        <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
-          <FaSearch className="text-gray-500" />
-          <input
-            type="text"
-            placeholder={t("dashboard.search.searchEvents")}
-            className="border-none outline-none text-sm ml-2 w-full"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </div>
-        <select
-          className="ml-4 border px-2 py-1 rounded-md text-sm"
-          value={selectedCategory}
-          onChange={(e) => handleCategoryChange(e.target.value)}
-        >
-          <option value="all">{t("dashboard.filter.allCategories")}</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.translations[language]} {/* Display translation based on current language */}
-            </option>
-          ))}
-        </select>
-      </div>
-      {loading && <p>Loading...</p>}
+          {/* Search Bar and Filter */}
+          <div className="sticky top-0 bg-white z-10 flex items-center justify-between mb-4 p-1 shadow-sm w-full">
+            <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
+              <FaSearch className="text-gray-500" />
+              <input
+                type="text"
+                placeholder={t("dashboard.search.searchEvents")}
+                className="border-none outline-none text-sm ml-2 w-full"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
+            <select
+              className="ml-4 border px-2 py-1 rounded-md text-sm"
+              value={selectedCategory}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+            >
+              <option value="all">{t("dashboard.filter.allCategories")}</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.translations[language]} {/* Display translation based on current language */}
+                </option>
+              ))}
+            </select>
+          </div>
+          {loading && <p>Loading...</p>}
 
-      {/* Events Grid */}
-      {!loading && (
-        <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
-          {filteredEvents.map((event) => {
+          {/* Events Grid */}
+          {!loading && (
+            <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
+              {filteredEvents.map((event) => {
             const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
-            return (
+                return (
               <div key={event.id} className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4">
-                {/* Event Title */}
-                <h3 className="text-base font-bold mb-2">{event.title}</h3>
+                    {/* Event Title */}
+                    <h3 className="text-base font-bold mb-2">{event.title}</h3>
 
-                {/* Event Image */}
-                <div className="mb-4">
-                  <img
-                    src={backgroundImage}
-                    alt={event.title}
-                    className="w-full h-48 object-cover rounded-md"
-                  />
-                </div>
-                {/* Date with Calendar Icon */}
-                <div className="flex items-center mb-2">
-                  <FaCalendarAlt className="text-[#FFD966] mr-2" />
-                  <p className="text-gray-700 font-medium">
-                    {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                  </p>
-                </div>
+                    {/* Event Image */}
+                    <div className="mb-4">
+                      <img
+                        src={backgroundImage}
+                        alt={event.title}
+                        className="w-full h-48 object-cover rounded-md"
+                      />
+                    </div>
+                    {/* Date with Calendar Icon */}
+                    <div className="flex items-center mb-2">
+                      <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                      <p className="text-gray-700 font-medium">
+                        {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
+                      </p>
+                    </div>
 
-                {/* Location with Pin Icon */}
-                <div className="flex items-center mb-3">
-                  <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
-                  <p className="text-gray-700 font-medium">{event.location}</p>
-                </div>
+                    {/* Location with Pin Icon */}
+                    <div className="flex items-center mb-3">
+                      <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                      <p className="text-gray-700 font-medium">{event.location}</p>
+                    </div>
 
-                {/* Description */}
-                <p className="text-gray-500 text-sm">{event.description}</p>
+                    {/* Description */}
+                    <p className="text-gray-500 text-sm">{event.description}</p>
                 <div className="flex justify-center mt-4">
-                  <button
+                      <button
                     className="bg-[#FFD966] hover:bg-yellow-500 text-black font-bold px-6 py-2 rounded-md transition-colors duration-200"
                     onClick={() => setSelectedEvent(event)}
-                  >
-                    {t("dashboard.events.moreDetails")}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                      >
+                        {t("dashboard.events.moreDetails")}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
       {/* Centralized Event Details Modal */}
       {renderEventDetailsModal()}
