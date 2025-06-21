@@ -124,7 +124,10 @@ export const getWeekDays = (date) => {
  * @returns {string[]} Array of hour strings.
  */
 export const getDayHours = () => {
-  return Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+  return Array.from({ length: 24 }, (_, i) => {
+    const hour = i.toString().padStart(2, '0');
+    return `${hour}:00`;
+  });
 };
 
 /**
@@ -147,4 +150,67 @@ export const getEventDateRange = (event) => {
     current.setDate(current.getDate() + 1);
   }
   return dates;
+};
+
+export const processEventsForDayView = (events) => {
+  const timeToMinutes = (time) => {
+    if (!time) return 0;
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const sortedEvents = events
+    .map(event => ({
+      ...event,
+      startMinutes: timeToMinutes(event.timeFrom),
+      endMinutes: timeToMinutes(event.timeTo) || timeToMinutes(event.timeFrom) + 60,
+    }))
+    .sort((a, b) => a.startMinutes - b.startMinutes || b.endMinutes - a.endMinutes);
+
+  const eventLayouts = [];
+  let collisionGroups = [];
+
+  sortedEvents.forEach((event, index) => {
+    let placed = false;
+    for (const group of collisionGroups) {
+      const lastEventInGroup = group[group.length - 1];
+      if (event.startMinutes < lastEventInGroup.endMinutes) {
+        group.push(event);
+        placed = true;
+        break;
+      }
+    }
+
+    if (!placed) {
+      collisionGroups.push([event]);
+    }
+  });
+
+  collisionGroups.forEach(group => {
+    const columns = [];
+    group.forEach(event => {
+      let placed = false;
+      for (let i = 0; i < columns.length; i++) {
+        const lastEventInColumn = columns[i][columns[i].length - 1];
+        if (event.startMinutes >= lastEventInColumn.endMinutes) {
+          columns[i].push(event);
+          event.column = i;
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        columns.push([event]);
+        event.column = columns.length - 1;
+      }
+    });
+
+    group.forEach(event => {
+      event.totalColumns = columns.length;
+    });
+
+    eventLayouts.push(...group);
+  });
+  
+  return eventLayouts;
 }; 
