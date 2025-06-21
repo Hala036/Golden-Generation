@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { formatDateToDDMMYYYY, isUpcoming } from '../utils/calendarUtils';
+import { formatDateToDDMMYYYY, isUpcoming, parseDDMMYYYY } from '../utils/calendarUtils';
 import { toast } from 'react-hot-toast';
 
 export const useCalendarEvents = (userRole) => {
@@ -126,27 +126,30 @@ export const useCalendarEvents = (userRole) => {
     const dateStr = formatDateToDDMMYYYY(date);
     
     return events.filter(event => {
-      if (!event.date && !event.startDate) return false;
-      const eventDate = event.date || event.startDate;
-
+      if (!event.startDate && !event.date) return false;
+      // Use startDate and endDate for range check
+      const eventStart = event.startDate ? parseDDMMYYYY(event.startDate) : null;
+      const eventEnd = event.endDate ? parseDDMMYYYY(event.endDate) : eventStart;
+      const current = parseDDMMYYYY(dateStr);
+      if (!eventStart || !current) return false;
+      // Check if current date is within event range (inclusive)
+      const inRange = current >= eventStart && current <= eventEnd;
+      if (!inRange) return false;
       // Admin: see all events in their settlement
       if (userRole === 'admin') {
         if (event.status === 'pending') {
           // Only show pending retiree events in this admin's settlement
-          return eventDate === dateStr && 
-                 (!event.settlement || event.settlement === userSettlement);
+          return (!event.settlement || event.settlement === userSettlement);
         }
-        return eventDate === dateStr;
+        return true;
       }
-
       // Retiree:
       if (event.status === 'pending') {
         // Only show if created by this retiree
-        return eventDate === dateStr && event.createdBy === auth.currentUser?.uid;
+        return event.createdBy === auth.currentUser?.uid;
       }
-
       // Show open events if joined, created, or open to all
-      return eventDate === dateStr && (
+      return (
         event.participants?.includes(auth.currentUser?.uid) ||
         event.createdBy === auth.currentUser?.uid ||
         event.status === 'open'
