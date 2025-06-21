@@ -10,7 +10,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import Cards from "./Cards";
 import SettingsCards from "./SettingsCards";
-import Calendar from "./RetireeCalendar";
+import Calendar from "../Calendar/RetireeCalendar";
 import Messages from "./Messages";
 import Notifications from "./Notifications";
 import AddEvents from "./AddEvents";
@@ -148,13 +148,13 @@ const Dashboard = () => {
 
         {/* Scrollable Content Area */}
         <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1">
-          {selected === "upcoming" && <Cards />}
+          {selected === "upcoming" && <Cards userRole="retiree" />}
           {selected === "add" && <AddEvents />}
           {selected === "settings" && <SettingsCards />}
           {selected === "calendar" && <Calendar />}
           {selected === "messages" && <Messages />}
           {selected === "notifications" && <Notifications />}
-          {selected === "support" && <Support />} {/* Add Support component */}
+          {selected === "support" && <Support />}
         </div>
       </div>
     </div>
