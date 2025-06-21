@@ -4,10 +4,11 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import Login from './components/Login';
 import SignUp from './components/SignUp/SignUp';
-import Dashboard from './components/RetireeProfile/Dashboard';
+import Dashboard from './components/RetireeProfile/RetireeDashboard';
 import ForgotPassword from './components/ForgotPassword';
 
 import './App.css';
@@ -39,10 +40,12 @@ const App = () => {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <Router>
-          <Toaster position="top-right" />
-          <AppRoutes />
-        </Router>
+        <ThemeProvider>
+          <Router>
+            <Toaster position="top-right" />
+            <AppRoutes />
+          </Router>
+        </ThemeProvider>
       </LanguageProvider>
     </AuthProvider>
   );

@@ -2,7 +2,8 @@ import useSignupStore from './store/signupStore';
 import { useAuth } from './context/AuthContext'; // Use context for user session
 import { useNavigate } from 'react-router-dom';
 
-import Dashboard from './components/RetireeProfile/Dashboard';
+import Dashboard from './components/RetireeProfile/RetireeDashboard';
+import Shared from './components/SharedDashboard/SharedDashboard';
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashboard';
 import Login from './components/Login';
