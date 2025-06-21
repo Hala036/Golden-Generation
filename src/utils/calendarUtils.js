@@ -125,4 +125,26 @@ export const getWeekDays = (date) => {
  */
 export const getDayHours = () => {
   return Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+};
+
+/**
+ * Returns an array of date strings (DD-MM-YYYY) that the event spans from startDate to endDate inclusive.
+ * @param {Object} event - The event object with startDate, endDate.
+ * @returns {string[]} Array of date strings in DD-MM-YYYY format.
+ */
+export const getEventDateRange = (event) => {
+  const { startDate, endDate } = event;
+  if (!startDate) return [];
+  const start = parseDDMMYYYY(startDate);
+  const end = endDate ? parseDDMMYYYY(endDate) : start;
+  const dates = [];
+  let current = new Date(start);
+  while (current <= end) {
+    const d = current.getDate().toString().padStart(2, '0');
+    const m = (current.getMonth() + 1).toString().padStart(2, '0');
+    const y = current.getFullYear();
+    dates.push(`${d}-${m}-${y}`);
+    current.setDate(current.getDate() + 1);
+  }
+  return dates;
 }; 
