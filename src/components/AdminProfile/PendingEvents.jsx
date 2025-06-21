@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "../../firebase";
 import { collection, query, where, getDocs, getDoc, updateDoc, doc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+import { triggerNotification } from "../SharedDashboard/TriggerNotifications";
 
 const PendingEvents = () => {
   const [pendingEvents, setPendingEvents] = useState([]);
@@ -49,7 +50,20 @@ const PendingEvents = () => {
 
   const handleApprove = async (eventId) => {
     try {
+      const eventDoc = await getDoc(doc(db, "events", eventId));
+      const eventData = eventDoc.data();
+
       await updateDoc(doc(db, "events", eventId), { status: "active", color: "yellow" });
+
+      // Trigger notification for approval
+      await triggerNotification({
+        message: `Your event "${eventData.title}" has been approved.`,
+        target: [eventData.createdBy],
+        link: `/events/${eventId}`,
+        createdBy: auth.currentUser.uid,
+        type: "alert"
+      });
+
       toast.success("Event approved successfully!");
       setPendingEvents((prev) => prev.filter((event) => event.id !== eventId));
     } catch (error) {
@@ -60,7 +74,20 @@ const PendingEvents = () => {
 
   const handleReject = async (eventId) => {
     try {
+      const eventDoc = await getDoc(doc(db, "events", eventId));
+      const eventData = eventDoc.data();
+
       await updateDoc(doc(db, "events", eventId), { status: "rejected", color: "red" });
+
+      // Trigger notification for rejection
+      await triggerNotification({
+        message: `Your event "${eventData.title}" has been rejected.`,
+        target: [eventData.createdBy],
+        link: `/events/${eventId}`,
+        createdBy: auth.currentUser.uid,
+        type: "alert"
+      });
+
       toast.success("Event rejected successfully!");
       setPendingEvents((prev) => prev.filter((event) => event.id !== eventId));
     } catch (error) {

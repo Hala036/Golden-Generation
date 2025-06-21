@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import profile from '../../assets/profile.jpeg';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { useTheme } from '../../context/ThemeContext';
+import { triggerNotification } from './TriggerNotifications'; // Import the triggerNotification function
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -434,10 +435,23 @@ const Messages = () => {
         timestamp: serverTimestamp()
       };
 
+      // Add the message to Firestore
       await addDoc(collection(db, 'messages'), messageData);
+
+      // Trigger a notification for the recipient
+      const recipientId = selectedChat.participants.find((p) => p !== auth.currentUser.uid);
+      await triggerNotification({
+        message: `New message from ${auth.currentUser.displayName || 'a user'}`,
+        target: [recipientId], // Send notification to the recipient
+        link: `/messages/${selectedChat.id}`, // Link to the conversation
+        createdBy: auth.currentUser.uid,
+        type: 'message'
+      });
+
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
+      toast.error('Failed to send message');
     }
   };
 
@@ -1049,4 +1063,4 @@ const Messages = () => {
   );
 };
 
-export default Messages; 
+export default Messages;
