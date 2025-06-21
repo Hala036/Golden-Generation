@@ -11,7 +11,7 @@ import TripImg from "../../assets/Trip.png";
 import VacationImg from "../../assets/Vacation.png";
 import WorkshopImg from "../../assets/Workshop.png";
 import LectureImg from "../../assets/Lecture.png";
-import HomeGroupImg from "../../assets/HouseParty.png";
+import HousePartyImg from "../../assets/HouseParty.png";
 import SocialEventImg from "../../assets/SocialEvent.png";
 
 // Map local images to categories
@@ -20,7 +20,7 @@ const categoryImages = {
   vacation: VacationImg,
   workshop: WorkshopImg,
   lecture: LectureImg,
-  homegroup: HomeGroupImg,
+  houseparty: HousePartyImg,
   socialevent: SocialEventImg,
 };
 
