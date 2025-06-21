@@ -118,34 +118,18 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
     // Mark the notification as read
     handleMarkAsRead(notification.id);
 
-    // Switch to "messages" tab if the notification type is "message"
+    // Redirect based on notification type
     if (notification.type === "message" && setSelectedTab) {
       setSelectedTab("messages");
+      setShowNotificationsPopup(false); // Close the notifications popup
+      setShowModal(false); // Close the notification modal
+    } else if (notification.type === "request" && setSelectedTab) {
+      setSelectedTab("volunteer"); // Redirect to Volunteer tab
       setShowNotificationsPopup(false); // Close the notifications popup
       setShowModal(false); // Close the notification modal
     } else {
       setSelectedNotification(notification);
       setShowModal(true);
-    }
-  };
-
-  const handleAcceptInvite = async (notificationId) => {
-    try {
-      // Logic for accepting the invite (e.g., update the job request or user profile)
-      console.log(`Accepted invite for notification ID: ${notificationId}`);
-      await handleMarkAsRead(notificationId); // Mark notification as read
-    } catch (err) {
-      console.error("Error accepting invite:", err);
-    }
-  };
-
-  const handleRejectInvite = async (notificationId) => {
-    try {
-      // Logic for rejecting the invite (e.g., update the job request or user profile)
-      console.log(`Rejected invite for notification ID: ${notificationId}`);
-      await handleMarkAsRead(notificationId); // Mark notification as read
-    } catch (err) {
-      console.error("Error rejecting invite:", err);
     }
   };
 
@@ -198,28 +182,6 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
                         : ""
                     : ""}
                 </div>
-                {n.type === "invite" && (
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      className="text-sm text-green-500 hover:underline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAcceptInvite(n.id);
-                      }}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      className="text-sm text-red-500 hover:underline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRejectInvite(n.id);
-                      }}
-                    >
-                      Reject
-                    </button>
-                  </div>
-                )}
               </div>
               {!n.read && <span className="w-2 h-2 bg-red-500 rounded-full mt-2"></span>}
             </div>

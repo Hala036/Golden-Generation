@@ -106,11 +106,30 @@ const Jobs = () => {
     try {
       setLoading(true);
 
+      const jobRequestData = {
+        ...formData,
+        volunteerDays: formData.days || [], // Add volunteerDays
+        volunteerHours: formData.timing || "", // Add volunteerHours
+        volunteerFrequency: formData.frequency || "", // Add volunteerFrequency
+        createdBy: currentUser.uid, // Admin ID
+        createdAt: new Date(), // Timestamp
+        status: "Active", // Default status
+        statusHistory: [
+          {
+            status: "Active",
+            timestamp: new Date(),
+            changedBy: currentUser.uid,
+            notes: "Job request created",
+          },
+        ],
+        assignedSeniors: [], // Initialize empty array
+      };
+
       if (editMode) {
-        await updateJobRequest(editId, formData);
+        await updateJobRequest(editId, jobRequestData);
         toast.success("Voluntary request updated successfully");
       } else {
-        await createJobRequest(formData);
+        await createJobRequest(jobRequestData);
         toast.success("Voluntary request created successfully");
       }
 
@@ -119,7 +138,7 @@ const Jobs = () => {
       setJobRequests(updatedJobRequests);
     } catch (err) {
       console.error("Error submitting form:", err);
-      toast.error(editMode ? "Failed to update voluntary request" : "Failed to create volunatry request");
+      toast.error(editMode ? "Failed to update voluntary request" : "Failed to create voluntary request");
     } finally {
       setLoading(false);
     }
@@ -191,7 +210,7 @@ const Jobs = () => {
       await triggerNotification({
         message: `You have been invited to volunteer for the job: "${jobRequest.title}".`,
         target: [seniorId], // Target specific senior
-        type: "invite", // Notification type
+        type: "request", // Notification type
         link: `/jobs/${jobRequestId}`, // Link to job details
         createdBy: currentUser.uid // Admin who invited
       });
