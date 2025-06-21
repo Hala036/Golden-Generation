@@ -1,4 +1,4 @@
-import { FaUser, FaBriefcase, FaChartBar, FaClock, FaSearch } from "react-icons/fa";
+import { FaUser, FaBriefcase, FaChartBar, FaClock, FaTags } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ import CategoryManagement from "./CategoryManagement";
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const customIcons = [
-    { id: "categoryManagement", label: t('dashboard.categoryManagement'), icon: <FaSearch /> },
+    { id: "categoryManagement", label: t('dashboard.categoryManagement'), icon: <FaTags /> },
     { id: "retirees", label: t('dashboard.retirees'), icon: <FaUser /> },
     { id: "jobs", label: t('dashboard.volunteerRequests'), icon: <FaBriefcase /> },
     { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
