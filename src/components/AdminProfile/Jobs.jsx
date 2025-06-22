@@ -10,7 +10,7 @@ import {
   inviteSeniorToJobRequest
 } from "../../jobRequestsService";
 import { getAvailableSettlements } from "../../firebase";
-import MatchDetails from "./matchDetails";
+import MatchDetails from "./MatchDetails";
 import StatusHistory from "./StatusHistory";
 import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification
 import { useAuth } from "../../hooks/useAuth"; // Import useAuth hook
