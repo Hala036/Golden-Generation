@@ -1,21 +1,26 @@
 import React from 'react';
-
-const steps = [
-  'ID Verification',
-  'Account Credentials',
-  'Personal Details',
-  'Work Background',
-  'Lifestyle',
-  'Veterans Community'
-];
+import { useLanguage } from '../../context/LanguageContext';
 
 const SignUpProgress = ({ currentStep, stepValidation = {} }) => {
+  const { t } = useLanguage();
+
+  const steps = [
+    t('ID Verification'),
+    t('Account Credentials'),
+    t('Personal Details'),
+    t('Work Background'),
+    t('Lifestyle'),
+    t('Veterans Community')
+  ];
+
   return (
     <div className="max-w-4xl mx-auto mt-4 sm:mt-8 px-4">
       {/* Mobile Progress Bar */}
       <div className="block sm:hidden mb-6">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-sm font-medium text-gray-600">Step {currentStep + 1} of {steps.length}</span>
+          <span className="text-sm font-medium text-gray-600">
+            {t('Step')} {currentStep + 1} {t('of')} {steps.length}
+          </span>
           <span className="text-sm font-medium text-[#FFD966]">{steps[currentStep]}</span>
         </div>
         <div className="relative h-2.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">

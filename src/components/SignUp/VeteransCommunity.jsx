@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Check, Users, Heart, Calendar, Clock, MapPin, Star } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
+import { useLanguage } from '../../context/LanguageContext';
 
 const VeteransCommunity = ({ onComplete }) => {
+  const { t } = useLanguage();
   const { veteransData, setVeteransData } = useSignupStore();
 
   const [formData, setFormData] = useState(veteransData || {
@@ -25,74 +27,74 @@ const VeteransCommunity = ({ onComplete }) => {
   });
 
   const activityOptions = [
-    { id: 'cooking', label: 'Cooking', icon: '🍳' },
-    { id: 'trips', label: 'Trips', icon: '🚌' },
-    { id: 'choir', label: 'Choir', icon: '🎵' },
-    { id: 'torah-classes', label: 'Torah Classes', icon: '📚' },
-    { id: 'lectures', label: 'Lectures', icon: '🎤' },
-    { id: 'exercise', label: 'Exercise', icon: '💪' }
+    { id: 'cooking', label: t('Cooking'), icon: '🍳' },
+    { id: 'trips', label: t('Trips'), icon: '🚌' },
+    { id: 'choir', label: t('Choir'), icon: '🎵' },
+    { id: 'torah-classes', label: t('Torah Classes'), icon: '📚' },
+    { id: 'lectures', label: t('Lectures'), icon: '🎤' },
+    { id: 'exercise', label: t('Exercise'), icon: '💪' }
   ];
 
   const reasonOptions = [
-    'Not another challenger',
-    'Not relevant',
-    'I have no information',
-    'Not interesting',
-    'I don\'t have time'
+    t('Not another challenger'),
+    t('Not relevant'),
+    t('I have no information'),
+    t('Not interesting'),
+    t("I don't have time")
   ];
 
   const volunteerAreaOptions = [
-    { id: 'publicity', label: 'Publicity', icon: '📢' },
-    { id: 'health', label: 'Health', icon: '🏥' },
-    { id: 'eater', label: 'Catering', icon: '🍽️' },
-    { id: 'teaching', label: 'Teaching', icon: '👨‍🏫' },
-    { id: 'high-tech', label: 'High Tech', icon: '💻' },
-    { id: 'tourism', label: 'Tourism', icon: '🗺️' },
-    { id: 'safety', label: 'Safety', icon: '🛡️' },
-    { id: 'funds', label: 'Fundraising', icon: '💰' },
-    { id: 'special-treat', label: 'Special Events', icon: '🎉' },
-    { id: 'craftsmanship', label: 'Craftsmanship', icon: '🔨' },
-    { id: 'aaliyah', label: 'Aaliyah', icon: '✈️' },
-    { id: 'culture', label: 'Culture', icon: '🎭' }
+    { id: 'publicity', label: t('Publicity'), icon: '📢' },
+    { id: 'health', label: t('Health'), icon: '🏥' },
+    { id: 'eater', label: t('Catering'), icon: '🍽️' },
+    { id: 'teaching', label: t('Teaching'), icon: '👨‍🏫' },
+    { id: 'high-tech', label: t('High Tech'), icon: '💻' },
+    { id: 'tourism', label: t('Tourism'), icon: '🗺️' },
+    { id: 'safety', label: t('Safety'), icon: '🛡️' },
+    { id: 'funds', label: t('Fundraising'), icon: '💰' },
+    { id: 'special-treat', label: t('Special Events'), icon: '🎉' },
+    { id: 'craftsmanship', label: t('Craftsmanship'), icon: '🔨' },
+    { id: 'aaliyah', label: t('Aaliyah'), icon: '✈️' },
+    { id: 'culture', label: t('Culture'), icon: '🎭' }
   ];
 
   const frequencyOptions = [
-    'Once a month',
-    'Once every two weeks',
-    'Once a week',
-    'Twice a week'
+    t('Once a month'),
+    t('Once every two weeks'),
+    t('Once a week'),
+    t('Twice a week')
   ];
 
   const timeOptions = [
-    'Morning hours',
-    'Noon hours',
-    'Evening hours'
+    t('Morning hours'),
+    t('Noon hours'),
+    t('Evening hours')
   ];
 
   const dayOptions = [
-    { id: 'sunday', label: 'Sunday', short: 'Sun' },
-    { id: 'monday', label: 'Monday', short: 'Mon' },
-    { id: 'tuesday', label: 'Tuesday', short: 'Tue' },
-    { id: 'wednesday', label: 'Wednesday', short: 'Wed' },
-    { id: 'thursday', label: 'Thursday', short: 'Thu' },
-    { id: 'friday', label: 'Friday', short: 'Fri' }
+    { id: 'sunday', label: t('Sunday'), short: t('Sun') },
+    { id: 'monday', label: t('Monday'), short: t('Mon') },
+    { id: 'tuesday', label: t('Tuesday'), short: t('Tue') },
+    { id: 'wednesday', label: t('Wednesday'), short: t('Wed') },
+    { id: 'thursday', label: t('Thursday'), short: t('Thu') },
+    { id: 'friday', label: t('Friday'), short: t('Fri') }
   ];
 
   const consultationOptions = [
-    { id: 'company', label: 'Company', icon: '🏢' },
-    { id: 'gardening', label: 'Gardening', icon: '🌱' },
-    { id: 'health', label: 'Health', icon: '🏥' },
-    { id: 'food-nutrition', label: 'Food/Nutrition', icon: '🥗' },
-    { id: 'home-economics', label: 'Home Economics', icon: '🏠' },
-    { id: 'order-house', label: 'House Organization', icon: '📋' },
-    { id: 'marketing', label: 'Marketing', icon: '📈' },
-    { id: 'shopping', label: 'Shopping', icon: '🛒' },
-    { id: 'mobility', label: 'Mobility', icon: '🚗' },
-    { id: 'digital', label: 'Digital', icon: '📱' },
-    { id: 'legal', label: 'Legal', icon: '⚖️' },
-    { id: 'psychology', label: 'Psychology', icon: '🧠' },
-    { id: 'house-rules', label: 'House Rules', icon: '📜' },
-    { id: 'sport', label: 'Sport', icon: '⚽' }
+    { id: 'company', label: t('Company'), icon: '🏢' },
+    { id: 'gardening', label: t('Gardening'), icon: '🌱' },
+    { id: 'health', label: t('Health'), icon: '🏥' },
+    { id: 'food-nutrition', label: t('Food/Nutrition'), icon: '🥗' },
+    { id: 'home-economics', label: t('Home Economics'), icon: '🏠' },
+    { id: 'order-house', label: t('House Organization'), icon: '📋' },
+    { id: 'marketing', label: t('Marketing'), icon: '📈' },
+    { id: 'shopping', label: t('Shopping'), icon: '🛒' },
+    { id: 'mobility', label: t('Mobility'), icon: '🚗' },
+    { id: 'digital', label: t('Digital'), icon: '📱' },
+    { id: 'legal', label: t('Legal'), icon: '⚖️' },
+    { id: 'psychology', label: t('Psychology'), icon: '🧠' },
+    { id: 'house-rules', label: t('House Rules'), icon: '📜' },
+    { id: 'sport', label: t('Sport'), icon: '⚽' }
   ];
 
   const handleArraySelection = (field, value) => {
@@ -101,7 +103,6 @@ const VeteransCommunity = ({ onComplete }) => {
       const updatedArray = currentArray.includes(value)
         ? currentArray.filter(item => item !== value)
         : [...currentArray, value];
-      
       return {
         ...prev,
         [field]: updatedArray
@@ -111,8 +112,6 @@ const VeteransCommunity = ({ onComplete }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Ensure arrays are initialized even if empty
     const finalData = {
       ...formData,
       currentActivities: formData.currentActivities || [],
@@ -122,13 +121,9 @@ const VeteransCommunity = ({ onComplete }) => {
       additionalVolunteerDays: formData.additionalVolunteerDays || [],
       consultationFields: formData.consultationFields || []
     };
-
-    // If not participating in activities, ensure reason is set
     if (finalData.currentActivities.length === 0 && !finalData.notParticipatingReason) {
       finalData.notParticipatingReason = reasonOptions[0];
     }
-
-    // Map to nested structure for matching algorithm compatibility
     const mappedData = {
       ...finalData,
       lifestyle: {
@@ -146,7 +141,6 @@ const VeteransCommunity = ({ onComplete }) => {
       volunteerDays: finalData.volunteerDays,
       additionalVolunteerDays: finalData.additionalVolunteerDays,
     };
-
     setVeteransData(mappedData);
     onComplete();
   };
@@ -183,36 +177,31 @@ const VeteransCommunity = ({ onComplete }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
       <FloatingElements />
-      
       <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative z-10">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Veterans Community
+              {t('Veterans Community')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Join our vibrant community and make a difference. Tell us about your interests and how you'd like to contribute.
+            {t("Join our vibrant community and make a difference. Tell us about your interests and how you'd like to contribute.")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-12">
-          {/* Settlement and Professional Background */}
-          {/* Removed Basic Information section */}
-          
           {/* Current Activities Section */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <div className="flex items-center mb-6">
               <Heart className="w-8 h-8 text-red-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Current Activities
+                  {t('Current Activities')}
                 </h3>
-                <p className="text-gray-600 text-lg">What activities are you currently participating in?</p>
+                <p className="text-gray-600 text-lg">{t('What activities are you currently participating in?')}</p>
               </div>
             </div>
-            
             <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
               {activityOptions.map((activity) => (
                 <SelectionCard
@@ -233,16 +222,15 @@ const VeteransCommunity = ({ onComplete }) => {
           {(!formData.currentActivities || formData.currentActivities.length === 0) && (
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
               <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Why aren't you participating?
+                {t("Why aren't you participating?")}
               </h3>
-              <p className="text-gray-600 mb-6 text-lg">Help us understand your situation better</p>
-              
+              <p className="text-gray-600 mb-6 text-lg">{t('Help us understand your situation better')}</p>
               <select
                 value={formData.notParticipatingReason}
                 onChange={(e) => setFormData({ ...formData, notParticipatingReason: e.target.value })}
                 className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
               >
-                <option value="">Select a reason</option>
+                <option value="">{t('Select a reason')}</option>
                 {reasonOptions.map((reason) => (
                   <option key={reason} value={reason}>{reason}</option>
                 ))}
@@ -256,12 +244,11 @@ const VeteransCommunity = ({ onComplete }) => {
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Current Volunteering
+                  {t('Current Volunteering')}
                 </h3>
-                <p className="text-gray-600 text-lg">Are you already volunteering somewhere?</p>
+                <p className="text-gray-600 text-lg">{t('Are you already volunteering somewhere?')}</p>
               </div>
             </div>
-
             <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
               <input
                 type="checkbox"
@@ -269,14 +256,13 @@ const VeteransCommunity = ({ onComplete }) => {
                 onChange={(e) => setFormData({ ...formData, isVolunteer: e.target.checked })}
                 className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
               />
-              <span className="text-lg font-semibold text-gray-800">Yes, I'm currently volunteering</span>
+              <span className="text-lg font-semibold text-gray-800">{t("Yes, I'm currently volunteering")}</span>
             </label>
-
             {formData.isVolunteer && (
               <div className="mt-8 space-y-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
                 {/* Volunteer Areas */}
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Volunteer Areas</h4>
+                  <h4 className="text-xl font-bold text-gray-800 mb-4">{t('Volunteer Areas')}</h4>
                   <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
                     {volunteerAreaOptions.map((area) => (
                       <SelectionCard
@@ -292,49 +278,46 @@ const VeteransCommunity = ({ onComplete }) => {
                     ))}
                   </div>
                 </div>
-
                 {/* Frequency and Hours */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <div className="flex items-center mb-4">
                       <Calendar className="w-6 h-6 text-blue-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">Frequency</h4>
+                      <h4 className="text-xl font-bold text-gray-800">{t('Frequency')}</h4>
                     </div>
                     <select
                       value={formData.volunteerFrequency}
                       onChange={(e) => setFormData({ ...formData, volunteerFrequency: e.target.value })}
                       className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
                     >
-                      <option value="">Select frequency</option>
+                      <option value="">{t('Select frequency')}</option>
                       {frequencyOptions.map((freq) => (
                         <option key={freq} value={freq}>{freq}</option>
                       ))}
                     </select>
                   </div>
-
                   <div>
                     <div className="flex items-center mb-4">
                       <Clock className="w-6 h-6 text-green-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">Preferred Hours</h4>
+                      <h4 className="text-xl font-bold text-gray-800">{t('Preferred Hours')}</h4>
                     </div>
                     <select
                       value={formData.volunteerHours}
                       onChange={(e) => setFormData({ ...formData, volunteerHours: e.target.value })}
                       className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
                     >
-                      <option value="">Select hours</option>
+                      <option value="">{t('Select hours')}</option>
                       {timeOptions.map((time) => (
                         <option key={time} value={time}>{time}</option>
                       ))}
                     </select>
                   </div>
                 </div>
-
                 {/* Days */}
                 <div>
                   <div className="flex items-center mb-4">
                     <MapPin className="w-6 h-6 text-purple-500 mr-2" />
-                    <h4 className="text-xl font-bold text-gray-800">Available Days</h4>
+                    <h4 className="text-xl font-bold text-gray-800">{t('Available Days')}</h4>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     {dayOptions.map((day) => (
@@ -358,10 +341,9 @@ const VeteransCommunity = ({ onComplete }) => {
           {/* Additional Volunteering Section */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Additional Volunteering
+              {t('Additional Volunteering')}
             </h3>
-            <p className="text-gray-600 mb-6 text-lg">Would you like to volunteer in additional areas?</p>
-
+            <p className="text-gray-600 mb-6 text-lg">{t('Would you like to volunteer in additional areas?')}</p>
             <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
               <input
                 type="checkbox"
@@ -369,14 +351,13 @@ const VeteransCommunity = ({ onComplete }) => {
                 onChange={(e) => setFormData({ ...formData, additionalVolunteering: e.target.checked })}
                 className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
               />
-              <span className="text-lg font-semibold text-gray-800">Yes, I'd like to volunteer additionally</span>
+              <span className="text-lg font-semibold text-gray-800">{t("Yes, I'd like to volunteer additionally")}</span>
             </label>
-
             {formData.additionalVolunteering && (
               <div className="mt-8 space-y-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
                 {/* Additional Areas */}
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Areas of Interest</h4>
+                  <h4 className="text-xl font-bold text-gray-800 mb-4">{t('Areas of Interest')}</h4>
                   <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
                     {volunteerAreaOptions.map((area) => (
                       <SelectionCard
@@ -392,41 +373,38 @@ const VeteransCommunity = ({ onComplete }) => {
                     ))}
                   </div>
                 </div>
-
                 {/* Additional Frequency and Hours */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">Preferred Frequency</h4>
+                    <h4 className="text-xl font-bold text-gray-800 mb-4">{t('Preferred Frequency')}</h4>
                     <select
                       value={formData.additionalVolunteerFrequency}
                       onChange={(e) => setFormData({ ...formData, additionalVolunteerFrequency: e.target.value })}
                       className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
                     >
-                      <option value="">Select frequency</option>
+                      <option value="">{t('Select frequency')}</option>
                       {frequencyOptions.map((freq) => (
                         <option key={freq} value={freq}>{freq}</option>
                       ))}
                     </select>
                   </div>
-
                   <div>
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">Preferred Hours</h4>
+                    <h4 className="text-xl font-bold text-gray-800 mb-4">{t('Preferred Hours')}</h4>
                     <select
                       value={formData.additionalVolunteerHours}
                       onChange={(e) => setFormData({ ...formData, additionalVolunteerHours: e.target.value })}
                       className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
                     >
-                      <option value="">Select hours</option>
+                      <option value="">{t('Select hours')}</option>
                       {timeOptions.map((time) => (
                         <option key={time} value={time}>{time}</option>
                       ))}
                     </select>
                   </div>
                 </div>
-
                 {/* Additional Days */}
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Preferred Days</h4>
+                  <h4 className="text-xl font-bold text-gray-800 mb-4">{t('Preferred Days')}</h4>
                   <div className="grid grid-cols-3 gap-4">
                     {dayOptions.map((day) => (
                       <SelectionCard
@@ -449,10 +427,9 @@ const VeteransCommunity = ({ onComplete }) => {
           {/* Consultation Section */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Consultation Services
+              {t('Consultation Services')}
             </h3>
-            <p className="text-gray-600 mb-6 text-lg">Would you like consultation in any field?</p>
-
+            <p className="text-gray-600 mb-6 text-lg">{t('Would you like consultation in any field?')}</p>
             <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
               <input
                 type="checkbox"
@@ -460,12 +437,11 @@ const VeteransCommunity = ({ onComplete }) => {
                 onChange={(e) => setFormData({ ...formData, needsConsultation: e.target.checked })}
                 className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
               />
-              <span className="text-lg font-semibold text-gray-800">Yes, I need consultation</span>
+              <span className="text-lg font-semibold text-gray-800">{t('Yes, I need consultation')}</span>
             </label>
-
             {formData.needsConsultation && (
               <div className="mt-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Fields for Consultation</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('Fields for Consultation')}</h4>
                 <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
                   {consultationOptions.map((field) => (
                     <SelectionCard
@@ -492,14 +468,13 @@ const VeteransCommunity = ({ onComplete }) => {
             >
               <span className="flex items-center justify-center space-x-2">
                 <Star className="w-6 h-6" />
-                <span>Create My Community Profile</span>
+                <span>{t('Create My Community Profile')}</span>
                 <Star className="w-6 h-6" />
               </span>
             </button>
           </div>
         </form>
       </div>
-
       <style jsx>{`
         @keyframes fadeIn {
           from {

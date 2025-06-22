@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import useSignupStore from '../../store/signupStore';
 import { Users, Star, Check } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Lifestyle = ({ onComplete }) => {
+  const { t } = useLanguage();
   const { lifestyleData, setLifestyleData } = useSignupStore();
   const [formData, setFormData] = useState(
     lifestyleData || {
@@ -88,10 +90,10 @@ const Lifestyle = ({ onComplete }) => {
     <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm flex flex-col items-center">
       <label className="block text-center font-bold text-gray-800 mb-2">
         <span className="mr-2">{icon}</span>
-        {label}
+        {t(label)}
       </label>
       <div className="w-full max-w-md flex items-center">
-        <span className="text-sm mr-3">Low</span>
+        <span className="text-sm mr-3">{t('Low')}</span>
         <input
           type="range"
           min={min}
@@ -101,7 +103,7 @@ const Lifestyle = ({ onComplete }) => {
           onChange={onChange}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
         />
-        <span className="text-sm ml-3">High</span>
+        <span className="text-sm ml-3">{t('High')}</span>
       </div>
       <div className="mt-2 flex items-center">
         <span className="text-xl mr-2">{getLevelEmoji(value)}</span>
@@ -126,7 +128,7 @@ const Lifestyle = ({ onComplete }) => {
       aria-pressed={isSelected}
     >
       <span className="text-2xl mb-1">{interestEmojis[interest]}</span>
-      <span className={`text-sm font-semibold text-center ${isSelected ? 'text-gray-900' : 'text-gray-600'}`}>{interest}</span>
+      <span className={`text-sm font-semibold text-center ${isSelected ? 'text-gray-900' : 'text-gray-600'}`}>{t(interest)}</span>
       {isSelected && (
         <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
           <Check size={16} />
@@ -144,18 +146,18 @@ const Lifestyle = ({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Lifestyle
+              {t('Lifestyle')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Tell us about your daily activities and interests
+            {t('Tell us about your daily activities and interests')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-12">
           {/* Computer/Smartphone Ability */}
           <SliderCard
-            label='Level of ability in using a computer/smartphone'
+            label={t('Level of ability in using a computer/smartphone')}
             icon="💻"
             value={formData.computerAbility}
             onChange={e => setFormData({ ...formData, computerAbility: parseFloat(e.target.value) })}
@@ -163,7 +165,7 @@ const Lifestyle = ({ onComplete }) => {
 
           {/* Sport Activity Level */}
           <SliderCard
-            label='Level of weekly "sport" activity'
+            label={t('Level of weekly "sport" activity')}
             icon="🏃"
             value={formData.sportActivity}
             onChange={e => setFormData({ ...formData, sportActivity: parseFloat(e.target.value) })}
@@ -171,7 +173,7 @@ const Lifestyle = ({ onComplete }) => {
 
           {/* Weekly Schedule Occupancy */}
           <SliderCard
-            label='Occupancy level of the weekly schedule'
+            label={t('Occupancy level of the weekly schedule')}
             icon="📅"
             value={formData.weeklySchedule}
             onChange={e => setFormData({ ...formData, weeklySchedule: parseFloat(e.target.value) })}
@@ -181,7 +183,7 @@ const Lifestyle = ({ onComplete }) => {
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
             <label className="block text-center font-bold text-gray-800 mb-4">
               <span className="mr-2">⭐</span>
-              Interests (select all that apply)
+              {t('Interests (select all that apply)')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl mx-auto">
               {interestOptions.map((interest) => (
@@ -200,14 +202,14 @@ const Lifestyle = ({ onComplete }) => {
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm max-w-md mx-auto">
               <label className="block text-center font-bold text-gray-800 mb-2">
                 <span className="mr-2">🏅</span>
-                Sports Subspecialty
+                {t('Sports Subspecialty')}
               </label>
               <input
                 type="text"
                 value={formData.sportsSubspecialty}
                 onChange={(e) => setFormData({ ...formData, sportsSubspecialty: e.target.value })}
                 className="w-full border rounded-md p-2"
-                placeholder="Enter your sports subspecialty"
+                placeholder={t("Enter your sports subspecialty")}
               />
             </div>
           )}
@@ -219,7 +221,7 @@ const Lifestyle = ({ onComplete }) => {
               className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
             >
               <Star className="w-6 h-6" />
-              <span>Continue</span>
+              <span>{t('Continue')}</span>
               <Star className="w-6 h-6" />
             </button>
           </div>

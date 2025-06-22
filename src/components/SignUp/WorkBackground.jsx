@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Star, Users } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
 import Select from 'react-select';
+import { useLanguage } from '../../context/LanguageContext'; // <-- Add this import
 
 // Academic degrees list
 const academicDegrees = [
@@ -195,6 +196,7 @@ const createFlatJobList = () => {
 };
 
 const WorkBackground = ({ onComplete }) => {
+  const { t } = useLanguage(); // <-- Add this line
   const { workData, setWorkData } = useSignupStore();
   const [formData, setFormData] = useState(workData || {
     retirementStatus: '',
@@ -334,13 +336,13 @@ const WorkBackground = ({ onComplete }) => {
     return (
       <div className="mt-4">
         <div className="flex justify-between items-center mb-2">
-          <h4 className="text-md font-medium text-gray-800">Sub-specialties for {selectedJob.label}</h4>
+          <h4 className="text-md font-medium text-gray-800">{t('Sub-specialties for')} {t(selectedJob.label)}</h4>
           <button 
             type="button" 
             onClick={handleBackToJobs}
             className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
           >
-            <span className="mr-1">←</span> Change Job
+            <span className="mr-1">←</span> {t('Change Job')}
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -351,7 +353,7 @@ const WorkBackground = ({ onComplete }) => {
               className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{sub.icon}</span>
-              <span className="text-sm font-medium">{sub.label}</span>
+              <span className="text-sm font-medium">{t(sub.label)}</span>
             </div>
           ))}
         </div>
@@ -363,14 +365,14 @@ const WorkBackground = ({ onComplete }) => {
     return (
       <div key={category} className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <h4 className="text-md font-medium text-gray-800">{category}</h4>
+          <h4 className="text-md font-medium text-gray-800">{t(category)}</h4>
           {!showingAllCategories && (
             <button 
               type="button" 
               onClick={handleBackToCategories}
               className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
             >
-              <span className="mr-1">←</span> All Categories
+              <span className="mr-1">←</span> {t('All Categories')}
             </button>
           )}
         </div>
@@ -382,7 +384,7 @@ const WorkBackground = ({ onComplete }) => {
               className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
               <span className="text-xl mr-2">{job.icon}</span>
-              <span className="text-sm font-medium">{job.label}</span>
+              <span className="text-sm font-medium">{t(job.label)}</span>
             </div>
           ))}
         </div>
@@ -455,11 +457,11 @@ const WorkBackground = ({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Work Background
+              {t('Work Background')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Tell us about your professional experience
+            {t('Tell us about your professional experience')}
           </p>
         </div>
 
@@ -467,10 +469,10 @@ const WorkBackground = ({ onComplete }) => {
           {/* Retirement Status */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
             <label className="block text-lg font-bold text-gray-800 mb-4">
-              Retirement Status
+              {t('Retirement Status')}
             </label>
             <div className="flex gap-4">
-              {['I didn\'t retire', 'Partially retired', 'Fully retired'].map((status) => (
+              {["I didn't retire", 'Partially retired', 'Fully retired'].map((status) => (
                 <label key={status} className="flex items-center">
                   <input
                     type="radio"
@@ -480,7 +482,7 @@ const WorkBackground = ({ onComplete }) => {
                     onChange={(e) => setFormData({ ...formData, retirementStatus: e.target.value })}
                     className="mr-2"
                   />
-                  <span className="text-sm">{status}</span>
+                  <span className="text-sm">{t(status)}</span>
                 </label>
               ))}
             </div>
@@ -489,7 +491,7 @@ const WorkBackground = ({ onComplete }) => {
           {/* Employment Status */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
             <label className="block text-lg font-bold text-gray-800 mb-4">
-              Are you working today?
+              {t('Are you working today?')}
             </label>
             <div className="flex items-center gap-4">
               <label className="flex items-center">
@@ -499,7 +501,7 @@ const WorkBackground = ({ onComplete }) => {
                   onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
                   className="mr-2"
                 />
-                <span className="text-sm">Yes</span>
+                <span className="text-sm">{t('Yes')}</span>
               </label>
               {formData.currentlyWorking && (
                 <input
@@ -507,7 +509,7 @@ const WorkBackground = ({ onComplete }) => {
                   value={formData.dischargeDate}
                   onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
                   className="border rounded-md p-2 text-sm"
-                  placeholder="Expected discharge date"
+                  placeholder={t('Expected discharge date')}
                 />
               )}
             </div>
@@ -516,7 +518,7 @@ const WorkBackground = ({ onComplete }) => {
           {/* Job Search and Selection */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
             <label className="block text-lg font-bold text-gray-800 mb-4">
-              {selectedJob ? 'Your Selected Job' : 'Select Your Job'}
+              {selectedJob ? t('Your Selected Job') : t('Select Your Job')}
             </label>
             {/* Display selected job in a highlighted box */}
             {selectedJob && (
@@ -549,7 +551,7 @@ const WorkBackground = ({ onComplete }) => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search for a job..."
+                  placeholder={t('Search for a job...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full border rounded-md p-2 pl-10"
@@ -575,13 +577,13 @@ const WorkBackground = ({ onComplete }) => {
           {/* Other Job Input */}
           {((formData.jobTitle === 'Other') || (formData.subspecialty === 'Other')) && (
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-              <label className="block text-lg font-bold text-gray-800 mb-2">Please specify your job</label>
+              <label className="block text-lg font-bold text-gray-800 mb-2">{t('Please specify your job')}</label>
               <input
                 type="text"
                 value={formData.otherJob || ''}
                 onChange={(e) => setFormData({ ...formData, otherJob: e.target.value })}
                 className="w-full border rounded-md p-2"
-                placeholder="Enter your job title"
+                placeholder={t('Enter your job title')}
                 required
               />
             </div>
@@ -589,10 +591,18 @@ const WorkBackground = ({ onComplete }) => {
 
           {/* Academic Degrees */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-            <label className="block text-lg font-bold text-gray-800 mb-4">Academic Degrees</label>
+            <label className="block text-lg font-bold text-gray-800 mb-4">{t('Academic Degrees')}</label>
             <Select
               isMulti
-              options={academicDegreeOptions}
+              options={academicDegreeOptions.map(opt => ({
+                ...opt,
+                label: (
+                  <span>
+                    <span className="mr-2">{opt.icon}</span>
+                    {t(opt.rawLabel)}
+                  </span>
+                ),
+              }))}
               value={academicDegreeOptions.filter(opt =>
                 formData.academicDegrees?.includes(opt.value)
               )}
@@ -606,7 +616,7 @@ const WorkBackground = ({ onComplete }) => {
               }}
               className="react-select-container"
               classNamePrefix="react-select"
-              placeholder="Select your academic degrees..."
+              placeholder={t('Select your academic degrees...')}
               closeMenuOnSelect={false}
               styles={{
                 control: (base, state) => ({
@@ -629,13 +639,13 @@ const WorkBackground = ({ onComplete }) => {
             />
             {formData.academicDegrees?.includes('other') && (
               <div className="mt-2">
-                <label className="block text-sm font-medium text-gray-700">Please specify your degree</label>
+                <label className="block text-sm font-medium text-gray-700">{t('Please specify your degree')}</label>
                 <input
                   type="text"
                   value={formData.otherAcademicDegree || ''}
                   onChange={(e) => setFormData({ ...formData, otherAcademicDegree: e.target.value })}
                   className="w-full border rounded-md p-2 mt-1"
-                  placeholder="Enter your academic degree"
+                  placeholder={t('Enter your academic degree')}
                   required
                 />
               </div>
@@ -649,7 +659,7 @@ const WorkBackground = ({ onComplete }) => {
               className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
             >
               <Star className="w-6 h-6" />
-              <span>Continue</span>
+              <span>{t('Continue')}</span>
               <Star className="w-6 h-6" />
             </button>
           </div>

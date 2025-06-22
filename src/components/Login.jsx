@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
 import useSignupStore from '../store/signupStore';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../context/LanguageContext'; // Use your custom hook for translations
 
 const roleMap = {
   user: 'retiree',
@@ -13,7 +13,7 @@ const roleMap = {
 };
 
 const LoginPage = () => {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const { setRole } = useSignupStore();
   const navigate = useNavigate();
   const [selectedLoginType, setSelectedLoginType] = useState("user");
@@ -40,22 +40,22 @@ const LoginPage = () => {
       const userData = await getUserData(userCredential.user.uid);
       
       if (!userData?.role) {
-        throw new Error('User role not found');
+        throw new Error(t('no Role'));
       }
 
       // Only allow login if attempting to login as the correct role type
       if (selectedLoginType === 'admin' && userData.role !== 'admin' && userData.role !== 'superadmin') {
-        throw new Error('Invalid login type. Please login as admin');
+        throw new Error(t('invalid Admin'));
       } else if (selectedLoginType === 'user' && userData.role !== 'retiree') {
-        throw new Error('Invalid login type. Please login as user');
+        throw new Error(t('invalid User'));
       }
 
       setRole(userData.role); // Set global role state
-      toast.success('Login successful!');
+      toast.success(t('login success'));
       
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Failed to login. Please check your credentials.');
+      toast.error(error.message || t('login failed'));
     } finally {
       setIsLoading(false);
     }
@@ -63,18 +63,8 @@ const LoginPage = () => {
 
   const handleSignUp = (e) => {
     e.preventDefault();
-    navigate('/signup', { replace: true });
+    navigate('/sign up', { replace: true });
   };
-
-  // After successful login and getting user data:
-const handleLogin = async () => {
-  try {
-    const userDoc = await getUserData(user.uid);
-    setRole(userDoc.role); // Set the role in the store
-  } catch (error) {
-    console.error('Error during login:', error);
-  }
-};
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-b from-gray-100 to-gray-200">
@@ -85,12 +75,12 @@ const handleLogin = async () => {
         <div className="w-full max-w-md space-y-4 sm:space-y-6">
           {/* Logo or Brand Name - Visible on mobile */}
           <div className="lg:hidden text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">Golden Generation</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">{t('brand')}</h1>
           </div>
 
           {/* Header */}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
-            {t('auth.login.title')}
+            {t('login Title')}
           </h2>
 
           {/* Role Switcher */}
@@ -103,7 +93,7 @@ const handleLogin = async () => {
                   : "text-gray-600 hover:bg-gray-50"
               } rtl:rounded-r-full ltr:rounded-l-full`}
             >
-              {t('auth.login.user')}
+              {t('user')}
             </button>
             <button
               onClick={() => setSelectedLoginType("admin")}
@@ -113,7 +103,7 @@ const handleLogin = async () => {
                   : "text-gray-600 hover:bg-gray-50"
               } rtl:rounded-l-full ltr:rounded-r-full`}
             >
-              {t('auth.login.admin')}
+              {t('admin')}
             </button>
           </div>
 
@@ -126,7 +116,7 @@ const handleLogin = async () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder={t('auth.login.email')}
+                  placeholder={t('email')}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#FFD966] focus:border-transparent transition duration-200"
                   required
                 />
@@ -137,7 +127,7 @@ const handleLogin = async () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder={t('auth.login.password')}
+                  placeholder={t('password')}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#FFD966] focus:border-transparent transition duration-200"
                   required
                 />
@@ -150,7 +140,7 @@ const handleLogin = async () => {
                 onClick={() => navigate('/forgot-password')}
                 className="text-sm sm:text-base font-medium text-gray-600 hover:text-gray-800 transition duration-200"
               >
-                {t('auth.login.forgotPassword')}
+                {t('forgot Password')}
               </button>
             </div>
 
@@ -159,18 +149,18 @@ const handleLogin = async () => {
               disabled={isLoading}
               className="w-full py-3 bg-[#FFD966] text-gray-900 rounded-lg text-sm sm:text-base font-semibold hover:bg-yellow-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              {isLoading ? t('auth.login.signingIn') : t('auth.login.signIn')}
+              {isLoading ? t('signingIn') : t('signIn')}
             </button>
 
             {/* Footer Text */}
             <div className="text-center text-sm sm:text-base space-x-1">
-              <span className="text-gray-600">{t('auth.login.newAccount')}</span>
+              <span className="text-gray-600">{t('newAccount')}</span>
               <button
                 type="button"
                 onClick={handleSignUp}
                 className="font-semibold text-[#FFD966] hover:text-yellow-500 transition duration-200"
               >
-                {t('auth.login.signUp')}
+                {t('signUp')}
               </button>
             </div>
           </form>
@@ -182,7 +172,7 @@ const handleLogin = async () => {
         <div className="absolute inset-0 flex items-center justify-center">
           <img
             src={coupleimage}
-            alt="Couple enjoying event"
+            alt={t('login Image')}
             className="w-full h-full object-cover object-[center_10%]"
           />
         </div>

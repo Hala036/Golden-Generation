@@ -13,8 +13,10 @@ import { FaArrowLeft } from 'react-icons/fa';
 import WorkBackground from './WorkBackground';
 import Lifestyle from './Lifestyle';
 import VeteransCommunity from './VeteransCommunity';
+import { useLanguage } from '../../context/LanguageContext'; // <-- Add this line
 
 const SignUp = () => {
+  const { t } = useLanguage(); // <-- Add this line
   const navigate = useNavigate();
   const { 
     currentStep, 
@@ -82,13 +84,13 @@ const SignUp = () => {
 
         // 6. Success handling
         resetStore();
-        toast.success('Account created successfully!', { id: 'signup' });
+        toast.success(t('Account created successfully!'), { id: 'signup' });
 
         // 7. Navigate to dashboard
         navigate('/dashboard');
       } catch (error) {
         console.error('Signup error:', error);
-        toast.error(error.message || 'Failed to create account. Please try again.', { id: 'signup' });
+        toast.error(error.message ? t(error.message) : t('Failed to create account. Please try again.'), { id: 'signup' });
       } finally {
         setCreating(false); // End loading
       }
@@ -138,7 +140,7 @@ const SignUp = () => {
         {/* Header Section */}
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-            Create Your Account
+            {t('Create Your Account')}
           </h2>
         </div>
 
@@ -156,7 +158,7 @@ const SignUp = () => {
               className="absolute top-4 left-4 flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
             >
               <FaArrowLeft className="mr-2" />
-              <span className="text-sm font-medium">Back</span>
+              <span className="text-sm font-medium">{t('Back')}</span>
             </button>
             {renderStep()}
           </div>
@@ -165,12 +167,12 @@ const SignUp = () => {
         {/* Help Text */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
+            {t('Already have an account?')}{' '}
             <button
               onClick={() => navigate('/login')}
               className="text-[#FFD966] hover:text-[#FFB800] font-medium transition-colors duration-200"
             >
-              Sign in
+              {t('Sign in')}
             </button>
           </p>
         </div>
@@ -181,7 +183,7 @@ const SignUp = () => {
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-            <p className="text-lg font-medium">Creating your account...</p>
+            <p className="text-lg font-medium">{t('Creating your account...')}</p>
           </div>
         </div>
       )}

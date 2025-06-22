@@ -3,6 +3,7 @@ import useSignupStore from '../../store/signupStore';
 import languageList from '../../data/languages.json';
 import groupedLanguages from '../../data/languagesGrouped.json';
 import countryList from '../../data/country.json';
+import { useLanguage } from '../../context/LanguageContext'; // Add this at the top
 
 import Select from 'react-select';
 import {
@@ -302,6 +303,7 @@ const CheckboxField = memo(({ label, name, className = '', checked, onChange, id
 ));
 
 const PersonalDetails = memo(({ onComplete }) => {
+  const { t } = useLanguage(); // Add this line
   const { personalData, updatePersonalData } = useSignupStore();
   const formRef = useRef(null);
   const [formData, setFormData] = useState(personalData || {
@@ -342,27 +344,27 @@ const PersonalDetails = memo(({ onComplete }) => {
   const militaryOptions = ['none', 'military', 'national'];
 
   const maritalStatusOptions = [
-    { value: 'married', label: 'Married' },
-    { value: 'single', label: 'Single' },
-    { value: 'divorced', label: 'Divorced' },
-    { value: 'widowed', label: 'Widowed' },
+    { value: 'married', label: t('Married') },
+    { value: 'single', label: t('Single') },
+    { value: 'divorced', label: t('Divorced') },
+    { value: 'widowed', label: t('Widowed') },
   ];
 
   // Replace fetch languages useEffect:
   useEffect(() => {
     try {
-      setLanguages(Object.entries(languageList).map(([value, label]) => ({ value, label })));
-      setCountries(Array.isArray(countryList) ? countryList.map((c) => ({ value: c.code || c.name, label: c.name })) : []);
+      setLanguages(Object.entries(languageList).map(([value, label]) => ({ value, label: t(label) })));
+      setCountries(Array.isArray(countryList) ? countryList.map((c) => ({ value: c.code || c.name, label: t(c.name) })) : []);
       setLoading(prev => ({ ...prev, languages: false }));
     } catch (error) {
       console.error('Error loading languages or countries list:', error);
       setApiError(prev => ({ ...prev, languages: true }));
-      toast.error('Failed to load languages or countries.');
+      toast.error(t('Failed to load languages or countries.'));
       setLanguages([]);
       setCountries([]);
       setLoading(prev => ({ ...prev, languages: false }));
     }
-  }, []);
+  }, [t]);
 
   // Add this useEffect to fix the loading state issue
   useEffect(() => {
@@ -406,31 +408,30 @@ const PersonalDetails = memo(({ onComplete }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber']; // Base required fields
-    // Add required fields for new immigrants
+    const requiredFields = ['streetName', 'houseNumber'];
     if (formData.isNewImmigrant) {
       requiredFields.push('arrivalDate', 'originCountry');
     }
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        let fieldName = field === 'streetName' ? 'Street Name' : 
-                       field === 'houseNumber' ? 'House Number' :
-                       field === 'arrivalDate' ? 'Arrival Date' :
-                       field === 'originCountry' ? 'Origin Country' : field;
-        newErrors[field] = `${fieldName} is required`;
+        let fieldName = field === 'streetName' ? t('Street Name') : 
+                       field === 'houseNumber' ? t('House Number') :
+                       field === 'arrivalDate' ? t('Arrival Date') :
+                       field === 'originCountry' ? t('Origin Country') : t(field);
+        newErrors[field] = t('{{fieldName}} is required', { fieldName });
       }
     });
     // Validate house number is numeric
     if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
-      newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
+      newErrors.houseNumber = t('House number must be numeric (e.g., 123 or 123A)');
     }
     // Validate Israeli phone number
     if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = 'Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)';
+      newErrors.phoneNumber = t('Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData]);
+  }, [formData, t]);
 
   const handleSubmit = useCallback(
     (e) => {
@@ -519,11 +520,11 @@ const PersonalDetails = memo(({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <FaCheck className="w-12 h-12 text-yellow-500 mr-4" />
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Personal Details
+              {t('Personal Details')}
             </h2>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Please provide your personal information to help us serve you better.
+            {t('Please provide your personal information to help us serve you better.')}
           </p>
         </div>
 
@@ -555,20 +556,20 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaCheck className="w-8 h-8 text-green-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Contact Information
+                  {t('Contact Information')}
                 </h3>
-                <p className="text-gray-600 text-lg">How can we reach you?</p>
+                <p className="text-gray-600 text-lg">{t('How can we reach you?')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Phone Number */}
               <FormField
-                label="Phone Number"
+                label={t("Phone Number")}
                 name="phoneNumber"
                 id="phoneNumber"
                 type="text"
                 autoComplete="tel"
-                placeholder="05XXXXXXXX"
+                placeholder={t("05XXXXXXXX")}
                 value={formData.phoneNumber}
                 onChange={e => {
                   let val = e.target.value.replace(/\D/g, '');
@@ -588,7 +589,7 @@ const PersonalDetails = memo(({ onComplete }) => {
               />
               {/* Marital Status */}
               <FormField
-                label="Marital Status"
+                label={t("Marital Status")}
                 name="maritalStatus"
                 id="maritalStatus"
                 type="select"
@@ -608,20 +609,20 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaHome className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Address Information
+                  {t('Address Information')}
                 </h3>
-                <p className="text-gray-600 text-lg">Where do you live?</p>
+                <p className="text-gray-600 text-lg">{t('Where do you live?')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
-                label="House Number"
+                label={t("House Number")}
                 name="houseNumber"
                 id="houseNumber"
                 required
                 type="text"
                 autoComplete="address-line1"
-                placeholder="123"
+                placeholder={t("123")}
                 value={formData.houseNumber}
                 onChange={e => {
                   const val = e.target.value.toUpperCase();
@@ -640,12 +641,12 @@ const PersonalDetails = memo(({ onComplete }) => {
                 pattern="\d{1,4}[A-Za-z]?"
               />
               <FormField
-                label="Street Name"
+                label={t("Street Name")}
                 name="streetName"
                 id="streetName"
                 required
                 autoComplete="address-line2"
-                placeholder="Main Street"
+                placeholder={t("Main Street")}
                 className="sm:col-span-2"
                 value={formData.streetName}
                 onChange={handleInputChange}
@@ -654,12 +655,12 @@ const PersonalDetails = memo(({ onComplete }) => {
               />
             </div>
             <FormField
-              label="Additional Address Details (Optional)"
+              label={t("Additional Address Details (Optional)")}
               name="address"
               id="address"
               type="textarea"
               autoComplete="address-line3"
-              placeholder="Apartment number, building name, or other address details..."
+              placeholder={t("Apartment number, building name, or other address details...")}
               className="sm:col-span-2"
               value={formData.address}
               onChange={handleInputChange}
@@ -674,14 +675,14 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaLanguage className="w-8 h-8 text-blue-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Language & Background
+                  {t('Language & Background')}
                 </h3>
-                <p className="text-gray-600 text-lg">Tell us about your language and background</p>
+                <p className="text-gray-600 text-lg">{t('Tell us about your language and background')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <FormField
-                label="Native Language"
+                label={t("Native Language")}
                 name="nativeLanguage"
                 id="nativeLanguage"
                 type="select"
@@ -699,12 +700,12 @@ const PersonalDetails = memo(({ onComplete }) => {
                 getLanguageIcon={getLanguageIcon}
               />
               <FormField
-                label="Hebrew Level"
+                label={t("Hebrew Level")}
                 name="hebrewLevel"
                 id="hebrewLevel"
                 type="select"
                 autoComplete="hebrew-level"
-                options={hebrewLevels.map(level => ({ value: level, label: level.charAt(0).toUpperCase() + level.slice(1) }))}
+                options={hebrewLevels.map(level => ({ value: level, label: t(level.charAt(0).toUpperCase() + level.slice(1)) }))}
                 value={formData.hebrewLevel}
                 onChange={handleInputChange}
                 error={errors.hebrewLevel}
@@ -714,7 +715,7 @@ const PersonalDetails = memo(({ onComplete }) => {
             {/* New Immigrant Question */}
             <div className="mt-4">
               <CheckboxField
-                label="I am a new immigrant to Israel"
+                label={t("I am a new immigrant to Israel")}
                 name="isNewImmigrant"
                 id="isNewImmigrant"
                 checked={formData.isNewImmigrant}
@@ -725,7 +726,7 @@ const PersonalDetails = memo(({ onComplete }) => {
             {formData.isNewImmigrant && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
                 <FormField
-                  label="Arrival Date"
+                  label={t("Arrival Date")}
                   name="arrivalDate"
                   id="arrivalDate"
                   type="date"
@@ -737,7 +738,7 @@ const PersonalDetails = memo(({ onComplete }) => {
                   getFieldIcon={() => getFieldIcon('arrivalDate')}
                 />
                 <FormField
-                  label="Origin Country"
+                  label={t("Origin Country")}
                   name="originCountry"
                   id="originCountry"
                   type="select"
@@ -759,34 +760,34 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaInfoCircle className="w-8 h-8 text-purple-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Additional Information
+                  {t('Additional Information')}
                 </h3>
-                <p className="text-gray-600 text-lg">Anything else we should know?</p>
+                <p className="text-gray-600 text-lg">{t('Anything else we should know?')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-4">
                 <FormField
-                  label="Health Condition"
+                  label={t("Health Condition")}
                   name="healthCondition"
                   id="healthCondition"
                   type="textarea"
                   autoComplete="health-condition"
-                  placeholder="Please describe any health conditions..."
+                  placeholder={t("Please describe any health conditions...")}
                   value={formData.healthCondition}
                   onChange={handleInputChange}
                   error={errors.healthCondition}
                   getFieldIcon={() => getFieldIcon('healthCondition')}
                 />
                 <FormField
-                  label="Military/National Service"
+                  label={t("Military/National Service")}
                   name="militaryService"
                   id="militaryService"
                   type="select"
                   autoComplete="military-service"
                   options={militaryOptions.map((option) => ({
                     value: option,
-                    label: option === 'none' ? 'None' : option === 'military' ? 'Military Service' : 'National Service',
+                    label: option === 'none' ? t('None') : option === 'military' ? t('Military Service') : t('National Service'),
                   }))}
                   value={formData.militaryService}
                   onChange={handleInputChange}
@@ -797,28 +798,28 @@ const PersonalDetails = memo(({ onComplete }) => {
               <div className="space-y-3 sm:mt-0">
                 <div className="p-4 bg-gray-50 rounded-lg space-y-3">
                   <CheckboxField
-                    label="I have a car"
+                    label={t("I have a car")}
                     name="hasCar"
                     id="hasCar"
                     checked={formData.hasCar}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
-                    label="Living alone"
+                    label={t("Living alone")}
                     name="livingAlone"
                     id="livingAlone"
                     checked={formData.livingAlone}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
-                    label="Family members in settlement"
+                    label={t("Family members in settlement")}
                     name="familyInSettlement"
                     id="familyInSettlement"
                     checked={formData.familyInSettlement}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
-                    label="I carry a weapon"
+                    label={t("I carry a weapon")}
                     name="hasWeapon"
                     id="hasWeapon"
                     checked={formData.hasWeapon}
@@ -839,12 +840,12 @@ const PersonalDetails = memo(({ onComplete }) => {
               {loading.settlements || loading.languages ? (
                 <>
                   <FaSpinner className="animate-spin" />
-                  <span>Loading...</span>
+                  <span>{t('Loading...')}</span>
                 </>
               ) : (
                 <>
                   <Star className="w-6 h-6" />
-                  <span>Continue</span>
+                  <span>{t('Continue')}</span>
                   <Star className="w-6 h-6" />
                 </>
               )}

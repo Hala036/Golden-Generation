@@ -5,9 +5,12 @@ import useSignupStore from '../../store/signupStore';
 import { debounce } from 'lodash';
 import { toast } from 'react-hot-toast';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
+
 import { Star, Users } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Credentials = ({ onComplete }) => {
+  const { t } = useLanguage();
   const [errors, setErrors] = useState({});
   const [isChecking, setIsChecking] = useState(false);
   const { credentialsData, updateCredentialsData } = useSignupStore();
@@ -21,12 +24,12 @@ const Credentials = ({ onComplete }) => {
       const q = query(usersRef, where('credentials.email', '==', email.toLowerCase()), where("role", "==", "retiree"));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
-        toast.error('Email is already registered');
+        setErrors(prev => ({ ...prev, email: t('Email is already registered') }));
+        toast.error(t('Email is already registered'));
       }
     } catch (error) {
       console.error('Error checking email:', error);
-      toast.error('Error checking email availability');
+      toast.error(t('Error checking email availability'));
     } finally {
       setIsChecking(false);
     }
@@ -40,12 +43,12 @@ const Credentials = ({ onComplete }) => {
       const usernameRef = doc(db, 'usernames', username.toLowerCase());
       const usernameDoc = await getDoc(usernameRef);
       if (usernameDoc.exists()) {
-        setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        toast.error('Username is already taken');
+        setErrors(prev => ({ ...prev, username: t('Username is already taken') }));
+        toast.error(t('Username is already taken'));
       }
     } catch (error) {
       console.error('Error checking username:', error);
-      toast.error('Error checking username availability');
+      toast.error(t('Error checking username availability'));
     } finally {
       setIsChecking(false);
     }
@@ -71,31 +74,31 @@ const Credentials = ({ onComplete }) => {
     const { email, password, confirmPassword, username } = credentialsData;
 
     if (!email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('Email is required');
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = t('Invalid email format');
     }
 
     if (!username) {
-      newErrors.username = 'Username is required';
+      newErrors.username = t('Username is required');
     } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+      newErrors.username = t('Username must be at least 3 characters');
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
+      newErrors.username = t('Username can only contain letters, numbers, and underscores');
     }
 
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('Password is required');
     } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = t('Password must be at least 8 characters');
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+      newErrors.password = t('Password must contain at least one uppercase letter, one lowercase letter, and one number');
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = t('Please confirm your password');
     } else if (confirmPassword !== password) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('Passwords do not match');
     }
 
     setErrors(newErrors);
@@ -105,12 +108,12 @@ const Credentials = ({ onComplete }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isChecking) {
-      toast.error('Please wait while we verify your information');
+      toast.error(t('Please wait while we verify your information'));
       return;
     }
 
     setIsChecking(true);
-    toast.loading('Validating credentials...', { id: 'credentials-check' });
+    toast.loading(t('Validating credentials...'), { id: 'credentials-check' });
 
     try {
       const [formIsValid, usernameAvailable] = await Promise.all([
@@ -119,38 +122,38 @@ const Credentials = ({ onComplete }) => {
       ]);
 
       if (!formIsValid) {
-        toast.error('Please fix the form errors', { id: 'credentials-check' });
+        toast.error(t('Please fix the form errors'), { id: 'credentials-check' });
         return;
       }
 
       if (!usernameAvailable) {
-        setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        toast.error('Username is already taken', { id: 'credentials-check' });
+        setErrors(prev => ({ ...prev, username: t('Username is already taken') }));
+        toast.error(t('Username is already taken'), { id: 'credentials-check' });
         return;
       }
 
       try {
         const methods = await fetchSignInMethodsForEmail(auth, credentialsData.email);
         if (methods.length > 0) {
-          setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
-          toast.error('Email is already registered', { id: 'credentials-check' });
+          setErrors(prev => ({ ...prev, email: t('Email is already registered') }));
+          toast.error(t('Email is already registered'), { id: 'credentials-check' });
           return;
         }
       } catch (error) {
         console.error('Firebase email check error:', error);
         if (error.code === 'auth/invalid-email') {
-          setErrors(prev => ({ ...prev, email: 'Invalid email format' }));
-          toast.error('Invalid email format', { id: 'credentials-check' });
+          setErrors(prev => ({ ...prev, email: t('Invalid email format') }));
+          toast.error(t('Invalid email format'), { id: 'credentials-check' });
           return;
         }
         throw error;
       }
 
-      toast.success('Credentials validated successfully', { id: 'credentials-check' });
+      toast.success(t('Credentials validated successfully'), { id: 'credentials-check' });
       onComplete();
     } catch (error) {
       console.error('Error in credentials validation:', error);
-      toast.error('Error validating credentials', { id: 'credentials-check' });
+      toast.error(t('Error validating credentials'), { id: 'credentials-check' });
     } finally {
       setIsChecking(false);
     }
@@ -182,11 +185,11 @@ const Credentials = ({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Account Credentials
+              {t('Account Credentials')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Create your account credentials to join the community.
+            {t('Create your account credentials to join the community.')}
           </p>
         </div>
 
@@ -196,16 +199,16 @@ const Credentials = ({ onComplete }) => {
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Set Your Credentials
+                  {t('Set Your Credentials')}
                 </h3>
-                <p className="text-gray-600 text-lg">Choose your username, email, and password</p>
+                <p className="text-gray-600 text-lg">{t('Choose your username, email, and password')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Email Field */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Email Address <span className="text-red-500">*</span>
+                  {t('Email Address')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -218,7 +221,7 @@ const Credentials = ({ onComplete }) => {
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                     }`}
-                    placeholder="Enter your email address"
+                    placeholder={t("Enter your email address")}
                   />
                   {isChecking ? (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -251,7 +254,7 @@ const Credentials = ({ onComplete }) => {
               {/* Username Field */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Username <span className="text-red-500">*</span>
+                  {t('Username')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -264,7 +267,7 @@ const Credentials = ({ onComplete }) => {
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                     }`}
-                    placeholder="Choose a unique username"
+                    placeholder={t("Choose a unique username")}
                   />
                   {isChecking ? (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -293,14 +296,14 @@ const Credentials = ({ onComplete }) => {
                   </p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
-                  Username must be at least 3 characters and can only contain letters, numbers, and underscores
+                  {t('Username must be at least 3 characters and can only contain letters, numbers, and underscores')}
                 </p>
               </div>
 
               {/* Password Field */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Password <span className="text-red-500">*</span>
+                  {t('Password')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -312,7 +315,7 @@ const Credentials = ({ onComplete }) => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                   }`}
-                  placeholder="Enter your password"
+                  placeholder={t("Enter your password")}
                 />
                 {errors.password && (
                   <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -323,14 +326,14 @@ const Credentials = ({ onComplete }) => {
                   </p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
-                  Password must be at least 8 characters and include uppercase, lowercase, and numbers
+                  {t('Password must be at least 8 characters and include uppercase, lowercase, and numbers')}
                 </p>
               </div>
 
               {/* Confirm Password Field */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Confirm Password <span className="text-red-500">*</span>
+                  {t('Confirm Password')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="password"
@@ -342,7 +345,7 @@ const Credentials = ({ onComplete }) => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                   }`}
-                  placeholder="Confirm your password"
+                  placeholder={t("Confirm your password")}
                 />
                 {errors.confirmPassword && (
                   <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
@@ -369,12 +372,12 @@ const Credentials = ({ onComplete }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                   </svg>
-                  <span>Checking...</span>
+                  <span>{t('Checking...')}</span>
                 </>
               ) : (
                 <>
                   <Star className="w-6 h-6" />
-                  <span>Continue</span>
+                  <span>{t('Continue')}</span>
                   <Star className="w-6 h-6" />
                 </>
               )}
