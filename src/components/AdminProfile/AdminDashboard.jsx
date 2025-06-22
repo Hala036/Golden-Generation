@@ -41,7 +41,7 @@ const AdminDashboard = () => {
     jobs: <Jobs />,
     analysis: <Analysis />,
     comprehensiveAnalytics: <ComprehensiveAnalytics />,
-    pending: <Pending />
+    pending: <Pending />,
     categoryManagement: <CategoryManagement />
   };
 
