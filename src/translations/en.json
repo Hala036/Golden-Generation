@@ -1642,15 +1642,16 @@
   "password": "Password",
   "forgot Password": "Forgot password?",
   "signing in": "Signing in...",
-  "sign in": "Sign in",
   "new Account": "Don't have an account?",
-  "sign up": "Sign Up",
+  "Sign Up": "Sign Up",
   "login Success": "Login successful!",
   "login Failed": "Failed to login. Please check your credentials.",
   "no Role": "User role not found",
   "invalid Admin": "Invalid login type. Please login as admin",
   "invalid User": "Invalid login type. Please login as user",
   "login Image": "Couple enjoying event",
-  "brand": "Golden Generation"
-
+  "brand": "Golden Generation",
+  "login": "Login",
+  "sign out": "Signout",
+  "Sign In": "Sign In"
 }

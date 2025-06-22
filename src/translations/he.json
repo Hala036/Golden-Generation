@@ -1644,7 +1644,7 @@
   "password": "סיסמה",
   "forgot Password": "שכחת סיסמה?",
   "signing in": "מתחבר...",
-  "sign in": "התחבר",
+  "Sign In": "התחבר",
   "new Account": "אין לך חשבון?",
   "sign up": "הירשם",
   "login Success": "התחברות הצליחה!",
@@ -1653,8 +1653,10 @@
   "invalid Admin": "סוג התחברות לא תקין. התחבר כמנהל",
   "invalid User": "סוג התחברות לא תקין. התחבר כמשתמש",
   "login Image": "זוג נהנה מהאירוע",
-  "brand": "דור הזהב"
-
+  "brand": "דור הזהב",
+  "New Account": "חשבון חדש",
+  "Sign Up": "הירשם",
+  "Sign Out": "יציאה"
 }
 
 
