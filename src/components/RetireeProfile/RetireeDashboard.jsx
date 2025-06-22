@@ -1,4 +1,5 @@
-import { FaHeadset, FaCalendarAlt } from "react-icons/fa";
+import { useState } from "react";
+import { FaHeadset, FaCalendarAlt, FaCog, FaPlusCircle, FaComments, FaCalendarCheck, FaHome } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -14,9 +15,13 @@ import Volunteer from "./Volunteer";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
+  const [selected, setSelected] = useState("upcoming"); // Manage selected state here
 
   const customIcons = [
+    { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaCalendarAlt /> }, // Add Volunteer icon
+    // { id: "consultation", label: t('dashboard.consultation'), icon: <FaBriefcase /> },
+    { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
   ];
 
   const customButtons = [
@@ -29,7 +34,6 @@ const RetireeDashboard = () => {
 
   const componentsById = {
     upcoming: <Cards />,
-    main: <AdminHomepage />,
     settings: <Settings />,
     calendar: <RetireeCalendar />,
     messages: <Messages />,
@@ -40,7 +44,13 @@ const RetireeDashboard = () => {
   };
 
   return (
-    <Dashboard customIcons={customIcons} customButtons={customButtons} componentsById={componentsById} />
+    <Dashboard
+      customIcons={customIcons}
+      customButtons={customButtons}
+      componentsById={componentsById}
+      selected={selected}
+      setSelected={setSelected}
+    />
   );
 };
 
