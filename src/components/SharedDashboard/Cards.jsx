@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaArrowLeft } from "react-icons/fa";
-import { db, auth } from "../../firebase"; // Import Firebase configuration
-import { collection, getDocs, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
+import { db } from "../../firebase"; // Import Firebase configuration
+import { collection, onSnapshot } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
-import { toast } from 'react-hot-toast';
+import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Admin modal
+import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -23,171 +24,103 @@ const categoryImages = {
   socialevent: SocialEventImg,
 };
 
-const Cards = () => {
-  const { language, t } = useLanguage(); // Access language and translation function
+const Cards = ({ userRole = 'retiree' }) => {
+  const { language, t } = useLanguage();
   const [events, setEvents] = useState([]);
-  const [baseEvents, setBaseEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [categories, setCategories] = useState([]); // Store categories
-  const [selectedCategory, setSelectedCategory] = useState("all"); // Track selected category
-  const [searchQuery, setSearchQuery] = useState(""); // Track search input
-  const [loading, setLoading] = useState(false); // Loading state
-  const [selectedEvent, setSelectedEvent] = useState(null); // Track the selected event for details view
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // Fetch categories and events from Firestore
+  // Fetch categories and events from Firestore in real-time
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const user = auth.currentUser;
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
-        // Fetch categories
+    const fetchCategories = async () => {
         const categoriesRef = collection(db, "categories");
-        const categoriesSnapshot = await getDocs(categoriesRef);
-        const categoriesData = categoriesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const categoriesSnapshot = await onSnapshot(categoriesRef, (snapshot) => {
+            const categoriesData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         setCategories(categoriesData);
-
-        // Fetch events
-        const eventsRef = collection(db, "events");
-        const eventsSnapshot = await getDocs(eventsRef);
-        const eventsData = eventsSnapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-          .filter((event) => event.status == "active"); // only include active events
-        setEvents(eventsData);
-
-        const settlementFiltered = eventsData.filter((event) => event.settlement === userSettlement);
-        setBaseEvents(settlementFiltered);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
+        });
+        return categoriesSnapshot;
     };
 
-    fetchData();
-  }, []);
+    const fetchEvents = () => {
+        setLoading(true);
+        const eventsRef = collection(db, "events");
+        const unsubscribe = onSnapshot(eventsRef, (snapshot) => {
+            const eventsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            
+            // Filter events based on role
+            const roleBasedEvents = userRole === 'admin'
+                ? eventsData.filter(event => event.status === 'active' || event.status === 'pending')
+                : eventsData.filter(event => event.status === 'active');
+            
+            setEvents(roleBasedEvents);
+            setFilteredEvents(roleBasedEvents);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching events in real-time:", error);
+        setLoading(false);
+        });
+        return unsubscribe;
+    };
 
-  const applySearchAndCategory = (base) => {
-    const filtered = base.filter((event) => {
-      const matchesCategory = selectedCategory === "all" || event.categoryId === selectedCategory;
-      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-    setFilteredEvents(filtered);
-  };
+    fetchCategories();
+    const unsubscribeEvents = fetchEvents();
 
-  useEffect(() => {
-    applySearchAndCategory(baseEvents);
-  }, [baseEvents, selectedCategory, searchQuery]);
+    return () => {
+      // Unsubscribe from listeners when component unmounts
+      unsubscribeEvents();
+    };
+  }, [userRole]);
 
   // Handle category filter
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
+    if (category === "all") {
+      setFilteredEvents(events.filter((event) => event.title.toLowerCase().includes(searchQuery.toLowerCase())));
+    } else {
+      setFilteredEvents(
+        events.filter(
+          (event) =>
+            event.categoryId === category &&
+            event.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
   };
 
   // Handle search input
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value.toLowerCase());
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    setFilteredEvents(
+      events.filter(
+        (event) =>
+          (selectedCategory === "all" || event.categoryId === selectedCategory) &&
+          event.title.toLowerCase().includes(query)
+      )
+    );
   };
 
-  // Handle "More Info" button click
-  const handleMoreInfo = (event) => {
-    setSelectedEvent(event); // Set the selected event for details view
-  };
+  // Conditionally render the correct modal based on the user's role
+  const renderEventDetailsModal = () => {
+    if (!selectedEvent) return null;
 
-  // Handle "Back to Events" button click
-  const handleBackToEvents = () => {
-    setSelectedEvent(null); // Reset the selected event to go back to the events list
-  };
+    const modalProps = {
+      event: selectedEvent,
+      onClose: () => setSelectedEvent(null),
+    };
 
-  // Handle "Join Event" button click
-  const handleJoinEvent = async (event) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        alert("You must be logged in to join events.");
-        return;
+    if (userRole === 'admin') {
+      return <AdminEventDetails {...modalProps} />;
       }
-
-      // Add the user's ID to the participants list in the event document
-      const eventDocRef = doc(db, "events", event.id);
-      await updateDoc(eventDocRef, {
-        participants: arrayUnion(user.uid),
-      });
-
-      // Add the event ID to the user's registered events list
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        await updateDoc(userDocRef, {
-          registeredEvents: arrayUnion(event.id),
-        });
-      } else {
-        // If the user document doesn't exist, create it with the registeredEvents field
-        await updateDoc(userDocRef, {
-          registeredEvents: [event.id],
-        });
-      }
-
-      toast.success(`Successfully joined event: ${event.title}`);
-    } catch (error) {
-      console.error("Error joining event:", error);
-      toast.error("Failed to join event. Please try again.");
-    }
+    return <RetireeEventDetails {...modalProps} />;
   };
 
   return (
-    <div className="bg-white">
-      {/* Check if an event is selected */}
-      {selectedEvent ? (
-        // Event Details View
-        <div class="p-2">
-          {/* Back to Events Button */}
-          <button
-            onClick={handleBackToEvents}
-            className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
-          >
-            <FaArrowLeft className="text-xl" />
-            {t("dashboard.events.backToEvents")}
-          </button>
-
-          {/* Banner Image */}
-          <div className="mb-4">
-            <img
-              src={selectedEvent.imageUrl || categoryImages[selectedEvent.categoryId]}
-              alt={selectedEvent.title}
-              className="w-full h-64 object-cover rounded-md"
-            />
-          </div>
-
-          <h2 className="text-xl font-bold mb-4">{selectedEvent.title}</h2>
-          <p className="mb-2">
-            <FaCalendarAlt className="inline text-[#FFD966] mr-2" />
-            {selectedEvent.endDate ? `${selectedEvent.startDate} - ${selectedEvent.endDate}` : selectedEvent.startDate}
-          </p>
-          <p className="mb-2">
-            <FaMapMarkerAlt className="inline text-[#FFD966] mr-2" />
-            {selectedEvent.location}
-          </p>
-          <p className="mb-4">{selectedEvent.description}</p>
-          <button
-            className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-            onClick={() => handleJoinEvent(selectedEvent)}
-          >
-            {t("dashboard.events.join")}
-          </button>
-        </div>
-      ) : (
-        // Events List View
-        <>
+    <div className="bg-white p-4">
           {/* Search Bar and Filter */}
           <div className="sticky top-0 bg-white z-10 flex items-center justify-between mb-4 p-1 shadow-sm w-full">
             <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
@@ -219,12 +152,9 @@ const Cards = () => {
           {!loading && (
             <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
               {filteredEvents.map((event) => {
-                const backgroundImage = event.imageUrl || categoryImages[event.categoryId];
+            const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
                 return (
-                  <div
-                    key={event.id}
-                    className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4"
-                  >
+              <div key={event.id} className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4">
                     {/* Event Title */}
                     <h3 className="text-base font-bold mb-2">{event.title}</h3>
 
@@ -237,43 +167,37 @@ const Cards = () => {
                       />
                     </div>
                     {/* Date with Calendar Icon */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center">
-                        <FaCalendarAlt className="text-[#FFD966] mr-2" />
-                        <p className="text-gray-700 font-medium">
-                          {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                        </p>
-                      </div>
-                      {/* More Details Button */}
-                      <button
-                        className="bg-[#FFD966] hover:bg-yellow-500 text-yellow-700 font-bold px-6 py-2 rounded-md transition-colors duration-200"
-                        onClick={() => handleMoreInfo(event)}
-                      >
-                        {t("dashboard.events.moreDetails")}
-                      </button>
+                    <div className="flex items-center mb-2">
+                      <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                      <p className="text-gray-700 font-medium">
+                        {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
+                      </p>
                     </div>
 
                     {/* Location with Pin Icon */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center">
-                        <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
-                        <p className="text-gray-700 font-medium">{event.location}</p>
-                      </div>
-                      {/* Number of Participants */}
-                      <p className="text-gray-500 text-sm">
-                        {event.participants ? `${event.participants.length} ${t("dashboard.events.participants")}` : `${t("dashboard.events.noParticipants")}`}
-                      </p>
+                    <div className="flex items-center mb-3">
+                      <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                      <p className="text-gray-700 font-medium">{event.location}</p>
                     </div>
 
                     {/* Description */}
                     <p className="text-gray-500 text-sm">{event.description}</p>
+                <div className="flex justify-center mt-4">
+                      <button
+                    className="bg-[#FFD966] hover:bg-yellow-500 text-black font-bold px-6 py-2 rounded-md transition-colors duration-200"
+                    onClick={() => setSelectedEvent(event)}
+                      >
+                        {t("dashboard.events.moreDetails")}
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
           )}
-        </>
-      )}
+
+      {/* Centralized Event Details Modal */}
+      {renderEventDetailsModal()}
     </div>
   );
 };

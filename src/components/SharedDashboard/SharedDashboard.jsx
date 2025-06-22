@@ -9,6 +9,7 @@ import profile from "../../assets/profile.jpeg";
 import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
+import Notifications from './Notifications'; // Import the Notifications component
 
 const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
   const [selected, setSelected] = useState("main");
   const [userData, setUserData] = useState(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true); // Track sidebar state
+  const [showNotificationsPopup, setShowNotificationsPopup] = useState(false); // State for notifications popup
 
   const baseIcons = [
     { id: "main", label: t('dashboard.homePage'), icon: <FaHome /> },
@@ -143,7 +145,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen box-border p-4">
+      <div className="flex-1 flex flex-col h-screen box-border p-4 relative">
         {/* Top Bar */}
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-6 py-4 z-10 flex items-center justify-between">
           <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1>
@@ -155,7 +157,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
               />
               <FaBell
                 className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800"
-                onClick={() => setSelected("notifications")}
+                onClick={() => setShowNotificationsPopup((prev) => !prev)} // Toggle the popup
               />
               <FaComments
                 className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800"
@@ -183,6 +185,25 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
         <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
           {componentsById[selected] || <div>dashboard.No Component Found</div>}
         </div>
+
+        {/* Notifications Popup */}
+        {showNotificationsPopup && (
+          <div className="absolute top-20 right-10 bg-white rounded-lg shadow-lg p-6 w-96 z-50">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">Notifications</h3>
+              <button
+                className="text-red-500 hover:text-red-700"
+                onClick={() => setShowNotificationsPopup(false)} // Close the popup
+              >
+                &times;
+              </button>
+            </div>
+            {/* Scrollable Notifications List */}
+            <div className="max-h-96 overflow-y-auto">
+              <Notifications setSelectedTab={setSelected} setShowNotificationsPopup={setShowNotificationsPopup} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

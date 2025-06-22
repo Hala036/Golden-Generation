@@ -5,6 +5,8 @@ import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { CallProvider } from './context/callContext';
+import GlobalCallModal from './components/GlobalCallModal';
 
 import Login from './components/Login';
 import SignUp from './components/SignUp/SignUp';
@@ -41,10 +43,13 @@ const App = () => {
     <AuthProvider>
       <LanguageProvider>
         <ThemeProvider>
+          <CallProvider>
           <Router>
             <Toaster position="top-right" />
+            <GlobalCallModal />
             <AppRoutes />
           </Router>
+          </CallProvider>
         </ThemeProvider>
       </LanguageProvider>
     </AuthProvider>

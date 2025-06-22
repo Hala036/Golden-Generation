@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { auth, db } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import useSignupStore from './store/signupStore';
+import { useAuth } from './context/AuthContext'; // Use context for user session
 import { useNavigate } from 'react-router-dom';
 
 import Dashboard from './components/RetireeProfile/RetireeDashboard';
@@ -10,39 +9,18 @@ import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashbo
 import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { currentUser, loading } = useAuth(); // from AuthContext
+  const { role } = useSignupStore(); // from Zustand store
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        navigate('/login');
-        return;
-      }
-
-      try {
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-          setRole(userDoc.data().role);
-        } else {
-          console.error('User doc not found');
-          navigate('/login');
-        }
-      } catch (error) {
-        console.error('Failed to fetch user role:', error);
-        navigate('/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserRole();
-  }, [navigate]);
 
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 
+  // Redirect to login if no user
+  if (!currentUser) {
+    navigate('/login');
+    return null;
+  }
+  
   switch (role) {
     case 'superadmin':
       return <SuperAdminDashboard />;
@@ -50,10 +28,10 @@ const RoleBasedDashboard = () => {
       return <AdminDashboard />;
     case 'retiree':
       return <Dashboard />;
-    case undefined:
-      return <Login />;
     default:
-      return <div className="p-4">Unauthorized or unknown role.</div>;
+      // If role is not set, it might be a new login.
+      // We could wait or redirect. For now, showing unauthorized.
+      return <div className="p-4">Unauthorized or role not found.</div>;
   }
 };
 

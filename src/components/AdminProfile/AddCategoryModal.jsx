@@ -9,6 +9,7 @@ const AddCategoryModal = ({ onClose }) => {
     he: "",
     ar: ""
   });
+  const [color, setColor] = useState("#CCCCCC"); // Default color
   const [loading, setLoading] = useState(false);
 
   const handleAddCategory = async () => {
@@ -32,7 +33,8 @@ const AddCategoryModal = ({ onClose }) => {
       const categoryDoc = doc(categoriesRef, formattedName); // Use formattedName as the document ID
       await setDoc(categoryDoc, {
         name: formattedName,
-        translations: updatedTranslations
+        translations: updatedTranslations,
+        color: color // Save the selected color
       });
       toast.success("Category added successfully!"); // Show success toast
       onClose(); // Close the modal
@@ -88,6 +90,17 @@ const AddCategoryModal = ({ onClose }) => {
               setTranslations({ ...translations, ar: e.target.value })
             }
             placeholder="e.g., رحلة"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Category Color
+          </label>
+          <input
+            type="color"
+            className="w-full h-10 px-1 py-1 border rounded-md"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
           />
         </div>
         <div className="flex justify-end space-x-4">
