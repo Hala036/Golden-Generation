@@ -1,4 +1,4 @@
-import { FaUser, FaBriefcase, FaChartBar, FaClock } from "react-icons/fa";
+import { FaUser, FaBriefcase, FaChartBar, FaClock, FaChartLine } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,8 @@ import Notifications from "../SharedDashboard/Notifications";
 import Pending from "./PendingEvents";
 import Retirees from "./Retirees";
 import Jobs from "./Jobs";
-import Analysis from "./Analysis";
+import Analysis from "./Analytics/Analysis";
+import ComprehensiveAnalytics from "./Analytics/ComprehensiveAnalytics";
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
     { id: "retirees", label: t('dashboard.retirees'), icon: <FaUser /> },
     { id: "jobs", label: t('dashboard.volunteerRequests'), icon: <FaBriefcase /> },
     { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
+    { id: "comprehensiveAnalytics", label: "Advanced Analytics", icon: <FaChartLine /> },
     { id: "pending", label: t('dashboard.pendingEvents'), icon: <FaClock /> }
   ];
 
@@ -36,6 +38,7 @@ const AdminDashboard = () => {
     retirees: <Retirees />,
     jobs: <Jobs />,
     analysis: <Analysis />,
+    comprehensiveAnalytics: <ComprehensiveAnalytics />,
     pending: <Pending />
   };
 
