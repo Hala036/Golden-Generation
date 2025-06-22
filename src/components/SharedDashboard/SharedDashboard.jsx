@@ -164,7 +164,6 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ru">Русский</Select.Option>
                 <Select.Option value="ar">العربية</Select.Option>
               </Select>
             </div>
@@ -173,15 +172,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
 
         {/* Scrollable Content */}
         <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
-          {userRole === "admin" || userRole === "superadmin" ? (
-            componentsById[selected] || <div>dashboard.No Component Found</div>
-          ) : (
-            selected === "main" ? (
-              <div>{t("dashboard.accessDenied")}</div>
-            ) : (
-              componentsById[selected] || <div>dashboard.No Component Found</div>
-            )
-          )}
+          {componentsById[selected] || <div>No Component Found</div>}
         </div>
 
         {/* Notifications Popup */}
