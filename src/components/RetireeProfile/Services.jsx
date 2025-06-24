@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
+import { db, auth } from "../../firebase"; // Adjust the import path as necessary
+import { doc, getDoc } from "firebase/firestore";
+import { createServiceRequest } from "../../serviceRequestsService";
 
 const Services = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +14,7 @@ const Services = () => {
     frequency: "",
     timing: "",
     days: [],
+    settlement: "", // New field for settlement
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,57 +35,52 @@ const Services = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDaySelection = (day) => {
-    setFormData((prev) => {
-      const selectedDays = prev.days || [];
-      return {
-        ...prev,
-        days: selectedDays.includes(day)
-          ? selectedDays.filter((d) => d !== day)
-          : [...selectedDays, day],
-      };
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (isSubmitting) {
-      toast.error("Please wait, form is being submitted...");
-      return;
-    }
-
     setIsSubmitting(true);
 
+    console.log("Form Data:", formData);
     try {
-      const response = await fetch("/api/requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        toast.success("Request sent successfully!");
-        setFormData({
-          title: "",
-          description: "",
-          location: "",
-          volunteerField: "",
-          professionalBackground: "",
-          frequency: "",
-          timing: "",
-          days: [],
-        });
-      } else {
-        throw new Error("Failed to send request");
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("You must be logged in to create events");
+        setIsSubmitting(false);
+        return;
       }
-    } catch (error) {
-      console.error("Error sending request:", error);
-      toast.error("Failed to send request");
-    } finally {
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+      console.log("User Settlement:", userSettlement);
+
+      if (!userSettlement) {
+        toast.error("Failed to fetch user settlement.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const serviceRequestData = {
+        ...formData,
+        settlement: userSettlement, // Ensure settlement is included
+        status: "pending",
+      };
+
+      await createServiceRequest(serviceRequestData);
+      toast.success("Service request created successfully!");
+
+      setFormData({
+        title: "",
+        description: "",
+        location: "",
+        volunteerField: "",
+        professionalBackground: "",
+        frequency: "",
+        timing: "",
+        days: [],
+        settlement: userSettlement, // Reset settlement field
+      });
       setIsSubmitting(false);
+    } catch (error) {
+      toast.error("Failed to create service request");
     }
   };
 
@@ -182,19 +181,31 @@ const Services = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Days</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Select Days <span className="text-red-500">*</span>
+          </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
               <div
                 key={day}
-                onClick={() => handleDaySelection(day)}
+                onClick={() =>
+                  setFormData((prev) => {
+                    const selectedDays = prev.days || [];
+                    return {
+                      ...prev,
+                      days: selectedDays.includes(day)
+                        ? selectedDays.filter(d => d !== day)
+                        : [...selectedDays, day]
+                    };
+                  })
+                }
                 className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
-                  formData.days.includes(day)
-                    ? "border-yellow-400 bg-yellow-100"
-                    : "border-gray-300 hover:border-yellow-400 hover:bg-gray-50"
+                  (formData.days || []).includes(day)
+                    ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
+                    : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
                 }`}
               >
-                <span className={`text-sm font-medium ${formData.days.includes(day) ? "text-gray-900 font-bold" : "text-gray-600"}`}>
+                <span className={`text-sm font-medium ${(formData.days || []).includes(day) ? 'text-gray-900 font-bold' : 'text-gray-600'}`}>
                   {day}
                 </span>
               </div>
