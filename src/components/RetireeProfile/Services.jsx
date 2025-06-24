@@ -86,97 +86,99 @@ const Services = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
+    <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-auto max-h-screen overflow-y-auto">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Create a Service Request</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-            placeholder="e.g., Medical Escort Needed"
-            required
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+              placeholder="e.g., Medical Escort Needed"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-            placeholder="e.g., Community Center"
-            required
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+              placeholder="e.g., Community Center"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Field</label>
-          <select
-            name="volunteerField"
-            value={formData.volunteerField}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Select Field</option>
-            {volunteerFields.map((field) => (
-              <option key={field} value={field}>
-                {field}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Field</label>
+            <select
+              name="volunteerField"
+              value={formData.volunteerField}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">Select Field</option>
+              {volunteerFields.map((field) => (
+                <option key={field} value={field}>
+                  {field}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Professional Background</label>
-          <input
-            type="text"
-            name="professionalBackground"
-            value={formData.professionalBackground}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-            placeholder="e.g., Healthcare, Education"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Professional Background</label>
+            <input
+              type="text"
+              name="professionalBackground"
+              value={formData.professionalBackground}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+              placeholder="e.g., Healthcare, Education"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
-          <select
-            name="frequency"
-            value={formData.frequency}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Select Frequency</option>
-            {timingOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+            <select
+              name="frequency"
+              value={formData.frequency}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select Frequency</option>
+              {timingOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Timing</label>
-          <select
-            name="timing"
-            value={formData.timing}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Select Timing</option>
-            {timeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Timing</label>
+            <select
+              name="timing"
+              value={formData.timing}
+              onChange={handleInputChange}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select Timing</option>
+              {timeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div>
