@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../context/UserContext"; // Import UserContext
 import { 
   FaBell, 
   FaPlus, 
@@ -10,25 +11,23 @@ import {
   FaExclamationTriangle,
   FaCheckCircle,
   FaUserPlus,
-  FaHandshake
+  FaHandshake,
+  FaHandsHelping,
+  FaCalendarCheck
 } from 'react-icons/fa';
-import { MdPendingActions, MdEventAvailable } from 'react-icons/md';
+import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
+import { query, collection, where, getDocs, Timestamp } from "firebase/firestore"; // Import Firestore utilities
+import { auth, db } from "../../firebase"; // Import Firestore instance
 
-const AdminHomepage = () => {
+const AdminHomepage = ({ setSelected }) => {
+  const { userData } = useContext(UserContext); // Access user data from context
+  const userSettlement = userData?.idVerification?.settlement || "";
+  const userName = userData?.credentials?.username || "Admin";
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: 'alert', message: '3 requests pending approval', urgent: true },
-    { id: 2, type: 'warning', message: 'Event "Cooking Together" has no volunteers yet', urgent: false },
-    { id: 3, type: 'info', message: 'Weekly report is ready for review', urgent: false }
-  ]);
-
-  const [recentActivity] = useState([
-    { id: 1, action: 'Ruth Cohen joined the community', time: '5 minutes ago', type: 'join' },
-    { id: 2, action: 'Moshe Levi applied to "Garden Event"', time: '12 minutes ago', type: 'apply' },
-    { id: 3, action: 'Sarah Davis completed volunteer service', time: '1 hour ago', type: 'complete' },
-    { id: 4, action: 'New service request: Home cleaning', time: '2 hours ago', type: 'request' },
-    { id: 5, action: 'Event "Music Workshop" fully booked', time: '3 hours ago', type: 'event' }
-  ]);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+  const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
+  const [activeEventsCount, setActiveEventsCount] = useState(0); // State for active events
+  const [volunteerMatchesCount, setVolunteerMatchesCount] = useState(0); // State for volunteer matches
 
   const [upcomingEvents] = useState([
     { id: 1, title: 'Music Workshop', date: '2025-06-16', time: '10:00', participants: 12, volunteers: 3 },
@@ -36,40 +35,138 @@ const AdminHomepage = () => {
     { id: 3, title: 'Cooking Together', date: '2025-06-18', time: '16:00', participants: 15, volunteers: 0 }
   ]);
 
-  useEffect(() => {
+  const [notifications, setNotifications] = useState([
+    { id: 1, type: 'alert', message: '3 requests pending approval', urgent: true },
+    { id: 2, type: 'warning', message: 'Event "Cooking Together" has no volunteers yet', urgent: false },
+    { id: 3, type: 'info', message: 'Weekly report is ready for review', urgent: false }
+  ]);
+
+  // Define recentActivity array
+  const recentActivity = [
+    { id: 1, action: 'Ruth Cohen joined the community', time: '5 minutes ago', type: 'join' },
+    { id: 2, action: 'Moshe Levi applied to "Garden Event"', time: '12 minutes ago', type: 'apply' },
+    { id: 3, action: 'Sarah Davis completed volunteer service', time: '1 hour ago', type: 'complete' },
+    { id: 4, action: 'New service request: Home cleaning', time: '2 hours ago', type: 'request' },
+    { id: 5, action: 'Event "Music Workshop" fully booked', time: '3 hours ago', type: 'event' }
+  ];
+
+  useState(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
+  useState(() => {
+    const fetchPendingRequestsCount = async () => {
+      try {
+        const allRequests = await getServiceRequests();
+        const pendingRequests = allRequests.filter((request) => request.status === "pending");
+        setPendingRequestsCount(pendingRequests.length);
+      } catch (error) {
+        console.error("Error fetching pending requests count:", error);
+      }
+    };
+
+    fetchPendingRequestsCount();
+  }, []);
+
+  useEffect(() => {
+    if (!userSettlement) return;
+
+    const fetchRetireesRegisteredCount = async () => {
+      try {
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+        const allUsersQuery = query(
+          collection(db, "users"),
+          where("role", "==", "retiree"),
+          where("idVerification.settlement", "==", userSettlement)
+        );
+
+        const querySnapshot = await getDocs(allUsersQuery);
+
+        // Filter users manually based on the `createdAt` string
+        const retireesRegisteredThisWeek = querySnapshot.docs.filter((doc) => {
+          const createdAt = new Date(doc.data().createdAt); // Convert `createdAt` string to Date
+          return createdAt >= lastWeek; // Compare with `lastWeek`
+        });
+
+        setRetireesRegisteredCount(retireesRegisteredThisWeek.length); // Set the count of retirees registered
+      } catch (error) {
+        console.error("Error fetching retirees registered count:", error);
+      }
+    };
+
+    const fetchActiveEventsCount = async () => {
+      try {
+        const activeEventsQuery = query(
+          collection(db, "events"),
+          where("status", "==", "active") // Query for active events
+        );
+
+        const querySnapshot = await getDocs(activeEventsQuery);
+
+        setActiveEventsCount(querySnapshot.size); // Set the count of active events
+      } catch (error) {
+        console.error("Error fetching active events count:", error);
+      }
+    };
+
+    const fetchVolunteerMatchesCount = async () => {
+      try {
+        const user = auth.currentUser;
+        const uid = user?.uid || null;
+        const volunteerMatchesQuery = query(
+          collection(db, "jobRequests"),
+          where("status", "==", "Active"), // Query for active job requests
+          where("createdBy", "==", uid) // Filter by current user's UID
+        );
+
+        const querySnapshot = await getDocs(volunteerMatchesQuery);
+
+        setVolunteerMatchesCount(querySnapshot.size); // Set the count of volunteer matches
+      } catch (error) {
+        console.error("Error fetching volunteer matches count:", error);
+      }
+    };
+
+    fetchRetireesRegisteredCount();
+    fetchActiveEventsCount();
+    fetchVolunteerMatchesCount();
+  }, [userSettlement, userData?.uid]); // Dependencies on userSettlement and current user's UID
+
   const overviewCards = [
     {
-      title: 'Pending Service Requests',
-      value: '14',
-      icon: <MdPendingActions className="text-3xl text-orange-500" />,
-      color: 'bg-orange-50 border-orange-200',
-      urgent: true
+      title: "Pending Service Requests",
+      value: pendingRequestsCount, // Dynamically update the value
+      icon: <FaClock className="text-3xl text-orange-500" />,
+      color: "bg-orange-50 border-orange-200",
+      urgent: true,
+      onClick: () => setSelected("service"), // Set selected to "service"
     },
     {
-      title: 'Retirees Registered This Week',
-      value: '7',
+      title: "Retirees Registered This Week",
+      value: retireesRegisteredCount, // Dynamically update the value
       icon: <FaUserPlus className="text-3xl text-green-500" />,
-      color: 'bg-green-50 border-green-200',
-      urgent: false
+      color: "bg-green-50 border-green-200",
+      urgent: false,
     },
     {
-      title: 'Upcoming Events',
-      value: '3',
-      icon: <MdEventAvailable className="text-3xl text-blue-500" />,
-      color: 'bg-blue-50 border-blue-200',
-      urgent: false
+      title: "Active Events",
+      value: activeEventsCount, // Dynamically update the value
+      icon: <FaCalendarCheck className="text-3xl text-blue-500" />,
+      color: "bg-blue-50 border-blue-200",
+      urgent: false,
+      onClick: () => setSelected("upcoming"), // Set selected to "events"
     },
     {
-      title: 'Volunteer Matches Pending',
-      value: '5',
-      icon: <FaHandshake className="text-3xl text-purple-500" />,
-      color: 'bg-purple-50 border-purple-200',
-      urgent: true
-    }
+      title: "Volunteer Matches Pending",
+      value: volunteerMatchesCount, // Dynamically update the value
+      icon: <FaHandsHelping className="text-3xl text-purple-500" />,
+      color: "bg-purple-50 border-purple-200",
+      urgent: true,
+      onClick: () => setSelected("jobs"), // Set selected to "Jobs"
+    },
   ];
 
   const quickActions = [
@@ -96,7 +193,7 @@ const AdminHomepage = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, Admin Sarah 👋</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, {userName} 👋</h1>
             <p className="text-gray-600">Here's what's happening in your community today</p>
           </div>
           <div className="text-right">
@@ -113,13 +210,14 @@ const AdminHomepage = () => {
         {overviewCards.map((card, index) => (
           <div
             key={index}
+            onClick={card.onClick} // Handle card click
             className={`${card.color} border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
           >
-            {card.urgent && (
+            {/* {card.urgent && (
               <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold animate-pulse">
                 !
               </div>
-            )}
+            )} */}
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
