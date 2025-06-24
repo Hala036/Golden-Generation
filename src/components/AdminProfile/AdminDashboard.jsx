@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaUser, FaBriefcase, FaChartBar, FaTags, FaHandsHelping, FaCog, FaCalendarCheck, FaHome } from "react-icons/fa";
+import { FaUser, FaBriefcase, FaChartBar, FaClock, FaTags, FaChartLine, FaHandsHelping, FaCog, FaCalendarCheck, FaHome } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,8 @@ import CategoryManagement from "./CategoryManagement";
 import Retirees from "./Retirees";
 import Jobs from "./Jobs";
 import Service from "./ServiceRequests";
-import Analysis from "./Analysis";
+import Analysis from "./Analytics/Analysis";
+import ComprehensiveAnalytics from "./Analytics/ComprehensiveAnalytics";
 import Settings from "../SharedDashboard/SettingsCards";
 import Notifications from "../SharedDashboard/Notifications";
 import AddEvent from "../SharedDashboard/AddEvents";
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
     { id: "service", label: t('dashboard.serviceRequests'), icon: <FaHandsHelping /> },
     { id: "analysis", label: t('dashboard.analytics'), icon: <FaChartBar /> },
     { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
+    { id: "comprehensiveAnalytics", label: "Advanced Analytics", icon: <FaChartLine /> },
   ];
 
   const customButtons = [];
@@ -46,6 +48,7 @@ const AdminDashboard = () => {
     jobs: <Jobs />,
     service: <Service />, // Assuming service requests are handled in Messages
     analysis: <Analysis />,
+    comprehensiveAnalytics: <ComprehensiveAnalytics />,
     pending: <Pending />,
     categoryManagement: <CategoryManagement />
   };
