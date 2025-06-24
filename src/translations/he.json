@@ -441,10 +441,13 @@
       "homePage": "דף הבית",
       "retirees": "ותיקים",
       "volunteerRequests": "בקשות התנדבות",
+      "serviceRequests": "בקשות שירות",
+      "service": "בקשת שירותים",
       "analytics": "ניתוח",
       "contactUs": "תמיכת לקוחות",
       "pendingEvents": "אירועים ממתינים",
       "categoryManagement": "ניהול קטגוריות",
+      "volunteer": "התנדבות",
       "arrowClose": "→",
       "arrowOpen": "←",
       "events": {

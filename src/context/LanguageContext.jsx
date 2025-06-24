@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import i18n from '../i18n'; // Import the i18n instance
 import enTranslations from '../translations/en.json';
 import heTranslations from '../translations/he.json';
-import ruTranslations from '../translations/ru.json';
 import arTranslations from '../translations/ar.json';
 
 const LanguageContext = createContext();
@@ -23,8 +22,6 @@ export const LanguageProvider = ({ children }) => {
         return enTranslations;
       case 'he':
         return heTranslations;
-      case 'ru':
-        return ruTranslations;
       case 'ar':
         return arTranslations;
       default:

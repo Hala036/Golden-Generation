@@ -11,26 +11,16 @@ import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Notifications from './Notifications'; // Import the Notifications component
 
-const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => {
+const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selected, setSelected }) => {
+  // Remove local state for `selected` since it's now passed as a prop
   const { t } = useTranslation();
+  const { currentUser } = auth;
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
-  const [selected, setSelected] = useState("main");
   const [userData, setUserData] = useState(null);
+  const [userRole, setUserRole] = useState(null); // Track user role
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true); // Track sidebar state
   const [showNotificationsPopup, setShowNotificationsPopup] = useState(false); // State for notifications popup
-
-  const baseIcons = [
-    { id: "main", label: t('dashboard.homePage'), icon: <FaHome /> },
-    { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
-    { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
-    { id: "notifications", label: t('dashboard.notifications'), icon: <FaBell /> },
-    { id: "add", label: t('dashboard.events.addEvent'), icon: <FaPlusCircle /> },
-    { id: "calendar", label: t('dashboard.calendar'), icon: <FaCalendarAlt /> },
-    { id: "messages", label: t('dashboard.messages'), icon: <FaComments /> },
-  ];
-
-  const icons = [...baseIcons, ...customIcons];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -91,8 +81,8 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
 
         {/* Navigation Items */}
         <nav className="py-4">
-          {icons
-            .filter(({ id }) => id !== "notifications" && id !== "messages")
+          {customIcons
+            .filter(({ id }) => id !== "notifications" && id !== "messages" && id !== "add") // Exclude notifications and messages from sidebar
             .map(({ id, label, icon }) => (
               <div
                 key={id}
@@ -174,7 +164,6 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ru">Русский</Select.Option>
                 <Select.Option value="ar">العربية</Select.Option>
               </Select>
             </div>
@@ -183,7 +172,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
 
         {/* Scrollable Content */}
         <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
-          {componentsById[selected] || <div>dashboard.No Component Found</div>}
+          {componentsById[selected] || <div>No Component Found</div>}
         </div>
 
         {/* Notifications Popup */}
