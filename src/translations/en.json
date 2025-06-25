@@ -32,7 +32,15 @@
         "admin": "Admin",
         "success": "Login successful!",
         "error": "Failed to login. Please check your credentials.",
-        "imageAlt": "Couple enjoying event"
+        "imageAlt": "Couple enjoying event",
+        "errors": {
+          "invalidCredential": "Incorrect email or password. Please try again.",
+          "userNotFound": "No account found with this email.",
+          "wrongPassword": "Incorrect password. Please try again.",
+          "invalidEmail": "Invalid email address.",
+          "tooManyRequests": "Too many failed attempts. Please try again later.",
+          "generic": "Failed to login. Please check your credentials."
+        }
       },
       "signup": {
         "title": "Create Your Account",
@@ -520,7 +528,6 @@
       "contactUs": "Customer Support",
       "pendingEvents": "Pending Events",
       "categoryManagement": "Category Management",
-      "volunteer": "Volunteering",
       "arrowClose": "←",
       "arrowOpen": "→",
       "events":{

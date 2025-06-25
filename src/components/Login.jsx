@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
 import useSignupStore from '../store/signupStore';
 import { useTranslation } from 'react-i18next';
+import Modal from './Modal';
+import { getDocs, collection, query, where } from "firebase/firestore";
+import { db } from "../firebase";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -17,6 +20,8 @@ const LoginPage = () => {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showRoleErrorModal, setShowRoleErrorModal] = useState(false);
+  const [roleErrorMessage, setRoleErrorMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,38 +34,57 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log('Login attempt started with:', { email: formData.email, loginType: selectedLoginType });
-
     try {
-      console.log('Attempting Firebase sign in...');
-      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      console.log('Firebase sign in successful:', userCredential.user.uid);
-      
-      console.log('Fetching user data...');
-      const userData = await getUserData(userCredential.user.uid);
-      console.log('User data fetched:', userData);
-      
-      if (!userData?.role) {
-        throw new Error('User role not found');
+      // Fetch user document by email first
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('credentials.email', '==', formData.email.toLowerCase()));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        setRoleErrorMessage('No account found with this email.');
+        setShowRoleErrorModal(true);
+        setIsLoading(false);
+        return;
       }
-
+      const userData = querySnapshot.docs[0].data();
+      if (!userData?.role) {
+        setRoleErrorMessage('User role not found.');
+        setShowRoleErrorModal(true);
+        setIsLoading(false);
+        return;
+      }
       // Only allow login if attempting to login as the correct role type
       if (selectedLoginType === 'admin' && userData.role !== 'admin' && userData.role !== 'superadmin') {
-        throw new Error('Invalid login type. Please login as admin');
+        setRoleErrorMessage('Access Denied: You are trying to log in with the wrong role.');
+        setShowRoleErrorModal(true);
+        setIsLoading(false);
+        return;
       } else if (selectedLoginType === 'user' && userData.role !== 'retiree') {
-        throw new Error('Invalid login type. Please login as user');
+        setRoleErrorMessage('Access Denied: You are trying to log in with the wrong role.');
+        setShowRoleErrorModal(true);
+        setIsLoading(false);
+        return;
       }
-
+      // If role matches, proceed to sign in
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
       setRole(userData.role); // Set global role state
       toast.success('Login successful!');
-      console.log('Login successful, navigating to dashboard...');
-      
-      // Navigate all roles to the main dashboard entry point
       navigate('/dashboard');
-      
     } catch (error) {
-      console.error('Login error:', error);
-      toast.error(error.message || 'Failed to login. Please check your credentials.');
+      let errorMessage = '';
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = t('auth.login.errors.userNotFound') || 'No account found with this email.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = t('auth.login.errors.wrongPassword') || 'Incorrect password. Please try again.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = t('auth.login.errors.invalidEmail') || 'Invalid email address.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = t('auth.login.errors.tooManyRequests') || 'Too many failed attempts. Please try again later.';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = t('auth.login.errors.invalidCredential') || 'Incorrect email or password. Please try again.';
+      } else {
+        errorMessage = error.message || t('auth.login.errors.generic') || 'Failed to login. Please check your credentials.';
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -173,6 +197,23 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
+
+      {/* Modal for Role Error */}
+      <Modal
+        title="Access Denied"
+        onClose={() => setShowRoleErrorModal(false)}
+        show={showRoleErrorModal}
+      >
+        <div className="text-center">
+          <p className="mb-4">{roleErrorMessage || 'You are trying to log in with the wrong role.'}</p>
+          <button
+            className="px-4 py-2 bg-yellow-400 rounded text-gray-900 font-semibold hover:bg-yellow-500 transition"
+            onClick={() => setShowRoleErrorModal(false)}
+          >
+            OK
+          </button>
+        </div>
+      </Modal>
 
       {/* Right - Image Section */}
       <div className="hidden lg:block lg:w-1/2 bg-[#FFD966] relative">

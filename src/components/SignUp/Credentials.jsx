@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import useSignupStore from '../../store/signupStore';
@@ -7,10 +7,18 @@ import { toast } from 'react-hot-toast';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { Star, Users } from 'lucide-react';
 
-const Credentials = ({ onComplete }) => {
+const Credentials = ({ onComplete, editMode = false, data }) => {
   const [errors, setErrors] = useState({});
   const [isChecking, setIsChecking] = useState(false);
   const { credentialsData, updateCredentialsData } = useSignupStore();
+
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      updateCredentialsData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
 
   // Debounced email check
   const checkEmailAvailability = debounce(async (email) => {
@@ -356,30 +364,32 @@ const Credentials = ({ onComplete }) => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              disabled={isChecking}
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              {isChecking ? (
-                <>
-                  <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                  </svg>
-                  <span>Checking...</span>
-                </>
-              ) : (
-                <>
-                  <Star className="w-6 h-6" />
-                  <span>Continue</span>
-                  <Star className="w-6 h-6" />
-                </>
-              )}
-            </button>
-          </div>
+          {/* Submit Button - only show if not in editMode */}
+          {!editMode && (
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                disabled={isChecking}
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                {isChecking ? (
+                  <>
+                    <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <>
+                    <Star className="w-6 h-6" />
+                    <span>Continue</span>
+                    <Star className="w-6 h-6" />
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </form>
       </div>
 

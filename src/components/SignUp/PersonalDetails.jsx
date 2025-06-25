@@ -301,7 +301,7 @@ const CheckboxField = memo(({ label, name, className = '', checked, onChange, id
   </div>
 ));
 
-const PersonalDetails = memo(({ onComplete }) => {
+const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   const { personalData, updatePersonalData } = useSignupStore();
   const formRef = useRef(null);
   const [formData, setFormData] = useState(personalData || {
@@ -503,6 +503,25 @@ const PersonalDetails = memo(({ onComplete }) => {
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
   }, []);
+
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      updatePersonalData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
+
+  // Helper to handle parent-driven continue in editMode
+  useEffect(() => {
+    if (!editMode) return;
+    window.__updatePersonalDataAndContinue = () => {
+      updatePersonalData(formData);
+      // Do NOT call onComplete here to avoid recursion
+    };
+    return () => { delete window.__updatePersonalDataAndContinue; };
+    // eslint-disable-next-line
+  }, [formData, editMode, onComplete]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
@@ -829,27 +848,19 @@ const PersonalDetails = memo(({ onComplete }) => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              disabled={loading.settlements || loading.languages}
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              {loading.settlements || loading.languages ? (
-                <>
-                  <FaSpinner className="animate-spin" />
-                  <span>Loading...</span>
-                </>
-              ) : (
-                <>
-                  <Star className="w-6 h-6" />
-                  <span>Continue</span>
-                  <Star className="w-6 h-6" />
-                </>
-              )}
-            </button>
-          </div>
+          {/* Submit Button - only show if not in editMode */}
+          {!editMode && (
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                <Star className="w-6 h-6" />
+                <span>Continue</span>
+                <Star className="w-6 h-6" />
+              </button>
+            </div>
+          )}
         </form>
       </div>
 

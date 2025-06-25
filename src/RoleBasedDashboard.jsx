@@ -1,6 +1,8 @@
 import useSignupStore from './store/signupStore';
 import { useAuth } from './context/AuthContext'; // Use context for user session
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { getUserData } from './firebase';
 
 import Dashboard from './components/RetireeProfile/RetireeDashboard';
 import Shared from './components/SharedDashboard/SharedDashboard';
@@ -10,8 +12,16 @@ import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
   const { currentUser, loading } = useAuth(); // from AuthContext
-  const { role } = useSignupStore(); // from Zustand store
+  const { role, setRole } = useSignupStore(); // from Zustand store
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser && !role) {
+      getUserData(currentUser.uid).then(userData => {
+        if (userData?.role) setRole(userData.role);
+      });
+    }
+  }, [currentUser, role, setRole]);
 
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 

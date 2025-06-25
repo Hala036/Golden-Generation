@@ -6,7 +6,7 @@ import Credentials from './Credentials';
 import PersonalDetails from './PersonalDetails';
 import SignUpProgress from './SignUpProgress';
 import { toast } from 'react-hot-toast';
-import { auth, db } from '../../firebase';
+import { auth, db, getUserData } from '../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -28,7 +28,8 @@ const SignUp = () => {
     setCurrentStep, 
     resetStore, 
     stepValidation,
-    setStepValidation
+    setStepValidation,
+    setRole
   } = useSignupStore();
 
   const [creating, setCreating] = useState(false);
@@ -89,6 +90,12 @@ const SignUp = () => {
 
         // 6. Sign in the user (optional, for direct dashboard access)
         await signInWithEmailAndPassword(auth, credentialsData.email, credentialsData.password);
+
+        // Fetch user data and set role in Zustand
+        const userDataFromFirestore = await getUserData(userCredential.user.uid);
+        if (userDataFromFirestore?.role) {
+          setRole(userDataFromFirestore.role);
+        }
 
         // 7. Success handling
         resetStore();
