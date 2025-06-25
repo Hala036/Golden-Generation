@@ -15,7 +15,7 @@ import Notifications from "../SharedDashboard/Notifications";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
 import AdminCalendar from "../Calendar/AdminCalendar";
-import Pending from "../AdminProfile/PendingEvents";
+import EventRequests from "../AdminProfile/PendingEvents";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
@@ -47,7 +47,7 @@ const RetireeDashboard = () => {
     service: <ServiceRequests />, // Link to ServiceRequests component
     analysis: <Analysis />,
     comprehensiveAnalytics: <ComprehensiveAnalytics />,
-    pending: <Pending />,
+    eventRequests: <EventRequests />,
   };
 
   return (

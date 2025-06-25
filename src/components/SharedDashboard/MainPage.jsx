@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../context/UserContext"; // Import UserContext
-import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck } from 'react-icons/fa';
+import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay } from 'react-icons/fa';
 import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
 import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
@@ -16,12 +16,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
   const [activeEventsCount, setActiveEventsCount] = useState(0); // State for active events
   const [volunteerMatchesCount, setVolunteerMatchesCount] = useState(0); // State for volunteer matches
-
-  const [upcomingEvents] = useState([
-    { id: 1, title: 'Music Workshop', date: '2025-06-16', time: '10:00', participants: 12, volunteers: 3 },
-    { id: 2, title: 'Garden Event', date: '2025-06-17', time: '14:00', participants: 8, volunteers: 1 },
-    { id: 3, title: 'Cooking Together', date: '2025-06-18', time: '16:00', participants: 15, volunteers: 0 }
-  ]);
+  const [pendingEventsCount, setPendingEventsCount] = useState(0); // State for pending event requests
 
   const [notifications, setNotifications] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]); // State for recent activity
@@ -40,11 +35,11 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     return () => clearInterval(timer);
   }, []);
 
-  { /* Fetch information to display on overview cards and alerts */ }
+  { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
     if (!userSettlement) return;
 
-    // Pending Requests
+    // Pending Service Requests
     const fetchPendingRequestsCount = async () => {
       try {
         const allRequests = await getServiceRequests();
@@ -115,6 +110,22 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       }
     };
 
+    // Pending Event Requests Count
+    const fetchPendingEventRequestsCount = async () => {
+      try {
+        const pendingEventsQuery = query(
+          collection(db, "events"),
+          where("status", "==", "pending"), // Query for pending events
+          where("settlement", "==", userSettlement)
+        );
+        const querySnapshot = await getDocs(pendingEventsQuery);
+        setPendingEventsCount(querySnapshot.size);
+      } catch (error) {
+        console.error("Error fetching pending event requests count:", error);
+        return 0; // Return 0 in case of error
+      }
+    };
+
     // Fetch recent notifications
     const fetchRecentNotifications = async () => {
       try {
@@ -139,9 +150,10 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       }
     };
 
+    // Recent Activity
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to start of the day
-    console.log("Today:", today);
 
     const fetchRecentActivity = async () => {
       const activity = [];
@@ -199,7 +211,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         todayRetirees.forEach((retiree) => {
           activity.push({
             id: retiree.id,
-            action: `${retiree.data().name} joined the community`,
+            action: `${retiree.data().credentials.username} joined the community`,
             time: (() => {
               const createdAtDate = new Date(retiree.data().createdAt); // Parse createdAt
               if (isNaN(createdAtDate.getTime())) {
@@ -225,14 +237,12 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           where("status", "==", "active")
         );
         const eventsSnapshot = await getDocs(activeEventsQuery);
-        console.log("Active Events number:", eventsSnapshot.size);
         const todayEvents = eventsSnapshot.docs.filter((doc) => {
           const eventDate = doc.data().createdAt instanceof Timestamp
             ? doc.data().createdAt.toDate()
             : new Date(doc.data().createdAt);
           return eventDate >= today;
         });
-        console.log("Today Events:", todayEvents);
         todayEvents.forEach((event) => {
           activity.push({
             id: event.id,
@@ -309,8 +319,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       }
     };
 
-    console.log("recent activity:", recentActivity);
-
+    fetchPendingEventRequestsCount();
     fetchRecentNotifications();
     fetchPendingRequestsCount();
     fetchRetireesRegisteredCount();
@@ -334,6 +343,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       icon: <FaUserPlus className="text-2xl md:text-3xl text-green-500" />, // Adjust icon size
       color: "bg-green-50 border-green-200",
       urgent: false,
+      onClick: () => setSelected("retirees"),
     },
     {
       title: "Active Events",
@@ -353,7 +363,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     },
     {
       title: "Pending Event Requests",
-      value: 0, // Replace with dynamic value if available
+      value: pendingEventsCount, // Replace with dynamic value if available
       icon: <FaCalendarAlt className="text-2xl md:text-3xl text-red-500" />, // Adjust icon size
       color: "bg-red-50 border-red-200",
       urgent: true,
@@ -362,10 +372,10 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   ];
 
   const quickActions = [
-    { title: 'Add New Event', icon: <FaPlus />, color: 'bg-green-500 hover:bg-green-600' },
-    { title: 'View All Requests', icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600' },
-    { title: 'Manage Retirees', icon: <FaUsers />, color: 'bg-purple-500 hover:bg-purple-600' },
-    { title: 'Reports & Analytics', icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600' }
+    { title: 'Calendar', icon: <FaCalendarAlt />, color: 'bg-green-500 hover:bg-green-600', onClick: () => setSelected("calendar") },
+    { title: 'View All Requests', icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600', onClick: () => setSelected("service") },
+    { title: 'Manage Retirees', icon: <FaUsers />, color: 'bg-purple-500 hover:bg-purple-600', onClick: () => setSelected("retirees") },
+    { title: 'Reports & Analytics', icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
   ];
 
   const getActivityIcon = (type) => {
@@ -387,6 +397,19 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, {userName} 👋</h1>
             <p className="text-gray-600">Here's what's happening in your community today</p>
+          </div>
+          {/* Quick Actions */}
+          <div className="grid grid-cols-4 gap-2">
+            {quickActions.map((action, index) => (
+              <button
+                key={index}
+                onClick={action.onClick}
+                className={`${action.color} text-white p-2 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-1`}
+              >
+                <span className="text-lg md:text-xl">{action.icon}</span>
+                <span className="text-[10px] md:text-xs font-small text-center">{action.title}</span>
+              </button>
+            ))}
           </div>
           <div className="text-right">
             <div className="text-sm text-gray-500">Current Time</div>
@@ -446,73 +469,22 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         </div>
 
         {/* Alerts & Quick Actions */}
-        <div className="space-y-6">
+        {/* <div className="space-y-6"> */}
           {/* Alerts */}
-          <div 
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 cursor-pointer"
-          >
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-1 p-3 flex items-center">
               <FaBell className="mr-2 text-red-500" />
               Alerts & Notifications
             </h2>
-            <Notifications 
-              setSelectedTab={setSelected} 
-              setShowNotificationsPopup={setShowNotificationsPopup} 
-              limit={2} // Limit notifications to 3
-            />
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Access</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {quickActions.map((action, index) => (
-                <button
-                  key={index}
-                  className={`${action.color} text-white p-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 flex flex-col items-center space-y-2`}
-                >
-                  <span className="text-xl">{action.icon}</span>
-                  <span className="text-xs font-medium text-center">{action.title}</span>
-                </button>
-              ))}
+            <div className="space-y-4 max-h-80 overflow-y-auto">
+              <Notifications 
+                setSelectedTab={setSelected} 
+                setShowNotificationsPopup={setShowNotificationsPopup} 
+                limit={3} // Limit notifications to 3
+              />
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Event Calendar */}
-      <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-          <FaCalendarAlt className="mr-2 text-green-500" />
-          Upcoming Events Calendar
-        </h2>
-        <div className="grid md:grid-cols-3 gap-4">
-          {upcomingEvents.map((event) => (
-            <div
-              key={event.id}
-              className={`border-2 rounded-lg p-4 transition-all duration-200 hover:shadow-lg cursor-pointer ${
-                event.volunteers === 0 
-                  ? 'border-red-200 bg-red-50' 
-                  : 'border-gray-200 bg-white hover:border-blue-300'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800">{event.title}</h3>
-                {event.volunteers === 0 && (
-                  <FaExclamationTriangle className="text-red-500" />
-                )}
-              </div>
-              <p className="text-sm text-gray-600 mb-2">
-                📅 {new Date(event.date).toLocaleDateString()} at {event.time}
-              </p>
-              <div className="flex justify-between text-xs">
-                <span className="text-green-600">👥 {event.participants} participants</span>
-                <span className={event.volunteers === 0 ? 'text-red-600' : 'text-blue-600'}>
-                  🙋 {event.volunteers} volunteers
-                </span>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

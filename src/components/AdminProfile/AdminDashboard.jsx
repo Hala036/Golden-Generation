@@ -16,7 +16,7 @@ import Notifications from "../SharedDashboard/Notifications";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
 import AdminCalendar from "../Calendar/AdminCalendar";
-import Pending from "./PendingEvents";
+import EventRequests from "./PendingEvents";
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
     service: <ServiceRequests />, // Link to ServiceRequests component
     analysis: <Analysis />,
     comprehensiveAnalytics: <ComprehensiveAnalytics />,
-    pending: <Pending />,
+    eventRequests: <EventRequests />,
     categoryManagement: <CategoryManagement />,
   };
 
