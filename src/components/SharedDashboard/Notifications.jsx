@@ -12,7 +12,7 @@ const iconMap = {
   message: <FaEnvelope className="text-blue-500 text-xl" />,
 };
 
-const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Add setShowNotificationsPopup as a prop
+const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => { // Add setShowNotificationsPopup as a prop
   const { currentUser } = useAuth();
   const [userRole, setUserRole] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -43,12 +43,8 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
 
   // Fetch notifications
   useEffect(() => {
-    if (!currentUser) {
-      console.log("currentUser is null or undefined");
-      return;
-    }
+    if (!currentUser) { return; }
 
-    console.log("currentUser:", currentUser);
     const fetchNotifications = async () => {
       setLoading(true);
       try {
@@ -66,8 +62,9 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
             };
           })
         );
+        const displayedNotifications = limit ? enrichedNotifications.slice(0, limit) : enrichedNotifications;
 
-        setNotifications(enrichedNotifications);
+        setNotifications(displayedNotifications);
       } catch (err) {
         console.error("Error fetching notifications:", err);
       } finally {
@@ -136,8 +133,24 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (setShowModal) {
+        setSelectedNotification(false); // Close the popup if clicked outside
+      }
+    };
+
+    if (selectedNotification) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [selectedNotification]);
+
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 md:p-8">
+    <div className="w-full max-w-2xl mx-auto p-2 md:p-8">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <button
@@ -207,8 +220,8 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
 
       {/* Modal for Notification Details */}
       {showModal && selectedNotification && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-gray-800 opacity-50"></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
+          <div className="absolute inset-0 bg-gray-200 opacity-50"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">{selectedNotification.title || "Notification"}</h3>
