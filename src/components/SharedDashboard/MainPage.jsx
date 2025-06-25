@@ -23,16 +23,13 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     { id: 3, title: 'Cooking Together', date: '2025-06-18', time: '16:00', participants: 15, volunteers: 0 }
   ]);
 
-  const [notifications, setNotifications] = useState([
-    // { id: 1, type: 'alert', message: '3 requests pending approval', urgent: true },
-    // { id: 2, type: 'warning', message: 'Event "Cooking Together" has no volunteers yet', urgent: false },
-    // { id: 3, type: 'info', message: 'Weekly report is ready for review', urgent: false }
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]); // State for recent activity
 
   // Define recentActivity array
-  const recentActivity = [
+  const defaultRecentActivity = [
     { id: 1, action: 'Ruth Cohen joined the community', time: '5 minutes ago', type: 'join' },
-    { id: 2, action: 'Moshe Levi applied to "Garden Event"', time: '12 minutes ago', type: 'apply' },
+    { id: 2, action: 'Moshe Levi created the event "Garden Event"', time: '12 minutes ago', type: 'apply' },
     { id: 3, action: 'Sarah Davis completed volunteer service', time: '1 hour ago', type: 'complete' },
     { id: 4, action: 'New service request: Home cleaning', time: '2 hours ago', type: 'request' },
     { id: 5, action: 'Event "Music Workshop" fully booked', time: '3 hours ago', type: 'event' }
@@ -142,11 +139,112 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       }
     };
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of the day
+    console.log("Today:", today);
+
+    const fetchRecentActivity = async () => {
+      const activity = [];
+
+      try {
+        // Fetch actions from service requests
+        const allRequests = await getServiceRequests();
+        const todayRequests = allRequests.filter((request) => {
+          const requestDate = request.createdAt instanceof Timestamp 
+            ? request.createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
+            : new Date(request.createdAt); // Parse as a regular date string if not a Timestamp
+
+          console.log("Request Date:", requestDate);
+          console.log("Today:", today);
+          return requestDate >= today; // Compare with today's date
+        });
+        console.log("Today's Requests:", todayRequests);
+        todayRequests.forEach((request) => {
+          activity.push({
+            id: request.id,
+            action: `New service request: ${request.title}`,
+            time: `${Math.floor((new Date() - new Date(request.createdAt)) / (1000 * 60))} minutes ago`,
+            type: "request",
+          });
+        });
+
+        // Fetch actions from retirees
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+        const allUsersQuery = query(
+          collection(db, "users"),
+          where("role", "==", "retiree"),
+          where("idVerification.settlement", "==", userSettlement)
+        );
+        const querySnapshot = await getDocs(allUsersQuery);
+        const todayRetirees = querySnapshot.docs.filter((doc) => {
+          const createdAt = new Date(doc.data().createdAt);
+          return createdAt >= today;
+        });
+        todayRetirees.forEach((retiree) => {
+          activity.push({
+            id: retiree.id,
+            action: `${retiree.data().name} joined the community`,
+            time: `${Math.floor((new Date() - new Date(retiree.data().createdAt)) / (1000 * 60))} minutes ago`,
+            type: "join",
+          });
+        });
+
+        // Fetch actions from events
+        const activeEventsQuery = query(
+          collection(db, "events"),
+          where("status", "==", "active")
+        );
+        const eventsSnapshot = await getDocs(activeEventsQuery);
+        const todayEvents = eventsSnapshot.docs.filter((doc) => {
+          const eventDate = new Date(doc.data().createdAt);
+          return eventDate >= today;
+        });
+        todayEvents.forEach((event) => {
+          activity.push({
+            id: event.id,
+            action: `Event "${event.data().title}" created`,
+            time: `${Math.floor((new Date() - new Date(event.data().createdAt)) / (1000 * 60))} minutes ago`,
+            type: "event",
+          });
+        });
+
+        // Fetch actions from volunteer matches
+        const volunteerMatchesQuery = query(
+          collection(db, "jobRequests"),
+          where("status", "==", "Active"),
+          where("createdBy", "==", user?.uid || null)
+        );
+        const matchesSnapshot = await getDocs(volunteerMatchesQuery);
+        const todayMatches = matchesSnapshot.docs.filter((doc) => {
+          const matchDate = new Date(doc.data().createdAt);
+          return matchDate >= today;
+        });
+        todayMatches.forEach((match) => {
+          activity.push({
+            id: match.id,
+            action: `Volunteer match created for "${match.data().title}"`,
+            time: `${Math.floor((new Date() - new Date(match.data().createdAt)) / (1000 * 60))} minutes ago`,
+            type: "apply",
+          });
+        });
+
+        // Update recentActivity state
+        setRecentActivity(activity);
+      } catch (error) {
+        console.error("Error fetching recent activity:", error);
+      }
+    };
+
+    console.log("recent activity:", recentActivity);
+
     fetchRecentNotifications();
     fetchPendingRequestsCount();
     fetchRetireesRegisteredCount();
     fetchActiveEventsCount();
     fetchVolunteerMatchesCount();
+    fetchRecentActivity();
   }, [userSettlement, userData?.uid]); // Dependencies on userSettlement and current user's UID
 
   const overviewCards = [
@@ -247,6 +345,11 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
               Recent Activity Feed
             </h2>
             <div className="space-y-4 max-h-80 overflow-y-auto">
+              {recentActivity.length === 0 && (
+                <div className="text-center text-gray-500 py-4">
+                  No recent activity to show.
+                </div>
+              )}
               {recentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="flex-shrink-0 mt-1">
