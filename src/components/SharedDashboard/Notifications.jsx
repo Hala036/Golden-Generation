@@ -150,8 +150,8 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
   }, [selectedNotification]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-2 md:p-8">
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full max-w-2xl mx-auto p-2 md:p-4">
+      <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-4">
           <button
             className="text-sm text-blue-500 hover:underline"
@@ -169,7 +169,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           )}
         </div>
       </div>
-      <div className="bg-white rounded-xl shadow-lg divide-y">
+      <div className="bg-white rounded-xl divide-y">
         {loading ? (
           <div className="p-8 text-center text-gray-400">Loading...</div>
         ) : notifications.length === 0 ? (
@@ -178,7 +178,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           notifications.map((n) => (
             <div
               key={n.id}
-              className={`relative p-3 rounded-lg border-l-4 mb-2 ${
+              className={`relative p-3 rounded-lg border-l-4 mb-3 shadow-lg ${
                 n.type === 'alert' ? 'border-orange-500 bg-orange-50' : 
                 n.type === 'success' ? 'border-green-500 bg-green-50' :
                 n.type === 'message' ? 'border-blue-500 bg-blue-50' :
@@ -212,7 +212,6 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
                     : ""}
                 </div>
               </div>
-              {/* {!n.read && <span className="w-2 h-2 bg-red-500 rounded-full mt-2"></span>} */}
             </div>
           ))
         )}
