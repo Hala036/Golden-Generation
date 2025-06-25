@@ -338,7 +338,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       onClick: () => setSelected("service"), // Set selected to "service"
     },
     {
-      title: "Retirees Registered This Week",
+      title: "Signups This Week",
       value: retireesRegisteredCount, // Dynamically update the value
       icon: <FaUserPlus className="text-2xl md:text-3xl text-green-500" />, // Adjust icon size
       color: "bg-green-50 border-green-200",
@@ -428,12 +428,15 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
             onClick={card.onClick} // Handle card click
             className={`${card.color} border-2 rounded-lg p-4 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-medium text-gray-600 mb-1">{card.title}</p>
-                <p className="text-xl md:text-3xl font-bold text-gray-800">{card.value}</p>
+            <div className="flex flex-col items-center justify-between h-full mb-1">
+              {/* Title and Icon */}
+              <div className="flex items-center justify-between w-full">
+                <p className="text-xs md:text-sm font-medium text-gray-600">{card.title}</p>
+                <div className="text-lg md:text-3xl">{card.icon}</div>
               </div>
-              <div className="text-lg md:text-3xl">{card.icon}</div>
+              
+              {/* Value */}
+              <p className="text-xl md:text-3xl font-bold text-gray-800 text-center">{card.value}</p>
             </div>
           </div>
         ))}
