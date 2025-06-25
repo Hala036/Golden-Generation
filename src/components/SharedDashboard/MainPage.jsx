@@ -1,25 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../context/UserContext"; // Import UserContext
-import { 
-  FaBell, 
-  FaPlus, 
-  FaSearch, 
-  FaUsers, 
-  FaChartBar, 
-  FaCalendarAlt,
-  FaClock,
-  FaExclamationTriangle,
-  FaCheckCircle,
-  FaUserPlus,
-  FaHandshake,
-  FaHandsHelping,
-  FaCalendarCheck
-} from 'react-icons/fa';
+import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck } from 'react-icons/fa';
 import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
-import { query, collection, where, getDocs, Timestamp } from "firebase/firestore"; // Import Firestore utilities
+import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
+import Notifications from "./Notifications"; // Import Notifications component
 
-const AdminHomepage = ({ setSelected }) => {
+const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
+  const user = auth.currentUser;
   const { userData } = useContext(UserContext); // Access user data from context
   const userSettlement = userData?.idVerification?.settlement || "";
   const userName = userData?.credentials?.username || "Admin";
@@ -36,9 +24,9 @@ const AdminHomepage = ({ setSelected }) => {
   ]);
 
   const [notifications, setNotifications] = useState([
-    { id: 1, type: 'alert', message: '3 requests pending approval', urgent: true },
-    { id: 2, type: 'warning', message: 'Event "Cooking Together" has no volunteers yet', urgent: false },
-    { id: 3, type: 'info', message: 'Weekly report is ready for review', urgent: false }
+    // { id: 1, type: 'alert', message: '3 requests pending approval', urgent: true },
+    // { id: 2, type: 'warning', message: 'Event "Cooking Together" has no volunteers yet', urgent: false },
+    // { id: 3, type: 'info', message: 'Weekly report is ready for review', urgent: false }
   ]);
 
   // Define recentActivity array
@@ -55,7 +43,11 @@ const AdminHomepage = ({ setSelected }) => {
     return () => clearInterval(timer);
   }, []);
 
-  useState(() => {
+  { /* Fetch information to display on overview cards and alerts */ }
+  useEffect(() => {
+    if (!userSettlement) return;
+
+    // Pending Requests
     const fetchPendingRequestsCount = async () => {
       try {
         const allRequests = await getServiceRequests();
@@ -66,12 +58,7 @@ const AdminHomepage = ({ setSelected }) => {
       }
     };
 
-    fetchPendingRequestsCount();
-  }, []);
-
-  useEffect(() => {
-    if (!userSettlement) return;
-
+    // Registered Retirees This Week
     const fetchRetireesRegisteredCount = async () => {
       try {
         const lastWeek = new Date();
@@ -97,6 +84,7 @@ const AdminHomepage = ({ setSelected }) => {
       }
     };
 
+    // Active Events
     const fetchActiveEventsCount = async () => {
       try {
         const activeEventsQuery = query(
@@ -112,9 +100,9 @@ const AdminHomepage = ({ setSelected }) => {
       }
     };
 
+    // Volunteer Matches
     const fetchVolunteerMatchesCount = async () => {
       try {
-        const user = auth.currentUser;
         const uid = user?.uid || null;
         const volunteerMatchesQuery = query(
           collection(db, "jobRequests"),
@@ -130,6 +118,32 @@ const AdminHomepage = ({ setSelected }) => {
       }
     };
 
+    // Fetch recent notifications
+    const fetchRecentNotifications = async () => {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.data();
+        const userNotifications = userData?.notifs || [];
+    
+        const enrichedNotifications = await Promise.all(
+          userNotifications.map(async (notif) => {
+            const notifDoc = await getDoc(doc(db, "notifications", notif.id));
+            return {
+              id: notif.id,
+              ...notifDoc.data(),
+              read: notif.read,
+            };
+          })
+        );
+    
+        setNotifications(enrichedNotifications);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchRecentNotifications();
+    fetchPendingRequestsCount();
     fetchRetireesRegisteredCount();
     fetchActiveEventsCount();
     fetchVolunteerMatchesCount();
@@ -213,11 +227,6 @@ const AdminHomepage = ({ setSelected }) => {
             onClick={card.onClick} // Handle card click
             className={`${card.color} border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
           >
-            {/* {card.urgent && (
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold animate-pulse">
-                !
-              </div>
-            )} */}
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
@@ -256,32 +265,18 @@ const AdminHomepage = ({ setSelected }) => {
         {/* Alerts & Quick Actions */}
         <div className="space-y-6">
           {/* Alerts */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div 
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 cursor-pointer"
+          >
+            <h2 className="text-xl font-semibold text-gray-800 mb-1 p-3 flex items-center">
               <FaBell className="mr-2 text-red-500" />
               Alerts & Notifications
             </h2>
-            <div className="space-y-3">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`p-3 rounded-lg border-l-4 ${
-                    notification.urgent 
-                      ? 'bg-red-50 border-red-400' 
-                      : 'bg-yellow-50 border-yellow-400'
-                  }`}
-                >
-                  <div className="flex items-start">
-                    <FaExclamationTriangle 
-                      className={`mr-2 mt-0.5 ${
-                        notification.urgent ? 'text-red-500' : 'text-yellow-500'
-                      }`} 
-                    />
-                    <p className="text-sm text-gray-700">{notification.message}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Notifications 
+              setSelectedTab={setSelected} 
+              setShowNotificationsPopup={setShowNotificationsPopup} 
+              limit={2} // Limit notifications to 3
+            />
           </div>
 
           {/* Quick Actions */}
