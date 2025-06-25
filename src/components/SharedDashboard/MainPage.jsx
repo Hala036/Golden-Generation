@@ -153,17 +153,31 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           const requestDate = request.createdAt instanceof Timestamp 
             ? request.createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
             : new Date(request.createdAt); // Parse as a regular date string if not a Timestamp
-
-          console.log("Request Date:", requestDate);
-          console.log("Today:", today);
           return requestDate >= today; // Compare with today's date
         });
-        console.log("Today's Requests:", todayRequests);
         todayRequests.forEach((request) => {
           activity.push({
             id: request.id,
             action: `New service request: ${request.title}`,
-            time: `${Math.floor((new Date() - new Date(request.createdAt)) / (1000 * 60))} minutes ago`,
+            time: (() => {
+            const createdAtDate =
+              request.createdAt instanceof Timestamp
+                ? request.createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
+                : new Date(request.createdAt); // Parse as a regular date string if not a Timestamp
+
+            if (isNaN(createdAtDate.getTime())) {
+              return "Invalid date";
+            }    
+              const diffInMs = new Date() - createdAtDate; // Difference in milliseconds
+              const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes
+              const diffInHours = Math.floor(diffInMinutes / 60); // Convert to hours
+
+              if (diffInMinutes < 60) {
+                return `${diffInMinutes} minutes ago`;
+              } else {
+                return `${diffInHours} hours ago`;
+              }
+            })(),
             type: "request",
           });
         });
@@ -186,7 +200,21 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           activity.push({
             id: retiree.id,
             action: `${retiree.data().name} joined the community`,
-            time: `${Math.floor((new Date() - new Date(retiree.data().createdAt)) / (1000 * 60))} minutes ago`,
+            time: (() => {
+              const createdAtDate = new Date(retiree.data().createdAt); // Parse createdAt
+              if (isNaN(createdAtDate.getTime())) {
+                return "Invalid date";
+              }
+              const diffInMs = new Date() - createdAtDate;
+              const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+              const diffInHours = Math.floor(diffInMinutes / 60);
+
+              if (diffInMinutes < 60) {
+                return `${diffInMinutes} minutes ago`;
+              } else {
+                return `${diffInHours} hours ago`;
+              }
+            })(),
             type: "join",
           });
         });
@@ -197,15 +225,38 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           where("status", "==", "active")
         );
         const eventsSnapshot = await getDocs(activeEventsQuery);
+        console.log("Active Events number:", eventsSnapshot.size);
         const todayEvents = eventsSnapshot.docs.filter((doc) => {
-          const eventDate = new Date(doc.data().createdAt);
+          const eventDate = doc.data().createdAt instanceof Timestamp
+            ? doc.data().createdAt.toDate()
+            : new Date(doc.data().createdAt);
           return eventDate >= today;
         });
+        console.log("Today Events:", todayEvents);
         todayEvents.forEach((event) => {
           activity.push({
             id: event.id,
             action: `Event "${event.data().title}" created`,
-            time: `${Math.floor((new Date() - new Date(event.data().createdAt)) / (1000 * 60))} minutes ago`,
+            time: (() => {
+              const createdAtDate =
+                event.data().createdAt instanceof Timestamp
+                  ? event.data().createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
+                  : new Date(event.data().createdAt); // Parse as a regular date string if not a Timestamp
+
+              if (isNaN(createdAtDate.getTime())) {
+                return "Invalid date";
+              }
+
+              const diffInMs = new Date() - createdAtDate; // Difference in milliseconds
+              const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes
+              const diffInHours = Math.floor(diffInMinutes / 60); // Convert to hours
+
+              if (diffInMinutes < 60) {
+                return `${diffInMinutes} minutes ago`;
+              } else {
+                return `${diffInHours} hours ago`;
+              }
+            })(),
             type: "event",
           });
         });
@@ -218,14 +269,35 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         );
         const matchesSnapshot = await getDocs(volunteerMatchesQuery);
         const todayMatches = matchesSnapshot.docs.filter((doc) => {
-          const matchDate = new Date(doc.data().createdAt);
+          const matchDate = doc.data().createdAt instanceof Timestamp
+            ? doc.data().createdAt.toDate()
+            : new Date(doc.data().createdAt);
           return matchDate >= today;
         });
         todayMatches.forEach((match) => {
           activity.push({
             id: match.id,
             action: `Volunteer match created for "${match.data().title}"`,
-            time: `${Math.floor((new Date() - new Date(match.data().createdAt)) / (1000 * 60))} minutes ago`,
+            time: (() => {
+              const createdAtDate =
+                match.data().createdAt instanceof Timestamp
+                  ? match.data().createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
+                  : new Date(match.data().createdAt); // Parse as a regular date string if not a Timestamp
+
+              if (isNaN(createdAtDate.getTime())) {
+                return "Invalid date";
+              }
+
+              const diffInMs = new Date() - createdAtDate; // Difference in milliseconds
+              const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes
+              const diffInHours = Math.floor(diffInMinutes / 60); // Convert to hours
+
+              if (diffInMinutes < 60) {
+                return `${diffInMinutes} minutes ago`;
+              } else {
+                return `${diffInHours} hours ago`;
+              }
+            })(),
             type: "apply",
           });
         });
