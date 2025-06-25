@@ -581,7 +581,7 @@ const IDVerification = ({ onComplete }) => {
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

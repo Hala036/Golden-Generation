@@ -6,6 +6,7 @@ import { useAuth } from './hooks/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { CallProvider } from './context/callContext';
+import { UserProvider } from './context/UserContext'; // Import the UserProvider
 import GlobalCallModal from './components/GlobalCallModal';
 
 import Login from './components/Login';
@@ -41,17 +42,19 @@ const PublicRoute = ({ children }) => {
 const App = () => {
   return (
     <AuthProvider>
-      <LanguageProvider>
-        <ThemeProvider>
-          <CallProvider>
-          <Router>
-            <Toaster position="top-right" />
-            <GlobalCallModal />
-            <AppRoutes />
-          </Router>
-          </CallProvider>
-        </ThemeProvider>
-      </LanguageProvider>
+      <UserProvider> {/* Wrap UserProvider */}
+        <LanguageProvider>
+          <ThemeProvider>
+            <CallProvider>
+              <Router>
+                <Toaster position="top-right" />
+                <GlobalCallModal />
+                <AppRoutes />
+              </Router>
+            </CallProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </UserProvider>
     </AuthProvider>
   );
 };
