@@ -6,10 +6,10 @@ import { useAuth } from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
 
 const iconMap = {
-  info: <FaInfoCircle className="text-blue-400 text-xl" />,
-  alert: <FaExclamationTriangle className="text-yellow-500 text-xl" />,
+  info: <FaInfoCircle className="text-yellow-500 text-xl" />,
+  alert: <FaExclamationTriangle className="text-orange-500 text-xl" />,
   success: <FaCheckCircle className="text-green-500 text-xl" />,
-  message: <FaEnvelope className="text-gray-500 text-xl" />,
+  message: <FaEnvelope className="text-blue-500 text-xl" />,
 };
 
 const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Add setShowNotificationsPopup as a prop
@@ -165,12 +165,25 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
           notifications.map((n) => (
             <div
               key={n.id}
-              className={`flex items-start gap-4 px-6 py-5 cursor-pointer hover:bg-gray-50 transition ${
-                n.read ? 'opacity-60' : ''
+              className={`relative p-3 rounded-lg border-l-4 mb-2 ${
+                n.type === 'alert' ? 'border-orange-500 bg-orange-50' : 
+                n.type === 'success' ? 'border-green-500 bg-green-50' :
+                n.type === 'message' ? 'border-blue-500 bg-blue-50' :
+                n.type === 'info' ? 'border-yellow-500 bg-yellow-50' :
+                'border-gray-300 bg-gray-50' // Default color
               }`}
+              style={{
+                opacity: n.read ? 0.6 : 1, // Apply opacity via inline style
+              }}
               onClick={() => handleNotificationClick(n)}
             >
-              <div className="mt-1">
+              {!n.read && (
+                <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold animate-pulse">
+                  !
+                </div>
+              )}
+
+              <div className="flex items-start">
                 {iconMap[n.type] || iconMap.info}
               </div>
               <div className="flex-1 min-w-0">
@@ -186,7 +199,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup }) => { // Ad
                     : ""}
                 </div>
               </div>
-              {!n.read && <span className="w-2 h-2 bg-red-500 rounded-full mt-2"></span>}
+              {/* {!n.read && <span className="w-2 h-2 bg-red-500 rounded-full mt-2"></span>} */}
             </div>
           ))
         )}
