@@ -323,7 +323,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     {
       title: "Pending Service Requests",
       value: pendingRequestsCount, // Dynamically update the value
-      icon: <FaClock className="text-3xl text-orange-500" />,
+      icon: <FaClock className="text-2xl md:text-3xl text-orange-500" />, // Adjust icon size
       color: "bg-orange-50 border-orange-200",
       urgent: true,
       onClick: () => setSelected("service"), // Set selected to "service"
@@ -331,14 +331,14 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     {
       title: "Retirees Registered This Week",
       value: retireesRegisteredCount, // Dynamically update the value
-      icon: <FaUserPlus className="text-3xl text-green-500" />,
+      icon: <FaUserPlus className="text-2xl md:text-3xl text-green-500" />, // Adjust icon size
       color: "bg-green-50 border-green-200",
       urgent: false,
     },
     {
       title: "Active Events",
       value: activeEventsCount, // Dynamically update the value
-      icon: <FaCalendarCheck className="text-3xl text-blue-500" />,
+      icon: <FaCalendarCheck className="text-2xl md:text-3xl text-blue-500" />, // Adjust icon size
       color: "bg-blue-50 border-blue-200",
       urgent: false,
       onClick: () => setSelected("upcoming"), // Set selected to "events"
@@ -346,10 +346,18 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     {
       title: "Volunteer Matches Pending",
       value: volunteerMatchesCount, // Dynamically update the value
-      icon: <FaHandsHelping className="text-3xl text-purple-500" />,
+      icon: <FaHandsHelping className="text-2xl md:text-3xl text-purple-500" />, // Adjust icon size
       color: "bg-purple-50 border-purple-200",
       urgent: true,
       onClick: () => setSelected("jobs"), // Set selected to "Jobs"
+    },
+    {
+      title: "Pending Event Requests",
+      value: 0, // Replace with dynamic value if available
+      icon: <FaCalendarAlt className="text-2xl md:text-3xl text-red-500" />, // Adjust icon size
+      color: "bg-red-50 border-red-200",
+      urgent: true,
+      onClick: () => setSelected("eventRequests"), // Set selected to "eventRequests"
     },
   ];
 
@@ -390,19 +398,19 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
         {overviewCards.map((card, index) => (
           <div
             key={index}
             onClick={card.onClick} // Handle card click
-            className={`${card.color} border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
+            className={`${card.color} border-2 rounded-lg p-4 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
-                <p className="text-3xl font-bold text-gray-800">{card.value}</p>
+                <p className="text-xs md:text-sm font-medium text-gray-600 mb-1">{card.title}</p>
+                <p className="text-xl md:text-3xl font-bold text-gray-800">{card.value}</p>
               </div>
-              {card.icon}
+              <div className="text-lg md:text-3xl">{card.icon}</div>
             </div>
           </div>
         ))}
