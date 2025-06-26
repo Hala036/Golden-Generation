@@ -44,10 +44,11 @@ const LoginPage = () => {
         throw new Error('User role not found');
       }
 
-      // Only allow login if attempting to login as the correct role type
-      if (selectedLoginType === 'admin' && userData.role !== 'admin' && userData.role !== 'superadmin') {
+      // Normalize role to lowercase for login type check
+      const userRole = userData.role.toLowerCase();
+      if (selectedLoginType === 'admin' && userRole !== 'admin' && userRole !== 'superadmin') {
         throw new Error('Invalid login type. Please login as admin');
-      } else if (selectedLoginType === 'user' && userData.role !== 'retiree') {
+      } else if (selectedLoginType === 'user' && userRole !== 'retiree') {
         throw new Error('Invalid login type. Please login as user');
       }
 
