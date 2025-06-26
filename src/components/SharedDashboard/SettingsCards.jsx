@@ -418,6 +418,12 @@ const SettingsCards = () => {
       icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
       onClick: () => setShowDeleteAccount(true),
     },
+    {
+      label: "Edit Sign-Up Data",
+      description: "Edit all information entered during sign-up",
+      icon: <FiSettings className="text-2xl" />,
+      onClick: () => navigate("/edit-signup-data"),
+    },
   ];
 
   return (

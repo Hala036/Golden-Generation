@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Check, Users, Heart, Calendar, Clock, MapPin, Star } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
 
-const VeteransCommunity = ({ onComplete }) => {
+const VeteransCommunity = ({ onComplete, editMode = false, data }) => {
   const { veteransData, setVeteransData } = useSignupStore();
 
   const [formData, setFormData] = useState(veteransData || {
@@ -23,6 +23,10 @@ const VeteransCommunity = ({ onComplete }) => {
     settlement: '',
     professionalBackground: ''
   });
+
+  // Add a ref to always hold the latest formData
+  const formDataRef = useRef(formData);
+  useEffect(() => { formDataRef.current = formData; }, [formData]);
 
   const activityOptions = [
     { id: 'cooking', label: 'Cooking', icon: '🍳' },
@@ -109,6 +113,14 @@ const VeteransCommunity = ({ onComplete }) => {
     });
   };
 
+  // Utility to remove forbidden nested keys
+  function stripNestedFields(obj) {
+    const forbidden = ['lifestyle', 'workBackground', 'personalDetails'];
+    const clean = { ...obj };
+    forbidden.forEach(key => { if (key in clean) delete clean[key]; });
+    return clean;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -128,26 +140,7 @@ const VeteransCommunity = ({ onComplete }) => {
       finalData.notParticipatingReason = reasonOptions[0];
     }
 
-    // Map to nested structure for matching algorithm compatibility
-    const mappedData = {
-      ...finalData,
-      lifestyle: {
-        interests: [
-          ...(finalData.volunteerAreas || []),
-          ...(finalData.additionalVolunteerFields || [])
-        ]
-      },
-      workBackground: {
-        category: finalData.professionalBackground || ""
-      },
-      personalDetails: {
-        settlement: finalData.settlement || ""
-      },
-      volunteerDays: finalData.volunteerDays,
-      additionalVolunteerDays: finalData.additionalVolunteerDays,
-    };
-
-    setVeteransData(mappedData);
+    setVeteransData(stripNestedFields(finalData));
     onComplete();
   };
 
@@ -179,6 +172,25 @@ const VeteransCommunity = ({ onComplete }) => {
       <div className="absolute w-20 h-20 bottom-1/3 right-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '6s' }} />
     </div>
   );
+
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      setFormData(stripNestedFields(data));
+    }
+  }, [editMode, data]);
+
+  // Helper to handle parent-driven continue in editMode
+  useEffect(() => {
+    if (!editMode) return;
+    window.__updateVeteransDataAndContinue = () => {
+      const cleaned = stripNestedFields(formDataRef.current);
+      setVeteransData(cleaned);
+      return cleaned; // Return the latest data
+    };
+    return () => { delete window.__updateVeteransDataAndContinue; };
+    // eslint-disable-next-line
+  }, [editMode, setVeteransData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
@@ -484,19 +496,21 @@ const VeteransCommunity = ({ onComplete }) => {
             )}
           </div>
 
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95"
-            >
-              <span className="flex items-center justify-center space-x-2">
-                <Star className="w-6 h-6" />
-                <span>Create My Community Profile</span>
-                <Star className="w-6 h-6" />
-              </span>
-            </button>
-          </div>
+          {/* Submit Button - only show if not in editMode */}
+          {!editMode && (
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span className="flex items-center justify-center space-x-2">
+                  <Star className="w-6 h-6" />
+                  <span>{editMode ? 'Continue' : 'Create My Community Profile'}</span>
+                  <Star className="w-6 h-6" />
+                </span>
+              </button>
+            </div>
+          )}
         </form>
       </div>
 
