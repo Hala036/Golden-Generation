@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { auth, db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import useSignupStore from './store/signupStore';
-import { useAuth } from './context/AuthContext'; // Use context for user session
 import { useNavigate } from 'react-router-dom';
-import { getUserData } from './firebase';
 
 import Dashboard from './components/RetireeProfile/RetireeDashboard';
 import Shared from './components/SharedDashboard/SharedDashboard';
@@ -13,17 +10,9 @@ import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashbo
 import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
-  const { currentUser, loading } = useAuth(); // from AuthContext
-  const { role, setRole } = useSignupStore(); // from Zustand store
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (currentUser && !role) {
-      getUserData(currentUser.uid).then(userData => {
-        if (userData?.role) setRole(userData.role);
-      });
-    }
-  }, [currentUser, role, setRole]);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -64,7 +53,7 @@ const RoleBasedDashboard = () => {
     case undefined:
       return <Login />;
     default:
-      return <div className="p-4">Unauthorized or unknown role.</div>;
+      return <div className="p-4">Unauthorized or unknown user.</div>;
   }
 };
 
