@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { auth, db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import useSignupStore from './store/signupStore';
+import { useAuth } from './context/AuthContext'; // Use context for user session
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import { getUserData } from './firebase';
 
 import Dashboard from './components/RetireeProfile/RetireeDashboard';
