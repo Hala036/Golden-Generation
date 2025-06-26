@@ -7,9 +7,9 @@ import { useLanguage } from '../../context/LanguageContext';
 import debounce from 'lodash.debounce';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
-import localSettlements from '../../data/settlements.json';
 import Select from 'react-select';
 import { Users, Star, Check } from 'lucide-react';
+import { validateIsraeliID, validateRequiredField } from '../../utils/validation';
 
 const IDVerification = ({ onComplete }) => {
   const { t } = useLanguage();
@@ -155,16 +155,30 @@ const IDVerification = ({ onComplete }) => {
     toast.info('QR code scanning will be implemented soon');
   };
 
-  // Fetch available settlements from local JSON file
+  // Fetch available settlements from Firestore
   useEffect(() => {
-    try {
-      setSettlements(localSettlements);
-    } catch (error) {
-      console.error('Error loading settlements from local file:', error);
-      setSettlementsError(true);
-    } finally {
-      setLoadingSettlements(false);
-    }
+    const fetchAvailableSettlements = async () => {
+      setLoadingSettlements(true);
+      try {
+        const snapshot = await getDocs(collection(db, 'availableSettlements'));
+        const settlements = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          // Only include settlements that are available and have an assigned admin
+          if (data.available && data.adminId) {
+            settlements.push({ label: data.name, value: data.name });
+          }
+        });
+        setSettlements(settlements);
+        setSettlementsError(false);
+      } catch (error) {
+        console.error('Error loading settlements from Firestore:', error);
+        setSettlementsError(true);
+      } finally {
+        setLoadingSettlements(false);
+      }
+    };
+    fetchAvailableSettlements();
   }, []);
 
   const handleUpload = () => {
@@ -222,39 +236,41 @@ const IDVerification = ({ onComplete }) => {
     const newErrors = {};
     const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
 
-    if (!idNumber?.trim()) {
-      newErrors.idNumber = t("ID number is required");
-    } else if (!/^\d{9}$/.test(idNumber)) {
-      newErrors.idNumber = t("ID number must be 9 digits");
+    // ID Number
+    const idError = validateIsraeliID(idNumber);
+    if (idError) {
+      newErrors.idNumber = t(idError);
     } else if (errors.idNumber) {
       newErrors.idNumber = errors.idNumber;
     }
 
-    if (!firstName?.trim()) {
-      newErrors.firstName = t("First name is required");
-    }
+    // First Name
+    const firstNameError = validateRequiredField(firstName, 'First name');
+    if (firstNameError) newErrors.firstName = t(firstNameError);
 
-    if (!lastName?.trim()) {
-      newErrors.lastName = t("Last name is required");
-    }
+    // Last Name
+    const lastNameError = validateRequiredField(lastName, 'Last name');
+    if (lastNameError) newErrors.lastName = t(lastNameError);
 
+    // Date of Birth
     if (!dateOfBirth) {
-      newErrors.dateOfBirth = t("Date of birth is required");
+      newErrors.dateOfBirth = t('Date of birth is required');
     } else {
       const age = calculateAge(dateOfBirth);
       if (age < 50) {
-        newErrors.dateOfBirth = t("Minimum age is 50 years");
-        toast.error(t("Age requirement not met: minimum age is 50 years"));
+        newErrors.dateOfBirth = t('Minimum age is 50 years');
+        toast.error(t('Age requirement not met: minimum age is 50 years'));
       }
     }
 
+    // Gender
     if (!gender) {
-      newErrors.gender = "Gender is required";
+      newErrors.gender = t('Gender is required');
     }
 
-    if (!settlement) {
-      newErrors.settlement = "Settlement is required";
-    }
+    // Settlement
+    const settlementError = validateRequiredField(settlement, 'Settlement');
+    if (settlementError) newErrors.settlement = t(settlementError);
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -523,17 +539,12 @@ const IDVerification = ({ onComplete }) => {
                 </div>
               ) : (
                 <Select
-                  options={settlements.map(s => ({
-                    value: s.id || s.name,
-                    label: s.name || s,
-                  }))}
+                  options={settlements}
                   value={
-                    settlements.find(s => s.id === idVerificationData.settlement || s.name === idVerificationData.settlement)
+                    settlements.find(s => s.value === idVerificationData.settlement)
                       ? {
                           value: idVerificationData.settlement,
-                          label:
-                            settlements.find(s => s.id === idVerificationData.settlement || s.name === idVerificationData.settlement)
-                              ?.name || idVerificationData.settlement,
+                          label: idVerificationData.settlement,
                         }
                       : null
                   }
