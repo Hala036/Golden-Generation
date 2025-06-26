@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import { Check, Users, Heart, Calendar, Clock, MapPin, Star } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
 
 const VeteransCommunity = ({ onComplete }) => {
+  const { t } = useLanguage();
   const { veteransData, setVeteransData } = useSignupStore();
 
   const [formData, setFormData] = useState(veteransData || {
@@ -25,74 +27,74 @@ const VeteransCommunity = ({ onComplete }) => {
   });
 
   const activityOptions = [
-    { id: 'cooking', label: 'Cooking', icon: '🍳' },
-    { id: 'trips', label: 'Trips', icon: '🚌' },
-    { id: 'choir', label: 'Choir', icon: '🎵' },
-    { id: 'torah-classes', label: 'Torah Classes', icon: '📚' },
-    { id: 'lectures', label: 'Lectures', icon: '🎤' },
-    { id: 'exercise', label: 'Exercise', icon: '💪' }
+    { id: 'cooking', label: t('auth.veteransCommunity.cooking'), icon: '🍳' },
+    { id: 'trips', label: t('auth.veteransCommunity.trips'), icon: '🚌' },
+    { id: 'choir', label: t('auth.veteransCommunity.choir'), icon: '🎵' },
+    { id: 'torah-classes', label: t('auth.veteransCommunity.torahClasses'), icon: '📚' },
+    { id: 'lectures', label: t('auth.veteransCommunity.lectures'), icon: '🎤' },
+    { id: 'exercise', label: t('auth.veteransCommunity.exercise'), icon: '💪' }
   ];
 
   const reasonOptions = [
-    'Not another challenger',
-    'Not relevant',
-    'I have no information',
-    'Not interesting',
-    'I don\'t have time'
+    t('auth.veteransCommunity.noChallenge'),
+    t('auth.veteransCommunity.notRelevant'),
+    t('auth.veteransCommunity.noInfo'),
+    t('auth.veteransCommunity.notInteresting'),
+    t('auth.veteransCommunity.noTime')
   ];
 
   const volunteerAreaOptions = [
-    { id: 'publicity', label: 'Publicity', icon: '📢' },
-    { id: 'health', label: 'Health', icon: '🏥' },
-    { id: 'eater', label: 'Catering', icon: '🍽️' },
-    { id: 'teaching', label: 'Teaching', icon: '👨‍🏫' },
-    { id: 'high-tech', label: 'High Tech', icon: '💻' },
-    { id: 'tourism', label: 'Tourism', icon: '🗺️' },
-    { id: 'safety', label: 'Safety', icon: '🛡️' },
-    { id: 'funds', label: 'Fundraising', icon: '💰' },
-    { id: 'special-treat', label: 'Special Events', icon: '🎉' },
-    { id: 'craftsmanship', label: 'Craftsmanship', icon: '🔨' },
-    { id: 'aaliyah', label: 'Aaliyah', icon: '✈️' },
-    { id: 'culture', label: 'Culture', icon: '🎭' }
+    { id: 'publicity', label: t('auth.veteransCommunity.publicity'), icon: '📢' },
+    { id: 'health', label: t('auth.veteransCommunity.health'), icon: '🏥' },
+    { id: 'eater', label: t('auth.veteransCommunity.eater'), icon: '🍽️' },
+    { id: 'teaching', label: t('auth.veteransCommunity.teaching'), icon: '👨‍🏫' },
+    { id: 'high-tech', label: t('auth.veteransCommunity.highTech'), icon: '💻' },
+    { id: 'tourism', label: t('auth.veteransCommunity.tourism'), icon: '🗺️' },
+    { id: 'safety', label: t('auth.veteransCommunity.safety'), icon: '🛡️' },
+    { id: 'funds', label: t('auth.veteransCommunity.funds'), icon: '💰' },
+    { id: 'special-treat', label: t('auth.veteransCommunity.specialTreat'), icon: '🎉' },
+    { id: 'craftsmanship', label: t('auth.veteransCommunity.craftsmanship'), icon: '🔨' },
+    { id: 'aaliyah', label: t('auth.veteransCommunity.aaliyah'), icon: '✈️' },
+    { id: 'culture', label: t('auth.veteransCommunity.culture'), icon: '🎭' }
   ];
 
   const frequencyOptions = [
-    'Once a month',
-    'Once every two weeks',
-    'Once a week',
-    'Twice a week'
+    t('auth.veteransCommunity.onceMonth'),
+    t('auth.veteransCommunity.onceTwoWeeks'),
+    t('auth.veteransCommunity.onceWeek'),
+    t('auth.veteransCommunity.twiceWeek')
   ];
 
   const timeOptions = [
-    'Morning hours',
-    'Noon hours',
-    'Evening hours'
+    t('auth.veteransCommunity.morning'),
+    t('auth.veteransCommunity.noon'),
+    t('auth.veteransCommunity.evening')
   ];
 
   const dayOptions = [
-    { id: 'sunday', label: 'Sunday', short: 'Sun' },
-    { id: 'monday', label: 'Monday', short: 'Mon' },
-    { id: 'tuesday', label: 'Tuesday', short: 'Tue' },
-    { id: 'wednesday', label: 'Wednesday', short: 'Wed' },
-    { id: 'thursday', label: 'Thursday', short: 'Thu' },
-    { id: 'friday', label: 'Friday', short: 'Fri' }
+    { id: 'sunday', label: t('auth.veteransCommunity.sunday'), short: t('auth.veteransCommunity.sun') },
+    { id: 'monday', label: t('auth.veteransCommunity.monday'), short: t('auth.veteransCommunity.mon') },
+    { id: 'tuesday', label: t('auth.veteransCommunity.tuesday'), short: t('auth.veteransCommunity.tue') },
+    { id: 'wednesday', label: t('auth.veteransCommunity.wednesday'), short: t('auth.veteransCommunity.wed') },
+    { id: 'thursday', label: t('auth.veteransCommunity.thursday'), short: t('auth.veteransCommunity.thu') },
+    { id: 'friday', label: t('auth.veteransCommunity.friday'), short: t('auth.veteransCommunity.fri') }
   ];
 
   const consultationOptions = [
-    { id: 'company', label: 'Company', icon: '🏢' },
-    { id: 'gardening', label: 'Gardening', icon: '🌱' },
-    { id: 'health', label: 'Health', icon: '🏥' },
-    { id: 'food-nutrition', label: 'Food/Nutrition', icon: '🥗' },
-    { id: 'home-economics', label: 'Home Economics', icon: '🏠' },
-    { id: 'order-house', label: 'House Organization', icon: '📋' },
-    { id: 'marketing', label: 'Marketing', icon: '📈' },
-    { id: 'shopping', label: 'Shopping', icon: '🛒' },
-    { id: 'mobility', label: 'Mobility', icon: '🚗' },
-    { id: 'digital', label: 'Digital', icon: '📱' },
-    { id: 'legal', label: 'Legal', icon: '⚖️' },
-    { id: 'psychology', label: 'Psychology', icon: '🧠' },
-    { id: 'house-rules', label: 'House Rules', icon: '📜' },
-    { id: 'sport', label: 'Sport', icon: '⚽' }
+    { id: 'company', label: t('auth.veteransCommunity.company'), icon: '🏢' },
+    { id: 'gardening', label: t('auth.veteransCommunity.gardening'), icon: '🌱' },
+    { id: 'health', label: t('auth.veteransCommunity.health'), icon: '🏥' },
+    { id: 'food-nutrition', label: t('auth.veteransCommunity.foodNutrition'), icon: '🥗' },
+    { id: 'home-economics', label: t('auth.veteransCommunity.homeEconomics'), icon: '🏠' },
+    { id: 'order-house', label: t('auth.veteransCommunity.orderHouse'), icon: '📋' },
+    { id: 'marketing', label: t('auth.veteransCommunity.marketing'), icon: '📈' },
+    { id: 'shopping', label: t('auth.veteransCommunity.shopping'), icon: '🛒' },
+    { id: 'mobility', label: t('auth.veteransCommunity.mobility'), icon: '🚗' },
+    { id: 'digital', label: t('auth.veteransCommunity.digital'), icon: '📱' },
+    { id: 'legal', label: t('auth.veteransCommunity.legal'), icon: '⚖️' },
+    { id: 'psychology', label: t('auth.veteransCommunity.psychology'), icon: '🧠' },
+    { id: 'house-rules', label: t('auth.veteransCommunity.houseRules'), icon: '📜' },
+    { id: 'sport', label: t('auth.veteransCommunity.sport'), icon: '⚽' }
   ];
 
   const handleArraySelection = (field, value) => {
@@ -189,11 +191,11 @@ const VeteransCommunity = ({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Veterans Community
+              {t('auth.veteransCommunity.title')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Join our vibrant community and make a difference. Tell us about your interests and how you'd like to contribute.
+            {t('auth.veteransCommunity.description')}
           </p>
         </div>
 
@@ -202,153 +204,155 @@ const VeteransCommunity = ({ onComplete }) => {
           {/* Removed Basic Information section */}
           
           {/* Current Activities Section */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
             <div className="flex items-center mb-6">
-              <Heart className="w-8 h-8 text-red-500 mr-3" />
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Current Activities
-                </h3>
-                <p className="text-gray-600 text-lg">What activities are you currently participating in?</p>
-              </div>
+              <Heart className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.veteransCommunity.currentActivities')}
+              </h2>
             </div>
+            <p className="text-gray-600 mb-6">
+              {t('auth.veteransCommunity.currentActivitiesDescription')}
+            </p>
             
-            <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
               {activityOptions.map((activity) => (
                 <SelectionCard
                   key={activity.id}
-                  isSelected={formData.currentActivities?.includes(activity.id)}
+                  isSelected={formData.currentActivities.includes(activity.id)}
                   onClick={() => handleArraySelection('currentActivities', activity.id)}
                 >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{activity.icon}</span>
-                    <span className="font-semibold text-gray-800">{activity.label}</span>
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">{activity.icon}</div>
+                    <div className="font-semibold text-gray-800">{activity.label}</div>
                   </div>
                 </SelectionCard>
               ))}
             </div>
+
+            {/* Not Participating Reason */}
+            {formData.currentActivities.length === 0 && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  {t('auth.veteransCommunity.whyNotParticipating')}
+                </label>
+                <p className="text-gray-600 mb-4">
+                  {t('auth.veteransCommunity.whyNotParticipatingDescription')}
+                </p>
+                <select
+                  value={formData.notParticipatingReason}
+                  onChange={(e) => setFormData({ ...formData, notParticipatingReason: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                >
+                  <option value="">{t('auth.veteransCommunity.selectReason')}</option>
+                  {reasonOptions.map((reason, index) => (
+                    <option key={index} value={reason}>{reason}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
-          {/* Reason for Not Participating */}
-          {(!formData.currentActivities || formData.currentActivities.length === 0) && (
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
-              <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Why aren't you participating?
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg">Help us understand your situation better</p>
-              
-              <select
-                value={formData.notParticipatingReason}
-                onChange={(e) => setFormData({ ...formData, notParticipatingReason: e.target.value })}
-                className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
-              >
-                <option value="">Select a reason</option>
-                {reasonOptions.map((reason) => (
-                  <option key={reason} value={reason}>{reason}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
           {/* Current Volunteering Section */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
             <div className="flex items-center mb-6">
-              <Star className="w-8 h-8 text-yellow-500 mr-3" />
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Current Volunteering
-                </h3>
-                <p className="text-gray-600 text-lg">Are you already volunteering somewhere?</p>
-              </div>
+              <Heart className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.veteransCommunity.currentVolunteering')}
+              </h2>
             </div>
+            <p className="text-gray-600 mb-6">
+              {t('auth.veteransCommunity.currentVolunteeringDescription')}
+            </p>
 
-            <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.isVolunteer}
-                onChange={(e) => setFormData({ ...formData, isVolunteer: e.target.checked })}
-                className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
-              />
-              <span className="text-lg font-semibold text-gray-800">Yes, I'm currently volunteering</span>
-            </label>
+            <div className="mb-6">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.isVolunteer}
+                  onChange={(e) => setFormData({ ...formData, isVolunteer: e.target.checked })}
+                  className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                />
+                <span className="text-gray-700">
+                  {t('auth.veteransCommunity.yesImCurrentlyVolunteering')}
+                </span>
+              </label>
+            </div>
 
             {formData.isVolunteer && (
-              <div className="mt-8 space-y-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
+              <div className="space-y-6">
                 {/* Volunteer Areas */}
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Volunteer Areas</h4>
-                  <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t('auth.veteransCommunity.volunteerAreas')}
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {volunteerAreaOptions.map((area) => (
                       <SelectionCard
                         key={area.id}
-                        isSelected={formData.volunteerAreas?.includes(area.id)}
+                        isSelected={formData.volunteerAreas.includes(area.id)}
                         onClick={() => handleArraySelection('volunteerAreas', area.id)}
                       >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{area.icon}</span>
-                          <span className="font-semibold text-gray-800">{area.label}</span>
+                        <div className="text-center">
+                          <div className="text-2xl mb-1">{area.icon}</div>
+                          <div className="font-semibold text-gray-800 text-sm">{area.label}</div>
                         </div>
                       </SelectionCard>
                     ))}
                   </div>
                 </div>
 
-                {/* Frequency and Hours */}
-                <div className="grid md:grid-cols-2 gap-6">
+                {/* Frequency, Hours, Days */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <div className="flex items-center mb-4">
-                      <Calendar className="w-6 h-6 text-blue-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">Frequency</h4>
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.veteransCommunity.frequency')}
+                    </label>
                     <select
                       value={formData.volunteerFrequency}
                       onChange={(e) => setFormData({ ...formData, volunteerFrequency: e.target.value })}
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     >
-                      <option value="">Select frequency</option>
-                      {frequencyOptions.map((freq) => (
-                        <option key={freq} value={freq}>{freq}</option>
+                      <option value="">{t('auth.veteransCommunity.selectFrequency')}</option>
+                      {frequencyOptions.map((freq, index) => (
+                        <option key={index} value={freq}>{freq}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <div className="flex items-center mb-4">
-                      <Clock className="w-6 h-6 text-green-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">Preferred Hours</h4>
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.veteransCommunity.preferredHours')}
+                    </label>
                     <select
                       value={formData.volunteerHours}
                       onChange={(e) => setFormData({ ...formData, volunteerHours: e.target.value })}
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     >
-                      <option value="">Select hours</option>
-                      {timeOptions.map((time) => (
-                        <option key={time} value={time}>{time}</option>
+                      <option value="">{t('auth.veteransCommunity.selectHours')}</option>
+                      {timeOptions.map((time, index) => (
+                        <option key={index} value={time}>{time}</option>
                       ))}
                     </select>
                   </div>
-                </div>
 
-                {/* Days */}
-                <div>
-                  <div className="flex items-center mb-4">
-                    <MapPin className="w-6 h-6 text-purple-500 mr-2" />
-                    <h4 className="text-xl font-bold text-gray-800">Available Days</h4>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {dayOptions.map((day) => (
-                      <SelectionCard
-                        key={day.id}
-                        isSelected={formData.volunteerDays?.includes(day.id)}
-                        onClick={() => handleArraySelection('volunteerDays', day.id)}
-                      >
-                        <div className="text-center">
-                          <div className="font-bold text-gray-800">{day.short}</div>
-                          <div className="text-sm text-gray-600">{day.label}</div>
-                        </div>
-                      </SelectionCard>
-                    ))}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.veteransCommunity.availableDays')}
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {dayOptions.map((day) => (
+                        <label key={day.id} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.volunteerDays.includes(day.id)}
+                            onChange={() => handleArraySelection('volunteerDays', day.id)}
+                            className="mr-2 h-3 w-3 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">{day.short}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -356,126 +360,152 @@ const VeteransCommunity = ({ onComplete }) => {
           </div>
 
           {/* Additional Volunteering Section */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
-            <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Additional Volunteering
-            </h3>
-            <p className="text-gray-600 mb-6 text-lg">Would you like to volunteer in additional areas?</p>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center mb-6">
+              <Heart className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.veteransCommunity.additionalVolunteering')}
+              </h2>
+            </div>
+            <p className="text-gray-600 mb-6">
+              {t('auth.veteransCommunity.additionalVolunteeringDescription')}
+            </p>
 
-            <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.additionalVolunteering}
-                onChange={(e) => setFormData({ ...formData, additionalVolunteering: e.target.checked })}
-                className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
-              />
-              <span className="text-lg font-semibold text-gray-800">Yes, I'd like to volunteer additionally</span>
-            </label>
+            <div className="mb-6">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.additionalVolunteering}
+                  onChange={(e) => setFormData({ ...formData, additionalVolunteering: e.target.checked })}
+                  className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                />
+                <span className="text-gray-700">
+                  {t('auth.veteransCommunity.yesIdLikeToVolunteerAdditionally')}
+                </span>
+              </label>
+            </div>
 
             {formData.additionalVolunteering && (
-              <div className="mt-8 space-y-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
-                {/* Additional Areas */}
+              <div className="space-y-6">
+                {/* Additional Volunteer Areas */}
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Areas of Interest</h4>
-                  <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t('auth.veteransCommunity.areasOfInterest')}
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {volunteerAreaOptions.map((area) => (
                       <SelectionCard
                         key={area.id}
-                        isSelected={formData.additionalVolunteerFields?.includes(area.id)}
+                        isSelected={formData.additionalVolunteerFields.includes(area.id)}
                         onClick={() => handleArraySelection('additionalVolunteerFields', area.id)}
                       >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{area.icon}</span>
-                          <span className="font-semibold text-gray-800">{area.label}</span>
+                        <div className="text-center">
+                          <div className="text-2xl mb-1">{area.icon}</div>
+                          <div className="font-semibold text-gray-800 text-sm">{area.label}</div>
                         </div>
                       </SelectionCard>
                     ))}
                   </div>
                 </div>
 
-                {/* Additional Frequency and Hours */}
-                <div className="grid md:grid-cols-2 gap-6">
+                {/* Additional Frequency, Hours, Days */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">Preferred Frequency</h4>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.veteransCommunity.preferredFrequency')}
+                    </label>
                     <select
                       value={formData.additionalVolunteerFrequency}
                       onChange={(e) => setFormData({ ...formData, additionalVolunteerFrequency: e.target.value })}
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     >
-                      <option value="">Select frequency</option>
-                      {frequencyOptions.map((freq) => (
-                        <option key={freq} value={freq}>{freq}</option>
+                      <option value="">{t('auth.veteransCommunity.selectFrequency')}</option>
+                      {frequencyOptions.map((freq, index) => (
+                        <option key={index} value={freq}>{freq}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">Preferred Hours</h4>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.veteransCommunity.preferredHours')}
+                    </label>
                     <select
                       value={formData.additionalVolunteerHours}
                       onChange={(e) => setFormData({ ...formData, additionalVolunteerHours: e.target.value })}
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                     >
-                      <option value="">Select hours</option>
-                      {timeOptions.map((time) => (
-                        <option key={time} value={time}>{time}</option>
+                      <option value="">{t('auth.veteransCommunity.selectHours')}</option>
+                      {timeOptions.map((time, index) => (
+                        <option key={index} value={time}>{time}</option>
                       ))}
                     </select>
                   </div>
-                </div>
 
-                {/* Additional Days */}
-                <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Preferred Days</h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    {dayOptions.map((day) => (
-                      <SelectionCard
-                        key={day.id}
-                        isSelected={formData.additionalVolunteerDays?.includes(day.id)}
-                        onClick={() => handleArraySelection('additionalVolunteerDays', day.id)}
-                      >
-                        <div className="text-center">
-                          <div className="font-bold text-gray-800">{day.short}</div>
-                          <div className="text-sm text-gray-600">{day.label}</div>
-                        </div>
-                      </SelectionCard>
-                    ))}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.veteransCommunity.preferredDays')}
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {dayOptions.map((day) => (
+                        <label key={day.id} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.additionalVolunteerDays.includes(day.id)}
+                            onChange={() => handleArraySelection('additionalVolunteerDays', day.id)}
+                            className="mr-2 h-3 w-3 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">{day.short}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Consultation Section */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
-            <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Consultation Services
-            </h3>
-            <p className="text-gray-600 mb-6 text-lg">Would you like consultation in any field?</p>
+          {/* Consultation Services Section */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center mb-6">
+              <Heart className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.veteransCommunity.consultationServices')}
+              </h2>
+            </div>
+            <p className="text-gray-600 mb-6">
+              {t('auth.veteransCommunity.consultationServicesDescription')}
+            </p>
 
-            <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.needsConsultation}
-                onChange={(e) => setFormData({ ...formData, needsConsultation: e.target.checked })}
-                className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
-              />
-              <span className="text-lg font-semibold text-gray-800">Yes, I need consultation</span>
-            </label>
+            <div className="mb-6">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.needsConsultation}
+                  onChange={(e) => setFormData({ ...formData, needsConsultation: e.target.checked })}
+                  className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                />
+                <span className="text-gray-700">
+                  {t('auth.veteransCommunity.yesINeedConsultation')}
+                </span>
+              </label>
+            </div>
 
             {formData.needsConsultation && (
-              <div className="mt-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Fields for Consultation</h4>
-                <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-                  {consultationOptions.map((field) => (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  {t('auth.veteransCommunity.fieldsForConsultation')}
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {consultationOptions.map((option) => (
                     <SelectionCard
-                      key={field.id}
-                      isSelected={formData.consultationFields?.includes(field.id)}
-                      onClick={() => handleArraySelection('consultationFields', field.id)}
+                      key={option.id}
+                      isSelected={formData.consultationFields.includes(option.id)}
+                      onClick={() => handleArraySelection('consultationFields', option.id)}
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{field.icon}</span>
-                        <span className="font-semibold text-gray-800">{field.label}</span>
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">{option.icon}</div>
+                        <div className="font-semibold text-gray-800 text-sm">{option.label}</div>
                       </div>
                     </SelectionCard>
                   ))}
@@ -485,22 +515,20 @@ const VeteransCommunity = ({ onComplete }) => {
           </div>
 
           {/* Submit Button */}
-          <div className="text-center pt-8">
+          <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
             >
-              <span className="flex items-center justify-center space-x-2">
-                <Star className="w-6 h-6" />
-                <span>Create My Community Profile</span>
-                <Star className="w-6 h-6" />
-              </span>
+              <Star className="w-6 h-6" />
+              <span>{t('auth.veteransCommunity.createMyCommunityProfile')}</span>
+              <Star className="w-6 h-6" />
             </button>
           </div>
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

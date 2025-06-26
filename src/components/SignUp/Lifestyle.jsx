@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import useSignupStore from '../../store/signupStore';
 import { Users, Star, Check } from 'lucide-react';
 
 const Lifestyle = ({ onComplete }) => {
+  const { t } = useLanguage();
   const { lifestyleData, setLifestyleData } = useSignupStore();
   const [formData, setFormData] = useState(
     lifestyleData || {
@@ -15,44 +17,44 @@ const Lifestyle = ({ onComplete }) => {
   );
 
   const interestOptions = [
-    'Safety read books', 'culture', 'cooking', 'trips', 'Photography', 'sport',
-    'study', 'gardening', 'computer', 'craftsmanship', 'music', 'art', 'dancing',
-    'hiking', 'meditation', 'yoga', 'gaming', 'writing', 'volunteering', 'podcasts',
-    'movies', 'fashion', 'languages', 'astronomy', 'history', 'science', 'technology',
-    'baking', "don't have", 'other'
+    t('auth.lifestyle.safetyReadBooks'), t('auth.lifestyle.culture'), t('auth.lifestyle.cooking'), t('auth.lifestyle.trips'), t('auth.lifestyle.photography'), t('auth.lifestyle.sport'),
+    t('auth.lifestyle.study'), t('auth.lifestyle.gardening'), t('auth.lifestyle.computer'), t('auth.lifestyle.craftsmanship'), t('auth.lifestyle.music'), t('auth.lifestyle.art'), t('auth.lifestyle.dancing'),
+    t('auth.lifestyle.hiking'), t('auth.lifestyle.meditation'), t('auth.lifestyle.yoga'), t('auth.lifestyle.gaming'), t('auth.lifestyle.writing'), t('auth.lifestyle.volunteering'), t('auth.lifestyle.podcasts'),
+    t('auth.lifestyle.movies'), t('auth.lifestyle.fashion'), t('auth.lifestyle.languages'), t('auth.lifestyle.astronomy'), t('auth.lifestyle.history'), t('auth.lifestyle.science'), t('auth.lifestyle.technology'),
+    t('auth.lifestyle.baking'), t('auth.lifestyle.dontHave'), t('auth.lifestyle.other')
   ];
 
   const interestEmojis = {
-    'Safety read books': '📚',
-    'culture': '🎭',
-    'cooking': '🍳',
-    'trips': '✈️',
-    'Photography': '📷',
-    'sport': '🏆',
-    'other': '🔍',
-    "don't have": '❌',
-    'study': '🎓',
-    'gardening': '🌱',
-    'computer': '💻',
-    'craftsmanship': '🔨',
-    'music': '🎵',
-    'art': '🎨',
-    'dancing': '💃',
-    'hiking': '🥾',
-    'meditation': '🧘',
-    'yoga': '🧘‍♀️',
-    'gaming': '🎮',
-    'writing': '✍️',
-    'volunteering': '🤝',
-    'podcasts': '🎧',
-    'movies': '🎬',
-    'fashion': '👕',
-    'languages': '🗣️',
-    'astronomy': '🔭',
-    'history': '📜',
-    'science': '🔬',
-    'technology': '📱',
-    'baking': '🍰'
+    [t('auth.lifestyle.safetyReadBooks')]: '📚',
+    [t('auth.lifestyle.culture')]: '🎭',
+    [t('auth.lifestyle.cooking')]: '🍳',
+    [t('auth.lifestyle.trips')]: '✈️',
+    [t('auth.lifestyle.photography')]: '📷',
+    [t('auth.lifestyle.sport')]: '🏆',
+    [t('auth.lifestyle.other')]: '🔍',
+    [t('auth.lifestyle.dontHave')]: '❌',
+    [t('auth.lifestyle.study')]: '🎓',
+    [t('auth.lifestyle.gardening')]: '🌱',
+    [t('auth.lifestyle.computer')]: '💻',
+    [t('auth.lifestyle.craftsmanship')]: '🔨',
+    [t('auth.lifestyle.music')]: '🎵',
+    [t('auth.lifestyle.art')]: '🎨',
+    [t('auth.lifestyle.dancing')]: '💃',
+    [t('auth.lifestyle.hiking')]: '🥾',
+    [t('auth.lifestyle.meditation')]: '🧘',
+    [t('auth.lifestyle.yoga')]: '🧘‍♀️',
+    [t('auth.lifestyle.gaming')]: '🎮',
+    [t('auth.lifestyle.writing')]: '✍️',
+    [t('auth.lifestyle.volunteering')]: '🤝',
+    [t('auth.lifestyle.podcasts')]: '🎧',
+    [t('auth.lifestyle.movies')]: '🎬',
+    [t('auth.lifestyle.fashion')]: '👕',
+    [t('auth.lifestyle.languages')]: '🗣️',
+    [t('auth.lifestyle.astronomy')]: '🔭',
+    [t('auth.lifestyle.history')]: '📜',
+    [t('auth.lifestyle.science')]: '🔬',
+    [t('auth.lifestyle.technology')]: '📱',
+    [t('auth.lifestyle.baking')]: '🍰'
   };
 
   const handleInterestSelection = (interest) => {
@@ -91,7 +93,7 @@ const Lifestyle = ({ onComplete }) => {
         {label}
       </label>
       <div className="w-full max-w-md flex items-center">
-        <span className="text-sm mr-3">Low</span>
+        <span className="text-sm mr-3">{t('auth.lifestyle.low')}</span>
         <input
           type="range"
           min={min}
@@ -101,11 +103,13 @@ const Lifestyle = ({ onComplete }) => {
           onChange={onChange}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
         />
-        <span className="text-sm ml-3">High</span>
+        <span className="text-sm ml-3">{t('auth.lifestyle.high')}</span>
       </div>
       <div className="mt-2 flex items-center">
         <span className="text-xl mr-2">{getLevelEmoji(value)}</span>
-        <span className="text-sm font-medium">{value.toFixed(1)}/5</span>
+        <span className="text-sm font-medium">
+          {t('auth.lifestyle.valueDisplay').replace('{{value}}', value.toFixed(1))}
+        </span>
       </div>
     </div>
   );
@@ -144,18 +148,18 @@ const Lifestyle = ({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Lifestyle
+              {t('auth.lifestyle.title')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Tell us about your daily activities and interests
+            {t('auth.lifestyle.description')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-12">
           {/* Computer/Smartphone Ability */}
           <SliderCard
-            label='Level of ability in using a computer/smartphone'
+            label={t('auth.lifestyle.computerAbilityLabel')}
             icon="💻"
             value={formData.computerAbility}
             onChange={e => setFormData({ ...formData, computerAbility: parseFloat(e.target.value) })}
@@ -163,7 +167,7 @@ const Lifestyle = ({ onComplete }) => {
 
           {/* Sport Activity Level */}
           <SliderCard
-            label='Level of weekly "sport" activity'
+            label={t('auth.lifestyle.sportActivityLabel')}
             icon="🏃"
             value={formData.sportActivity}
             onChange={e => setFormData({ ...formData, sportActivity: parseFloat(e.target.value) })}
@@ -171,7 +175,7 @@ const Lifestyle = ({ onComplete }) => {
 
           {/* Weekly Schedule Occupancy */}
           <SliderCard
-            label='Occupancy level of the weekly schedule'
+            label={t('auth.lifestyle.weeklyScheduleLabel')}
             icon="📅"
             value={formData.weeklySchedule}
             onChange={e => setFormData({ ...formData, weeklySchedule: parseFloat(e.target.value) })}
@@ -181,7 +185,7 @@ const Lifestyle = ({ onComplete }) => {
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
             <label className="block text-center font-bold text-gray-800 mb-4">
               <span className="mr-2">⭐</span>
-              Interests (select all that apply)
+              {t('auth.lifestyle.interestsLabel')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl mx-auto">
               {interestOptions.map((interest) => (
@@ -196,37 +200,37 @@ const Lifestyle = ({ onComplete }) => {
           </div>
 
           {/* Sports Subspecialty */}
-          {formData.interests.includes('sport') && (
+          {formData.interests.includes(t('auth.lifestyle.sport')) && (
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm max-w-md mx-auto">
-              <label className="block text-center font-bold text-gray-800 mb-2">
-                <span className="mr-2">🏅</span>
-                Sports Subspecialty
+              <label className="block text-center font-bold text-gray-800 mb-4">
+                <span className="mr-2">🏆</span>
+                {t('auth.lifestyle.sportsSubspecialtyLabel')}
               </label>
               <input
                 type="text"
                 value={formData.sportsSubspecialty}
-                onChange={(e) => setFormData({ ...formData, sportsSubspecialty: e.target.value })}
-                className="w-full border rounded-md p-2"
-                placeholder="Enter your sports subspecialty"
+                onChange={e => setFormData({ ...formData, sportsSubspecialty: e.target.value })}
+                placeholder={t('auth.lifestyle.sportsSubspecialtyPlaceholder')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
               />
             </div>
           )}
 
           {/* Submit Button */}
-          <div className="text-center pt-8">
+          <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
             >
               <Star className="w-6 h-6" />
-              <span>Continue</span>
+              <span>{t('auth.lifestyle.continueButton')}</span>
               <Star className="w-6 h-6" />
             </button>
           </div>
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
