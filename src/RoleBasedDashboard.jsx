@@ -25,6 +25,32 @@ const RoleBasedDashboard = () => {
     }
   }, [currentUser, role, setRole]);
 
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          setRole(userDoc.data().role);
+        } else {
+          console.error('User doc not found');
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Failed to fetch user role:', error);
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserRole();
+  }, [navigate]);
 
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 
