@@ -1,21 +1,25 @@
 import React from 'react';
-
-const steps = [
-  'ID Verification',
-  'Account Credentials',
-  'Personal Details',
-  'Work Background',
-  'Lifestyle',
-  'Veterans Community'
-];
+import { useLanguage } from '../../context/LanguageContext';
 
 const SignUpProgress = ({ currentStep, stepValidation = {} }) => {
+  const { t, language } = useLanguage();
+  const isRTL = language === 'he';
+  const steps = [
+    t('auth.signup.progress.idVerification'),
+    t('auth.signup.progress.accountCredentials'),
+    t('auth.signup.progress.personalDetails'),
+    t('auth.signup.progress.workBackground'),
+    t('auth.signup.progress.lifestyle'),
+    t('auth.signup.progress.veteransCommunity')
+  ];
   return (
     <div className="max-w-4xl mx-auto mt-4 sm:mt-8 px-4">
       {/* Mobile Progress Bar */}
       <div className="block sm:hidden mb-6">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-sm font-medium text-gray-600">Step {currentStep + 1} of {steps.length}</span>
+          <span className="text-sm font-medium text-gray-600">
+            {t('auth.signup.progress.stepOf', { current: currentStep + 1, total: steps.length })}
+          </span>
           <span className="text-sm font-medium text-[#FFD966]">{steps[currentStep]}</span>
         </div>
         <div className="relative h-2.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
@@ -34,10 +38,11 @@ const SignUpProgress = ({ currentStep, stepValidation = {} }) => {
           
           {/* Progress Line */}
           <div
-            className="absolute top-5 left-0 h-1 transition-all duration-500 ease-out rounded-full"
-            style={{ 
+            className={`absolute top-5 ${isRTL ? 'right-0' : 'left-0'} h-1 transition-all duration-500 ease-out rounded-full`}
+            style={{
               width: `${(currentStep / (steps.length - 1)) * 100}%`,
-              background: `linear-gradient(to right, ${currentStep > 0 ? 'rgb(34 197 94)' : '#FFD966'}, ${currentStep > 0 ? 'rgb(34 197 94)' : '#FFB800'})`
+              background: `linear-gradient(${isRTL ? 'to left' : 'to right'}, ${currentStep > 0 ? 'rgb(34 197 94)' : '#FFD966'}, ${currentStep > 0 ? 'rgb(34 197 94)' : '#FFB800'})`,
+              ...(isRTL ? { left: 'auto', right: 0 } : { left: 0, right: 'auto' })
             }}
           ></div>
 
