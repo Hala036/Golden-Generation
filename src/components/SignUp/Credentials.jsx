@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
+
 import { auth, db } from '../../firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import useSignupStore from '../../store/signupStore';
@@ -8,7 +10,10 @@ import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { Star, Users } from 'lucide-react';
 import PasswordInput from '../PasswordInput';
 
-const Credentials = ({ onComplete, editMode = false, data }) => {
+
+const Credentials = ({ onComplete }) => {
+  const { t } = useLanguage();
+
   const [errors, setErrors] = useState({});
   const [isChecking, setIsChecking] = useState(false);
   const { credentialsData, updateCredentialsData } = useSignupStore();
@@ -30,12 +35,12 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
       const q = query(usersRef, where('credentials.email', '==', email.toLowerCase()), where("role", "==", "retiree"));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
-        toast.error('Email is already registered');
+        setErrors(prev => ({ ...prev, email: t('auth.credentials.email.inUse') }));
+        toast.error(t('auth.credentials.email.inUse'));
       }
     } catch (error) {
       console.error('Error checking email:', error);
-      toast.error('Error checking email availability');
+      toast.error(t('auth.credentials.validation.error'));
     } finally {
       setIsChecking(false);
     }
@@ -49,12 +54,12 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
       const usernameRef = doc(db, 'usernames', username.toLowerCase());
       const usernameDoc = await getDoc(usernameRef);
       if (usernameDoc.exists()) {
-        setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        toast.error('Username is already taken');
+        setErrors(prev => ({ ...prev, username: t('auth.credentials.username.inUse') }));
+        toast.error(t('auth.credentials.username.inUse'));
       }
     } catch (error) {
       console.error('Error checking username:', error);
-      toast.error('Error checking username availability');
+      toast.error(t('auth.credentials.validation.error'));
     } finally {
       setIsChecking(false);
     }
@@ -80,31 +85,31 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
     const { email, password, confirmPassword, username } = credentialsData;
 
     if (!email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('auth.credentials.email.required');
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = t('auth.credentials.email.invalid');
     }
 
     if (!username) {
-      newErrors.username = 'Username is required';
+      newErrors.username = t('auth.credentials.username.required');
     } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+      newErrors.username = t('auth.credentials.username.minLength');
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
+      newErrors.username = t('auth.credentials.username.invalid');
     }
 
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('auth.credentials.password.required');
     } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = t('auth.credentials.password.minLength');
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+      newErrors.password = t('auth.credentials.password.requirements');
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = t('auth.credentials.confirmPassword.required');
     } else if (confirmPassword !== password) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('auth.credentials.confirmPassword.mismatch');
     }
 
     setErrors(newErrors);
@@ -114,12 +119,12 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isChecking) {
-      toast.error('Please wait while we verify your information');
+      toast.error(t('auth.credentials.validation.wait'));
       return;
     }
 
     setIsChecking(true);
-    toast.loading('Validating credentials...', { id: 'credentials-check' });
+    toast.loading(t('auth.credentials.validation.processing'), { id: 'credentials-check' });
 
     try {
       const [formIsValid, usernameAvailable] = await Promise.all([
@@ -128,38 +133,38 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
       ]);
 
       if (!formIsValid) {
-        toast.error('Please fix the form errors', { id: 'credentials-check' });
+        toast.error(t('auth.credentials.validation.fix'), { id: 'credentials-check' });
         return;
       }
 
       if (!usernameAvailable) {
-        setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        toast.error('Username is already taken', { id: 'credentials-check' });
+        setErrors(prev => ({ ...prev, username: t('auth.credentials.username.inUse') }));
+        toast.error(t('auth.credentials.username.inUse'), { id: 'credentials-check' });
         return;
       }
 
       try {
         const methods = await fetchSignInMethodsForEmail(auth, credentialsData.email);
         if (methods.length > 0) {
-          setErrors(prev => ({ ...prev, email: 'Email is already registered' }));
-          toast.error('Email is already registered', { id: 'credentials-check' });
+          setErrors(prev => ({ ...prev, email: t('auth.credentials.email.inUse') }));
+          toast.error(t('auth.credentials.email.inUse'), { id: 'credentials-check' });
           return;
         }
       } catch (error) {
         console.error('Firebase email check error:', error);
         if (error.code === 'auth/invalid-email') {
-          setErrors(prev => ({ ...prev, email: 'Invalid email format' }));
-          toast.error('Invalid email format', { id: 'credentials-check' });
+          setErrors(prev => ({ ...prev, email: t('auth.credentials.email.invalid') }));
+          toast.error(t('auth.credentials.email.invalid'), { id: 'credentials-check' });
           return;
         }
         throw error;
       }
 
-      toast.success('Credentials validated successfully', { id: 'credentials-check' });
+      toast.success(t('auth.credentials.validation.success'), { id: 'credentials-check' });
       onComplete();
     } catch (error) {
       console.error('Error in credentials validation:', error);
-      toast.error('Error validating credentials', { id: 'credentials-check' });
+      toast.error(t('auth.credentials.validation.error'), { id: 'credentials-check' });
     } finally {
       setIsChecking(false);
     }
@@ -191,11 +196,11 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Account Credentials
+              {t('auth.credentials.title')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Create your account credentials to join the community.
+            {t('auth.credentials.subtitle')}
           </p>
         </div>
 
@@ -205,180 +210,133 @@ const Credentials = ({ onComplete, editMode = false, data }) => {
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Set Your Credentials
+                  {t('auth.signup.setYourCredentials')}
                 </h3>
-                <p className="text-gray-600 text-lg">Choose your username, email, and password</p>
+                <p className="text-gray-600 text-lg">
+                  {t('auth.signup.chooseUsernameEmailAndPassword')}
+                </p>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <div className="space-y-6">
               {/* Email Field */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Email Address <span className="text-red-500">*</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.credentials.email.label')}
                 </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    name="email"
-                    value={credentialsData.email || ''}
-                    onChange={handleChange}
-                    className={`w-full px-3 py-2 rounded-xl shadow-sm text-base pr-10 transition-colors duration-200 ${
-                      errors.email
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
-                    }`}
-                    placeholder="Enter your email address"
-                  />
-                  {isChecking ? (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
-                    </div>
-                  ) : errors.email ? (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  ) : credentialsData.email && !errors.email ? (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  ) : null}
-                </div>
+                <input
+                  type="email"
+                  name="email"
+                  value={credentialsData.email || ''}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${
+                    errors.email ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder={t('auth.credentials.email.placeholder')}
+                  required
+                />
                 {errors.email && (
-                  <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    {errors.email}
-                  </p>
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
+                {isChecking && (
+                  <p className="mt-1 text-sm text-yellow-600">{t('auth.credentials.validation.wait')}</p>
                 )}
               </div>
 
               {/* Username Field */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Username <span className="text-red-500">*</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.credentials.username.label')}
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="username"
-                    value={credentialsData.username || ''}
-                    onChange={handleChange}
-                    className={`w-full px-3 py-2 rounded-xl shadow-sm text-base pr-10 transition-colors duration-200 ${
-                      errors.username
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
-                    }`}
-                    placeholder="Choose a unique username"
-                  />
-                  {isChecking ? (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
-                    </div>
-                  ) : errors.username ? (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  ) : credentialsData.username && !errors.username ? (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  ) : null}
-                </div>
+                <input
+                  type="text"
+                  name="username"
+                  value={credentialsData.username || ''}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${
+                    errors.username ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder={t('auth.credentials.username.placeholder')}
+                  required
+                />
                 {errors.username && (
-                  <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    {errors.username}
-                  </p>
+                  <p className="mt-1 text-sm text-red-600">{errors.username}</p>
                 )}
-                <p className="mt-1 text-xs text-gray-500">
-                  Username must be at least 3 characters and can only contain letters, numbers, and underscores
-                </p>
+                {isChecking && (
+                  <p className="mt-1 text-sm text-yellow-600">{t('auth.credentials.validation.wait')}</p>
+                )}
               </div>
 
               {/* Password Field */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Password <span className="text-red-500">*</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.credentials.password.label')}
                 </label>
                 <PasswordInput
                   name="password"
                   value={credentialsData.password || ''}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
-                    errors.password
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${
+                    errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Enter your password"
-                  error={errors.password}
-                  autoComplete="new-password"
-                  showStrengthIndicator={true}
+                  placeholder={t('auth.credentials.password.placeholder')}
+                  required
                 />
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                )}
+
               </div>
 
               {/* Confirm Password Field */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Confirm Password <span className="text-red-500">*</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.credentials.confirmPassword.label')}
                 </label>
                 <PasswordInput
                   name="confirmPassword"
                   value={credentialsData.confirmPassword || ''}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
-                    errors.confirmPassword
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${
+                    errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Confirm your password"
-                  error={errors.confirmPassword}
-                  autoComplete="new-password"
+                  placeholder={t('auth.credentials.confirmPassword.placeholder')}
+                  required
                 />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                )}
+
               </div>
             </div>
           </div>
 
-          {/* Submit Button - only show if not in editMode */}
-          {!editMode && (
-            <div className="text-center pt-8">
-              <button
-                type="submit"
-                disabled={isChecking}
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-              >
-                {isChecking ? (
-                  <>
-                    <svg className="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg>
-                    <span>Checking...</span>
-                  </>
-                ) : (
-                  <>
-                    <Star className="w-6 h-6" />
-                    <span>Continue</span>
-                    <Star className="w-6 h-6" />
-                  </>
-                )}
-              </button>
-            </div>
-          )}
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              disabled={isChecking}
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isChecking ? (
+                <>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                  <span>{t('auth.credentials.validation.wait')}</span>
+                </>
+              ) : (
+                <>
+                  <Star className="w-6 h-6" />
+                  <span>{t('common.continue')}</span>
+                  <Star className="w-6 h-6" />
+                </>
+              )}
+            </button>
+          </div>
+
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

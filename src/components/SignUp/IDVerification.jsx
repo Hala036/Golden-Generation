@@ -50,16 +50,16 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        setErrors((prev) => ({ ...prev, idNumber: "ID number is already registered" }));
-        toast.error("ID number is already registered");
+        setErrors((prev) => ({ ...prev, idNumber: t('auth.signup.idNumberRegistered') }));
+        toast.error(t('auth.signup.idNumberRegistered'));
       } else {
-        setErrors((prev) => ({ ...prev, idNumber: "" }));
-        toast.success("ID number is available");
+        setErrors((prev) => ({ ...prev, idNumber: '' }));
+        toast.success(t('auth.signup.idNumberAvailable'));
       }
       
     } catch (error) {
       console.error("Error checking ID number:", error);
-      toast.error("Error checking ID number availability");
+      toast.error(t('auth.signup.idNumberCheckError'));
     }
   }, 500);
 
@@ -94,7 +94,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
 
       if (truncatedValue.length === 9) {
         if (!isValidIsraeliID(truncatedValue)) {
-          toast.error('Invalid Israeli ID number');
+          toast.error(t('auth.signup.invalidIsraeliId'));
         } else {
           checkIdAvailability(truncatedValue);
         }
@@ -114,14 +114,14 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
     // Check file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPG, JPEG, or PNG)');
+      toast.error(t('auth.signup.invalidImageFile'));
       return;
     }
 
     // Check file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
+      toast.error(t('auth.signup.fileSizeLimit'));
       return;
     }
 
@@ -136,7 +136,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
       await processImageWithOCR(file);
     } catch (error) {
       console.error('Error handling file:', error);
-      toast.error('Error processing file. Please try again.');
+      toast.error(t('auth.signup.fileProcessingError'));
     } finally {
       setIsLoading(false);
     }
@@ -188,13 +188,13 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
       const extractedData = extractDataFromOCR(text);
       if (extractedData) {
         updateIdVerificationData(extractedData);
-        toast.success('Data extracted successfully!');
+        toast.success(t('auth.signup.dataExtractedSuccess'));
       } else {
-        toast.error('Could not extract data from image. Please try again.');
+        toast.error(t('auth.signup.dataExtractedFail'));
       }
     } catch (error) {
       console.error('OCR Error:', error);
-      toast.error('Error processing image. Please try again or fill the form manually.');
+      toast.error(t('auth.signup.ocrProcessingError'));
     } finally {
       if (worker) {
         try {
@@ -223,37 +223,37 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
     const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
 
     if (!idNumber?.trim()) {
-      newErrors.idNumber = t("ID number is required");
+      newErrors.idNumber = t('auth.idVerification.errors.idRequired');
     } else if (!/^\d{9}$/.test(idNumber)) {
-      newErrors.idNumber = t("ID number must be 9 digits");
+      newErrors.idNumber = t('auth.idVerification.errors.idFormat');
     } else if (errors.idNumber) {
       newErrors.idNumber = errors.idNumber;
     }
 
     if (!firstName?.trim()) {
-      newErrors.firstName = t("First name is required");
+      newErrors.firstName = t('auth.idVerification.errors.firstNameRequired');
     }
 
     if (!lastName?.trim()) {
-      newErrors.lastName = t("Last name is required");
+      newErrors.lastName = t('auth.idVerification.errors.lastNameRequired');
     }
 
     if (!dateOfBirth) {
-      newErrors.dateOfBirth = t("Date of birth is required");
+      newErrors.dateOfBirth = t('auth.idVerification.errors.dateOfBirthRequired');
     } else {
       const age = calculateAge(dateOfBirth);
       if (age < 50) {
-        newErrors.dateOfBirth = t("Minimum age is 50 years");
-        toast.error(t("Age requirement not met: minimum age is 50 years"));
+        newErrors.dateOfBirth = t('auth.idVerification.errors.ageRequirement');
+        toast.error(t('auth.idVerification.errors.ageRequirementNotMet'));
       }
     }
 
     if (!gender) {
-      newErrors.gender = "Gender is required";
+      newErrors.gender = t('auth.idVerification.errors.genderRequired');
     }
 
     if (!settlement) {
-      newErrors.settlement = "Settlement is required";
+      newErrors.settlement = t('auth.idVerification.form.failedToLoadSettlements');
     }
 
     setErrors(newErrors);
@@ -316,11 +316,11 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ID Verification
+              {t('auth.idVerification.title')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Please provide your identification details
+            {t('auth.idVerification.subtitle')}
           </p>
         </div>
 
@@ -331,23 +331,23 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Identification Details
+                  {t('auth.idVerification.form.identificationDetails')}
                 </h3>
-                <p className="text-gray-600 text-lg">Enter your ID and personal information</p>
+                <p className="text-gray-600 text-lg">{t('auth.idVerification.form.enterIdAndPersonalInfo')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* ID Number */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  ID Number <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.idNumber')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="idNumber"
                   value={idVerificationData.idNumber || ''}
                   onChange={handleChange}
-                  placeholder='Enter 9 digits'
+                  placeholder={t('auth.idVerification.form.idNumberPlaceholder')}
                   maxLength="9"
                   className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
                     errors.idNumber
@@ -365,7 +365,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
               {/* First Name */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  First Name <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.firstName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -388,7 +388,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
               {/* Last Name */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Last Name <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.lastName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -411,7 +411,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
               {/* Date of Birth */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Date of Birth <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.dateOfBirth')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -437,7 +437,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
             {/* Gender Selection */}
             <div className="mt-8">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Gender <span className="text-red-500">*</span>
+                {t('auth.idVerification.form.gender')} <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div
@@ -450,7 +450,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                 >
                   <FaMars className={`text-2xl ${idVerificationData.gender === 'male' ? 'text-blue-600' : 'text-gray-500'}`} />
                   <span className={`text-base font-semibold ${idVerificationData.gender === 'male' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    Male
+                    {t('auth.idVerification.form.genderMale')}
                   </span>
                   {idVerificationData.gender === 'male' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
@@ -468,7 +468,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                 >
                   <FaVenus className={`text-2xl ${idVerificationData.gender === 'female' ? 'text-pink-600' : 'text-gray-500'}`} />
                   <span className={`text-base font-semibold ${idVerificationData.gender === 'female' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    Female
+                    {t('auth.idVerification.form.genderFemale')}
                   </span>
                   {idVerificationData.gender === 'female' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
@@ -486,7 +486,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                 >
                   <FaGenderless className={`text-2xl ${idVerificationData.gender === 'other' ? 'text-purple-600' : 'text-gray-500'}`} />
                   <span className={`text-base font-semibold ${idVerificationData.gender === 'other' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    Other
+                    {t('auth.idVerification.form.genderOther')}
                   </span>
                   {idVerificationData.gender === 'other' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
@@ -510,24 +510,24 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
               <Users className="w-8 h-8 text-blue-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Settlement
+                  {t('auth.idVerification.form.settlementTitle')}
                 </h3>
-                <p className="text-gray-600 text-lg">Select your place of residence</p>
+                <p className="text-gray-600 text-lg">{t('auth.idVerification.form.settlementSubtitle')}</p>
               </div>
             </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Settlement <span className="text-red-500">*</span>
+                {t('auth.idVerification.form.settlement')} <span className="text-red-500">*</span>
               </label>
               {loadingSettlements ? (
                 <div className="flex items-center gap-2 text-gray-500">
                   <FaSpinner className="animate-spin" />
-                  <span>Loading settlements...</span>
+                  <span>{t('auth.idVerification.form.loadingSettlements')}</span>
                 </div>
               ) : settlementsError ? (
                 <div className="text-red-500 flex items-center gap-1">
                   <FaInfoCircle />
-                  <span>Failed to load settlements. Please try again later.</span>
+                  <span>{t('auth.idVerification.form.failedToLoadSettlements')}</span>
                 </div>
               ) : (
                 <Select
@@ -548,7 +548,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                   onChange={(selected) => {
                     updateIdVerificationData({ settlement: selected.value });
                   }}
-                  placeholder="Select settlement..."
+                  placeholder={t('auth.idVerification.form.settlementPlaceholder')}
                   isSearchable
                   className="text-base"
                   classNamePrefix="react-select"

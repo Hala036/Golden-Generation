@@ -1,189 +1,176 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Users } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { Star, Users, Check } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
 import Select from 'react-select';
 
-// Academic degrees list
-const academicDegrees = [
-  { value: "high_school", label: "High School / Secondary Education", icon: "🏫" },
-  { value: "associate", label: "Associate Degree", icon: "🎓" },
-  { value: "bachelor", label: "Bachelor's Degree", icon: "📚" },
-  { value: "master", label: "Master's Degree", icon: "📝" },
-  { value: "phd", label: "PhD / Doctorate", icon: "🧪" },
-  { value: "postdoc", label: "Post-Doctoral", icon: "🔬" },
-  { value: "professional", label: "Professional Certification", icon: "📜" },
-  { value: "vocational", label: "Vocational Training", icon: "🛠️" },
-  { value: "none", label: "No Formal Education", icon: "🚫" },
-  { value: "other", label: "Other", icon: "❓" }
-];
-
 // Comprehensive job categories with sub-specialties
-const categorizedJobs = {
-  "Healthcare": [
-    { label: "Doctor", icon: "🩺", subspecialties: [
-      { label: "Cardiologist", icon: "❤️" },
-      { label: "Dermatologist", icon: "🧬" },
-      { label: "Emergency Physician", icon: "🚑" },
-      { label: "Family Physician", icon: "👨‍👩‍👧‍👦" },
-      { label: "Gastroenterologist", icon: "🔥" },
-      { label: "Neurologist", icon: "🧠" },
-      { label: "Obstetrician", icon: "🤰" },
-      { label: "Oncologist", icon: "🦠" },
-      { label: "Ophthalmologist", icon: "👁️" },
-      { label: "Orthopedic Surgeon", icon: "🦴" },
-      { label: "Pediatrician", icon: "👶" },
-      { label: "Psychiatrist", icon: "🧠" },
-      { label: "Radiologist", icon: "📡" },
-      { label: "Surgeon", icon: "🔪" },
-      { label: "Other", icon: "❓" }
+const categorizedJobs = (t) => ({
+  [t('auth.signup.workBackground.categories.healthcare')]: [
+    { label: t('auth.signup.workBackground.jobs.Doctor'), icon: "🩺", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.Cardiologist'), icon: "❤️" },
+      { label: t('auth.signup.workBackground.jobs.Dermatologist'), icon: "🧬" },
+      { label: t('auth.signup.workBackground.jobs.EmergencyPhysician'), icon: "🚑" },
+      { label: t('auth.signup.workBackground.jobs.FamilyPhysician'), icon: "👨‍👩‍👧‍👦" },
+      { label: t('auth.signup.workBackground.jobs.Gastroenterologist'), icon: "🔥" },
+      { label: t('auth.signup.workBackground.jobs.Neurologist'), icon: "🧠" },
+      { label: t('auth.signup.workBackground.jobs.Obstetrician'), icon: "🤰" },
+      { label: t('auth.signup.workBackground.jobs.Oncologist'), icon: "🦠" },
+      { label: t('auth.signup.workBackground.jobs.Ophthalmologist'), icon: "👁️" },
+      { label: t('auth.signup.workBackground.jobs.OrthopedicSurgeon'), icon: "🦴" },
+      { label: t('auth.signup.workBackground.jobs.Pediatrician'), icon: "👶" },
+      { label: t('auth.signup.workBackground.jobs.Psychiatrist'), icon: "🧠" },
+      { label: t('auth.signup.workBackground.jobs.Radiologist'), icon: "📡" },
+      { label: t('auth.signup.workBackground.jobs.Surgeon'), icon: "🔪" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Nurse", icon: "👩‍⚕️", subspecialties: [
-      { label: "Registered Nurse", icon: "💉" },
-      { label: "Nurse Practitioner", icon: "📋" },
-      { label: "Licensed Practical Nurse", icon: "🏥" },
-      { label: "ICU Nurse", icon: "💓" },
-      { label: "ER Nurse", icon: "🚨" },
-      { label: "Pediatric Nurse", icon: "👶" },
-      { label: "Other", icon: "❓" }
+    { label: t('auth.signup.workBackground.jobs.Nurse'), icon: "👩‍⚕️", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.RegisteredNurse'), icon: "💉" },
+      { label: t('auth.signup.workBackground.jobs.NursePractitioner'), icon: "📋" },
+      { label: t('auth.signup.workBackground.jobs.LicensedPracticalNurse'), icon: "🏥" },
+      { label: t('auth.signup.workBackground.jobs.ICUNurse'), icon: "💓" },
+      { label: t('auth.signup.workBackground.jobs.ERNurse'), icon: "🚨" },
+      { label: t('auth.signup.workBackground.jobs.PediatricNurse'), icon: "👶" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Dentist", icon: "🦷", subspecialties: [
-      { label: "General Dentist", icon: "😁" },
-      { label: "Orthodontist", icon: "🦷" },
-      { label: "Oral Surgeon", icon: "🔧" },
-      { label: "Periodontist", icon: "🦠" },
-      { label: "Other", icon: "❓" }
+    { label: t('auth.signup.workBackground.jobs.Dentist'), icon: "🦷", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.GeneralDentist'), icon: "😁" },
+      { label: t('auth.signup.workBackground.jobs.Orthodontist'), icon: "🦷" },
+      { label: t('auth.signup.workBackground.jobs.OralSurgeon'), icon: "🔧" },
+      { label: t('auth.signup.workBackground.jobs.Periodontist'), icon: "🦠" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Pharmacist", icon: "💊", subspecialties: [] },
-    { label: "Physical Therapist", icon: "🦵", subspecialties: [] },
-    { label: "Psychologist", icon: "🧠", subspecialties: [] },
-    { label: "Paramedic", icon: "🚑", subspecialties: [] },
-    { label: "Other Healthcare Professional", icon: "❓", subspecialties: [] }
+    { label: t('auth.signup.workBackground.jobs.Pharmacist'), icon: "💊", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.PhysicalTherapist'), icon: "🦵", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Psychologist'), icon: "🧠", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Paramedic'), icon: "🚑", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherHealthcareProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Engineering & Technology": [
-    { label: "Software Engineer", icon: "💻", subspecialties: [
-      { label: "Frontend Developer", icon: "🖥️" },
-      { label: "Backend Developer", icon: "🔧" },
-      { label: "Full Stack Developer", icon: "🔄" },
-      { label: "Mobile Developer", icon: "📱" },
-      { label: "Game Developer", icon: "🎮" },
-      { label: "DevOps Engineer", icon: "☁️" },
-      { label: "Machine Learning Engineer", icon: "🤖" },
-      { label: "Other", icon: "❓" }
+  [t('auth.signup.workBackground.categories.engineeringTechnology')]: [
+    { label: t('auth.signup.workBackground.jobs.SoftwareEngineer'), icon: "💻", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.FrontendDeveloper'), icon: "🖥️" },
+      { label: t('auth.signup.workBackground.jobs.BackendDeveloper'), icon: "🔧" },
+      { label: t('auth.signup.workBackground.jobs.FullStackDeveloper'), icon: "🔄" },
+      { label: t('auth.signup.workBackground.jobs.MobileDeveloper'), icon: "📱" },
+      { label: t('auth.signup.workBackground.jobs.GameDeveloper'), icon: "🎮" },
+      { label: t('auth.signup.workBackground.jobs.DevOpsEngineer'), icon: "☁️" },
+      { label: t('auth.signup.workBackground.jobs.MachineLearningEngineer'), icon: "🤖" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Civil Engineer", icon: "🏗️", subspecialties: [
-      { label: "Structural Engineer", icon: "🏢" },
-      { label: "Transportation Engineer", icon: "🚗" },
-      { label: "Environmental Engineer", icon: "🌳" },
-      { label: "Geotechnical Engineer", icon: "🏔️" },
-      { label: "Other", icon: "❓" }
+    { label: t('auth.signup.workBackground.jobs.CivilEngineer'), icon: "🏗️", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.StructuralEngineer'), icon: "🏢" },
+      { label: t('auth.signup.workBackground.jobs.TransportationEngineer'), icon: "🚗" },
+      { label: t('auth.signup.workBackground.jobs.EnvironmentalEngineer'), icon: "🌳" },
+      { label: t('auth.signup.workBackground.jobs.GeotechnicalEngineer'), icon: "🏔️" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Mechanical Engineer", icon: "⚙️", subspecialties: [] },
-    { label: "Electrical Engineer", icon: "⚡", subspecialties: [] },
-    { label: "Chemical Engineer", icon: "🧪", subspecialties: [] },
-    { label: "Biomedical Engineer", icon: "🔬", subspecialties: [] },
-    { label: "Data Scientist", icon: "📊", subspecialties: [] },
-    { label: "IT Specialist", icon: "🖥️", subspecialties: [] },
-    { label: "Other Engineering/Tech Professional", icon: "❓", subspecialties: [] }
+    { label: t('auth.signup.workBackground.jobs.MechanicalEngineer'), icon: "⚙️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ElectricalEngineer'), icon: "⚡", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ChemicalEngineer'), icon: "🧪", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.BiomedicalEngineer'), icon: "🔬", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.DataScientist'), icon: "📊", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ITSpecialist'), icon: "🖥️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherEngineeringTechProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Business & Finance": [
-    { label: "Accountant", icon: "🧮", subspecialties: [] },
-    { label: "Financial Analyst", icon: "📈", subspecialties: [] },
-    { label: "Investment Banker", icon: "💰", subspecialties: [] },
-    { label: "Marketing Manager", icon: "📣", subspecialties: [] },
-    { label: "Human Resources", icon: "👥", subspecialties: [] },
-    { label: "Business Analyst", icon: "📋", subspecialties: [] },
-    { label: "Project Manager", icon: "📊", subspecialties: [] },
-    { label: "Salesperson", icon: "💼", subspecialties: [] },
-    { label: "Real Estate Agent", icon: "🏠", subspecialties: [] },
-    { label: "Entrepreneur", icon: "🚀", subspecialties: [] },
-    { label: "Other Business Professional", icon: "❓", subspecialties: [] }
+  [t('auth.signup.workBackground.categories.businessFinance')]: [
+    { label: t('auth.signup.workBackground.jobs.Accountant'), icon: "🧮", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.FinancialAnalyst'), icon: "📈", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.InvestmentBanker'), icon: "💰", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.MarketingManager'), icon: "📣", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.HumanResources'), icon: "👥", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.BusinessAnalyst'), icon: "📋", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ProjectManager'), icon: "📊", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Salesperson'), icon: "💼", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.RealEstateAgent'), icon: "🏠", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Entrepreneur'), icon: "🚀", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherBusinessProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Education": [
-    { label: "Teacher", icon: "👩‍🏫", subspecialties: [
-      { label: "Elementary Teacher", icon: "🧒" },
-      { label: "Middle School Teacher", icon: "📚" },
-      { label: "High School Teacher", icon: "🎓" },
-      { label: "Special Education Teacher", icon: "❤️" },
-      { label: "ESL Teacher", icon: "🌎" },
-      { label: "Other", icon: "❓" }
+  [t('auth.signup.workBackground.categories.education')]: [
+    { label: t('auth.signup.workBackground.jobs.Teacher'), icon: "👩‍🏫", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.ElementaryTeacher'), icon: "🧒" },
+      { label: t('auth.signup.workBackground.jobs.MiddleSchoolTeacher'), icon: "📚" },
+      { label: t('auth.signup.workBackground.jobs.HighSchoolTeacher'), icon: "🎓" },
+      { label: t('auth.signup.workBackground.jobs.SpecialEducationTeacher'), icon: "❤️" },
+      { label: t('auth.signup.workBackground.jobs.ESLTeacher'), icon: "🌎" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Professor", icon: "👨‍🏫", subspecialties: [] },
-    { label: "School Administrator", icon: "🏫", subspecialties: [] },
-    { label: "School Counselor", icon: "🧠", subspecialties: [] },
-    { label: "Librarian", icon: "📚", subspecialties: [] },
-    { label: "Other Education Professional", icon: "❓", subspecialties: [] }
+    { label: t('auth.signup.workBackground.jobs.Professor'), icon: "👨‍🏫", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.SchoolAdministrator'), icon: "🏫", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.SchoolCounselor'), icon: "🧠", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Librarian'), icon: "📚", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherEducationProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Legal": [
-    { label: "Lawyer", icon: "⚖️", subspecialties: [
-      { label: "Corporate Lawyer", icon: "🏢" },
-      { label: "Criminal Lawyer", icon: "🔒" },
-      { label: "Family Lawyer", icon: "👨‍👩‍👧‍👦" },
-      { label: "Intellectual Property Lawyer", icon: "©️" },
-      { label: "Other", icon: "❓" }
+  [t('auth.signup.workBackground.categories.legal')]: [
+    { label: t('auth.signup.workBackground.jobs.Lawyer'), icon: "⚖️", subspecialties: [
+      { label: t('auth.signup.workBackground.jobs.CorporateLawyer'), icon: "🏢" },
+      { label: t('auth.signup.workBackground.jobs.CriminalLawyer'), icon: "🔒" },
+      { label: t('auth.signup.workBackground.jobs.FamilyLawyer'), icon: "👨‍👩‍👧‍👦" },
+      { label: t('auth.signup.workBackground.jobs.IntellectualPropertyLawyer'), icon: "©️" },
+      { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓" }
     ]},
-    { label: "Judge", icon: "🧑‍⚖️", subspecialties: [] },
-    { label: "Paralegal", icon: "📑", subspecialties: [] },
-    { label: "Legal Secretary", icon: "⌨️", subspecialties: [] },
-    { label: "Other Legal Professional", icon: "❓", subspecialties: [] }
+    { label: t('auth.signup.workBackground.jobs.Judge'), icon: "🧑‍⚖️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Paralegal'), icon: "📑", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.LegalSecretary'), icon: "⌨️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherLegalProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Arts & Media": [
-    { label: "Artist", icon: "🎨", subspecialties: [] },
-    { label: "Musician", icon: "🎵", subspecialties: [] },
-    { label: "Actor", icon: "🎭", subspecialties: [] },
-    { label: "Writer", icon: "✍️", subspecialties: [] },
-    { label: "Journalist", icon: "📰", subspecialties: [] },
-    { label: "Photographer", icon: "📷", subspecialties: [] },
-    { label: "Graphic Designer", icon: "🖌️", subspecialties: [] },
-    { label: "UX/UI Designer", icon: "📱", subspecialties: [] },
-    { label: "Film/Video Producer", icon: "🎬", subspecialties: [] },
-    { label: "Other Creative Professional", icon: "❓", subspecialties: [] }
+  [t('auth.signup.workBackground.categories.artsMedia')]: [
+    { label: t('auth.signup.workBackground.jobs.Artist'), icon: "🎨", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Musician'), icon: "🎵", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Actor'), icon: "🎭", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Writer'), icon: "✍️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Journalist'), icon: "📰", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Photographer'), icon: "📷", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.GraphicDesigner'), icon: "🖌️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.UXUIDesigner'), icon: "📱", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.FilmVideoProducer'), icon: "🎬", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherCreativeProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Service Industry": [
-    { label: "Chef/Cook", icon: "👨‍🍳", subspecialties: [] },
-    { label: "Server/Waiter", icon: "🍽️", subspecialties: [] },
-    { label: "Bartender", icon: "🍸", subspecialties: [] },
-    { label: "Barista", icon: "☕", subspecialties: [] },
-    { label: "Hotel Staff", icon: "🏨", subspecialties: [] },
-    { label: "Flight Attendant", icon: "✈️", subspecialties: [] },
-    { label: "Tour Guide", icon: "🧳", subspecialties: [] },
-    { label: "Retail Worker", icon: "🛍️", subspecialties: [] },
-    { label: "Cashier", icon: "💰", subspecialties: [] },
-    { label: "Other Service Professional", icon: "❓", subspecialties: [] }
+  [t('auth.signup.workBackground.categories.serviceIndustry')]: [
+    { label: t('auth.signup.workBackground.jobs.ChefCook'), icon: "👨‍🍳", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ServerWaiter'), icon: "🍽️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Bartender'), icon: "🍸", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Barista'), icon: "☕", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.HotelStaff'), icon: "🏨", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.FlightAttendant'), icon: "✈️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.TourGuide'), icon: "🧳", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.RetailWorker'), icon: "🛍️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Cashier'), icon: "💰", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherServiceProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Trades & Manual Labor": [
-    { label: "Electrician", icon: "💡", subspecialties: [] },
-    { label: "Plumber", icon: "🚰", subspecialties: [] },
-    { label: "Carpenter", icon: "🪚", subspecialties: [] },
-    { label: "Construction Worker", icon: "🏗️", subspecialties: [] },
-    { label: "Mechanic", icon: "🔧", subspecialties: [] },
-    { label: "Welder", icon: "🔥", subspecialties: [] },
-    { label: "Driver", icon: "🚗", subspecialties: [] },
-    { label: "Farmer", icon: "🌾", subspecialties: [] },
-    { label: "Landscaper", icon: "🌳", subspecialties: [] },
-    { label: "Cleaner", icon: "🧹", subspecialties: [] },
-    { label: "Other Trade Professional", icon: "❓", subspecialties: [] }
+  [t('auth.signup.workBackground.categories.tradesManualLabor')]: [
+    { label: t('auth.signup.workBackground.jobs.Electrician'), icon: "💡", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Plumber'), icon: "🚰", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Carpenter'), icon: "🪚", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ConstructionWorker'), icon: "🏗️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Mechanic'), icon: "🔧", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Welder'), icon: "🔥", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Driver'), icon: "🚗", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Farmer'), icon: "🌾", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Landscaper'), icon: "🌳", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Cleaner'), icon: "🧹", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OtherTradeProfessional'), icon: "❓", subspecialties: [] }
   ],
-  "Other Professions": [
-    { label: "Military Personnel", icon: "🪖", subspecialties: [] },
-    { label: "Police Officer", icon: "👮", subspecialties: [] },
-    { label: "Firefighter", icon: "🧑‍🚒", subspecialties: [] },
-    { label: "Scientist", icon: "🔬", subspecialties: [] },
-    { label: "Social Worker", icon: "🤝", subspecialties: [] },
-    { label: "Office Administrator", icon: "🗂️", subspecialties: [] },
-    { label: "Government Employee", icon: "🏛️", subspecialties: [] },
-    { label: "Homemaker", icon: "🏡", subspecialties: [] },
-    { label: "Religious Worker", icon: "🙏", subspecialties: [] },
-    { label: "Volunteer", icon: "🙌", subspecialties: [] },
-    { label: "Retired", icon: "🏖️", subspecialties: [] },
-    { label: "Student", icon: "📚", subspecialties: [] },
-    { label: "Other", icon: "❓", subspecialties: [] }
+  [t('auth.signup.workBackground.categories.otherProfessions')]: [
+    { label: t('auth.signup.workBackground.jobs.MilitaryPersonnel'), icon: "🪖", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.PoliceOfficer'), icon: "👮", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Firefighter'), icon: "🧑‍🚒", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Scientist'), icon: "🔬", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.SocialWorker'), icon: "🤝", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.OfficeAdministrator'), icon: "🗂️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.GovernmentEmployee'), icon: "🏛️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Homemaker'), icon: "🏡", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.ReligiousWorker'), icon: "🙏", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Volunteer'), icon: "🙌", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Retired'), icon: "🏖️", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Student'), icon: "📚", subspecialties: [] },
+    { label: t('auth.signup.workBackground.jobs.Other'), icon: "❓", subspecialties: [] }
   ]
-};
+});
 
 // Flatten job categories for search functionality
 const createFlatJobList = () => {
   const flatList = [];
-  Object.entries(categorizedJobs).forEach(([category, jobs]) => {
+  Object.entries(categorizedJobs(t)).forEach(([category, jobs]) => {
     jobs.forEach(job => {
       flatList.push({
         ...job,
@@ -194,7 +181,29 @@ const createFlatJobList = () => {
   return flatList;
 };
 
-const WorkBackground = ({ onComplete, editMode = false, data }) => {
+// Add SelectionCard component
+const SelectionCard = ({ isSelected, onClick, children }) => (
+  <div
+    className={`relative overflow-hidden transition-all duration-300 ease-in-out cursor-pointer
+      border-2 rounded-xl p-4 bg-gradient-to-br from-white to-gray-50
+      hover:border-yellow-300 hover:shadow-lg hover:scale-105
+      ${isSelected 
+        ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-xl shadow-yellow-200/50 scale-105 -translate-y-0.5' 
+        : 'border-gray-200'
+      }`}
+    onClick={onClick}
+  >
+    {isSelected && (
+      <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
+        <Check size={16} />
+      </div>
+    )}
+    {children}
+  </div>
+);
+
+const WorkBackground = ({ onComplete }) => {
+  const { t } = useLanguage();
   const { workData, setWorkData } = useSignupStore();
   const [formData, setFormData] = useState(workData || {
     retirementStatus: '',
@@ -215,13 +224,38 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
   const [showingAllCategories, setShowingAllCategories] = useState(true);
-  const [flatJobList] = useState(createFlatJobList());
+  const flatJobList = React.useMemo(() => {
+    const flatList = [];
+    Object.entries(categorizedJobs(t)).forEach(([category, jobs]) => {
+      jobs.forEach(job => {
+        flatList.push({
+          ...job,
+          category
+        });
+      });
+    });
+    return flatList;
+  }, [t]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
 
+  // Academic degrees list with translations - moved inside component
+  const academicDegrees = [
+    { value: "high_school", label: t('auth.signup.workBackground.academicDegrees.highSchool'), icon: "🏫" },
+    { value: "associate", label: t('auth.signup.workBackground.academicDegrees.associateDegree'), icon: "🎓" },
+    { value: "bachelor", label: t('auth.signup.workBackground.academicDegrees.bachelorsDegree'), icon: "📚" },
+    { value: "master", label: t('auth.signup.workBackground.academicDegrees.mastersDegree'), icon: "📝" },
+    { value: "phd", label: t('auth.signup.workBackground.academicDegrees.phd'), icon: "🧪" },
+    { value: "postdoc", label: t('auth.signup.workBackground.academicDegrees.postDoc'), icon: "🔬" },
+    { value: "professional", label: t('auth.signup.workBackground.academicDegrees.professionalCert'), icon: "📜" },
+    { value: "vocational", label: t('auth.signup.workBackground.academicDegrees.vocationalTraining'), icon: "🛠️" },
+    { value: "none", label: t('auth.signup.workBackground.academicDegrees.noFormalEducation'), icon: "🚫" },
+    { value: "other", label: t('auth.signup.workBackground.academicDegrees.other'), icon: "❓" }
+  ];
+
   useEffect(() => {
     if (searchTerm) {
-      const filtered = Object.entries(categorizedJobs)
+      const filtered = Object.entries(categorizedJobs(t))
         .map(([category, jobs]) => {
           const filteredJobs = jobs.filter(job =>
             job.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -249,25 +283,6 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
     }
   }, [formData.jobTitle, flatJobList]);
 
-  // Prefill form in edit mode
-  useEffect(() => {
-    if (editMode && data && Object.keys(data).length > 0) {
-      setWorkData(data);
-    }
-    // eslint-disable-next-line
-  }, [editMode, data]);
-
-  // Helper to handle parent-driven continue in editMode
-  useEffect(() => {
-    if (!editMode) return;
-    window.__updateWorkDataAndContinue = () => {
-      setWorkData(formData);
-      // Do NOT call onComplete here to avoid recursion
-    };
-    return () => { delete window.__updateWorkDataAndContinue; };
-    // eslint-disable-next-line
-  }, [formData, editMode, onComplete]);
-  
   // Clear retirement dates when status changes
   const handleRetirementStatusChange = (status) => {
     setFormData({
@@ -277,7 +292,6 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
       expectedRetirementDate: ''
     });
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -358,6 +372,19 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
     });
   };
 
+  const handleArraySelection = (field, value) => {
+    setFormData(prev => {
+      const currentArray = prev[field] || [];
+      const updatedArray = currentArray.includes(value)
+        ? currentArray.filter(item => item !== value)
+        : [...currentArray, value];
+      return {
+        ...prev,
+        [field]: updatedArray
+      };
+    });
+  };
+
   const renderSubspecialties = () => {
     if (!selectedJob || !selectedJob.subspecialties || selectedJob.subspecialties.length === 0) {
       return null;
@@ -366,13 +393,13 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
     return (
       <div className="mt-4">
         <div className="flex justify-between items-center mb-2">
-          <h4 className="text-md font-medium text-gray-800">Sub-specialties for {selectedJob.label}</h4>
+          <h4 className="text-md font-medium text-gray-800">{t('auth.signup.workBackground.yourSelectedJob')}</h4>
           <button 
             type="button" 
             onClick={handleBackToJobs}
             className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
           >
-            <span className="mr-1">←</span> Change Job
+            <span className="mr-1">←</span> {t('auth.signup.workBackground.changeJob')}
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -402,7 +429,7 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
               onClick={handleBackToCategories}
               className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
             >
-              <span className="mr-1">←</span> All Categories
+              <span className="mr-1">←</span> {t('auth.signup.workBackground.allCategories')}
             </button>
           )}
         </div>
@@ -434,15 +461,15 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
     }
 
     if (activeCategory) {
-      return renderJobsByCategory(activeCategory, categorizedJobs[activeCategory]);
+      return renderJobsByCategory(activeCategory, categorizedJobs(t)[activeCategory]);
     }
 
     if (showingAllCategories) {
       return (
         <div className="space-y-4">
-          <h4 className="text-md font-medium text-gray-800">Job Categories</h4>
+          <h4 className="text-md font-medium text-gray-800">{t('auth.signup.workBackground.jobCategories')}</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {Object.keys(categorizedJobs).map((category) => (
+            {Object.keys(categorizedJobs(t)).map((category) => (
               <div
                 key={category}
                 onClick={() => handleCategoryClick(category)}
@@ -487,241 +514,147 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Work Background
+              {t('auth.signup.workBackground.title')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Tell us about your professional experience
+            {t('auth.signup.tellUsAboutYourProfessionalExperience')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-12">
           {/* Retirement Status */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-            <label className="block text-lg font-bold text-gray-800 mb-4">
-              Retirement Status
-            </label>
-            <div className="flex gap-4">
-              {['I didn\'t retire', 'Partially retired', 'Fully retired'].map((status) => (
-                <label key={status} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="retirementStatus"
-                    value={status}
-                    checked={formData.retirementStatus === status}
-                    onChange={(e) => handleRetirementStatusChange(e.target.value)}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">{status}</span>
-                </label>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center mb-6">
+              <Star className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.signup.retirementStatus')}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { value: 'not_retired', label: t('auth.signup.workBackground.retirementStatus.options.notRetired'), icon: '💼' },
+                { value: 'partially', label: t('auth.signup.workBackground.retirementStatus.options.partially'), icon: '🔄' },
+                { value: 'fully', label: t('auth.signup.workBackground.retirementStatus.options.full'), icon: '🏖️' }
+              ].map((status) => (
+                <SelectionCard
+                  key={status.value}
+                  isSelected={formData.retirementStatus === status.value}
+                  onClick={() => handleRetirementStatusChange(status.value)}
+                >
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">{status.icon}</div>
+                    <div className="font-semibold text-gray-800">{status.label}</div>
+                  </div>
+                </SelectionCard>
               ))}
             </div>
-
-            {/* Retirement Date Field */}
-            {(formData.retirementStatus === 'Partially retired' || formData.retirementStatus === 'Fully retired') && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  When did you retire?
-                </label>
-                <input
-                  type="date"
-                  value={formData.retirementDate}
-                  onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
-                  className="w-full border rounded-md p-2"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Expected Retirement Date Field */}
-            {formData.retirementStatus === 'I didn\'t retire' && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expected retirement date (optional)
-                </label>
-                <input
-                  type="date"
-                  value={formData.expectedRetirementDate}
-                  onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
-                  className="w-full border rounded-md p-2"
-                />
-              </div>
-            )}
           </div>
 
-          {/* Employment Status */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-            <label className="block text-lg font-bold text-gray-800 mb-4">
-              Are you working today?
-            </label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.currentlyWorking}
-                  onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
-                  className="mr-2"
-                />
-                <span className="text-sm">Yes</span>
-              </label>
+          {/* Current Employment */}
+          {formData.retirementStatus !== 'fully' && (
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+              <div className="flex items-center mb-6">
+                <Star className="text-yellow-500 mr-3" />
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {t('auth.signup.areYouWorkingToday')}
+                </h2>
+              </div>
+              
+              <div className="mb-6">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.currentlyWorking}
+                    onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
+                    className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-700">
+                    {t('auth.signup.workBackground.currentEmployment.yes')}
+                  </span>
+                </label>
+              </div>
+
               {formData.currentlyWorking && (
-                <input
-                  type="date"
-                  value={formData.dischargeDate}
-                  onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
-                  className="border rounded-md p-2 text-sm"
-                  placeholder="Expected discharge date"
-                />
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('auth.signup.expectedDischargeDate')}
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.dischargeDate}
+                    onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  />
+                </div>
               )}
             </div>
-          </div>
-
-          {/* Job Search and Selection */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-            <label className="block text-lg font-bold text-gray-800 mb-4">
-              {selectedJob ? 'Your Selected Job' : 'Select Your Job'}
-            </label>
-            {/* Display selected job in a highlighted box */}
-            {selectedJob && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between p-4 rounded-lg border bg-yellow-300">
-                  <div className="flex items-center">
-                    <span className="text-xl mr-2">{selectedJob.icon}</span>
-                    <div>
-                      <span className="font-medium">{formData.jobTitle}</span>
-                      {formData.subspecialty && (
-                        <p className="text-sm text-gray-700">
-                          Subspecialty: {formData.subspecialty === 'Other' ? formData.otherJob : formData.subspecialty}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleChangeJob}
-                    className="text-sm bg-white px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100"
-                  >
-                    Change Selection
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Only show search bar if no job is selected */}
-            {!selectedJob && (
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search for a job..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full border rounded-md p-2 pl-10"
-                />
-                <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            )}
-
-            <div className="mt-4">
-              {renderJobSelection()}
-            </div>
-          </div>
-
-          {/* Other Job Input */}
-          {((formData.jobTitle === 'Other') || (formData.subspecialty === 'Other')) && (
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-              <label className="block text-lg font-bold text-gray-800 mb-2">Please specify your job</label>
-              <input
-                type="text"
-                value={formData.otherJob || ''}
-                onChange={(e) => setFormData({ ...formData, otherJob: e.target.value })}
-                className="w-full border rounded-md p-2"
-                placeholder="Enter your job title"
-                required
-              />
-            </div>
           )}
+
+          {/* Job Selection */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <Star className="text-yellow-500 mr-3" />
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {selectedJob ? t('auth.signup.workBackground.yourSelectedJob') : t('auth.signup.workBackground.selectYourJob')}
+                </h2>
+              </div>
+              {selectedJob && (
+                <button
+                  type="button"
+                  onClick={handleChangeJob}
+                  className="text-yellow-600 hover:text-yellow-700 font-medium"
+                >
+                  {t('auth.signup.workBackground.changeSelection')}
+                </button>
+              )}
+            </div>
+
+            {renderJobSelection()}
+          </div>
 
           {/* Academic Degrees */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm">
-            <label className="block text-lg font-bold text-gray-800 mb-4">Academic Degrees</label>
-            <Select
-              isMulti
-              options={academicDegreeOptions}
-              value={academicDegreeOptions.filter(opt =>
-                formData.academicDegrees?.includes(opt.value)
-              )}
-              onChange={selected => {
-                const values = selected ? selected.map(opt => opt.value) : [];
-                setFormData({
-                  ...formData,
-                  academicDegrees: values,
-                  otherAcademicDegree: values.includes('other') ? formData.otherAcademicDegree : ''
-                });
-              }}
-              className="react-select-container"
-              classNamePrefix="react-select"
-              placeholder="Select your academic degrees..."
-              closeMenuOnSelect={false}
-              styles={{
-                control: (base, state) => ({
-                  ...base,
-                  borderColor: '#d1d5db',
-                  boxShadow: state.isFocused ? '0 0 0 1px #FFD966' : '',
-                  '&:hover': {
-                    borderColor: '#FFD966',
-                  },
-                  minHeight: 44,
-                  borderRadius: 12,
-                }),
-                multiValue: (base) => ({
-                  ...base,
-                  backgroundColor: '#fef3c7',
-                  borderRadius: 8,
-                  padding: '2px 6px',
-                }),
-              }}
-            />
-            {formData.academicDegrees?.includes('other') && (
-              <div className="mt-2">
-                <label className="block text-sm font-medium text-gray-700">Please specify your degree</label>
-                <input
-                  type="text"
-                  value={formData.otherAcademicDegree || ''}
-                  onChange={(e) => setFormData({ ...formData, otherAcademicDegree: e.target.value })}
-                  className="w-full border rounded-md p-2 mt-1"
-                  placeholder="Enter your academic degree"
-                  required
-                />
-              </div>
-            )}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center mb-6">
+              <Star className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.signup.workBackground.academicDegrees.label')}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {academicDegrees.map((degree) => (
+                <SelectionCard
+                  key={degree.value}
+                  isSelected={formData.academicDegrees.includes(degree.value)}
+                  onClick={() => handleArraySelection('academicDegrees', degree.value)}
+                >
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">{degree.icon}</div>
+                    <div className="font-semibold text-gray-800 text-sm">{degree.label}</div>
+                  </div>
+                </SelectionCard>
+              ))}
+            </div>
           </div>
 
-          {/* Submit Button - only show if not in editMode */}
-          {!editMode && (
-            <div className="text-center pt-8">
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-              >
-                <Star className="w-6 h-6" />
-                <span>Continue</span>
-                <Star className="w-6 h-6" />
-              </button>
-            </div>
-          )}
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+            >
+              <Star className="w-6 h-6" />
+              <span>{t('common.continue')}</span>
+              <Star className="w-6 h-6" />
+            </button>
+          </div>
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -736,5 +669,6 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
     </div>
   );
 };
+
 
 export default WorkBackground;
