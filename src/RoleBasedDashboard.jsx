@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { auth, db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { getUserData } from './firebase';
 
 import Dashboard from './components/RetireeProfile/RetireeDashboard';
 import Shared from './components/SharedDashboard/SharedDashboard';
@@ -12,18 +10,36 @@ import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashbo
 import Login from './components/Login';
 
 const RoleBasedDashboard = () => {
-  const { currentUser, loading } = useAuth(); // from AuthContext
-  const { role, setRole } = useSignupStore(); // from Zustand store
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (currentUser && !role) {
-      getUserData(currentUser.uid).then(userData => {
-        if (userData?.role) setRole(userData.role);
-      });
-    }
-  }, [currentUser, role, setRole]);
+    const fetchUserRole = async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        navigate('/login');
+        return;
+      }
 
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          setRole(userDoc.data().role);
+        } else {
+          console.error('User doc not found');
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Failed to fetch user role:', error);
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserRole();
+  }, [navigate]);
 
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 
@@ -37,7 +53,7 @@ const RoleBasedDashboard = () => {
     case undefined:
       return <Login />;
     default:
-      return <div className="p-4">Unauthorized or unknown role.</div>;
+      return <div className="p-4">Unauthorized or unknown user.</div>;
   }
 };
 
