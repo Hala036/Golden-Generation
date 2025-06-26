@@ -3,6 +3,7 @@ import { getDocs, getDoc, collection, doc, updateDoc } from "firebase/firestore"
 import { db, auth } from "../../firebase"; // Firebase configuration
 import { toast } from "react-hot-toast";
 import { Check, Calendar, Clock, MapPin, Star } from "lucide-react";
+import { updateJobRequest } from "../../jobRequestsService"; // Import Firestore update function
 
 const Volunteer = () => {
   const [requests, setRequests] = useState([]);
