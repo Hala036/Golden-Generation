@@ -45,6 +45,8 @@ const SignUp = () => {
     if (step === 5) {
       setCreating(true); // Start loading
       try {
+        // Debug log for idVerificationData
+        console.log('idVerificationData before user creation:', idVerificationData);
         // 1. Create user in Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(
           auth,
@@ -54,7 +56,10 @@ const SignUp = () => {
 
         // 2. Prepare user data
         const userData = {
-          idVerification: idVerificationData,
+          idVerification: {
+            ...idVerificationData,
+            settlement: idVerificationData.settlement // ensure settlement is nested
+          },
           credentials: {
             email: credentialsData.email,
             username: credentialsData.username
