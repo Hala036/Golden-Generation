@@ -123,10 +123,7 @@ const useSignupStore = create(
           lifestyleData: { ...state.lifestyleData, ...data },
         })),
 
-      setVeteransData: (data) =>
-        set((state) => ({
-          veteransData: { ...state.veteransData, ...data },
-        })),
+      setVeteransData: (data) => set({ veteransData: data }),
 
       // Reset store
       resetStore: () =>

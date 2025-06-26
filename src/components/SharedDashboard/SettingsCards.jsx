@@ -375,7 +375,7 @@ const SettingsCards = () => {
       label: "Edit Profile",
       description: "Update your name, username, phone, and email",
       icon: <FiUser className="text-2xl" />,
-      onClick: handleOpenEditProfile,
+      onClick: () => navigate("/edit-signup-data"),
     },
     {
       label: "Change Password",
@@ -418,6 +418,12 @@ const SettingsCards = () => {
       description: "Permanently delete your account",
       icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
       onClick: () => setShowDeleteAccount(true),
+    },
+    {
+      label: "Edit User Information",
+      description: "Edit all information entered during sign-up",
+      icon: <FiSettings className="text-2xl" />,
+      onClick: handleOpenEditProfile,
     },
   ];
 

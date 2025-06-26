@@ -25,7 +25,7 @@ const categorizedJobs = {
       { label: "Dermatologist", icon: "🧬" },
       { label: "Emergency Physician", icon: "🚑" },
       { label: "Family Physician", icon: "👨‍👩‍👧‍👦" },
-      { label: "Gastroenterologist", icon: "�胃" },
+      { label: "Gastroenterologist", icon: "🔥" },
       { label: "Neurologist", icon: "🧠" },
       { label: "Obstetrician", icon: "🤰" },
       { label: "Oncologist", icon: "🦠" },
@@ -194,10 +194,12 @@ const createFlatJobList = () => {
   return flatList;
 };
 
-const WorkBackground = ({ onComplete }) => {
+const WorkBackground = ({ onComplete, editMode = false, data }) => {
   const { workData, setWorkData } = useSignupStore();
   const [formData, setFormData] = useState(workData || {
     retirementStatus: '',
+    retirementDate: '',
+    expectedRetirementDate: '',
     employmentDate: '',
     employmentType: '',
     category: '',
@@ -246,6 +248,36 @@ const WorkBackground = ({ onComplete }) => {
       }
     }
   }, [formData.jobTitle, flatJobList]);
+
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      setWorkData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
+
+  // Helper to handle parent-driven continue in editMode
+  useEffect(() => {
+    if (!editMode) return;
+    window.__updateWorkDataAndContinue = () => {
+      setWorkData(formData);
+      // Do NOT call onComplete here to avoid recursion
+    };
+    return () => { delete window.__updateWorkDataAndContinue; };
+    // eslint-disable-next-line
+  }, [formData, editMode, onComplete]);
+  
+  // Clear retirement dates when status changes
+  const handleRetirementStatusChange = (status) => {
+    setFormData({
+      ...formData,
+      retirementStatus: status,
+      retirementDate: '',
+      expectedRetirementDate: ''
+    });
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -477,13 +509,44 @@ const WorkBackground = ({ onComplete }) => {
                     name="retirementStatus"
                     value={status}
                     checked={formData.retirementStatus === status}
-                    onChange={(e) => setFormData({ ...formData, retirementStatus: e.target.value })}
+                    onChange={(e) => handleRetirementStatusChange(e.target.value)}
                     className="mr-2"
                   />
                   <span className="text-sm">{status}</span>
                 </label>
               ))}
             </div>
+
+            {/* Retirement Date Field */}
+            {(formData.retirementStatus === 'Partially retired' || formData.retirementStatus === 'Fully retired') && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  When did you retire?
+                </label>
+                <input
+                  type="date"
+                  value={formData.retirementDate}
+                  onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                  className="w-full border rounded-md p-2"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Expected Retirement Date Field */}
+            {formData.retirementStatus === 'I didn\'t retire' && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expected retirement date (optional)
+                </label>
+                <input
+                  type="date"
+                  value={formData.expectedRetirementDate}
+                  onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
+                  className="w-full border rounded-md p-2"
+                />
+              </div>
+            )}
           </div>
 
           {/* Employment Status */}
@@ -642,17 +705,19 @@ const WorkBackground = ({ onComplete }) => {
             )}
           </div>
 
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              <Star className="w-6 h-6" />
-              <span>Continue</span>
-              <Star className="w-6 h-6" />
-            </button>
-          </div>
+          {/* Submit Button - only show if not in editMode */}
+          {!editMode && (
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                <Star className="w-6 h-6" />
+                <span>Continue</span>
+                <Star className="w-6 h-6" />
+              </button>
+            </div>
+          )}
         </form>
       </div>
 

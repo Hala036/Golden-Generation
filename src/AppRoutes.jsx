@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
 import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard';
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
+import EditSignUpData from "./components/SignUp/EditSignUpData";
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -76,6 +77,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/edit-signup-data" element={<EditSignUpData />} />
 
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
