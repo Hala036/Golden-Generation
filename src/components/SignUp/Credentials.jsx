@@ -6,6 +6,7 @@ import { debounce } from 'lodash';
 import { toast } from 'react-hot-toast';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { Star, Users } from 'lucide-react';
+import { validateEmail, validateUsername, validatePassword, validateConfirmPassword } from '../../utils/validation';
 
 const Credentials = ({ onComplete }) => {
   const [errors, setErrors] = useState({});
@@ -70,33 +71,17 @@ const Credentials = ({ onComplete }) => {
     const newErrors = {};
     const { email, password, confirmPassword, username } = credentialsData;
 
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      newErrors.email = 'Invalid email format';
-    }
+    const emailError = validateEmail(email);
+    if (emailError) newErrors.email = emailError;
 
-    if (!username) {
-      newErrors.username = 'Username is required';
-    } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
-    }
+    const usernameError = validateUsername(username);
+    if (usernameError) newErrors.username = usernameError;
 
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
-    }
+    const passwordError = validatePassword(password);
+    if (passwordError) newErrors.password = passwordError;
 
-    if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (confirmPassword !== password) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
+    const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
+    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
