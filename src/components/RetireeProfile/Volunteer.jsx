@@ -15,6 +15,7 @@ const Volunteer = () => {
     volunteerDays: [],
     isVolunteer: false,
   });
+  const [activeTab, setActiveTab] = useState("requests"); // State for active tab
 
   const volunteerAreaOptions = [
     { id: "publicity", label: "Publicity", icon: "📢" },
@@ -228,56 +229,81 @@ const Volunteer = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
-      <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-xl font-bold mb-4">Volunteering Requests</h2>
-          {requests && requests.length > 0 ? (
-            <ul className="space-y-4">
-              {requests.map((request) => (
-                <li key={request.id} className="border border-gray-300 rounded-lg p-4 shadow-sm">
-                  <h3 className="text-lg font-semibold">{request.title}</h3>
-                  <p className="text-sm text-gray-600">{request.description}</p>
-                  <p className="text-sm text-gray-500">
-                    <strong>Timing:</strong> {request.volunteerHours || "Not specified"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    <strong>Location:</strong> {request.location || "Not specified"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    <strong>Frequency:</strong> {request.volunteerFrequency || "Not specified"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    <strong>Professional Background Requirements:</strong>{" "}
-                    {request.professionalBackground || "Not specified"}
-                  </p>
-                  <div className="flex space-x-4 mt-4">
-                    <button
-                      onClick={() => handleAcceptInvite(request.id)}
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={() => handleRejectInvite(request.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500">No volunteering requests available.</p>
-          )}
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Volunteering Information
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Manage your volunteering preferences and explore opportunities.
-          </p>
-        </div>
+      {/* Tabs */}
+      <div className="flex justify-center gap-2">
+        <button
+          className={`px-6 py-3 w-full ml-7 font-bold rounded-t-lg ${
+            activeTab === "requests"
+              ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+              : "bg-gray-200 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("requests")}
+        >
+          Volunteering Requests
+        </button>
+        <button
+          className={`px-6 py-3 w-full mr-7 font-bold rounded-t-lg ${
+            activeTab === "info"
+              ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+              : "bg-gray-200 text-gray-600"
+          }`}
+          onClick={() => setActiveTab("info")}
+        >
+          Volunteering Information
+        </button>
+      </div>
 
+      {/* Tab Content */}
+      {activeTab === "requests" && (
+        <div className="bg-white rounded-b-2xl ml-6 mr-6 mb-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
+              Volunteering Requests
+            </h2>
+            {requests && requests.length > 0 ? (
+              <ul className="space-y-4">
+                {requests.map((request) => (
+                  <li key={request.id} className="border border-gray-300 rounded-lg p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold">{request.title}</h3>
+                    <p className="text-sm text-gray-600">{request.description}</p>
+                    <p className="text-sm text-gray-500">
+                      <strong>Timing:</strong> {request.volunteerHours || "Not specified"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <strong>Location:</strong> {request.location || "Not specified"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <strong>Frequency:</strong> {request.volunteerFrequency || "Not specified"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <strong>Professional Background Requirements:</strong>{" "}
+                      {request.professionalBackground || "Not specified"}
+                    </p>
+                    <div className="flex space-x-4 mt-4 justify-center">
+                      <button
+                        onClick={() => handleAcceptInvite(request.id)}
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleRejectInvite(request.id)}
+                        className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No volunteering requests available.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "info" && (
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -285,8 +311,14 @@ const Volunteer = () => {
           }}
           className="space-y-12"
         >
-          {/* Current Volunteering */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+          <div className="bg-white rounded-b-2xl ml-6 mr-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
+              Volunteering Information
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Manage your volunteering preferences and explore opportunities.
+            </p>
+            {/* Current Volunteering */}
             <div className="flex items-center mb-6">
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
@@ -312,30 +344,23 @@ const Volunteer = () => {
             </label>
 
             {volunteerInfo.isVolunteer && (
-              <div className="mt-8 space-y-8" style={{ animation: 'fadeIn 0.6s ease-in-out' }}>
-                {/* Volunteer Areas */}
+              <div className="mt-8 space-y-8">
                 {/* Volunteer Areas */}
                 <div>
                   <h4 className="text-xl font-bold text-gray-800 mb-4">Volunteer Areas</h4>
                   <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-                    {volunteerAreaOptions.map((area) => {
-                      // Log each volunteer area option and its filters
-                      // console.log("Volunteer Area Option:", area);
-                      // console.log("Is Selected:", volunteerInfo.volunteerAreas?.includes(area.id));
-                      // console.log("Volunteer Areas Array:", volunteerInfo.volunteerAreas);
-                      return (
-                        <SelectionCard
-                          key={area.id}
-                          isSelected={volunteerInfo.volunteerAreas?.includes(area.id)}
-                          onClick={() => handleArraySelection("volunteerAreas", area.id)}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <span className="text-2xl">{area.icon}</span>
-                            <span className="font-semibold text-gray-800">{area.label}</span>
-                          </div>
-                        </SelectionCard>
-                      );
-                    })}
+                    {volunteerAreaOptions.map((area) => (
+                      <SelectionCard
+                        key={area.id}
+                        isSelected={volunteerInfo.volunteerAreas?.includes(area.id)}
+                        onClick={() => handleArraySelection("volunteerAreas", area.id)}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{area.icon}</span>
+                          <span className="font-semibold text-gray-800">{area.label}</span>
+                        </div>
+                      </SelectionCard>
+                    ))}
                   </div>
                 </div>
 
@@ -408,23 +433,22 @@ const Volunteer = () => {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              <span className="flex items-center justify-center space-x-2">
-                <Star className="w-6 h-6" />
-                <span>Save Changes</span>
-                <Star className="w-6 h-6" />
-              </span>
-            </button>
+            {/* Submit Button */}
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span className="flex items-center justify-center space-x-2">
+                  <Star className="w-6 h-6" />
+                  <span>Save Changes</span>
+                  <Star className="w-6 h-6" />
+                </span>
+              </button>
+            </div>
           </div>
         </form>
-      </div>
+      )}
     </div>
   );
 };
