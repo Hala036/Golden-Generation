@@ -528,7 +528,47 @@
           "nationalId": "National ID",
           "driverLicense": "Driver's License"
         }
-
+      }
+    },
+    "dashboard": {
+      "welcome": "Welcome",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout",
+      "homePage": "Home Page",
+      "retirees": "Retirees",
+      "volunteerRequests": "Volunteer Requests",
+      "serviceRequests": "Service Requests",
+      "service": "Request Services",
+      "analytics": "Analytics",
+      "contactUs": "Customer Support",
+      "pendingEvents": "Pending Events",
+      "categoryManagement": "Category Management",
+      "volunteer": "Volunteering",
+      "arrowClose": "←",
+      "arrowOpen": "→",
+      "events":{
+        "upcomingEvents": "Upcoming Events",
+        "addEvent": "Add Event",
+        "events": "Events",
+        "noEvents": "No events found",
+        "createEvent": "Create Event",
+        "editEvent": "Edit Event",
+        "deleteEvent": "Delete Event",
+        "eventDetails": "Event Details",
+        "eventTitle": "Event Title",
+        "eventDate": "Event Date",
+        "eventTime": "Event Time",
+        "eventLocation": "Event Location",
+        "eventDescription": "Event Description",
+        "eventParticipants": "Event Participants",
+        "eventStatus": "Event Status",
+        "backToEvents": "Back to Events",
+        "join": "Join Event",
+        "leave": "Leave Event",
+        "moreDetails": "More Info",
+        "participants": "Participants",
+        "noParticipants": "No participants yet"
       },
       "expiryDate": {
         "label": "ID Expiry Date"
