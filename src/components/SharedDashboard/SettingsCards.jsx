@@ -374,7 +374,7 @@ const SettingsCards = () => {
       label: "Edit Profile",
       description: "Update your name, username, phone, and email",
       icon: <FiUser className="text-2xl" />,
-      onClick: handleOpenEditProfile,
+      onClick: () => navigate("/edit-signup-data"),
     },
     {
       label: "Change Password",
@@ -419,10 +419,10 @@ const SettingsCards = () => {
       onClick: () => setShowDeleteAccount(true),
     },
     {
-      label: "Edit Sign-Up Data",
+      label: "Edit User Information",
       description: "Edit all information entered during sign-up",
       icon: <FiSettings className="text-2xl" />,
-      onClick: () => navigate("/edit-signup-data"),
+      onClick: handleOpenEditProfile,
     },
   ];
 
