@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { FaHeadset, FaCalendarAlt, FaCog, FaPlusCircle, FaComments, FaCalendarCheck, FaHome } from "react-icons/fa";
+import { FaHeadset, FaCalendarAlt, FaCog, FaHandsHelping, FaCalendarCheck } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
-import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
+import Volunteer from "./Volunteer";
+import Services from "./Services";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Settings from "../SharedDashboard/SettingsCards";
 import RetireeCalendar from "../Calendar/RetireeCalendar";
 import Messages from "../SharedDashboard/Messages";
 import Notifications from "../SharedDashboard/Notifications";
 import CustomerSupport from "./Support";
-import Volunteer from "./Volunteer";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ const RetireeDashboard = () => {
   const customIcons = [
     { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaCalendarAlt /> }, // Add Volunteer icon
-    // { id: "consultation", label: t('dashboard.consultation'), icon: <FaBriefcase /> },
+    { id: "service", label: t('dashboard.service'), icon: <FaHandsHelping /> },
     { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
   ];
 
@@ -41,6 +41,7 @@ const RetireeDashboard = () => {
     notifications: <Notifications />,
     support: <CustomerSupport />,
     volunteer: <Volunteer />,
+    service: <Services />, // Assuming service requests are handled in Messages
   };
 
   return (

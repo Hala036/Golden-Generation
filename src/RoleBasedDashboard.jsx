@@ -1,5 +1,6 @@
-import useSignupStore from './store/signupStore';
-import { useAuth } from './context/AuthContext'; // Use context for user session
+import { useEffect, useState } from 'react';
+import { auth, db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { getUserData } from './firebase';
@@ -23,14 +24,9 @@ const RoleBasedDashboard = () => {
     }
   }, [currentUser, role, setRole]);
 
+
   if (loading) return <div className="p-4">Loading dashboard...</div>;
 
-  // Redirect to login if no user
-  if (!currentUser) {
-    navigate('/login');
-    return null;
-  }
-  
   switch (role) {
     case 'superadmin':
       return <SuperAdminDashboard />;
@@ -38,10 +34,10 @@ const RoleBasedDashboard = () => {
       return <AdminDashboard />;
     case 'retiree':
       return <Dashboard />;
+    case undefined:
+      return <Login />;
     default:
-      // If role is not set, it might be a new login.
-      // We could wait or redirect. For now, showing unauthorized.
-      return <div className="p-4">Unauthorized or role not found.</div>;
+      return <div className="p-4">Unauthorized or unknown role.</div>;
   }
 };
 

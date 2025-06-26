@@ -198,6 +198,8 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
   const { workData, setWorkData } = useSignupStore();
   const [formData, setFormData] = useState(workData || {
     retirementStatus: '',
+    retirementDate: '',
+    expectedRetirementDate: '',
     employmentDate: '',
     employmentType: '',
     category: '',
@@ -265,6 +267,17 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
     return () => { delete window.__updateWorkDataAndContinue; };
     // eslint-disable-next-line
   }, [formData, editMode, onComplete]);
+  
+  // Clear retirement dates when status changes
+  const handleRetirementStatusChange = (status) => {
+    setFormData({
+      ...formData,
+      retirementStatus: status,
+      retirementDate: '',
+      expectedRetirementDate: ''
+    });
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -496,13 +509,44 @@ const WorkBackground = ({ onComplete, editMode = false, data }) => {
                     name="retirementStatus"
                     value={status}
                     checked={formData.retirementStatus === status}
-                    onChange={(e) => setFormData({ ...formData, retirementStatus: e.target.value })}
+                    onChange={(e) => handleRetirementStatusChange(e.target.value)}
                     className="mr-2"
                   />
                   <span className="text-sm">{status}</span>
                 </label>
               ))}
             </div>
+
+            {/* Retirement Date Field */}
+            {(formData.retirementStatus === 'Partially retired' || formData.retirementStatus === 'Fully retired') && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  When did you retire?
+                </label>
+                <input
+                  type="date"
+                  value={formData.retirementDate}
+                  onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                  className="w-full border rounded-md p-2"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Expected Retirement Date Field */}
+            {formData.retirementStatus === 'I didn\'t retire' && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expected retirement date (optional)
+                </label>
+                <input
+                  type="date"
+                  value={formData.expectedRetirementDate}
+                  onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
+                  className="w-full border rounded-md p-2"
+                />
+              </div>
+            )}
           </div>
 
           {/* Employment Status */}
