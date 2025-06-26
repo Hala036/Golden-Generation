@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+
 import { auth, db } from '../../firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import useSignupStore from '../../store/signupStore';
@@ -7,12 +8,23 @@ import { debounce } from 'lodash';
 import { toast } from 'react-hot-toast';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { Star, Users } from 'lucide-react';
+import PasswordInput from '../PasswordInput';
+
 
 const Credentials = ({ onComplete }) => {
   const { t } = useLanguage();
+
   const [errors, setErrors] = useState({});
   const [isChecking, setIsChecking] = useState(false);
   const { credentialsData, updateCredentialsData } = useSignupStore();
+
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      updateCredentialsData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
 
   // Debounced email check
   const checkEmailAvailability = debounce(async (email) => {
@@ -260,8 +272,7 @@ const Credentials = ({ onComplete }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {t('auth.credentials.password.label')}
                 </label>
-                <input
-                  type="password"
+                <PasswordInput
                   name="password"
                   value={credentialsData.password || ''}
                   onChange={handleChange}
@@ -274,6 +285,7 @@ const Credentials = ({ onComplete }) => {
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
                 )}
+
               </div>
 
               {/* Confirm Password Field */}
@@ -281,8 +293,7 @@ const Credentials = ({ onComplete }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {t('auth.credentials.confirmPassword.label')}
                 </label>
-                <input
-                  type="password"
+                <PasswordInput
                   name="confirmPassword"
                   value={credentialsData.confirmPassword || ''}
                   onChange={handleChange}
@@ -295,6 +306,7 @@ const Credentials = ({ onComplete }) => {
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
                 )}
+
               </div>
             </div>
           </div>
@@ -320,6 +332,7 @@ const Credentials = ({ onComplete }) => {
               )}
             </button>
           </div>
+
         </form>
       </div>
 

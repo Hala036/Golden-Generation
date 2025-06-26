@@ -5,6 +5,7 @@ import { Users, Star, Check } from 'lucide-react';
 
 const Lifestyle = ({ onComplete }) => {
   const { t } = useLanguage();
+
   const { lifestyleData, setLifestyleData } = useSignupStore();
   const [formData, setFormData] = useState(
     lifestyleData || {
@@ -139,6 +140,25 @@ const Lifestyle = ({ onComplete }) => {
     </div>
   );
 
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      setLifestyleData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
+
+  // Helper to handle parent-driven continue in editMode
+  useEffect(() => {
+    if (!editMode) return;
+    window.__updateLifestyleDataAndContinue = () => {
+      setLifestyleData(formData);
+      // Do NOT call onComplete here to avoid recursion
+    };
+    return () => { delete window.__updateLifestyleDataAndContinue; };
+    // eslint-disable-next-line
+  }, [formData, editMode, onComplete]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
       <FloatingElements />
@@ -227,6 +247,7 @@ const Lifestyle = ({ onComplete }) => {
               <Star className="w-6 h-6" />
             </button>
           </div>
+
         </form>
       </div>
 

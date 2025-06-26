@@ -67,6 +67,7 @@
           "married": "Married",
           "divorced": "Divorced",
           "widowed": "Widowed"
+
         }
       },
         "addressInformation": {
@@ -527,6 +528,7 @@
           "nationalId": "National ID",
           "driverLicense": "Driver's License"
         }
+
       },
       "expiryDate": {
         "label": "ID Expiry Date"

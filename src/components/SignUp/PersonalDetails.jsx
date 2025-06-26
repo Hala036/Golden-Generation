@@ -860,6 +860,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               >
                 <Star className="w-6 h-6" />
                 <span>{t('common.continue')}</span>
+
                 <Star className="w-6 h-6" />
               </button>
             </div>

@@ -5,6 +5,7 @@ import useSignupStore from '../../store/signupStore';
 
 const VeteransCommunity = ({ onComplete }) => {
   const { t } = useLanguage();
+
   const { veteransData, setVeteransData } = useSignupStore();
 
   const [formData, setFormData] = useState(veteransData || {
@@ -25,6 +26,10 @@ const VeteransCommunity = ({ onComplete }) => {
     settlement: '',
     professionalBackground: ''
   });
+
+  // Add a ref to always hold the latest formData
+  const formDataRef = useRef(formData);
+  useEffect(() => { formDataRef.current = formData; }, [formData]);
 
   const activityOptions = [
     { id: 'cooking', label: t('auth.veteransCommunity.cooking'), icon: '🍳' },
@@ -111,6 +116,14 @@ const VeteransCommunity = ({ onComplete }) => {
     });
   };
 
+  // Utility to remove forbidden nested keys
+  function stripNestedFields(obj) {
+    const forbidden = ['lifestyle', 'workBackground', 'personalDetails'];
+    const clean = { ...obj };
+    forbidden.forEach(key => { if (key in clean) delete clean[key]; });
+    return clean;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -130,26 +143,7 @@ const VeteransCommunity = ({ onComplete }) => {
       finalData.notParticipatingReason = reasonOptions[0];
     }
 
-    // Map to nested structure for matching algorithm compatibility
-    const mappedData = {
-      ...finalData,
-      lifestyle: {
-        interests: [
-          ...(finalData.volunteerAreas || []),
-          ...(finalData.additionalVolunteerFields || [])
-        ]
-      },
-      workBackground: {
-        category: finalData.professionalBackground || ""
-      },
-      personalDetails: {
-        settlement: finalData.settlement || ""
-      },
-      volunteerDays: finalData.volunteerDays,
-      additionalVolunteerDays: finalData.additionalVolunteerDays,
-    };
-
-    setVeteransData(mappedData);
+    setVeteransData(stripNestedFields(finalData));
     onComplete();
   };
 
@@ -181,6 +175,25 @@ const VeteransCommunity = ({ onComplete }) => {
       <div className="absolute w-20 h-20 bottom-1/3 right-10 rounded-full bg-gradient-to-r from-yellow-200/30 to-blue-200/30 animate-pulse" style={{ animationDelay: '6s' }} />
     </div>
   );
+
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      setFormData(stripNestedFields(data));
+    }
+  }, [editMode, data]);
+
+  // Helper to handle parent-driven continue in editMode
+  useEffect(() => {
+    if (!editMode) return;
+    window.__updateVeteransDataAndContinue = () => {
+      const cleaned = stripNestedFields(formDataRef.current);
+      setVeteransData(cleaned);
+      return cleaned; // Return the latest data
+    };
+    return () => { delete window.__updateVeteransDataAndContinue; };
+    // eslint-disable-next-line
+  }, [editMode, setVeteransData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
@@ -525,6 +538,7 @@ const VeteransCommunity = ({ onComplete }) => {
               <Star className="w-6 h-6" />
             </button>
           </div>
+
         </form>
       </div>
 
