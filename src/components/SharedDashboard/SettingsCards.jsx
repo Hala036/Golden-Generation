@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
+import PasswordInput from '../PasswordInput';
 
 const mockAnnouncements = [
   { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
@@ -470,17 +471,17 @@ const SettingsCards = () => {
           )}
           {showReauth && (
             <form onSubmit={handleReauthAndSave} className="space-y-4">
-              <input 
-                type="password" 
+              <PasswordInput
+                value={reauthPassword}
+                onChange={e => setReauthPassword(e.target.value)}
                 className={`w-full p-2 border rounded ${
                   theme === 'dark' 
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white border-gray-300'
                 }`}
-                placeholder="Re-authenticate with current password" 
-                value={reauthPassword} 
-                onChange={e => setReauthPassword(e.target.value)} 
-                required 
+                placeholder="Re-authenticate with current password"
+                autoComplete="current-password"
+                required
               />
               <div className="flex justify-end gap-2">
                 <button 
@@ -579,41 +580,42 @@ const SettingsCards = () => {
       {showChangePassword && (
         <Modal onClose={() => setShowChangePassword(false)} title="Change Password">
           <form onSubmit={handlePasswordSave} className="space-y-4">
-            <input 
-              type="password" 
+            <PasswordInput
+              value={passwordData.currentPassword}
+              onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
               className={`w-full p-2 border rounded ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Current Password" 
-              value={passwordData.currentPassword} 
-              onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} 
-              required 
+              placeholder="Current Password"
+              autoComplete="current-password"
+              required
             />
-            <input 
-              type="password" 
+            <PasswordInput
+              value={passwordData.newPassword}
+              onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
               className={`w-full p-2 border rounded ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="New Password" 
-              value={passwordData.newPassword} 
-              onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} 
-              required 
+              placeholder="New Password"
+              autoComplete="new-password"
+              showStrengthIndicator={true}
+              required
             />
-            <input 
-              type="password" 
+            <PasswordInput
+              value={passwordData.confirmPassword}
+              onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
               className={`w-full p-2 border rounded ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Confirm New Password" 
-              value={passwordData.confirmPassword} 
-              onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} 
-              required 
+              placeholder="Confirm New Password"
+              autoComplete="new-password"
+              required
             />
             <div className="flex justify-end gap-2">
               <button 
@@ -902,12 +904,12 @@ const SettingsCards = () => {
               onChange={e => setDeleteConfirm(e.target.value)}
               required
             />
-            <input 
-              type="password" 
+            <PasswordInput
+              value={deletePassword}
+              onChange={e => setDeletePassword(e.target.value)}
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your password" 
-              value={deletePassword} 
-              onChange={e => setDeletePassword(e.target.value)} 
+              placeholder="Enter your password"
+              autoComplete="current-password"
             />
             <div className="flex justify-end gap-2">
               <button 

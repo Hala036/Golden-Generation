@@ -6,6 +6,7 @@ import { toast, Toaster } from "react-hot-toast";
 import coupleimage from "../assets/couple.png";
 import useSignupStore from '../store/signupStore';
 import { useTranslation } from 'react-i18next';
+import PasswordInput from './PasswordInput';
 import Modal from './Modal';
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../firebase";
@@ -152,14 +153,13 @@ const LoginPage = () => {
                 />
               </div>
               <div>
-                <input
-                  type="password"
+                <PasswordInput
                   name="password"
-                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder={t('auth.login.password')}
+                  placeholder={t("auth.login.password")}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#FFD966] focus:border-transparent transition duration-200"
+                  autoComplete="current-password"
                   required
                 />
               </div>
@@ -230,3 +230,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
