@@ -3,6 +3,7 @@ import useSignupStore from '../../store/signupStore';
 import languageList from '../../data/languages.json';
 import groupedLanguages from '../../data/languagesGrouped.json';
 import countryList from '../../data/country.json';
+import { validatePhoneNumber, validateHouseNumber } from '../../utils/validation';
 
 import Select from 'react-select';
 import {
@@ -407,7 +408,6 @@ const PersonalDetails = memo(({ onComplete }) => {
   const validateForm = useCallback(() => {
     const newErrors = {};
     const requiredFields = ['streetName', 'houseNumber']; // Base required fields
-    // Add required fields for new immigrants
     if (formData.isNewImmigrant) {
       requiredFields.push('arrivalDate', 'originCountry');
     }
@@ -420,14 +420,12 @@ const PersonalDetails = memo(({ onComplete }) => {
         newErrors[field] = `${fieldName} is required`;
       }
     });
-    // Validate house number is numeric
-    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
-      newErrors.houseNumber = 'House number must be numeric (e.g., 123 or 123A)';
-    }
+    // Validate house number
+    const houseNumberError = validateHouseNumber(formData.houseNumber);
+    if (houseNumberError) newErrors.houseNumber = houseNumberError;
     // Validate Israeli phone number
-    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = 'Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)';
-    }
+    const phoneError = validatePhoneNumber(formData.phoneNumber);
+    if (phoneError) newErrors.phoneNumber = phoneError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData]);
