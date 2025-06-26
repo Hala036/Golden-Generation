@@ -263,39 +263,60 @@ const Volunteer = () => {
             </h2>
             {requests && requests.length > 0 ? (
               <ul className="space-y-4">
-                {requests.map((request) => (
-                  <li key={request.id} className="border border-gray-300 rounded-lg p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold">{request.title}</h3>
-                    <p className="text-sm text-gray-600">{request.description}</p>
-                    <p className="text-sm text-gray-500">
-                      <strong>Timing:</strong> {request.volunteerHours || "Not specified"}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      <strong>Location:</strong> {request.location || "Not specified"}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      <strong>Frequency:</strong> {request.volunteerFrequency || "Not specified"}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      <strong>Professional Background Requirements:</strong>{" "}
-                      {request.professionalBackground || "Not specified"}
-                    </p>
-                    <div className="flex space-x-4 mt-4 justify-center">
-                      <button
-                        onClick={() => handleAcceptInvite(request.id)}
-                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() => handleRejectInvite(request.id)}
-                        className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                {requests.map((request) => {
+                  // Check if the current user has a status in the assignedSeniors array
+                  const userAssignment = request.assignedSeniors?.find(
+                    (senior) => senior.seniorId === userId
+                  );
+
+                  return (
+                    <li key={request.id} className="border border-gray-300 rounded-lg p-4 shadow-sm">
+                      <h3 className="text-lg font-semibold">{request.title}</h3>
+                      <p className="text-sm text-gray-600">{request.description}</p>
+                      <p className="text-sm text-gray-500">
+                        <strong>Timing:</strong> {request.volunteerHours || "Not specified"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <strong>Location:</strong> {request.location || "Not specified"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <strong>Frequency:</strong> {request.volunteerFrequency || "Not specified"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <strong>Professional Background Requirements:</strong>{" "}
+                        {request.professionalBackground || "Not specified"}
+                      </p>
+
+                      {/* Display status if the user is assigned */}
+                      {userAssignment ? (
+                        <p
+                          className={`text-lg font-bold mt-4 ${
+                            userAssignment.status === "Accepted"
+                              ? "text-green-500"
+                              : "text-red-500"
+                          } text-center`}
+                        >
+                          {userAssignment.status === "Accepted" ? "Accepted" : "Declined"}
+                        </p>
+                      ) : (
+                        <div className="flex space-x-4 mt-4 justify-center">
+                          <button
+                            onClick={() => handleAcceptInvite(request.id)}
+                            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => handleRejectInvite(request.id)}
+                            className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p className="text-gray-500">No volunteering requests available.</p>
