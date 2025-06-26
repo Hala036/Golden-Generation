@@ -61,9 +61,9 @@ const PasswordInput = ({
           tabIndex={-1}
         >
           {showPassword ? (
-            <FiEyeOff className="h-5 w-5" />
-          ) : (
             <FiEye className="h-5 w-5" />
+          ) : (
+            <FiEyeOff className="h-5 w-5" />
           )}
         </button>
       </div>
