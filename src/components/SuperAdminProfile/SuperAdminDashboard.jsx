@@ -1,7 +1,7 @@
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaChartLine } from 'react-icons/fa';
+import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaChartLine, FaMapMarkerAlt, FaPlus, FaUserShield } from 'react-icons/fa';
 
 import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
@@ -16,6 +16,9 @@ import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
 import AdminCalendar from "../Calendar/AdminCalendar";
 import EventRequests from "../AdminProfile/PendingEvents";
+import SettlementsManager from "./SettlementsManager";
+import AdminSettlements from "../SignUp/AdminSettlements";
+import Admins from "./Admins";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
@@ -29,7 +32,9 @@ const RetireeDashboard = () => {
       { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
       { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
       { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
-      { id: "comprehensiveAnalytics", label: "Advanced Analytics", icon: <FaChartLine /> },
+      { id: "settlementsManager", label: "Settlement Manager", icon: <FaMapMarkerAlt /> },
+      { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
+      { id: "admins", label: "Admins", icon: <FaUserShield /> },
     ];
 
   const customButtons = [];
@@ -46,8 +51,10 @@ const RetireeDashboard = () => {
     jobs: <Jobs />,
     service: <ServiceRequests />, // Link to ServiceRequests component
     analysis: <Analysis />,
-    comprehensiveAnalytics: <ComprehensiveAnalytics />,
     eventRequests: <EventRequests />,
+    settlementsManager: <SettlementsManager />,
+    addSettlements: <AdminSettlements />,
+    admins: <Admins />,
   };
 
   return (
