@@ -18,7 +18,7 @@ import AdminCalendar from "../Calendar/AdminCalendar";
 import EventRequests from "../AdminProfile/PendingEvents";
 import SettlementsManager from "./SettlementsManager";
 import AdminSettlements from "../SignUp/AdminSettlements";
-import Admins from "./Admins";
+import AdminManagement from "./Admins";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
@@ -32,9 +32,8 @@ const RetireeDashboard = () => {
       { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
       { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
       { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
-      { id: "settlementsManager", label: "Settlement Manager", icon: <FaMapMarkerAlt /> },
       { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
-      { id: "admins", label: "Admins", icon: <FaUserShield /> },
+      { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
     ];
 
   const customButtons = [];
@@ -52,9 +51,8 @@ const RetireeDashboard = () => {
     service: <ServiceRequests />, // Link to ServiceRequests component
     analysis: <Analysis />,
     eventRequests: <EventRequests />,
-    settlementsManager: <SettlementsManager />,
     addSettlements: <AdminSettlements />,
-    admins: <Admins />,
+    admins: <AdminManagement />,
   };
 
   return (
