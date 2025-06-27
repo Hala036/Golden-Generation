@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -16,15 +16,13 @@ import {
 } from "recharts";
 import useFetchAnalysisData from "../../../hooks/useFetchAnalysisData";
 import { useChartData } from "../../../hooks/useChartData";
-
-
+import { db } from '../../../firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 const Analysis = () => {
-
-  const { users, jobs, events, availableSettlements, loading, error } = useFetchAnalysisData();
+  const { users, jobs, events } = useFetchAnalysisData();
   // Pass availableSettlements to useChartData
   const {
-    townChartData,
     jobByMonthData,
     totalUsers,
     totalVolunteers,
@@ -34,6 +32,52 @@ const Analysis = () => {
     eventsByCategoryData,
     eventsByMonthData,
   } = useChartData(users, jobs, availableSettlements, events);
+
+  // Real-time retiree counts for available settlements
+  const [retireeCounts, setRetireeCounts] = useState({});
+  const [availableSettlements, setAvailableSettlements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    // Listen for available settlements
+    const unsubSettlements = onSnapshot(collection(db, 'availableSettlements'), (snapshot) => {
+      const settlements = snapshot.docs.map(doc => doc.data().name);
+      setAvailableSettlements(settlements);
+      setLoading(false);
+    }, (err) => {
+      setError('Failed to load settlements');
+      setLoading(false);
+    });
+    return () => unsubSettlements();
+  }, []);
+
+  useEffect(() => {
+    if (availableSettlements.length === 0) return;
+    // Listen for retirees
+    const usersRef = collection(db, 'users');
+    const retireeQuery = query(usersRef, where('role', '==', 'retiree'));
+    const unsub = onSnapshot(retireeQuery, (retireeSnapshot) => {
+      const retirees = retireeSnapshot.docs.map(doc => doc.data());
+      const counts = {};
+      for (const settlement of availableSettlements) {
+        const normSettle = settlement.trim().normalize('NFC');
+        counts[normSettle] = retirees.filter(r =>
+          (r.idVerification?.settlement && r.idVerification.settlement.trim().normalize('NFC') === normSettle) ||
+          (r.settlement && r.settlement.trim().normalize('NFC') === normSettle)
+        ).length;
+      }
+      setRetireeCounts(counts);
+    });
+    return () => unsub();
+  }, [availableSettlements]);
+
+  // Prepare data for charts
+  const townChartData = availableSettlements.map(name => ({
+    name,
+    value: retireeCounts[name] || 0
+  }));
 
   // Color palettes for different chart types
   const primaryColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4"];
