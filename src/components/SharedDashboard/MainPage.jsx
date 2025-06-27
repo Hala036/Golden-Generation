@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../context/UserContext"; // Import UserContext
-import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay } from 'react-icons/fa';
+import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay, FaUserShield, FaMapMarkerAlt } from 'react-icons/fa';
 import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
 import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
@@ -8,10 +8,12 @@ import Notifications from "./Notifications"; // Import Notifications component
 
 const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   console.log("MainPage mounted");
+  const { userData, loading } = useContext(UserContext);
+  if (loading) return <div>Loading...</div>;
   const user = auth.currentUser;
-  const { userData } = useContext(UserContext); // Access user data from context
   const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
   const userName = userData?.credentials?.username || "Admin";
+  const userRole = userData?.role || ""; // Get user role
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -423,6 +425,17 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     { title: 'Reports & Analytics', icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
   ];
 
+  // SuperAdmin-only quick actions
+  const superAdminQuickActions = [
+    { title: 'Admin Management', icon: <FaUserShield />, color: 'bg-red-500 hover:bg-red-600', onClick: () => setSelected("admins") },
+    { title: 'Add Settlements', icon: <FaMapMarkerAlt />, color: 'bg-indigo-500 hover:bg-indigo-600', onClick: () => setSelected("addSettlements") },
+  ];
+
+  // Only show for superadmin
+  const allQuickActions = (userRole && userRole.toLowerCase() === 'superadmin')
+    ? [...quickActions, ...superAdminQuickActions]
+    : quickActions;
+
   const getActivityIcon = (type) => {
     switch (type) {
       case 'join': return <FaUserPlus className="text-green-500" />;
@@ -444,8 +457,8 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
             <p className="text-gray-600">Here's what's happening in your community today</p>
           </div>
           {/* Quick Actions */}
-          <div className="grid grid-cols-4 gap-2">
-            {quickActions.map((action, index) => (
+          <div className={`grid gap-2 ${userRole && userRole.toLowerCase() === 'superadmin' ? 'grid-cols-6' : 'grid-cols-4'}`}>
+            {allQuickActions.map((action, index) => (
               <button
                 key={index}
                 onClick={action.onClick}
