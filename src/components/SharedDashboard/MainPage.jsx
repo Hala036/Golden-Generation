@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../context/UserContext"; // Import UserContext
-import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay } from 'react-icons/fa';
+import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay, FaUserShield, FaMapMarkerAlt } from 'react-icons/fa';
 import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
 import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
 
 const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
+  console.log("MainPage mounted");
+  const { userData, loading } = useContext(UserContext);
+  if (loading) return <div>Loading...</div>;
   const user = auth.currentUser;
-  const { userData } = useContext(UserContext); // Access user data from context
-  const userSettlement = userData?.idVerification?.settlement || "";
+  const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
   const userName = userData?.credentials?.username || "Admin";
+  const userRole = userData?.role || ""; // Get user role
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -37,6 +40,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
+    console.log("MainPage useEffect running, userSettlement:", userSettlement);
     if (!userSettlement) return;
 
     // Pending Service Requests
@@ -56,21 +60,34 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
 
-        const allUsersQuery = query(
+        // Query by idVerification.settlement
+        const allUsersQuery1 = query(
           collection(db, "users"),
           where("role", "==", "retiree"),
           where("idVerification.settlement", "==", userSettlement)
         );
-
-        const querySnapshot = await getDocs(allUsersQuery);
-
-        // Filter users manually based on the `createdAt` string
-        const retireesRegisteredThisWeek = querySnapshot.docs.filter((doc) => {
-          const createdAt = new Date(doc.data().createdAt); // Convert `createdAt` string to Date
-          return createdAt >= lastWeek; // Compare with `lastWeek`
+        const querySnapshot1 = await getDocs(allUsersQuery1);
+        // Query by settlement (root)
+        const allUsersQuery2 = query(
+          collection(db, "users"),
+          where("role", "==", "retiree"),
+          where("settlement", "==", userSettlement)
+        );
+        const querySnapshot2 = await getDocs(allUsersQuery2);
+        // Merge and deduplicate
+        const allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        // Filter users manually based on the `createdAt` field
+        const retireesRegisteredThisWeek = allDocs.filter((doc) => {
+          let createdAt = doc.data().createdAt;
+          if (createdAt && createdAt.toDate) {
+            createdAt = createdAt.toDate();
+          } else if (typeof createdAt === 'string') {
+            createdAt = new Date(createdAt);
+          }
+          return createdAt && createdAt >= lastWeek;
         });
-
-        setRetireesRegisteredCount(retireesRegisteredThisWeek.length); // Set the count of retirees registered
+        console.log('All retiree docs for dashboard:', allDocs.map(doc => ({ id: doc.id, createdAt: doc.data().createdAt, role: doc.data().role, settlement: doc.data().settlement, idVerification: doc.data().idVerification })));
+        setRetireesRegisteredCount(retireesRegisteredThisWeek.length);
       } catch (error) {
         console.error("Error fetching retirees registered count:", error);
       }
@@ -197,34 +214,58 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         // Fetch actions from retirees
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
-
-        const allUsersQuery = query(
+        // Query by idVerification.settlement
+        const allUsersQuery1 = query(
           collection(db, "users"),
           where("role", "==", "retiree"),
           where("idVerification.settlement", "==", userSettlement)
         );
-        const querySnapshot = await getDocs(allUsersQuery);
-        const todayRetirees = querySnapshot.docs.filter((doc) => {
-          const createdAt = new Date(doc.data().createdAt);
-          return createdAt >= today;
+        const querySnapshot1 = await getDocs(allUsersQuery1);
+        // Query by settlement (root)
+        const allUsersQuery2 = query(
+          collection(db, "users"),
+          where("role", "==", "retiree"),
+          where("settlement", "==", userSettlement)
+        );
+        const querySnapshot2 = await getDocs(allUsersQuery2);
+        // Merge and deduplicate
+        const allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        const lastWeekForActivity = new Date();
+        lastWeekForActivity.setDate(lastWeekForActivity.getDate() - 7);
+        const recentRetirees = allDocs.filter((doc) => {
+          let createdAt = doc.data().createdAt;
+          if (createdAt && createdAt.toDate) {
+            createdAt = createdAt.toDate();
+          } else if (typeof createdAt === 'string') {
+            createdAt = new Date(createdAt);
+          }
+          return createdAt && createdAt >= lastWeekForActivity;
         });
-        todayRetirees.forEach((retiree) => {
+        console.log('Recent retirees for recent activity:', recentRetirees.map(r => ({ id: r.id, createdAt: r.data().createdAt })));
+        recentRetirees.forEach((retiree) => {
           activity.push({
             id: retiree.id,
-            action: `${retiree.data().credentials.username} joined the community`,
+            action: `${retiree.data().credentials?.username || retiree.data().username || 'Retiree'} joined the community`,
             time: (() => {
-              const createdAtDate = new Date(retiree.data().createdAt); // Parse createdAt
-              if (isNaN(createdAtDate.getTime())) {
+              let createdAtDate = retiree.data().createdAt;
+              if (createdAtDate && createdAtDate.toDate) {
+                createdAtDate = createdAtDate.toDate();
+              } else if (typeof createdAtDate === 'string') {
+                createdAtDate = new Date(createdAtDate);
+              }
+              if (isNaN(createdAtDate?.getTime?.() || createdAtDate?.getTime?.() === undefined)) {
                 return "Invalid date";
               }
               const diffInMs = new Date() - createdAtDate;
               const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
               const diffInHours = Math.floor(diffInMinutes / 60);
-
+              const diffInDays = Math.floor(diffInHours / 24);
               if (diffInMinutes < 60) {
                 return `${diffInMinutes} minutes ago`;
-              } else {
+              } else if (diffInHours < 24) {
                 return `${diffInHours} hours ago`;
+              } else {
+                return `${diffInDays} days ago`;
               }
             })(),
             type: "join",
@@ -237,34 +278,40 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           where("status", "==", "active")
         );
         const eventsSnapshot = await getDocs(activeEventsQuery);
-        const todayEvents = eventsSnapshot.docs.filter((doc) => {
-          const eventDate = doc.data().createdAt instanceof Timestamp
-            ? doc.data().createdAt.toDate()
-            : new Date(doc.data().createdAt);
-          return eventDate >= today;
+        console.log('All event docs for dashboard:', eventsSnapshot.docs.map(doc => ({ id: doc.id, createdAt: doc.data().createdAt, status: doc.data().status, settlement: doc.data().settlement })));
+        const recentEvents = eventsSnapshot.docs.filter((doc) => {
+          let eventDate = doc.data().createdAt;
+          if (eventDate && eventDate.toDate) {
+            eventDate = eventDate.toDate();
+          } else if (typeof eventDate === 'string') {
+            eventDate = new Date(eventDate);
+          }
+          return eventDate && eventDate >= lastWeekForActivity;
         });
-        todayEvents.forEach((event) => {
+        recentEvents.forEach((event) => {
           activity.push({
             id: event.id,
             action: `Event "${event.data().title}" created`,
             time: (() => {
-              const createdAtDate =
-                event.data().createdAt instanceof Timestamp
-                  ? event.data().createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
-                  : new Date(event.data().createdAt); // Parse as a regular date string if not a Timestamp
-
-              if (isNaN(createdAtDate.getTime())) {
+              let createdAtDate = event.data().createdAt;
+              if (createdAtDate && createdAtDate.toDate) {
+                createdAtDate = createdAtDate.toDate();
+              } else if (typeof createdAtDate === 'string') {
+                createdAtDate = new Date(createdAtDate);
+              }
+              if (isNaN(createdAtDate?.getTime?.() || createdAtDate?.getTime?.() === undefined)) {
                 return "Invalid date";
               }
-
-              const diffInMs = new Date() - createdAtDate; // Difference in milliseconds
-              const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes
-              const diffInHours = Math.floor(diffInMinutes / 60); // Convert to hours
-
+              const diffInMs = new Date() - createdAtDate;
+              const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+              const diffInHours = Math.floor(diffInMinutes / 60);
+              const diffInDays = Math.floor(diffInHours / 24);
               if (diffInMinutes < 60) {
                 return `${diffInMinutes} minutes ago`;
-              } else {
+              } else if (diffInHours < 24) {
                 return `${diffInHours} hours ago`;
+              } else {
+                return `${diffInDays} days ago`;
               }
             })(),
             type: "event",
@@ -378,6 +425,17 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     { title: 'Reports & Analytics', icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
   ];
 
+  // SuperAdmin-only quick actions
+  const superAdminQuickActions = [
+    { title: 'Admin Management', icon: <FaUserShield />, color: 'bg-red-500 hover:bg-red-600', onClick: () => setSelected("admins") },
+    { title: 'Add Settlements', icon: <FaMapMarkerAlt />, color: 'bg-indigo-500 hover:bg-indigo-600', onClick: () => setSelected("addSettlements") },
+  ];
+
+  // Only show for superadmin
+  const allQuickActions = (userRole && userRole.toLowerCase() === 'superadmin')
+    ? [...quickActions, ...superAdminQuickActions]
+    : quickActions;
+
   const getActivityIcon = (type) => {
     switch (type) {
       case 'join': return <FaUserPlus className="text-green-500" />;
@@ -399,8 +457,8 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
             <p className="text-gray-600">Here's what's happening in your community today</p>
           </div>
           {/* Quick Actions */}
-          <div className="grid grid-cols-4 gap-2">
-            {quickActions.map((action, index) => (
+          <div className={`grid gap-2 ${userRole && userRole.toLowerCase() === 'superadmin' ? 'grid-cols-6' : 'grid-cols-4'}`}>
+            {allQuickActions.map((action, index) => (
               <button
                 key={index}
                 onClick={action.onClick}

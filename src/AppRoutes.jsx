@@ -11,7 +11,10 @@ import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
 import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard';
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
+import AdminManagement from './components/SuperAdminProfile/Admins.jsx';
+import AdminSettlements from './components/SignUp/AdminSettlements';
 import EditSignUpData from "./components/SignUp/EditSignUpData";
+
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -74,6 +77,22 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <ViewProfileDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/admins"
+          element={
+            <ProtectedRoute>
+              <AdminManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/settlements"
+          element={
+            <ProtectedRoute>
+              <AdminSettlements />
             </ProtectedRoute>
           }
         />

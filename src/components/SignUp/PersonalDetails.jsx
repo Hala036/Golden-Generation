@@ -3,6 +3,7 @@ import useSignupStore from '../../store/signupStore';
 import languageList from '../../data/languages.json';
 import groupedLanguages from '../../data/languagesGrouped.json';
 import countryList from '../../data/country.json';
+import { validatePhoneNumber, validateHouseNumber } from '../../utils/validation';
 
 import Select from 'react-select';
 import {
@@ -425,12 +426,12 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
         newErrors[field] = t(fieldKey);
       }
     });
-    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
-      newErrors.houseNumber = t('auth.signup.personalDetails.errors.houseNumberFormat');
-    }
-    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = t('auth.signup.personalDetails.errors.phoneNumberFormat');
-    }
+    // Validate house number
+    const houseNumberError = validateHouseNumber(formData.houseNumber);
+    if (houseNumberError) newErrors.houseNumber = houseNumberError;
+    // Validate Israeli phone number
+    const phoneError = validatePhoneNumber(formData.phoneNumber);
+    if (phoneError) newErrors.phoneNumber = phoneError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData, t]);

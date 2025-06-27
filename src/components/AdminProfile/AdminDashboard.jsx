@@ -31,7 +31,7 @@ const AdminDashboard = () => {
     { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
     { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
     { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
-    { id: "comprehensiveAnalytics", label: "Advanced Analytics", icon: <FaChartLine /> },
+    //{ id: "comprehensiveAnalytics", label: "Advanced Analytics", icon: <FaChartLine /> },
   ];
 
   const customButtons = [];

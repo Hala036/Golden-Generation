@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, initializeFirestore, enableNetwork, disableNetwork } from "firebase/firestore";
+import { getAuth, deleteUser } from "firebase/auth";
+import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, initializeFirestore, enableNetwork, disableNetwork, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getDoc } from "firebase/firestore";
 
@@ -57,15 +57,17 @@ const getUserData = async (uid) => {
  * @returns {Promise<void>}
  */
 const addSettlement = async (settlementName) => {
+  console.debug('[addSettlement] called with:', settlementName);
   try {
     await setDoc(doc(db, 'availableSettlements', settlementName), { 
       name: settlementName,
       available: true,
       createdAt: new Date().toISOString() 
     });
+    console.debug('[addSettlement] success:', settlementName);
     return true;
   } catch (error) {
-    console.error("Error adding settlement:", error);
+    console.error('[addSettlement] error:', error);
     return false;
   }
 };
@@ -119,6 +121,49 @@ export const getUsersBySettlement = async (settlement) => {
   } catch (error) {
     console.error("Error fetching users by settlement:", error);
     throw error;
+  }
+};
+
+/**
+ * Assign an admin to a settlement and update both documents
+ * @param {string} settlementName - The name of the settlement
+ * @param {string} adminUserId - The UID of the admin user
+ */
+export const assignAdminToSettlement = async (settlementName, adminUserId) => {
+  // Update the settlement document
+  await updateDoc(doc(db, 'availableSettlements', settlementName), {
+    adminId: adminUserId,
+    available: true,
+  });
+  // Update the admin user document
+  await updateDoc(doc(db, 'users', adminUserId), {
+    role: 'Admin',
+    settlement: settlementName,
+  });
+};
+
+/**
+ * Fetch only available settlements with an assigned admin
+ * @returns {Promise<Array>} - Array of settlement objects
+ */
+export const getAvailableSettlementsForSignup = async () => {
+  const settlementsRef = collection(db, 'availableSettlements');
+  const snapshot = await getDocs(settlementsRef);
+  return snapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .filter(settlement => settlement.available && settlement.adminId);
+};
+
+/**
+ * Delete a Firebase Auth user by UID (must be signed in as that user or use Admin SDK on server)
+ * @param {object} user - The user object (firebase.User)
+ * @returns {Promise<void>}
+ */
+export const deleteAuthUser = async (user) => {
+  try {
+    await deleteUser(user);
+  } catch (error) {
+    console.error('Error deleting Auth user:', error);
   }
 };
 

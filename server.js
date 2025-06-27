@@ -6,6 +6,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import pkg from 'agora-access-token';
+import iconv from 'iconv-lite';
+import Papa from 'papaparse';
+import fs from 'fs';
 const { RtcTokenBuilder, RtcRole } = pkg;
 
 dotenv.config();
@@ -58,6 +61,21 @@ const __dirname = path.dirname(__filename);
       } catch (err) {
         console.error('Error fetching settlements:', err.message);
         res.status(500).json({ error: 'Failed to fetch settlements', message: err.message });
+      }
+    });
+
+    // Settlements CSV Route (serves settlements from CSV with Hebrew support)
+    app.get('/api/settlements-csv', async (req, res) => {
+      try {
+        const csvPath = path.join(__dirname, 'public', 'data', 'settlemnts_list_CSV.csv');
+        const buffer = fs.readFileSync(csvPath);
+        // Try decoding as windows-1255 (common for Hebrew CSVs)
+        const csvText = iconv.decode(buffer, 'windows-1255');
+        const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+        res.json(results.data);
+      } catch (err) {
+        console.error('Error reading settlements CSV:', err.message);
+        res.status(500).json({ error: 'Failed to read settlements CSV', message: err.message });
       }
     });
 
