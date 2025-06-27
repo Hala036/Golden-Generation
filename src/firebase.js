@@ -57,15 +57,17 @@ const getUserData = async (uid) => {
  * @returns {Promise<void>}
  */
 const addSettlement = async (settlementName) => {
+  console.debug('[addSettlement] called with:', settlementName);
   try {
     await setDoc(doc(db, 'availableSettlements', settlementName), { 
       name: settlementName,
       available: true,
       createdAt: new Date().toISOString() 
     });
+    console.debug('[addSettlement] success:', settlementName);
     return true;
   } catch (error) {
-    console.error("Error adding settlement:", error);
+    console.error('[addSettlement] error:', error);
     return false;
   }
 };

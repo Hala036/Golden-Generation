@@ -86,7 +86,10 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
             .map(({ id, label, icon }) => (
               <div
                 key={id}
-                onClick={() => setSelected(id)}
+                onClick={() => {
+                  console.debug('[Sidebar] setSelected called with:', id);
+                  setSelected(id);
+                }}
                 className={`flex items-center ${
                   isSidebarExpanded ? "space-x-3 px-6" : "justify-center"
                 } py-3 cursor-pointer transition duration-200 ml-2 ${

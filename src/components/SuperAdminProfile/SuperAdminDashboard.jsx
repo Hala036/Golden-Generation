@@ -25,6 +25,9 @@ const RetireeDashboard = () => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState("main"); // Manage selected state here
 
+  console.debug('[SuperAdminDashboard] mounted');
+  console.debug('[SuperAdminDashboard] selected:', selected);
+
   const customIcons = [
     { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
     { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
@@ -57,6 +60,11 @@ const RetireeDashboard = () => {
     admins: <AdminManagement />,
     categoryManagement: <CategoryManagement />,
   };
+
+  // Log when selected changes
+  React.useEffect(() => {
+    console.debug('[SuperAdminDashboard] selected changed:', selected);
+  }, [selected]);
 
   return (
     <Dashboard
