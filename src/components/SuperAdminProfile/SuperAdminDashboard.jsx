@@ -1,7 +1,7 @@
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaChartLine, FaMapMarkerAlt, FaPlus, FaUserShield } from 'react-icons/fa';
+import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaChartLine, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags } from 'react-icons/fa';
 
 import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
@@ -19,6 +19,7 @@ import EventRequests from "../AdminProfile/PendingEvents";
 import SettlementsManager from "./SettlementsManager";
 import AdminSettlements from "../SignUp/AdminSettlements";
 import AdminManagement from "./Admins";
+import CategoryManagement from "../AdminProfile/CategoryManagement";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ const RetireeDashboard = () => {
       { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
       { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
       { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
+      { id: "categoryManagement", label: "Category Management", icon: <FaTags /> },
       { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
       { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
       { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
@@ -53,6 +55,7 @@ const RetireeDashboard = () => {
     eventRequests: <EventRequests />,
     addSettlements: <AdminSettlements />,
     admins: <AdminManagement />,
+    categoryManagement: <CategoryManagement />,
   };
 
   return (
