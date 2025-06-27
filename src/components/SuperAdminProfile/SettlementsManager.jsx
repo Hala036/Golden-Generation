@@ -7,10 +7,12 @@ import {
 import { uploadSettlementsFromCSV } from '../../utils/addSettlements';
 import { Trash2, Upload } from 'lucide-react';
 import { assignAdminToSettlement, deleteAuthUser } from '../../firebase';
-import { collection, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, setDoc, doc, getDoc, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import Papa from 'papaparse';
+import Modal from '../Modal';
+import { FaEdit, FaTrash, FaEye, FaUserPlus, FaUsers } from 'react-icons/fa';
 
 const SettlementsManager = () => {
   const [allSettlements, setAllSettlements] = useState([]);
@@ -27,6 +29,7 @@ const SettlementsManager = () => {
   const [adminDetails, setAdminDetails] = useState({});
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [retireeCounts, setRetireeCounts] = useState({});
 
   // Enhanced fetch to get admin info for each settlement
   const fetchSettlements = async () => {
@@ -67,10 +70,29 @@ const SettlementsManager = () => {
     setUsers(nonAdmins);
   };
 
+  // Fetch retiree counts for each settlement
+  const fetchRetireeCounts = async (settlements) => {
+    const counts = {};
+    for (const s of settlements) {
+      const q = query(
+        collection(db, 'users'),
+        where('role', '==', 'retiree'),
+        where('idVerification.settlement', '==', s.name)
+      );
+      const snap = await getDocs(q);
+      counts[s.name] = snap.size;
+    }
+    setRetireeCounts(counts);
+  };
+
   useEffect(() => {
     fetchSettlements();
     fetchNonAdminUsers();
   }, []);
+
+  useEffect(() => {
+    if (settlementDetails.length > 0) fetchRetireeCounts(settlementDetails);
+  }, [settlementDetails]);
 
   // ✅ Toggle availability
   const handleToggle = async (settlement) => {
@@ -175,19 +197,18 @@ const SettlementsManager = () => {
     s.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Modal for admin details
+  // Replace AdminDetailsModal with shared Modal
   const AdminDetailsModal = ({ admin, onClose }) => (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] max-w-[90vw]">
-        <h2 className="text-xl font-bold mb-4">Admin Details</h2>
-        <div className="mb-2"><b>Username:</b> {admin.credentials?.username || '-'}</div>
-        <div className="mb-2"><b>Email:</b> {admin.credentials?.email || '-'}</div>
-        <div className="mb-2"><b>Phone:</b> {admin.credentials?.phone || '-'}</div>
-        <div className="mb-2"><b>Role:</b> {admin.role || '-'}</div>
-        <div className="mb-2"><b>Settlement:</b> {admin.settlement || '-'}</div>
-        <button onClick={onClose} className="mt-4 bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500">Close</button>
+    <Modal onClose={onClose} title="Admin Details">
+      <div className="space-y-2">
+        <div><b>Username:</b> {admin.credentials?.username || '-'}</div>
+        <div><b>Email:</b> {admin.credentials?.email || '-'}</div>
+        <div><b>Phone:</b> {admin.credentials?.phone || '-'}</div>
+        <div><b>Role:</b> {admin.role || '-'}</div>
+        <div><b>Settlement:</b> {admin.settlement || '-'}</div>
+        <div><b>Registered Retirees:</b> {retireeCounts[admin.settlement] || 0}</div>
       </div>
-    </div>
+    </Modal>
   );
 
   return (
@@ -311,19 +332,42 @@ const SettlementsManager = () => {
           {settlementDetails.map((settlement, index) => (
             <li
               key={index}
-              className={`p-4 rounded shadow flex flex-col gap-2 ${
+              className={`p-4 rounded-xl shadow flex flex-col gap-2 border-2 ${
                 availableSettlements.includes(settlement.name)
-                  ? 'bg-green-100'
-                  : 'bg-red-100'
+                  ? 'bg-green-50 border-green-300'
+                  : 'bg-red-50 border-red-200'
               }`}
             >
-              <span className="font-medium">{settlement.name}</span>
-              {settlement.adminId ? (
-                <span className="text-sm text-blue-700 underline cursor-pointer" onClick={() => { setSelectedAdmin(adminDetails[settlement.adminId]); setShowAdminModal(true); }}>
-                  Admin: {adminNames[settlement.adminId] || settlement.adminId}
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-lg">{settlement.name}</span>
+                <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                  availableSettlements.includes(settlement.name)
+                    ? 'bg-green-200 text-green-800'
+                    : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {availableSettlements.includes(settlement.name) ? 'Available' : 'Disabled'}
                 </span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <FaUsers className="text-blue-500" />
+                <span className="text-sm">{retireeCounts[settlement.name] || 0} retirees</span>
+              </div>
+              {settlement.adminId ? (
+                <div className="flex flex-col gap-1 mt-2">
+                  <span className="text-blue-700 underline cursor-pointer flex items-center gap-1" onClick={() => { setSelectedAdmin(adminDetails[settlement.adminId]); setShowAdminModal(true); }}>
+                    <FaEye className="inline" /> {adminNames[settlement.adminId] || settlement.adminId}
+                  </span>
+                  <span className="text-xs text-gray-500">{adminDetails[settlement.adminId]?.credentials?.email}</span>
+                  <span className="text-xs text-gray-500">{adminDetails[settlement.adminId]?.credentials?.phone}</span>
+                  <div className="flex gap-2 mt-2">
+                    <button onClick={() => {/* open edit modal logic */}} className="text-yellow-600 hover:text-yellow-900" title="Edit"><FaEdit /></button>
+                    <button onClick={() => {/* remove/disable logic */}} className="text-red-600 hover:text-red-900" title="Remove"><FaTrash /></button>
+                  </div>
+                </div>
               ) : (
-                <span className="text-sm text-gray-400">No admin assigned</span>
+                <button onClick={() => {/* open add admin modal logic */}} className="flex items-center gap-1 text-green-700 hover:text-green-900 mt-2" title="Add Admin">
+                  <FaUserPlus /> Add Admin
+                </button>
               )}
             </li>
           ))}
