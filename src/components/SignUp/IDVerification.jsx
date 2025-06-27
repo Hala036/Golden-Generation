@@ -11,7 +11,7 @@ import Select from 'react-select';
 import { Users, Star, Check } from 'lucide-react';
 import { validateIsraeliID, validateRequiredField } from '../../utils/validation';
 
-const IDVerification = ({ onComplete }) => {
+const IDVerification = ({ onComplete, editMode = false, data }) => {
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -50,16 +50,16 @@ const IDVerification = ({ onComplete }) => {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        setErrors((prev) => ({ ...prev, idNumber: "ID number is already registered" }));
-        toast.error("ID number is already registered");
+        setErrors((prev) => ({ ...prev, idNumber: t('auth.signup.idNumberRegistered') }));
+        toast.error(t('auth.signup.idNumberRegistered'));
       } else {
-        setErrors((prev) => ({ ...prev, idNumber: "" }));
-        toast.success("ID number is available");
+        setErrors((prev) => ({ ...prev, idNumber: '' }));
+        toast.success(t('auth.signup.idNumberAvailable'));
       }
       
     } catch (error) {
       console.error("Error checking ID number:", error);
-      toast.error("Error checking ID number availability");
+      toast.error(t('auth.signup.idNumberCheckError'));
     }
   }, 500);
 
@@ -94,7 +94,7 @@ const IDVerification = ({ onComplete }) => {
 
       if (truncatedValue.length === 9) {
         if (!isValidIsraeliID(truncatedValue)) {
-          toast.error('Invalid Israeli ID number');
+          toast.error(t('auth.signup.invalidIsraeliId'));
         } else {
           checkIdAvailability(truncatedValue);
         }
@@ -114,14 +114,14 @@ const IDVerification = ({ onComplete }) => {
     // Check file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPG, JPEG, or PNG)');
+      toast.error(t('auth.signup.invalidImageFile'));
       return;
     }
 
     // Check file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
+      toast.error(t('auth.signup.fileSizeLimit'));
       return;
     }
 
@@ -136,7 +136,7 @@ const IDVerification = ({ onComplete }) => {
       await processImageWithOCR(file);
     } catch (error) {
       console.error('Error handling file:', error);
-      toast.error('Error processing file. Please try again.');
+      toast.error(t('auth.signup.fileProcessingError'));
     } finally {
       setIsLoading(false);
     }
@@ -202,13 +202,13 @@ const IDVerification = ({ onComplete }) => {
       const extractedData = extractDataFromOCR(text);
       if (extractedData) {
         updateIdVerificationData(extractedData);
-        toast.success('Data extracted successfully!');
+        toast.success(t('auth.signup.dataExtractedSuccess'));
       } else {
-        toast.error('Could not extract data from image. Please try again.');
+        toast.error(t('auth.signup.dataExtractedFail'));
       }
     } catch (error) {
       console.error('OCR Error:', error);
-      toast.error('Error processing image. Please try again or fill the form manually.');
+      toast.error(t('auth.signup.ocrProcessingError'));
     } finally {
       if (worker) {
         try {
@@ -254,12 +254,12 @@ const IDVerification = ({ onComplete }) => {
 
     // Date of Birth
     if (!dateOfBirth) {
-      newErrors.dateOfBirth = t('Date of birth is required');
+      newErrors.dateOfBirth = t('auth.idVerification.errors.dateOfBirthRequired');
     } else {
       const age = calculateAge(dateOfBirth);
       if (age < 50) {
-        newErrors.dateOfBirth = t('Minimum age is 50 years');
-        toast.error(t('Age requirement not met: minimum age is 50 years'));
+        newErrors.dateOfBirth = t('auth.idVerification.errors.ageRequirement');
+        toast.error(t('auth.idVerification.errors.ageRequirementNotMet'));
       }
     }
 
@@ -315,6 +315,14 @@ const IDVerification = ({ onComplete }) => {
     </div>
   );
 
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      updateIdVerificationData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
       <FloatingElements />
@@ -324,11 +332,11 @@ const IDVerification = ({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <Users className="w-12 h-12 text-yellow-500 mr-4" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ID Verification
+              {t('auth.idVerification.title')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Please provide your identification details
+            {t('auth.idVerification.subtitle')}
           </p>
         </div>
 
@@ -339,23 +347,23 @@ const IDVerification = ({ onComplete }) => {
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Identification Details
+                  {t('auth.idVerification.form.identificationDetails')}
                 </h3>
-                <p className="text-gray-600 text-lg">Enter your ID and personal information</p>
+                <p className="text-gray-600 text-lg">{t('auth.idVerification.form.enterIdAndPersonalInfo')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* ID Number */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  ID Number <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.idNumber')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="idNumber"
                   value={idVerificationData.idNumber || ''}
                   onChange={handleChange}
-                  placeholder='Enter 9 digits'
+                  placeholder={t('auth.idVerification.form.idNumberPlaceholder')}
                   maxLength="9"
                   className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
                     errors.idNumber
@@ -373,7 +381,7 @@ const IDVerification = ({ onComplete }) => {
               {/* First Name */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  First Name <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.firstName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -396,7 +404,7 @@ const IDVerification = ({ onComplete }) => {
               {/* Last Name */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Last Name <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.lastName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -419,7 +427,7 @@ const IDVerification = ({ onComplete }) => {
               {/* Date of Birth */}
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Date of Birth <span className="text-red-500">*</span>
+                  {t('auth.idVerification.form.dateOfBirth')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -445,7 +453,7 @@ const IDVerification = ({ onComplete }) => {
             {/* Gender Selection */}
             <div className="mt-8">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Gender <span className="text-red-500">*</span>
+                {t('auth.idVerification.form.gender')} <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div
@@ -458,7 +466,7 @@ const IDVerification = ({ onComplete }) => {
                 >
                   <FaMars className={`text-2xl ${idVerificationData.gender === 'male' ? 'text-blue-600' : 'text-gray-500'}`} />
                   <span className={`text-base font-semibold ${idVerificationData.gender === 'male' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    Male
+                    {t('auth.idVerification.form.genderMale')}
                   </span>
                   {idVerificationData.gender === 'male' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
@@ -476,7 +484,7 @@ const IDVerification = ({ onComplete }) => {
                 >
                   <FaVenus className={`text-2xl ${idVerificationData.gender === 'female' ? 'text-pink-600' : 'text-gray-500'}`} />
                   <span className={`text-base font-semibold ${idVerificationData.gender === 'female' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    Female
+                    {t('auth.idVerification.form.genderFemale')}
                   </span>
                   {idVerificationData.gender === 'female' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
@@ -494,7 +502,7 @@ const IDVerification = ({ onComplete }) => {
                 >
                   <FaGenderless className={`text-2xl ${idVerificationData.gender === 'other' ? 'text-purple-600' : 'text-gray-500'}`} />
                   <span className={`text-base font-semibold ${idVerificationData.gender === 'other' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    Other
+                    {t('auth.idVerification.form.genderOther')}
                   </span>
                   {idVerificationData.gender === 'other' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
@@ -518,24 +526,24 @@ const IDVerification = ({ onComplete }) => {
               <Users className="w-8 h-8 text-blue-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Settlement
+                  {t('auth.idVerification.form.settlementTitle')}
                 </h3>
-                <p className="text-gray-600 text-lg">Select your place of residence</p>
+                <p className="text-gray-600 text-lg">{t('auth.idVerification.form.settlementSubtitle')}</p>
               </div>
             </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Settlement <span className="text-red-500">*</span>
+                {t('auth.idVerification.form.settlement')} <span className="text-red-500">*</span>
               </label>
               {loadingSettlements ? (
                 <div className="flex items-center gap-2 text-gray-500">
                   <FaSpinner className="animate-spin" />
-                  <span>Loading settlements...</span>
+                  <span>{t('auth.idVerification.form.loadingSettlements')}</span>
                 </div>
               ) : settlementsError ? (
                 <div className="text-red-500 flex items-center gap-1">
                   <FaInfoCircle />
-                  <span>Failed to load settlements. Please try again later.</span>
+                  <span>{t('auth.idVerification.form.failedToLoadSettlements')}</span>
                 </div>
               ) : (
                 <Select
@@ -551,7 +559,7 @@ const IDVerification = ({ onComplete }) => {
                   onChange={(selected) => {
                     updateIdVerificationData({ settlement: selected.value });
                   }}
-                  placeholder="Select settlement..."
+                  placeholder={t('auth.idVerification.form.settlementPlaceholder')}
                   isSearchable
                   className="text-base"
                   classNamePrefix="react-select"
@@ -578,17 +586,19 @@ const IDVerification = ({ onComplete }) => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              <Star className="w-6 h-6" />
-              <span>{t('auth.idVerification.form.submit') || 'Submit'}</span>
-              <Star className="w-6 h-6" />
-            </button>
-          </div>
+          {/* Submit Button - only show if not in editMode */}
+          {!editMode && (
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                <Star className="w-6 h-6" />
+                <span>{t('auth.idVerification.form.submit') || 'Submit'}</span>
+                <Star className="w-6 h-6" />
+              </button>
+            </div>
+          )}
         </form>
       </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import { db } from '../../firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
@@ -15,6 +16,7 @@ import { useLanguage } from '../../context/LanguageContext';
 
 const AdminSettlements = () => {
   console.debug('[AdminSettlements] mounted');
+  const { t } = useLanguage();
   const [allSettlements, setAllSettlements] = useState([]);
   const [settlementMap, setSettlementMap] = useState({});
   const [availableSettlements, setAvailableSettlements] = useState([]);
@@ -335,6 +337,7 @@ const AdminSettlements = () => {
         createdAt: new Date().toISOString(),
       });
       toast.success(`${name} enabled and added to availableSettlements!`);
+      
     } catch (err) {
       toast.error('Failed to enable settlement: ' + err.message);
     }
@@ -384,6 +387,7 @@ const AdminSettlements = () => {
       if (docToDelete) {
         await docToDelete.ref.delete();
         toast.success('Settlement deleted!');
+        
       }
       setDeleteModal({ open: false, settlement: null });
     } catch (err) {
@@ -478,7 +482,7 @@ const AdminSettlements = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading settlements...</div>;
+    return <div className="text-center py-8">{t('auth.adminSettlements.loading')}</div>;
   }
 
   console.debug('[AdminSettlements] rendering');

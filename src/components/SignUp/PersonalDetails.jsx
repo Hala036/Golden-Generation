@@ -26,6 +26,7 @@ import {
 import * as FaIcons from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { Star } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Language code to country code mapping for flags
 const languageFlagMap = {
@@ -302,8 +303,9 @@ const CheckboxField = memo(({ label, name, className = '', checked, onChange, id
   </div>
 ));
 
-const PersonalDetails = memo(({ onComplete }) => {
+const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   const { personalData, updatePersonalData } = useSignupStore();
+  const { t } = useLanguage();
   const formRef = useRef(null);
   const [formData, setFormData] = useState(personalData || {
     phoneNumber: '',
@@ -343,10 +345,10 @@ const PersonalDetails = memo(({ onComplete }) => {
   const militaryOptions = ['none', 'military', 'national'];
 
   const maritalStatusOptions = [
-    { value: 'married', label: 'Married' },
-    { value: 'single', label: 'Single' },
-    { value: 'divorced', label: 'Divorced' },
-    { value: 'widowed', label: 'Widowed' },
+    { value: 'married', label: t('auth.signup.personalDetails.maritalStatus.options.married') },
+    { value: 'single', label: t('auth.signup.personalDetails.maritalStatus.options.single') },
+    { value: 'divorced', label: t('auth.signup.personalDetails.maritalStatus.options.divorced') },
+    { value: 'widowed', label: t('auth.signup.personalDetails.maritalStatus.options.widowed') },
   ];
 
   // Replace fetch languages useEffect:
@@ -413,11 +415,15 @@ const PersonalDetails = memo(({ onComplete }) => {
     }
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
-        let fieldName = field === 'streetName' ? 'Street Name' : 
-                       field === 'houseNumber' ? 'House Number' :
-                       field === 'arrivalDate' ? 'Arrival Date' :
-                       field === 'originCountry' ? 'Origin Country' : field;
-        newErrors[field] = `${fieldName} is required`;
+        let fieldKey = '';
+        switch (field) {
+          case 'streetName': fieldKey = 'auth.signup.personalDetails.errors.streetNameRequired'; break;
+          case 'houseNumber': fieldKey = 'auth.signup.personalDetails.errors.houseNumberRequired'; break;
+          case 'arrivalDate': fieldKey = 'auth.signup.personalDetails.errors.arrivalDateRequired'; break;
+          case 'originCountry': fieldKey = 'auth.signup.personalDetails.errors.originCountryRequired'; break;
+          default: fieldKey = 'auth.signup.personalDetails.errors.required';
+        }
+        newErrors[field] = t(fieldKey);
       }
     });
     // Validate house number
@@ -428,7 +434,7 @@ const PersonalDetails = memo(({ onComplete }) => {
     if (phoneError) newErrors.phoneNumber = phoneError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData]);
+  }, [formData, t]);
 
   const handleSubmit = useCallback(
     (e) => {
@@ -502,6 +508,25 @@ const PersonalDetails = memo(({ onComplete }) => {
     return () => document.head.removeChild(style);
   }, []);
 
+  // Prefill form in edit mode
+  useEffect(() => {
+    if (editMode && data && Object.keys(data).length > 0) {
+      updatePersonalData(data);
+    }
+    // eslint-disable-next-line
+  }, [editMode, data]);
+
+  // Helper to handle parent-driven continue in editMode
+  useEffect(() => {
+    if (!editMode) return;
+    window.__updatePersonalDataAndContinue = () => {
+      updatePersonalData(formData);
+      // Do NOT call onComplete here to avoid recursion
+    };
+    return () => { delete window.__updatePersonalDataAndContinue; };
+    // eslint-disable-next-line
+  }, [formData, editMode, onComplete]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
       {/* Floating background elements for visual consistency */}
@@ -517,11 +542,11 @@ const PersonalDetails = memo(({ onComplete }) => {
           <div className="flex items-center justify-center mb-4">
             <FaCheck className="w-12 h-12 text-yellow-500 mr-4" />
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Personal Details
+              {t('auth.signup.personalDetails.title')}
             </h2>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Please provide your personal information to help us serve you better.
+            {t('auth.signup.personalDetails.description')}
           </p>
         </div>
 
@@ -553,20 +578,20 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaCheck className="w-8 h-8 text-green-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Contact Information
+                  {t('auth.signup.personalDetails.contactInformation.title')}
                 </h3>
-                <p className="text-gray-600 text-lg">How can we reach you?</p>
+                <p className="text-gray-600 text-lg">{t('auth.signup.personalDetails.contactInformation.description')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Phone Number */}
               <FormField
-                label="Phone Number"
+                label={t('auth.signup.personalDetails.phoneNumber')}
                 name="phoneNumber"
                 id="phoneNumber"
                 type="text"
                 autoComplete="tel"
-                placeholder="05XXXXXXXX"
+                placeholder={t('auth.signup.personalDetails.phoneNumber')}
                 value={formData.phoneNumber}
                 onChange={e => {
                   let val = e.target.value.replace(/\D/g, '');
@@ -586,7 +611,7 @@ const PersonalDetails = memo(({ onComplete }) => {
               />
               {/* Marital Status */}
               <FormField
-                label="Marital Status"
+                label={t('auth.signup.personalDetails.maritalStatus.label')}
                 name="maritalStatus"
                 id="maritalStatus"
                 type="select"
@@ -606,20 +631,20 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaHome className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Address Information
+                  {t('auth.signup.personalDetails.addressInformation.title')}
                 </h3>
-                <p className="text-gray-600 text-lg">Where do you live?</p>
+                <p className="text-gray-600 text-lg">{t('auth.signup.personalDetails.addressInformation.description')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
-                label="House Number"
+                label={t('auth.signup.personalDetails.houseNumber')}
                 name="houseNumber"
                 id="houseNumber"
                 required
                 type="text"
                 autoComplete="address-line1"
-                placeholder="123"
+                placeholder={t('auth.signup.personalDetails.houseNumber')}
                 value={formData.houseNumber}
                 onChange={e => {
                   const val = e.target.value.toUpperCase();
@@ -638,12 +663,12 @@ const PersonalDetails = memo(({ onComplete }) => {
                 pattern="\d{1,4}[A-Za-z]?"
               />
               <FormField
-                label="Street Name"
+                label={t('auth.signup.personalDetails.streetName')}
                 name="streetName"
                 id="streetName"
                 required
                 autoComplete="address-line2"
-                placeholder="Main Street"
+                placeholder={t('auth.signup.personalDetails.streetName')}
                 className="sm:col-span-2"
                 value={formData.streetName}
                 onChange={handleInputChange}
@@ -652,12 +677,12 @@ const PersonalDetails = memo(({ onComplete }) => {
               />
             </div>
             <FormField
-              label="Additional Address Details (Optional)"
+              label={t('auth.signup.personalDetails.additionalAddressDetails')}
               name="address"
               id="address"
               type="textarea"
               autoComplete="address-line3"
-              placeholder="Apartment number, building name, or other address details..."
+              placeholder={t('auth.signup.personalDetails.additionalAddressDetails')}
               className="sm:col-span-2"
               value={formData.address}
               onChange={handleInputChange}
@@ -672,14 +697,14 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaLanguage className="w-8 h-8 text-blue-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Language & Background
+                  {t('auth.signup.personalDetails.languageAndBackground.title')}
                 </h3>
-                <p className="text-gray-600 text-lg">Tell us about your language and background</p>
+                <p className="text-gray-600 text-lg">{t('auth.signup.personalDetails.languageAndBackground.description')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <FormField
-                label="Native Language"
+                label={t('auth.signup.personalDetails.nativeLanguage')}
                 name="nativeLanguage"
                 id="nativeLanguage"
                 type="select"
@@ -697,12 +722,12 @@ const PersonalDetails = memo(({ onComplete }) => {
                 getLanguageIcon={getLanguageIcon}
               />
               <FormField
-                label="Hebrew Level"
+                label={t('auth.signup.personalDetails.hebrewLevel.label')}
                 name="hebrewLevel"
                 id="hebrewLevel"
                 type="select"
                 autoComplete="hebrew-level"
-                options={hebrewLevels.map(level => ({ value: level, label: level.charAt(0).toUpperCase() + level.slice(1) }))}
+                options={hebrewLevels.map(level => ({ value: level, label: t(`auth.signup.personalDetails.hebrewLevel.${level}`) }))}
                 value={formData.hebrewLevel}
                 onChange={handleInputChange}
                 error={errors.hebrewLevel}
@@ -712,7 +737,7 @@ const PersonalDetails = memo(({ onComplete }) => {
             {/* New Immigrant Question */}
             <div className="mt-4">
               <CheckboxField
-                label="I am a new immigrant to Israel"
+                label={t('auth.signup.personalDetails.isNewImmigrant')}
                 name="isNewImmigrant"
                 id="isNewImmigrant"
                 checked={formData.isNewImmigrant}
@@ -723,7 +748,7 @@ const PersonalDetails = memo(({ onComplete }) => {
             {formData.isNewImmigrant && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
                 <FormField
-                  label="Arrival Date"
+                  label={t('auth.signup.personalDetails.arrivalDate')}
                   name="arrivalDate"
                   id="arrivalDate"
                   type="date"
@@ -735,7 +760,7 @@ const PersonalDetails = memo(({ onComplete }) => {
                   getFieldIcon={() => getFieldIcon('arrivalDate')}
                 />
                 <FormField
-                  label="Origin Country"
+                  label={t('auth.signup.personalDetails.originCountry')}
                   name="originCountry"
                   id="originCountry"
                   type="select"
@@ -757,34 +782,34 @@ const PersonalDetails = memo(({ onComplete }) => {
               <FaInfoCircle className="w-8 h-8 text-purple-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Additional Information
+                  {t('auth.signup.personalDetails.additionalInformation.title')}
                 </h3>
-                <p className="text-gray-600 text-lg">Anything else we should know?</p>
+                <p className="text-gray-600 text-lg">{t('auth.signup.personalDetails.additionalInformation.description')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-4">
                 <FormField
-                  label="Health Condition"
+                  label={t('auth.signup.personalDetails.healthCondition')}
                   name="healthCondition"
                   id="healthCondition"
                   type="textarea"
                   autoComplete="health-condition"
-                  placeholder="Please describe any health conditions..."
+                  placeholder={t('auth.signup.personalDetails.healthConditionPlaceholder')}
                   value={formData.healthCondition}
                   onChange={handleInputChange}
                   error={errors.healthCondition}
                   getFieldIcon={() => getFieldIcon('healthCondition')}
                 />
                 <FormField
-                  label="Military/National Service"
+                  label={t('auth.signup.personalDetails.militaryService')}
                   name="militaryService"
                   id="militaryService"
                   type="select"
                   autoComplete="military-service"
                   options={militaryOptions.map((option) => ({
                     value: option,
-                    label: option === 'none' ? 'None' : option === 'military' ? 'Military Service' : 'National Service',
+                    label: t(`auth.signup.personalDetails.militaryOptions.${option}`),
                   }))}
                   value={formData.militaryService}
                   onChange={handleInputChange}
@@ -795,28 +820,28 @@ const PersonalDetails = memo(({ onComplete }) => {
               <div className="space-y-3 sm:mt-0">
                 <div className="p-4 bg-gray-50 rounded-lg space-y-3">
                   <CheckboxField
-                    label="I have a car"
+                    label={t('auth.signup.personalDetails.hasCar')}
                     name="hasCar"
                     id="hasCar"
                     checked={formData.hasCar}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
-                    label="Living alone"
+                    label={t('auth.signup.personalDetails.livingAlone')}
                     name="livingAlone"
                     id="livingAlone"
                     checked={formData.livingAlone}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
-                    label="Family members in settlement"
+                    label={t('auth.signup.personalDetails.familyInSettlement')}
                     name="familyInSettlement"
                     id="familyInSettlement"
                     checked={formData.familyInSettlement}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
-                    label="I carry a weapon"
+                    label={t('auth.signup.personalDetails.hasWeapon')}
                     name="hasWeapon"
                     id="hasWeapon"
                     checked={formData.hasWeapon}
@@ -827,27 +852,20 @@ const PersonalDetails = memo(({ onComplete }) => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="text-center pt-8">
-            <button
-              type="submit"
-              disabled={loading.settlements || loading.languages}
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-            >
-              {loading.settlements || loading.languages ? (
-                <>
-                  <FaSpinner className="animate-spin" />
-                  <span>Loading...</span>
-                </>
-              ) : (
-                <>
-                  <Star className="w-6 h-6" />
-                  <span>Continue</span>
-                  <Star className="w-6 h-6" />
-                </>
-              )}
-            </button>
-          </div>
+          {/* Submit Button - only show if not in editMode */}
+          {!editMode && (
+            <div className="text-center pt-8">
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                <Star className="w-6 h-6" />
+                <span>{t('common.continue')}</span>
+
+                <Star className="w-6 h-6" />
+              </button>
+            </div>
+          )}
         </form>
       </div>
 

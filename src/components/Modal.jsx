@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 
-const Modal = ({ children, onClose, title }) => {
+const Modal = ({ children, onClose, title, show = true }) => {
   const themeContext = useTheme();
   const theme = themeContext?.theme || 'light';
-  
+  if (!show) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
       <div className={`rounded-xl shadow-2xl p-8 w-full max-w-md relative animate-fadeIn ${

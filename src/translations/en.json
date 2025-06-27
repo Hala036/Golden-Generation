@@ -1,510 +1,532 @@
 {
-    "common": {
-      "loading": "Loading...",
-      "error": "Error",
-      "success": "Success",
-      "back": "Back",
-      "continue": "Continue",
-      "submit": "Submit",
-      "save": "Save",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "edit": "Edit",
-      "required": "Required",
-      "optional": "Optional",
-      "switchLanguage": "Switch Language",
-      "step": "Step",
-      "of": "of",
-      "select": "Select"
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "back": "Back",
+    "continue": "Continue",
+    "submit": "Submit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "required": "Required",
+    "optional": "Optional",
+    "switchLanguage": "Switch Language",
+    "step": "Step",
+    "of": "of",
+    "select": "Select"
+  },
+  "auth": {
+    "login": {
+      "title": "Login as",
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "newAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "user": "User",
+      "admin": "Admin",
+      "success": "Login successful!",
+      "error": "Failed to login. Please check your credentials.",
+      "imageAlt": "Couple enjoying event"
     },
-    "auth": {
-      "login": {
-        "title": "Login as",
-        "email": "Email address",
-        "password": "Password",
-        "forgotPassword": "Forgot password?",
-        "noAccount": "Don't have an account?",
-        "signIn": "Sign in",
-        "signingIn": "Signing in...",
-        "newAccount": "Don't have an account?",
-        "signUp": "Sign up",
-        "user": "User",
-        "admin": "Admin",
-        "success": "Login successful!",
-        "error": "Failed to login. Please check your credentials.",
-        "imageAlt": "Couple enjoying event"
-      },
-      "signup": {
-        "title": "Create Your Account",
-        "haveAccount": "Already have an account?",
-        "signIn": "Sign in",
-        "creating": "Creating your account...",
-        "success": "Account created successfully!",
-        "error": {
-          "incomplete": "Please complete all required information",
-          "general": "Failed to create account. Please try again."
+    "signup": {
+      "logo": "Golden Generation",
+      "createAccount": "Create Your Account",
+      "back": "Back",
+      "continue ":"continue",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "creatingAccount": "Creating your account...",
+      "progress": {
+        "idVerification": "ID Verification",
+        "accountCredentials": "Account Credentials",
+        "personalDetails": "Personal Details",
+        "workBackground": "Work Background",
+        "lifestyle": "Lifestyle",
+        "veteransCommunity": "Veterans Community",
+        "stepOf": "Step {{current}} of {{total}}"
+    },
+    "personalDetails": {
+      "title": "Personal Details",
+        "description": "Please provide your personal information to help us serve you better.",
+        "contactInformation": {
+          "title": "Contact Information",
+          "description": "How can we reach you?"
         },
-        "steps": {
-          "idVerification": "ID Verification",
-          "credentials": "Account Credentials",
-          "personalDetails": "Personal Details",
-          "workBackground": "Work Background",
-          "lifestyle": "Lifestyle",
-          "veteransCommunity": "Veterans Community"
+        "phoneNumber": "Phone Number",
+      "maritalStatus": {
+        "label": "Marital Status",
+        "placeholder": "Select your marital status",
+        "options": {
+          "single": "Single",
+          "married": "Married",
+          "divorced": "Divorced",
+          "widowed": "Widowed"
+
         }
       },
-      "personalDetails": {
-        "title": "Personal Details",
-        "subtitle": "Tell us about yourself",
-        "firstName": {
-          "label": "First Name",
-          "placeholder": "Enter your first name"
+        "addressInformation": {
+          "title": "Address Information",
+          "description": "Where do you live?"
         },
-        "lastName": {
-          "label": "Last Name",
-          "placeholder": "Enter your last name"
+        "houseNumber": "House Number",
+        "streetName": "Street Name",
+        "additionalAddressDetails": "Additional Address Details (Optional)",
+        "languageAndBackground": {
+          "title": "Language & Background",
+          "description": "Tell us about your language and background"
         },
-        "birthDate": {
-          "label": "Date of Birth"
+        "nativeLanguage": "Native Language",
+      "hebrewLevel": {
+        "label": "Hebrew Level",
+          "placeholder": "Select your Hebrew level",
+          "beginner": "Beginner",
+          "intermediate": "Intermediate",
+          "advanced": "Advanced",
+          "native": "Native"
         },
-        "gender": {
-          "label": "Gender",
-          "placeholder": "Select your gender",
-          "options": {
-            "male": "Male",
-            "female": "Female",
-            "other": "Other"
-          }
+        "isNewImmigrant": "I am a new immigrant to Israel",
+        "arrivalDate": "Arrival Date",
+        "originCountry": "Origin Country",
+        "additionalInformation": {
+          "title": "Additional Information",
+          "description": "Anything else we should know?"
         },
-        "maritalStatus": {
-          "label": "Marital Status",
-          "placeholder": "Select your marital status",
-          "options": {
-            "single": "Single",
-            "married": "Married",
-            "divorced": "Divorced",
-            "widowed": "Widowed"
-          }
+        "healthCondition": "Health Condition",
+        "healthConditionPlaceholder": "Please describe any health conditions...",
+        "militaryService": "Military/National Service",
+        "militaryOptions": {
+          "none": "None",
+          "military": "Military",
+          "national": "National Service"
         },
-        "city": {
-          "label": "City",
-          "placeholder": "Enter your city"
-        },
-        "address": {
-          "label": "Address",
-          "placeholder": "Enter your full address"
-        },
-        "phone": {
-          "label": "Phone Number (Optional)",
-          "placeholder": "Enter your phone number"
-        },
-        "mobilePhone": {
-          "label": "Mobile Phone",
-          "placeholder": "Enter your mobile phone number"
-        },
-        "emergencyContact": {
-          "title": "Emergency Contact",
-          "name": {
-            "label": "Contact Name",
-            "placeholder": "Enter contact name"
-          },
-          "phone": {
-            "label": "Contact Phone",
-            "placeholder": "Enter contact phone number"
-          },
-          "relation": {
-            "label": "Relationship",
-            "placeholder": "Enter your relationship to the contact"
-          }
-        },
-        "continue": "Continue",
-        "nativeLanguage": {
-          "label": "Native Language",
-          "placeholder": "Enter your native language"
-        },
-        "hebrewLevel": {
-          "label": "Hebrew Level",
-          "placeholder": "Enter your Hebrew level"
-        },
-        "arrivalDate": {
-          "label": "Arrival Date",
-          "placeholder": "Select your arrival date"
-        },
-        "originCountry": {
-          "label": "Country of Origin",
-          "placeholder": "Enter your country of origin"
-        },
-        "healthCondition": {
-          "label": "Health Condition",
-          "placeholder": "Enter your health condition"
-        },
-        "militaryService": {
-          "label": "Military Service",
-          "placeholder": "Enter your military service"
-        },
-        "additionalOptions": "Additional Options",
-        "hasCar": {
-          "label": "Has Car"
-        },
-        "livingAlone": {
-          "label": "Living Alone"
-        },
-        "familyInSettlement": {
-          "label": "Family in Settlement"
-        },
-        "hasWeapon": {
-          "label": "Has Weapon"
-        }
-      },
-      "workBackground": {
-        "title": "Work Background",
-        "subtitle": "Tell us about your professional experience",
-        "retirementStatus": {
-          "label": "Retirement Status",
-          "options": {
-            "notRetired": "I didn't retire",
-            "partially": "Partially",
-            "full": "Full"
-          }
-        },
-        "currentEmployment": {
-          "label": "Are you working today?",
-          "yes": "Yes",
-          "dischargeDate": "Expected discharge date"
-        },
-        "lastJobs": {
-          "label": "Last Job(s)",
-          "options": {
-            "doctor": "Doctor",
-            "funds": "Funds",
-            "sales": "Sales",
-            "marketing": "Marketing",
-            "highTech": "High tech",
-            "teaching": "Teaching",
-            "housewife": "Housewife",
-            "admin": "Admin",
-            "socialAcademy": "Social Academy",
-            "psychology": "Psychology p.",
-            "tourism": "Tourism",
-            "retailing": "Retailing",
-            "nursing": "Nursing",
-            "engineer": "Engineer",
-            "management": "Management",
-            "coaching": "Coaching/Mentor",
-            "design": "Design",
-            "idf": "IDF",
-            "other": "Other"
-          }
-        },
-        "subspecialty": {
-          "label": "Subspecialty in work field",
-          "placeholder": "Enter your subspecialty"
-        },
-        "academicDegrees": {
-          "label": "Academic Degrees",
-          "placeholder": "Enter your academic degrees"
-        },
-        "continue": "Continue"
-      },
-      "lifestyle": {
-        "title": "Lifestyle",
-        "subtitle": "Tell us about your daily activities and interests",
-        "computerAbility": {
-          "label": "Level of ability in using a computer/smartphone (0 = low, 5 = high)",
-          "levels": {
-            "0": "None",
-            "1": "Basic",
-            "2": "Fair",
-            "3": "Good",
-            "4": "Very Good",
-            "5": "Excellent"
-          }
-        },
-        "sportActivity": {
-          "label": "Level of weekly sport activity (0 = low, 5 = high)",
-          "levels": {
-            "0": "None",
-            "1": "Rarely",
-            "2": "Sometimes",
-            "3": "Regular",
-            "4": "Often",
-            "5": "Very Active"
-          }
-        },
-        "weeklySchedule": {
-          "label": "Occupancy level of the weekly schedule (0 = low, 5 = high)",
-          "levels": {
-            "0": "Very Free",
-            "1": "Mostly Free",
-            "2": "Balanced",
-            "3": "Somewhat Busy",
-            "4": "Busy",
-            "5": "Very Busy"
-          }
-        },
-        "interests": {
-          "label": "Interests (select all that apply)",
-          "options": {
-            "books": "Safety read books",
-            "culture": "Culture",
-            "cooking": "Cooking",
-            "trips": "Trips",
-            "photography": "Photography",
-            "sport": "Sport",
-            "other": "Other",
-            "none": "Don't have",
-            "study": "Study",
-            "gardening": "Gardening",
-            "computer": "Computer",
-            "craftsmanship": "Craftsmanship"
-          }
-        },
-        "sportsSubspecialty": {
-          "label": "Sports Subspecialty",
-          "placeholder": "Enter your sports subspecialty"
-        },
-        "continue": "Continue"
-      },
-      "veteransCommunity": {
-        "title": "Veterans in the Community",
-        "subtitle": "Tell us about your community involvement",
-        "currentActivities": {
-          "label": "Current Activities",
-          "options": {
-            "cooking": "Cooking",
-            "trips": "Trips",
-            "choir": "Choir",
-            "torahClasses": "Torah classes",
-            "lectures": "Lectures",
-            "exercise": "Exercise"
-          }
-        },
-        "notParticipating": {
-          "label": "Reason for not participating",
-          "placeholder": "Select a reason",
-          "options": {
-            "noChallenge": "Not another challenger",
-            "notRelevant": "Not relevant",
-            "noInfo": "I have no information",
-            "notInteresting": "Not interesting",
-            "noTime": "I don't have time"
-          }
-        },
-        "volunteering": {
-          "isVolunteer": {
-            "label": "Are you already a volunteer?",
-            "yes": "Yes"
-          },
-          "areas": {
-            "label": "Volunteer Areas",
-            "options": {
-              "publicity": "Publicity",
-              "health": "Health",
-              "eater": "Eater",
-              "teaching": "Teaching",
-              "highTech": "High tech",
-              "tourism": "Tourism",
-              "safety": "Safety",
-              "funds": "Funds",
-              "specialTreat": "A special treat",
-              "craftsmanship": "Craftsmanship",
-              "aaliyah": "Aaliyah",
-              "culture": "Culture"
-            }
-          },
-          "frequency": {
-            "label": "Frequency",
-            "placeholder": "Select frequency",
-            "options": {
-              "onceMonth": "Once a month",
-              "onceTwoWeeks": "Once every two weeks",
-              "onceWeek": "Once a week",
-              "twiceWeek": "Twice a week"
-            }
-          },
-          "hours": {
-            "label": "Hours",
-            "placeholder": "Select hours",
-            "options": {
-              "morning": "Morning hours",
-              "noon": "Noon hours",
-              "evening": "Evening hours"
-            }
-          },
-          "days": {
-            "label": "Days",
-            "options": {
-              "monday": "Monday",
-              "tuesday": "Tuesday",
-              "wednesday": "Wednesday",
-              "thursday": "Thursday",
-              "friday": "Friday",
-              "saturday": "Saturday"
-            }
-          }
-        },
-        "additionalVolunteering": {
-          "label": "Would you like to volunteer additionally?",
-          "yes": "Yes",
-          "areas": {
-            "label": "Areas of Interest"
-          },
-          "frequency": {
-            "label": "Preferred Frequency"
-          }
-        },
-        "consultation": {
-          "label": "Would you like consultation in any of these areas?",
-          "options": {
-            "company": "Company",
-            "gardening": "Gardening",
-            "health": "Health",
-            "nutrition": "Food/nutrition",
-            "homeEconomics": "Home economics",
-            "houseOrder": "Order in the house",
-            "marketing": "Marketing",
-            "shopping": "Shopping",
-            "mobility": "Mobility",
-            "digital": "Digital",
-            "legal": "Legal",
-            "psychology": "Psychology",
-            "houseRules": "House rules",
-            "sport": "Sport"
-          }
-        },
-        "continue": "Continue"
-      },
-      "idVerification": {
-        "title": "ID Verification",
-        "subtitle": "Please provide your identification details",
-        "idNumber": {
-          "label": "ID Number",
-          "placeholder": "Enter your ID number"
-        },
-        "idType": {
-          "label": "ID Type",
-          "placeholder": "Select ID type",
-          "options": {
-            "passport": "Passport",
-            "nationalId": "National ID",
-            "driverLicense": "Driver's License"
-          }
-        },
-        "expiryDate": {
-          "label": "ID Expiry Date"
-        },
-        "idImage": {
-          "label": "ID Document Image",
-          "uploadButton": "Upload ID Document",
-          "dragDrop": "or drag and drop",
-          "fileTypes": "PNG, JPG, JPEG up to 5MB",
-          "fileSelected": "File selected successfully"
-        },
-        "selfie": {
-          "label": "Selfie with ID",
-          "uploadButton": "Upload a file",
-          "dragDrop": "or drag and drop",
-          "fileTypes": "PNG, JPG, JPEG up to 5MB",
-          "fileSelected": "File selected successfully"
-        },
+        "hasCar": "I have a car",
+        "livingAlone": "Living alone",
+        "familyInSettlement": "Family members in settlement",
+        "hasWeapon": "I carry a weapon",
         "errors": {
-          "idRequired": "ID number is required",
-          "idFormat": "ID number must be 9 digits",
-          "idTypeRequired": "ID type is required",
-          "expiryRequired": "Expiry date is required",
-          "expired": "ID has expired",
-          "idImageRequired": "ID image is required",
-          "selfieRequired": "Selfie image is required",
-          "fileSize": "File size must be less than 5MB",
-          "fileType": "Only PNG, JPG, and JPEG files are allowed",
-          "firstNameRequired": "First name is required",
-          "lastNameRequired": "Last name is required",
-          "idNumberRequired": "ID number is required",
-          "invalidIdNumber": "ID number must be 9 digits",
-          "dateOfBirthRequired": "Date of birth is required",
-          "ageRequirement": "Minimum age is 50 years",
-          "ageRequirementNotMet": "Age requirement not met: minimum age is 50 years",
-          "genderRequired": "Gender is required",
-          "invalidFileType": "Invalid file type. Please upload a JPG, JPEG, or PNG file",
-          "processing": "Error processing file",
-          "extraction": "Could not extract data from image",
-          "ocr": "Text recognition error"
-        },
-        "continue": "Continue",
-        "language": {
-          "select": "Select language",
-          "hebEng": "Hebrew + English",
-          "heb": "Hebrew",
-          "eng": "English"
-        },
-        "uploadInstructions": "Please upload or scan your ID for auto-fill, or fill the form manually.",
-        "uploadButton": "Upload ID Document",
-        "startScanning": "Start Scanning",
-        "acceptedFormats": "Accepted formats: JPG, JPEG, PNG (max 5MB)",
-        "form": {
-          "firstName": "First Name",
-          "lastName": "Last Name",
-          "idNumber": "ID Number",
-          "idNumberPlaceholder": "Enter 9 digits",
-          "dateOfBirth": "Date of Birth",
-          "gender": "Gender",
-          "selectGender": "Select gender",
-          "genderMale": "Male",
-          "genderFemale": "Female",
-          "genderOther": "Other",
-          "submit": "Continue"
+          "streetNameRequired": "Street name is required",
+          "houseNumberRequired": "House number is required",
+          "arrivalDateRequired": "Arrival date is required",
+          "originCountryRequired": "Origin country is required",
+          "required": "This field is required",
+          "houseNumberFormat": "House number must be numeric (e.g., 123 or 123A)",
+          "phoneNumberFormat": "Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)"
+      }
+    },
+    "workBackground": {
+      "title": "Work Background",
+      "subtitle": "Tell us about your professional experience",
+      "categories": {
+        "healthcare": "Healthcare",
+      "engineeringTechnology": "Engineering & Technology",
+        "businessFinance": "Business & Finance",
+        "education": "Education",
+        "legal": "Legal",
+        "artsMedia": "Arts & Media",
+        "serviceIndustry": "Service Industry",
+        "tradesManualLabor": "Trades & Manual Labor",
+        "otherProfessions": "Other Professions"},
+      "retirementStatus": {
+        "label": "Retirement Status",
+        "options": {
+          "notRetired": "I didn't retire",
+          "partially": "Partially",
+          "full": "Full"
         }
       },
-      "forgotPassword": {
-        "title": "Reset Password",
-        "emailPlaceholder": "Enter your email",
-        "sendButton": "Send Reset Link",
-        "sending": "Sending...",
-        "backToLogin": "Back to Login",
-        "success": "Password reset email sent! Please check your inbox.",
-        "error": "Failed to send reset email"
+      "currentEmployment": {
+        "label": "Are you working today?",
+        "yes": "Yes",
+        "dischargeDate": "Expected discharge date"
       },
-      "logout": {
-        "success": "Logged out successfully!",
-        "error": "Failed to logout. Please try again."
+      "lastJobs": {
+        "label": "Last Job(s)",
+        "options": {
+          "doctor": "Doctor",
+          "funds": "Funds",
+          "sales": "Sales",
+          "marketing": "Marketing",
+          "highTech": "High tech",
+          "teaching": "Teaching",
+          "housewife": "Housewife",
+          "admin": "Admin",
+          "socialAcademy": "Social Academy",
+          "psychology": "Psychology p.",
+          "tourism": "Tourism",
+          "retailing": "Retailing",
+          "nursing": "Nursing",
+          "engineer": "Engineer",
+          "management": "Management",
+          "coaching": "Coaching/Mentor",
+          "design": "Design",
+          "idf": "IDF",
+          "other": "Other"
+        }
       },
-      "credentials": {
-        "title": "Account Credentials",
-        "subtitle": "Create your account credentials",
-        "email": {
-          "label": "Email Address",
-          "placeholder": "Enter your email address",
-          "required": "Email is required",
-          "invalid": "Invalid email format",
-          "inUse": "Email is already registered",
-          "available": "Email is available"
+      "subspecialty": {
+        "label": "Subspecialty in work field",
+        "placeholder": "Enter your subspecialty"
+      },
+      "academicDegrees": {
+        "label": "Academic Degrees",
+          "placeholder": "Enter your academic degrees",
+          "highSchool": "High School",
+  "associateDegree": "Associate Degree",
+  "bachelorsDegree": "Bachelor's Degree",
+  "mastersDegree": "Master's Degree",
+  "phd": "PhD",
+  "postDoc": "Postdoctoral",
+  "professionalCert": "Professional Certificate",
+  "vocationalTraining": "Vocational Training",
+  "noFormalEducation": "No Formal Education",
+  "other": "Other"          
+
         },
-        "username": {
-          "label": "Username",
-          "placeholder": "Choose a username",
-          "required": "Username is required",
-          "minLength": "Username must be at least 3 characters",
-          "invalid": "Username can only contain letters, numbers, and underscores",
-          "inUse": "Username is already taken",
-          "available": "Username is available"
-        },
-        "password": {
-          "label": "Password",
-          "placeholder": "Create a password",
-          "required": "Password is required",
-          "minLength": "Password must be at least 8 characters",
-          "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-        },
-        "confirmPassword": {
-          "label": "Confirm Password",
-          "placeholder": "Confirm your password",
-          "required": "Please confirm your password",
-          "mismatch": "Passwords do not match"
-        },
-        "validation": {
-          "wait": "Please wait while we verify your information",
-          "fix": "Please fix the errors before continuing",
-          "success": "Credentials validated successfully"
+        "continue": "Continue",
+        "jobCategories": "Job Categories",
+        "yourSelectedJob": "Your Selected Job",
+        "selectYourJob": "Select Your Job",
+        "changeJob": "Change Job",
+        "allCategories": "All Categories",
+        "changeSelection": "Change Selection",
+        "jobs": {
+          "Doctor": "Doctor",
+          "Cardiologist": "Cardiologist",
+          "Dermatologist": "Dermatologist",
+          "EmergencyPhysician": "Emergency Physician",
+          "FamilyPhysician": "Family Physician",
+          "Gastroenterologist": "Gastroenterologist",
+          "Neurologist": "Neurologist",
+          "Obstetrician": "Obstetrician",
+          "Oncologist": "Oncologist",
+          "Ophthalmologist": "Ophthalmologist",
+          "OrthopedicSurgeon": "Orthopedic Surgeon",
+          "Pediatrician": "Pediatrician",
+          "Psychiatrist": "Psychiatrist",
+          "Radiologist": "Radiologist",
+          "Surgeon": "Surgeon",
+          "Other": "Other",
+          "Nurse": "Nurse",
+          "RegisteredNurse": "Registered Nurse",
+          "NursePractitioner": "Nurse Practitioner",
+          "LicensedPracticalNurse": "Licensed Practical Nurse",
+          "ICUNurse": "ICU Nurse",
+          "ERNurse": "ER Nurse",
+          "PediatricNurse": "Pediatric Nurse",
+          "Dentist": "Dentist",
+          "GeneralDentist": "General Dentist",
+          "Orthodontist": "Orthodontist",
+          "OralSurgeon": "Oral Surgeon",
+          "Periodontist": "Periodontist",
+          "Pharmacist": "Pharmacist",
+          "PhysicalTherapist": "Physical Therapist",
+          "Psychologist": "Psychologist",
+          "Paramedic": "Paramedic",
+          "OtherHealthcareProfessional": "Other Healthcare Professional",
+          "SoftwareEngineer": "Software Engineer",
+          "FrontendDeveloper": "Frontend Developer",
+          "BackendDeveloper": "Backend Developer",
+          "FullStackDeveloper": "Full Stack Developer",
+          "MobileDeveloper": "Mobile Developer",
+          "GameDeveloper": "Game Developer",
+          "DevOpsEngineer": "DevOps Engineer",
+          "MachineLearningEngineer": "Machine Learning Engineer",
+          "CivilEngineer": "Civil Engineer",
+          "StructuralEngineer": "Structural Engineer",
+          "TransportationEngineer": "Transportation Engineer",
+          "EnvironmentalEngineer": "Environmental Engineer",
+          "GeotechnicalEngineer": "Geotechnical Engineer",
+          "MechanicalEngineer": "Mechanical Engineer",
+          "ElectricalEngineer": "Electrical Engineer",
+          "ChemicalEngineer": "Chemical Engineer",
+          "BiomedicalEngineer": "Biomedical Engineer",
+          "DataScientist": "Data Scientist",
+          "ITSpecialist": "IT Specialist",
+          "OtherEngineeringTechProfessional": "Other Engineering/Tech Professional",
+          "Accountant": "Accountant",
+          "FinancialAnalyst": "Financial Analyst",
+          "InvestmentBanker": "Investment Banker",
+          "MarketingManager": "Marketing Manager",
+          "HumanResources": "Human Resources",
+          "BusinessAnalyst": "Business Analyst",
+          "ProjectManager": "Project Manager",
+          "Salesperson": "Salesperson",
+          "RealEstateAgent": "Real Estate Agent",
+          "Entrepreneur": "Entrepreneur",
+          "OtherBusinessProfessional": "Other Business Professional",
+          "Teacher": "Teacher",
+          "ElementaryTeacher": "Elementary Teacher",
+          "MiddleSchoolTeacher": "Middle School Teacher",
+          "HighSchoolTeacher": "High School Teacher",
+          "SpecialEducationTeacher": "Special Education Teacher",
+          "ESLTeacher": "ESL Teacher",
+          "Professor": "Professor",
+          "SchoolAdministrator": "School Administrator",
+          "SchoolCounselor": "School Counselor",
+          "Librarian": "Librarian",
+          "OtherEducationProfessional": "Other Education Professional",
+          "Lawyer": "Lawyer",
+          "CorporateLawyer": "Corporate Lawyer",
+          "CriminalLawyer": "Criminal Lawyer",
+          "FamilyLawyer": "Family Lawyer",
+          "IntellectualPropertyLawyer": "Intellectual Property Lawyer",
+          "Judge": "Judge",
+          "Paralegal": "Paralegal",
+          "LegalSecretary": "Legal Secretary",
+          "OtherLegalProfessional": "Other Legal Professional",
+          "Artist": "Artist",
+          "Musician": "Musician",
+          "Actor": "Actor",
+          "Writer": "Writer",
+          "Journalist": "Journalist",
+          "Photographer": "Photographer",
+          "GraphicDesigner": "Graphic Designer",
+          "UXUIDesigner": "UX/UI Designer",
+          "FilmVideoProducer": "Film/Video Producer",
+          "OtherCreativeProfessional": "Other Creative Professional",
+          "ChefCook": "Chef/Cook",
+          "ServerWaiter": "Server/Waiter",
+          "Bartender": "Bartender",
+          "Barista": "Barista",
+          "HotelStaff": "Hotel Staff",
+          "FlightAttendant": "Flight Attendant",
+          "TourGuide": "Tour Guide",
+          "RetailWorker": "Retail Worker",
+          "Cashier": "Cashier",
+          "OtherServiceProfessional": "Other Service Professional",
+          "Electrician": "Electrician",
+          "Plumber": "Plumber",
+          "Carpenter": "Carpenter",
+          "ConstructionWorker": "Construction Worker",
+          "Mechanic": "Mechanic",
+          "Welder": "Welder",
+          "Driver": "Driver",
+          "Farmer": "Farmer",
+          "Landscaper": "Landscaper",
+          "Cleaner": "Cleaner",
+          "OtherTradeProfessional": "Other Trade Professional",
+          "MilitaryPersonnel": "Military Personnel",
+          "PoliceOfficer": "Police Officer",
+          "Firefighter": "Firefighter",
+          "Scientist": "Scientist",
+          "SocialWorker": "Social Worker",
+          "OfficeAdministrator": "Office Administrator",
+          "GovernmentEmployee": "Government Employee",
+          "Homemaker": "Homemaker",
+          "ReligiousWorker": "Religious Worker",
+          "Volunteer": "Volunteer",
+          "Retired": "Retired",
+          "Student": "Student"
+        }
+      },
+      "tellUsAboutYourProfessionalExperience": "Tell us about your professional experience",
+      "retirementStatus": "Retirement Status",
+      "areYouWorkingToday": "Are you working today?",
+      "expectedDischargeDate": "Expected discharge date",
+      "searchForAJob": "Search for a job...",
+      "pleaseSpecifyYourJob": "Please specify your job",
+      "enterYourJobTitle": "Enter your job title",
+      "selectYourAcademicDegrees": "Select your academic degrees...",
+      "pleaseSpecifyYourDegree": "Please specify your degree",
+      "enterYourAcademicDegree": "Enter your academic degree",
+      "subspecialtiesFor": "Sub-specialties for",
+      "accountCredentials": "Account Credentials",
+      "createAccountCredentials": "Create your account credentials to join the community.",
+      "setYourCredentials": "Set Your Credentials",
+      "chooseUsernameEmailAndPassword": "Choose your username, email, and password",
+      "emailAddress": "Email Address",
+      "enterYourEmailAddress": "Enter your email address",
+      "username": "Username",
+      "chooseAUniqueUsername": "Choose a unique username",
+      "usernameMustBeAtLeast3CharactersAndCanOnlyContainLettersNumbersAndUnderscores": "Username must be at least 3 characters and can only contain letters, numbers, and underscores",
+      "enterYourPassword": "Enter your password",
+      "passwordMustBeAtLeast8CharactersAndIncludeUppercaseLowercaseAndNumbers": "Password must be at least 8 characters and include uppercase, lowercase, and numbers",
+      "confirmPassword": "Confirm Password",
+      "confirmYourPassword": "Confirm your password",
+      "checking": "Checking...",
+      "manageAvailableSettlements": "Manage Available Settlements",
+      "addNewSettlement": "Add New Settlement",
+      "enterSettlementName": "Enter settlement name",
+      "add": "Add",
+      "accountCreationFailed": "Account creation failed. Please try again.",
+      "idNumberRegistered": "ID number is already registered",
+      "idNumberCheckError": "Error checking ID number availability",
+      "idNumberAvailable": "ID number is available",
+      "invalidIsraeliId": "Invalid Israeli ID number",
+      "invalidImageFile": "Please upload a valid image file (JPG, JPEG, or PNG)",
+      "fileSizeLimit": "File size must be less than 5MB",
+      "fileProcessingError": "Error processing file. Please try again.",
+      "dataExtractedSuccess": "Data extracted successfully!",
+      "dataExtractedFail": "Could not extract data from image. Please try again.",
+      "ocrProcessingError": "Error processing image. Please try again or fill the form manually."
+    },
+    "lifestyle": {
+      "title": "Lifestyle",
+      "description": "Tell us about your daily activities and interests",
+      "computerAbilityLabel": "Level of ability in using a computer/smartphone (0 = low, 5 = high)",
+      "sportActivityLabel": "Level of weekly sport activity (0 = low, 5 = high)",
+      "weeklyScheduleLabel": "Occupancy level of the weekly schedule (0 = low, 5 = high)",
+      "low": "Low",
+      "high": "High",
+      "valueDisplay": "Level: {{value}}",
+      "interestsLabel": "Interests (select all that apply)",
+      "safetyReadBooks": "Safety read books",
+      "culture": "Culture",
+      "cooking": "Cooking",
+      "trips": "Trips",
+      "photography": "Photography",
+      "sport": "Sport",
+      "study": "Study",
+      "gardening": "Gardening",
+      "computer": "Computer",
+      "craftsmanship": "Craftsmanship",
+      "music": "Music",
+      "art": "Art",
+      "dancing": "Dancing",
+      "hiking": "Hiking",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "gaming": "Gaming",
+      "writing": "Writing",
+      "volunteering": "Volunteering",
+      "podcasts": "Podcasts",
+      "movies": "Movies",
+      "fashion": "Fashion",
+      "languages": "Languages",
+      "astronomy": "Astronomy",
+      "history": "History",
+      "science": "Science",
+      "technology": "Technology",
+      "baking": "Baking",
+      "dontHave": "Don't have",
+      "other": "Other",
+      "sportsSubspecialtyLabel": "Sports Subspecialty",
+      "sportsSubspecialtyPlaceholder": "Enter your sports subspecialty",
+      "continueButton": "Continue"
+    },
+    "veteransCommunity": {
+      "title": "Veterans Community",
+      "description": "Join our vibrant community and make a difference. Tell us about your interests and how you'd like to contribute.",
+          "cooking": "Cooking",
+          "trips": "Trips",
+          "choir": "Choir",
+      "torahClasses": "Torah Classes",
+          "lectures": "Lectures",
+      "exercise": "Exercise",
+      "currentActivities": "Current Activities",
+      "currentActivitiesDescription": "What activities are you currently participating in?",
+      "whyNotParticipating": "Why aren't you participating?",
+      "whyNotParticipatingDescription": "Help us understand your situation better",
+      "selectReason": "Select a reason",
+      "currentVolunteering": "Current Volunteering",
+      "currentVolunteeringDescription": "Are you already volunteering somewhere?",
+      "yesImCurrentlyVolunteering": "Yes, I'm currently volunteering",
+      "volunteerAreas": "Volunteer Areas",
+      "frequency": "Frequency",
+      "selectFrequency": "Select frequency",
+      "preferredHours": "Preferred Hours",
+      "selectHours": "Select hours",
+      "availableDays": "Available Days",
+      "additionalVolunteering": "Additional Volunteering",
+      "additionalVolunteeringDescription": "Would you like to volunteer in additional areas?",
+      "yesIdLikeToVolunteerAdditionally": "Yes, I'd like to volunteer additionally",
+      "areasOfInterest": "Areas of Interest",
+      "preferredFrequency": "Preferred Frequency",
+      "preferredDays": "Preferred Days",
+      "consultationServices": "Consultation Services",
+      "consultationServicesDescription": "Would you like consultation in any field?",
+      "yesINeedConsultation": "Yes, I need consultation",
+      "fieldsForConsultation": "Fields for Consultation",
+      "createMyCommunityProfile": "Create My Community Profile",
+      "noChallenge": "Not challenging enough",
+      "notRelevant": "Not relevant to me",
+      "noInfo": "Didn't know about it",
+      "notInteresting": "Not interesting",
+      "noTime": "No time",
+      "publicity": "Publicity",
+      "eater": "Food Service",
+      "highTech": "High Tech",
+      "safety": "Safety",
+      "funds": "Funds",
+      "specialTreat": "Special Treat",
+      "craftsmanship": "Craftsmanship",
+      "aaliyah": "Aliyah Support",
+      "onceMonth": "Once a month",
+      "onceTwoWeeks": "Once every two weeks",
+      "onceWeek": "Once a week",
+      "twiceWeek": "Twice a week",
+      "morning": "Morning",
+      "noon": "Noon",
+      "evening": "Evening",
+      "sunday": "Sunday",
+      "sun": "Sun",
+      "monday": "Monday",
+      "mon": "Mon",
+      "tuesday": "Tuesday",
+      "tue": "Tue",
+      "wednesday": "Wednesday",
+      "wed": "Wed",
+      "thursday": "Thursday",
+      "thu": "Thu",
+      "friday": "Friday",
+      "fri": "Fri",
+      "company": "Company",
+      "foodNutrition": "Food & Nutrition",
+      "homeEconomics": "Home Economics",
+      "orderHouse": "Order in the House",
+      "shopping": "Shopping",
+      "mobility": "Mobility",
+      "digital": "Digital Skills",
+      "houseRules": "House Rules",
+      "gardening": "Gardening",
+      "marketing": "Marketing",
+      "legal": "Legal",
+      "psychology": "Psychology",
+      "tourism": "Tourism",
+      "teaching": "Teaching",
+      "health": "Health",
+      "culture": "Culture"
+    },
+    "idVerification": {
+      "title": "ID Verification",
+      "subtitle": "Please provide your identification details",
+      "form": {
+        "identificationDetails": "Identification Details",
+        "enterIdAndPersonalInfo": "Enter your ID and personal information",
+        "idNumber": "ID Number",
+        "idNumberPlaceholder": "Enter 9 digits",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "dateOfBirth": "Date of Birth",
+        "gender": "Gender",
+        "genderMale": "Male",
+        "genderFemale": "Female",
+        "genderOther": "Other",
+        "settlementTitle": "Settlement",
+        "settlementSubtitle": "Select your place of residence",
+        "settlement": "Settlement",
+        "loadingSettlements": "Loading settlements...",
+        "failedToLoadSettlements": "Failed to load settlements. Please try again later.",
+        "settlementPlaceholder": "Select settlement...",
+        "submit": "Submit"
+      },
+      "idNumber": {
+        "label": "ID Number",
+        "placeholder": "Enter your ID number"
+      },
+      "idType": {
+        "label": "ID Type",
+        "placeholder": "Select ID type",
+        "options": {
+          "passport": "Passport",
+          "nationalId": "National ID",
+          "driverLicense": "Driver's License"
         }
       }
     },
@@ -548,145 +570,296 @@
         "participants": "Participants",
         "noParticipants": "No participants yet"
       },
-      "filter": {
-        "allCategories": "All Categories",
-        "trip": "Trip",
-        "vacation": "Vacation",
-        "workshop": "Workshop",
-        "lecture": "Lecture",
-        "houseparty": "House Party",
-        "socialevent": "Social Event"
+      "expiryDate": {
+        "label": "ID Expiry Date"
       },
-      "search": {
-        "searchCategories": "Search Categories",
-        "searchEvents": "Search Events",
-        "button": "Search"
+      "idImage": {
+        "label": "ID Document Image",
+        "uploadButton": "Upload ID Document",
+        "dragDrop": "or drag and drop",
+        "fileTypes": "PNG, JPG, JPEG up to 5MB",
+        "fileSelected": "File selected successfully"
       },
-      "language": {
-        "english": "English",
-        "russian": "Russian",
-        "hebrew": "Hebrew",
-        "arabic": "Arabic"
-      },
-      "header": {
-        "title": "Golden Generation",
-        "logout": "Logout"
-      },
-      "messages": {
-        "title": "Messages",
-        "search": "Search for users...",
-        "noMessages": "No messages yet.",
-        "typeMessage": "Type your message...",
-        "selectChat": "Select a chat to start messaging.",
-        "friendRequestSent": "Friend request sent successfully.",
-        "friendRequestExists": "A friend request already exists.",
-        "friendRequestAccepted": "Friend request accepted.",
-        "friendRequestRejected": "Friend request rejected.",
-        "incomingCall": "Incoming Call",
-        "calling": "Calling...",
-        "audioCallError": "Failed to start audio call.",
-        "leaveCall": "Leave Call",
-        "mute": "Mute",
-        "unmute": "Unmute",
-        "noUserSelected": "No user selected for the call.",
-        "mustBeLoggedIn": "You must be logged in to start a call.",
-        "loadingMessages": "Loading messages...",
-        "isTyping": "is typing..."
-      },
-      "notifications": "Notifications",
-      "calendar": "Calendar"
-    },
-    "errors": {
-      "required": "This field is required",
-      "invalidEmail": "Please enter a valid email address",
-      "invalidPhone": "Please enter a valid phone number",
-      "invalidDate": "Please enter a valid date",
-      "passwordMismatch": "Passwords do not match",
-      "passwordRequirements": "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number",
-      "usernameRequirements": "Username must be at least 3 characters and can only contain letters, numbers, and underscores",
-      "futureDate": "Date cannot be in the future",
-      "minAge": "Minimum age required is 50 years old"
-    },
-    "header": {
-      "search": "Search",
-      "language": "Language"
-    },
-    "admin": {
-      "retirees": {
-        "title": "Retirees Management",
-        "addRetiree": "Add Retiree",
-        "viewRetiree": "View Retiree",
-        "searchRetirees": "Search Retirees",
-        "noRetireesFound": "No retirees found",
-        "retireeDetails": "Retiree Details",
-        "retireeName": "Name",
-        "retireeEmail": "Email",
-        "retireePhone": "Phone Number",
-          "filters": {
-            "search": "Search by any feature...",
-            "addFilter": "Add Filter",
-            "remove": "Remove",
-            "select": "Select Feature",
-            "enterValue": "Enter Value"
-          },
-          "table": {
-            "name": "Name",
-            "age": "Age",
-            "gender": "Gender",
-            "work": "Work Fields"
-          }
-      },
-      "createEvent": {
-        "title": "Create Event",
-        "eventTitle": "Event Title",
-        "eventType": "Event Type",
-        "addCategory": "Add Category",
-        "dateRange": "Date Range",
-        "startDate": "Start Date",
-        "endDate": "End Date",
-        "timeRange": "Time Range",
-        "timeFrom": "Time From",
-        "timeTo": "Time To",
-        "location": "Location",
-        "description": "Description",
-        "capacity": "Capacity",
-        "requirements": "Special Requirements",
-        "requirementsPlaceholder": "Enter any special requirements for the event",
-        "image": "Add Image",
-        "submit": "Submit"
-      }
-    },
-    "retiree": {
-      "admin": {
-        "infoTitle": "Admin Information",
-        "username": "Username",
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone",
-        "loadingInfo": "Loading admin information...",
-        "defaultUsername": "Admin",
-        "defaultFirstName": "N/A",
-        "defaultLastName": "N/A",
-        "defaultEmail": "N/A",
-        "defaultPhone": "N/A"
-      },
-      "support": {
-        "title": "Customer Support",
-        "description": "If you have any questions or need assistance, feel free to reach out to us by sending a message below.",
-        "placeholder": "Type your message here...",
-        "sendButton": "Send Message"
+      "selfie": {
+        "label": "Selfie with ID",
+        "uploadButton": "Upload a file",
+        "dragDrop": "or drag and drop",
+        "fileTypes": "PNG, JPG, JPEG up to 5MB",
+        "fileSelected": "File selected successfully"
       },
       "errors": {
-        "noUserLoggedIn": "No user is logged in.",
-        "noUserData": "Failed to load user data.",
-        "missingSettlement": "Settlement information is missing.",
-        "noUsersInSettlement": "No users found in the settlement.",
-        "noAdminFound": "No admin found in the settlement.",
-        "fetchAdminError": "Failed to load admin data.",
-        "emptyMessage": "Please enter a message before sending."
+        "idRequired": "ID number is required",
+        "idFormat": "ID number must be 9 digits",
+        "idTypeRequired": "ID type is required",
+        "expiryRequired": "Expiry date is required",
+        "expired": "ID has expired",
+        "idImageRequired": "ID image is required",
+        "selfieRequired": "Selfie image is required",
+        "fileSize": "File size must be less than 5MB",
+        "fileType": "Only PNG, JPG, and JPEG files are allowed",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "idNumberRequired": "ID number is required",
+        "invalidIdNumber": "ID number must be 9 digits",
+        "dateOfBirthRequired": "Date of birth is required",
+        "ageRequirement": "Minimum age is 50 years",
+        "ageRequirementNotMet": "Age requirement not met: minimum age is 50 years",
+        "genderRequired": "Gender is required",
+        "invalidFileType": "Invalid file type. Please upload a JPG, JPEG, or PNG file",
+        "processing": "Error processing file",
+        "extraction": "Could not extract data from image",
+        "ocr": "Text recognition error"
       },
-      "success": {
-        "messageSent": "Your message has been sent successfully!"
+      "language": {
+        "select": "Select language",
+        "hebEng": "Hebrew + English",
+        "heb": "Hebrew",
+        "eng": "English"
+      },
+      "uploadInstructions": "Please upload or scan your ID for auto-fill, or fill the form manually.",
+      "startScanning": "Start Scanning",
+      "acceptedFormats": "Accepted formats: JPG, JPEG, PNG (max 5MB)"
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "emailPlaceholder": "Enter your email",
+      "sendButton": "Send Reset Link",
+      "sending": "Sending...",
+      "backToLogin": "Back to Login",
+      "success": "Password reset email sent! Please check your inbox.",
+      "error": "Failed to send reset email"
+    },
+    "logout": {
+      "success": "Logged out successfully!",
+      "error": "Failed to logout. Please try again."
+    },
+    "credentials": {
+      "title": "Set Your Credentials",
+      "subtitle": "Choose a unique username, your email, and a secure password to create your account.",
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter your email",
+        "required": "Email is required.",
+        "invalid": "Please enter a valid email address.",
+        "inUse": "This email is already in use."
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Choose a username",
+        "required": "Username is required.",
+        "minLength": "Username must be at least 3 characters.",
+        "invalid": "Username can only contain letters, numbers, and underscores.",
+        "inUse": "This username is already taken."
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Create a password",
+        "required": "Password is required.",
+        "minLength": "Password must be at least 8 characters.",
+        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "Re-enter your password",
+        "required": "Please confirm your password.",
+        "mismatch": "Passwords do not match."
+      },
+      "validation": {
+        "wait": "Checking availability...",
+        "processing": "Processing...",
+        "fix": "Please fix the errors above.",
+        "success": "Credentials are valid!",
+        "error": "An error occurred. Please try again."
       }
+    },
+    "adminSettlements": {
+      "manageAvailableSettlements": "Manage Available Settlements",
+      "addNewSettlement": "Add New Settlement",
+      "enterSettlementName": "Enter settlement name",
+      "add": "Add",
+      "loadError": "Failed to load settlements.",
+      "updateError": "Failed to update settlement.",
+      "addError": "Failed to add settlement."
     }
-  } 
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "homePage": "Home Page",
+    "retirees": "Retirees",
+    "volunteerRequests": "Volunteer Requests",
+    "serviceRequests": "Service Requests",
+    "service": "Request Services",
+    "analytics": "Analytics",
+    "contactUs": "Customer Support",
+    "pendingEvents": "Pending Events",
+    "categoryManagement": "Category Management",
+    "volunteer": "Volunteering",
+    "arrowClose": "←",
+    "arrowOpen": "→",
+    "events": {
+      "upcomingEvents": "Upcoming Events",
+      "addEvent": "Add Event",
+      "noEvents": "No events found",
+      "createEvent": "Create Event",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event",
+      "eventDetails": "Event Details",
+      "eventTitle": "Event Title",
+      "eventDate": "Event Date",
+      "eventTime": "Event Time",
+      "eventLocation": "Event Location",
+      "eventDescription": "Event Description",
+      "eventParticipants": "Event Participants",
+      "eventStatus": "Event Status",
+      "backToEvents": "Back to Events",
+      "join": "Join Event",
+      "leave": "Leave Event",
+      "moreDetails": "More Info",
+      "participants": "Participants",
+      "noParticipants": "No participants yet"
+    },
+    "filter": {
+      "allCategories": "All Categories",
+      "trip": "Trip",
+      "vacation": "Vacation",
+      "workshop": "Workshop",
+      "lecture": "Lecture",
+      "houseparty": "House Party",
+      "socialevent": "Social Event"
+    },
+    "search": {
+      "searchCategories": "Search Categories",
+      "searchEvents": "Search Events",
+      "button": "Search"
+    },
+    "language": {
+      "english": "English",
+      "russian": "Russian",
+      "hebrew": "Hebrew",
+      "arabic": "Arabic"
+    },
+    "header": {
+      "title": "Golden Generation",
+      "logout": "Logout"
+    },
+    "messages": {
+      "title": "Messages",
+      "search": "Search for users...",
+      "noMessages": "No messages yet.",
+      "typeMessage": "Type your message...",
+      "selectChat": "Select a chat to start messaging.",
+      "friendRequestSent": "Friend request sent successfully.",
+      "friendRequestExists": "A friend request already exists.",
+      "friendRequestAccepted": "Friend request accepted.",
+      "friendRequestRejected": "Friend request rejected.",
+      "incomingCall": "Incoming Call",
+      "calling": "Calling...",
+      "audioCallError": "Failed to start audio call.",
+      "leaveCall": "Leave Call",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "noUserSelected": "No user selected for the call.",
+      "mustBeLoggedIn": "You must be logged in to start a call.",
+      "loadingMessages": "Loading messages...",
+      "isTyping": "is typing..."
+    },
+    "notifications": "Notifications",
+    "calendar": "Calendar"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidPhone": "Please enter a valid phone number",
+    "invalidDate": "Please enter a valid date",
+    "passwordMismatch": "Passwords do not match",
+    "passwordRequirements": "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number",
+    "usernameRequirements": "Username must be at least 3 characters and can only contain letters, numbers, and underscores",
+    "futureDate": "Date cannot be in the future",
+    "minAge": "Minimum age required is 50 years old"
+  },
+  "header": {
+    "search": "Search",
+    "language": "Language"
+  },
+  "admin": {
+    "retirees": {
+      "title": "Retirees Management",
+      "addRetiree": "Add Retiree",
+      "viewRetiree": "View Retiree",
+      "searchRetirees": "Search Retirees",
+      "noRetireesFound": "No retirees found",
+      "retireeDetails": "Retiree Details",
+      "retireeName": "Name",
+      "retireeEmail": "Email",
+      "retireePhone": "Phone Number",
+        "filters": {
+          "search": "Search by any feature...",
+          "addFilter": "Add Filter",
+          "remove": "Remove",
+          "select": "Select Feature",
+          "enterValue": "Enter Value"
+        },
+        "table": {
+          "name": "Name",
+          "age": "Age",
+          "gender": "Gender",
+          "work": "Work Fields"
+        }
+    },
+    "createEvent": {
+      "title": "Create Event",
+      "eventTitle": "Event Title",
+      "eventType": "Event Type",
+      "addCategory": "Add Category",
+      "dateRange": "Date Range",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "timeRange": "Time Range",
+      "timeFrom": "Time From",
+      "timeTo": "Time To",
+      "location": "Location",
+      "description": "Description",
+      "capacity": "Capacity",
+      "requirements": "Special Requirements",
+      "requirementsPlaceholder": "Enter any special requirements for the event",
+      "image": "Add Image",
+      "submit": "Submit"
+    }
+  },
+  "retiree": {
+    "admin": {
+      "infoTitle": "Admin Information",
+      "username": "Username",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "loadingInfo": "Loading admin information...",
+      "defaultUsername": "Admin",
+      "defaultFirstName": "N/A",
+      "defaultLastName": "N/A",
+      "defaultEmail": "N/A",
+      "defaultPhone": "N/A"
+    },
+    "support": {
+      "title": "Customer Support",
+      "description": "If you have any questions or need assistance, feel free to reach out to us by sending a message below.",
+      "placeholder": "Type your message here...",
+      "sendButton": "Send Message"
+    },
+    "errors": {
+      "noUserLoggedIn": "No user is logged in.",
+      "noUserData": "Failed to load user data.",
+      "missingSettlement": "Settlement information is missing.",
+      "noUsersInSettlement": "No users found in the settlement.",
+      "noAdminFound": "No admin found in the settlement.",
+      "fetchAdminError": "Failed to load admin data.",
+      "emptyMessage": "Please enter a message before sending."
+    },
+    "success": {
+      "messageSent": "Your message has been sent successfully!"
+    }
+  }
+} 

@@ -13,6 +13,8 @@ import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard'
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import AdminManagement from './components/SuperAdminProfile/Admins.jsx';
 import AdminSettlements from './components/SignUp/AdminSettlements';
+import EditSignUpData from "./components/SignUp/EditSignUpData";
+
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -94,6 +96,8 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/edit-signup-data" element={<EditSignUpData />} />
+
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

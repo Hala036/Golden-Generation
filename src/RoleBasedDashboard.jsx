@@ -101,7 +101,7 @@ const RoleBasedDashboard = () => {
     case undefined:
       return <Login />;
     default:
-      return <UnauthorizedPage />;
+      return <div className="p-4">Unauthorized or unknown user.</div>;
   }
 };
 

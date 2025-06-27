@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 import useSignupStore from '../../store/signupStore';
 import IDVerification from './IDVerification';
 import Credentials from './Credentials';
 import PersonalDetails from './PersonalDetails';
 import SignUpProgress from './SignUpProgress';
 import { toast } from 'react-hot-toast';
-import { auth, db } from '../../firebase';
+import { auth, db, getUserData } from '../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -16,6 +17,7 @@ import VeteransCommunity from './VeteransCommunity';
 import { triggerNotification } from '../SharedDashboard/TriggerNotifications'; // Import the triggerNotification function
 
 const SignUp = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { 
     currentStep, 
@@ -28,7 +30,8 @@ const SignUp = () => {
     setCurrentStep, 
     resetStore, 
     stepValidation,
-    setStepValidation
+    setStepValidation,
+    setRole
   } = useSignupStore();
 
   const [creating, setCreating] = useState(false);
@@ -85,7 +88,7 @@ const SignUp = () => {
 
         // 5. Send welcome notification
         await triggerNotification({
-          message: `Welcome to Golden Generation, ${credentialsData.username}! We're excited to have you onboard.`,
+          message: `${t('auth.signup.welcomeMessage')} ${credentialsData.username}! ${t('auth.signup.welcomeSubmessage')}`,
           target: [userCredential.user.uid], // Send notification to the newly created user
           link: '/dashboard', // Link to the dashboard
           createdBy: 'system', // System-generated notification
@@ -95,15 +98,21 @@ const SignUp = () => {
         // 6. Sign in the user (optional, for direct dashboard access)
         await signInWithEmailAndPassword(auth, credentialsData.email, credentialsData.password);
 
+        // Fetch user data and set role in Zustand
+        const userDataFromFirestore = await getUserData(userCredential.user.uid);
+        if (userDataFromFirestore?.role) {
+          setRole(userDataFromFirestore.role);
+        }
+
         // 7. Success handling
         resetStore();
-        toast.success('Account created successfully!', { id: 'signup' });
+        toast.success(t('auth.signup.accountCreatedSuccess'), { id: 'signup' });
 
         // 8. Navigate to dashboard
         navigate('/dashboard');
       } catch (error) {
         console.error('Signup error:', error);
-        toast.error(error.message || 'Failed to create account. Please try again.', { id: 'signup' });
+        toast.error(error.message || t('auth.signup.accountCreationFailed'), { id: 'signup' });
       } finally {
         setCreating(false); // End loading
       }
@@ -144,7 +153,7 @@ const SignUp = () => {
       {/* Logo */}
       <div className="absolute top-4 left-4">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">
-          Golden Generation
+          {t('auth.signup.logo')}
         </h1>
       </div>
 
@@ -153,7 +162,7 @@ const SignUp = () => {
         {/* Header Section */}
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
-            Create Your Account
+            {t('auth.signup.createAccount')}
           </h2>
         </div>
 
@@ -171,7 +180,7 @@ const SignUp = () => {
               className="absolute top-4 left-4 flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
             >
               <FaArrowLeft className="mr-2" />
-              <span className="text-sm font-medium">Back</span>
+              <span className="text-sm font-medium">{t('auth.signup.back')}</span>
             </button>
             {renderStep()}
           </div>
@@ -180,12 +189,12 @@ const SignUp = () => {
         {/* Help Text */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
+            {t('auth.signup.alreadyHaveAccount')}{' '}
             <button
               onClick={() => navigate('/login')}
               className="text-[#FFD966] hover:text-[#FFB800] font-medium transition-colors duration-200"
             >
-              Sign in
+              {t('auth.signup.signIn')}
             </button>
           </p>
         </div>
@@ -196,7 +205,7 @@ const SignUp = () => {
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-            <p className="text-lg font-medium">Creating your account...</p>
+            <p className="text-lg font-medium">{t('auth.signup.creatingAccount')}</p>
           </div>
         </div>
       )}
