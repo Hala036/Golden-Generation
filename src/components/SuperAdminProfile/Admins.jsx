@@ -1,59 +1,522 @@
-import React from 'react';
-import { FaTrash } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaEdit, FaTrash, FaPlus, FaEye, FaUsers } from 'react-icons/fa';
+import { db } from '../../firebase';
+import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
 
-const Admins = ({ settlements, handleEditAdmin, handleDeleteAdmin, setFormData, setIsEditing, setShowModal }) => {
+const AdminManagement = () => {
+  const [admins, setAdmins] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [retireeCounts, setRetireeCounts] = useState({});
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    settlement: '',
+    phone: ''
+  });
+
+  // Fetch admins and their data
+  useEffect(() => {
+    fetchAdmins();
+  }, []);
+
+  const fetchAdmins = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch all users with admin role
+      const usersRef = collection(db, 'users');
+      const adminQuery = query(usersRef, where('role', '==', 'admin'));
+      const adminSnapshot = await getDocs(adminQuery);
+      
+      const adminsData = adminSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Fetch retiree counts for each settlement
+      const retireeCountsData = {};
+      for (const admin of adminsData) {
+        // Normalize and trim settlement name
+        let settlement = admin.idVerification?.settlement || admin.settlement;
+        if (settlement) {
+          settlement = settlement.trim().normalize('NFC');
+          // Query retirees where idVerification.settlement == settlement
+          const retireeQuery1 = query(
+            collection(db, 'users'),
+            where('role', '==', 'retiree'),
+            where('idVerification.settlement', '==', settlement)
+          );
+          const retireeSnapshot1 = await getDocs(retireeQuery1);
+
+          // Query retirees where settlement == settlement (root field)
+          const retireeQuery2 = query(
+            collection(db, 'users'),
+            where('role', '==', 'retiree'),
+            where('settlement', '==', settlement)
+          );
+          const retireeSnapshot2 = await getDocs(retireeQuery2);
+
+          // Use a Set to avoid double-counting
+          const retireeIds = new Set();
+          retireeSnapshot1.forEach(doc => retireeIds.add(doc.id));
+          retireeSnapshot2.forEach(doc => retireeIds.add(doc.id));
+
+          retireeCountsData[settlement] = retireeIds.size;
+        }
+      }
+
+      setAdmins(adminsData);
+      setRetireeCounts(retireeCountsData);
+    } catch (error) {
+      console.error('Error fetching admins:', error);
+      toast.error('Failed to fetch admins');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddAdmin = async () => {
+    if (!formData.name || !formData.email || !formData.settlement) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      // Create admin document
+      const adminData = {
+        credentials: {
+          username: formData.name,
+          email: formData.email
+        },
+        idVerification: {
+          firstName: formData.name,
+          settlement: formData.settlement,
+          phone: formData.phone
+        },
+        role: 'admin',
+        createdAt: new Date().toISOString()
+      };
+
+      const adminRef = doc(collection(db, 'users'));
+      await setDoc(adminRef, adminData);
+
+      // Add settlement to availableSettlements if not exists
+      const settlementRef = doc(db, 'availableSettlements', formData.settlement);
+      await setDoc(settlementRef, {
+        available: true,
+        adminId: adminRef.id
+      }, { merge: true });
+
+      toast.success('Admin added successfully!');
+      setShowAddModal(false);
+      resetForm();
+      fetchAdmins();
+    } catch (error) {
+      console.error('Error adding admin:', error);
+      toast.error('Failed to add admin');
+    }
+  };
+
+  const handleEditAdmin = async () => {
+    if (!selectedAdmin || !formData.name || !formData.email || !formData.settlement) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const adminRef = doc(db, 'users', selectedAdmin.id);
+      await updateDoc(adminRef, {
+        'credentials.username': formData.name,
+        'credentials.email': formData.email,
+        'idVerification.firstName': formData.name,
+        'idVerification.settlement': formData.settlement,
+        'idVerification.phone': formData.phone
+      });
+
+      toast.success('Admin updated successfully!');
+      setShowEditModal(false);
+      resetForm();
+      fetchAdmins();
+    } catch (error) {
+      console.error('Error updating admin:', error);
+      toast.error('Failed to update admin');
+    }
+  };
+
+  const handleDeleteAdmin = async (admin) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete admin "${admin.credentials?.username || admin.idVerification?.firstName}"?\n\nThis will also remove the settlement from available settlements.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      // Delete admin user
+      await deleteDoc(doc(db, 'users', admin.id));
+
+      // Remove settlement from availableSettlements
+      const settlement = admin.idVerification?.settlement;
+      if (settlement) {
+        await deleteDoc(doc(db, 'availableSettlements', settlement));
+      }
+
+      toast.success('Admin deleted successfully!');
+      fetchAdmins();
+    } catch (error) {
+      console.error('Error deleting admin:', error);
+      toast.error('Failed to delete admin');
+    }
+  };
+
+  const openEditModal = (admin) => {
+    setSelectedAdmin(admin);
+    setFormData({
+      name: admin.credentials?.username || admin.idVerification?.firstName || '',
+      email: admin.credentials?.email || '',
+      settlement: admin.idVerification?.settlement || '',
+      phone: admin.idVerification?.phone || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const openViewModal = (admin) => {
+    setSelectedAdmin(admin);
+    setShowViewModal(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      settlement: '',
+      phone: ''
+    });
+    setSelectedAdmin(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowAddModal(true);
+  };
+
+  // Modal component
+  const Modal = ({ isOpen, onClose, title, children, onSubmit, submitText }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <h2 className="text-xl font-bold mb-4">{title}</h2>
+          {children}
+          <div className="flex justify-end gap-2 mt-6">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            {onSubmit && (
+              <button
+                onClick={onSubmit}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+              >
+                {submitText}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">Loading admins...</div>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Admins</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Admin Management</h1>
         <button
-          onClick={() => {
-            setFormData({ name: '', email: '', settlement: '' });
-            setIsEditing(false);
-            setShowModal(true);
-          }}
-          className="bg-yellow-300 text-black px-4 py-2 rounded hover:bg-yellow-400"
+          onClick={openAddModal}
+          className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md flex items-center gap-2"
         >
-          Create Admin
+          <FaPlus /> Add Admin
         </button>
       </div>
-      <div className="bg-white shadow rounded overflow-hidden">
-        <table className="min-w-full text-left">
-          <thead className="bg-gray-100">
+
+      {/* Admins Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="p-4">Name</th>
-              <th>Settlement</th>
-              <th>Email</th>
-              <th className="text-right pr-4">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Admin Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Settlement
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Phone
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Registered Retirees
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {settlements.filter(s => s.admin).map((s, index) => (
-              <tr key={index} className="border-t">
-                <td className="p-4">{s.admin.name}</td>
-                <td>{s.name}</td>
-                <td>{s.admin.email}</td>
-                <td className="text-right pr-4 space-x-4">
-                  <span
-                    className="cursor-pointer text-gray-500 hover:text-yellow-500"
-                    onClick={() => handleEditAdmin(s)}
-                  >
-                    ✎
+          <tbody className="bg-white divide-y divide-gray-200">
+            {admins.map((admin) => (
+              <tr key={admin.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">
+                    {admin.credentials?.username || admin.idVerification?.firstName || 'N/A'}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {admin.idVerification?.settlement || admin.settlement || 'N/A'}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {admin.credentials?.email || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {admin.credentials?.phone || admin.idVerification?.phone || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <FaUsers className="mr-1" />
+                    {retireeCounts[admin.idVerification?.settlement] || 0} retirees
                   </span>
-                  <span
-                    className="cursor-pointer text-red-500 hover:text-red-700"
-                    onClick={() => handleDeleteAdmin(s.name)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => openViewModal(admin)}
+                      className="text-blue-600 hover:text-blue-900"
+                      title="View"
+                    >
+                      <FaEye />
+                    </button>
+                    <button
+                      onClick={() => openEditModal(admin)}
+                      className="text-yellow-600 hover:text-yellow-900"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteAdmin(admin)}
+                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                      title="Delete admin"
                   >
                     <FaTrash />
-                  </span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </>
+
+      {/* Add Admin Modal */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title="Add New Admin"
+        onSubmit={handleAddAdmin}
+        submitText="Add Admin"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Admin Name *
+            </label>
+            <input
+              type="text"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter admin name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email *
+            </label>
+            <input
+              type="email"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="Enter email address"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Settlement *
+            </label>
+            <input
+              type="text"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.settlement}
+              onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
+              placeholder="Enter settlement name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Phone
+            </label>
+            <input
+              type="tel"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="Enter phone number"
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Admin Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Edit Admin"
+        onSubmit={handleEditAdmin}
+        submitText="Update Admin"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Admin Name *
+            </label>
+            <input
+              type="text"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter admin name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email *
+            </label>
+            <input
+              type="email"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="Enter email address"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Settlement *
+            </label>
+            <input
+              type="text"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.settlement}
+              onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
+              placeholder="Enter settlement name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Phone
+            </label>
+            <input
+              type="tel"
+              className="border px-3 py-2 rounded-md w-full"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="Enter phone number"
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* View Admin Modal */}
+      <Modal
+        isOpen={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        title="Admin Details"
+      >
+        {selectedAdmin && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Admin Name
+              </label>
+              <p className="text-sm text-gray-900">
+                {selectedAdmin.credentials?.username || selectedAdmin.idVerification?.firstName || 'N/A'}
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <p className="text-sm text-gray-900">
+                {selectedAdmin.credentials?.email || 'N/A'}
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Settlement
+              </label>
+              <p className="text-sm text-gray-900">
+                {selectedAdmin.idVerification?.settlement || 'N/A'}
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
+              </label>
+              <p className="text-sm text-gray-900">
+                {selectedAdmin.idVerification?.phone || 'N/A'}
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Registered Retirees
+              </label>
+              <p className="text-sm text-gray-900">
+                {retireeCounts[selectedAdmin.idVerification?.settlement] || 0} retirees
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Created At
+              </label>
+              <p className="text-sm text-gray-900">
+                {selectedAdmin.createdAt ? new Date(selectedAdmin.createdAt).toLocaleDateString() : 'N/A'}
+              </p>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
   );
 };
 
-export default Admins;
+export default AdminManagement;
