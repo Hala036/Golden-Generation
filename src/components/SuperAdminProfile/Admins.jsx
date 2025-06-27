@@ -247,12 +247,6 @@ const AdminManagement = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Admin Management</h1>
-        <button
-          onClick={openAddModal}
-          className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md flex items-center gap-2"
-        >
-          <FaPlus /> Add Admin
-        </button>
       </div>
 
       {/* Admins Table */}
@@ -335,66 +329,6 @@ const AdminManagement = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Add Admin Modal */}
-      <Modal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Add New Admin"
-        onSubmit={handleAddAdmin}
-        submitText="Add Admin"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Admin Name *
-            </label>
-            <input
-              type="text"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Enter admin name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
-            </label>
-            <input
-              type="email"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="Enter email address"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Settlement *
-            </label>
-            <input
-              type="text"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.settlement}
-              onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
-              placeholder="Enter settlement name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone
-            </label>
-            <input
-              type="tel"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="Enter phone number"
-            />
-          </div>
-        </div>
-      </Modal>
 
       {/* Edit Admin Modal */}
       <Modal
