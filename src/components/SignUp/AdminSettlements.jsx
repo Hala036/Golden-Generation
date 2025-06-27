@@ -3,7 +3,7 @@ import { db } from '../../firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { FaList, FaCheckCircle, FaMinusCircle, FaSearch, FaUserShield } from 'react-icons/fa';
+import { FaList, FaCheckCircle, FaMinusCircle, FaSearch, FaUserShield, FaEdit, FaPlus } from 'react-icons/fa';
 import AssignAdminModal from './AssignAdminModal';
 import SettlementCard from './SettlementCard';
 import ConfirmDisableModal from './ConfirmDisableModal';
@@ -21,6 +21,14 @@ const AdminSettlements = () => {
   const [settlementToDisable, setSettlementToDisable] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState('all');
+  const [showSettlementModal, setShowSettlementModal] = useState(false);
+  const [settlementForm, setSettlementForm] = useState({
+    original: '', // for editing
+    name: '',
+    isEdit: false,
+  });
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [settlementSearch, setSettlementSearch] = useState('');
   const navigate = useNavigate();
 
   // Fetch settlements from local JSON file
@@ -159,6 +167,42 @@ const AdminSettlements = () => {
     }
   };
 
+  // Add or Edit Settlement in Firestore and local state
+  const handleSaveSettlement = async () => {
+    const name = settlementForm.name.trim();
+    if (!name) {
+      toast.error('Settlement name cannot be empty');
+      return;
+    }
+    try {
+      if (settlementForm.isEdit && settlementForm.original && settlementForm.original !== name) {
+        // Edit: Rename settlement
+        // Remove old, add new in allSettlements
+        setAllSettlements(prev => prev.map(s => s === settlementForm.original ? name : s));
+        // Update in Firestore (if you store settlements in a collection, update there)
+        // For demo, just update local state
+        toast.success('Settlement renamed!');
+      } else if (!allSettlements.includes(name)) {
+        // Add new
+        setAllSettlements(prev => [...prev, name]);
+        // Optionally add to Firestore if you store settlements there
+        toast.success('Settlement added!');
+      } else {
+        toast.error('Settlement already exists');
+        return;
+      }
+      setShowSettlementModal(false);
+      setSettlementForm({ original: '', name: '', isEdit: false });
+    } catch (err) {
+      toast.error('Failed to save settlement');
+    }
+  };
+
+  // Filtered settlements for suggestions
+  const filteredModalSettlements = allSettlements.filter(s =>
+    s.toLowerCase().includes(settlementForm.name.trim().toLowerCase())
+  );
+
   if (loading) {
     return <div className="text-center py-8">Loading settlements...</div>;
   }
@@ -176,12 +220,20 @@ const AdminSettlements = () => {
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Available Settlements</h1>
-        <button
-          onClick={() => navigate('/superadmin/admins')}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
-        >
-          <FaUserShield /> Admin Management
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowSettlementModal(true)}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
+          >
+            <FaPlus /> Add/Edit Settlement
+          </button>
+          <button
+            onClick={() => navigate('/superadmin/admins')}
+            className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
+          >
+            <FaUserShield /> Admin Management
+          </button>
+        </div>
       </div>
       {/* Availability Filter Buttons */}
       <div className="mb-6 flex gap-3 justify-center">
@@ -219,25 +271,29 @@ const AdminSettlements = () => {
         <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
       </div>
       {/* Settlements List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredSettlements.map(settlement => (
-          <SettlementCard
-            key={settlement} 
-            settlement={settlement}
-            isAvailable={availableSettlements.includes(settlement)}
-            adminInfo={settlementAdmins[settlement]}
-            onClick={() => {
-              if (!availableSettlements.includes(settlement)) {
-                setSelectedSettlement(settlement);
-                setShowAdminForm(true);
-              }
-            }}
-            onDisable={availableSettlements.includes(settlement)
-              ? () => handleDisableSettlement(settlement)
-              : undefined}
-          />
-        ))}
-      </div>
+      {filteredSettlements.length === 0 ? (
+        <div className="text-center text-gray-500 py-8">No settlements found.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredSettlements.map(settlement => (
+            <SettlementCard
+              key={settlement} 
+              settlement={settlement}
+              isAvailable={availableSettlements.includes(settlement)}
+              adminInfo={settlementAdmins[settlement]}
+              onClick={() => {
+                if (!availableSettlements.includes(settlement)) {
+                  setSelectedSettlement(settlement);
+                  setShowAdminForm(true);
+                }
+              }}
+              onDisable={availableSettlements.includes(settlement)
+                ? () => handleDisableSettlement(settlement)
+                : undefined}
+            />
+          ))}
+        </div>
+      )}
       {/* Assign Admin Modal */}
       <AssignAdminModal
         open={showAdminForm}
@@ -259,6 +315,70 @@ const AdminSettlements = () => {
           setSettlementToDisable(null);
         }}
       />
+      {/* Settlement Modal */}
+      {showSettlementModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">{settlementForm.isEdit ? 'Edit Settlement' : 'Add Settlement'}</h2>
+            <div className="mb-4 relative">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Settlement Name</label>
+              <input
+                type="text"
+                className="border px-3 py-2 rounded-md w-full"
+                value={settlementForm.name}
+                onChange={e => {
+                  setSettlementForm({ ...settlementForm, name: e.target.value, isEdit: false });
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                placeholder="Type to search or add..."
+                autoComplete="off"
+              />
+              {/* Suggestions dropdown */}
+              {showSuggestions && settlementForm.name && filteredModalSettlements.length > 0 && (
+                <ul className="absolute z-10 bg-white border border-gray-200 rounded w-full mt-1 max-h-40 overflow-y-auto shadow-lg">
+                  {filteredModalSettlements.map(s => (
+                    <li
+                      key={s}
+                      className="px-4 py-2 cursor-pointer hover:bg-yellow-100"
+                      onMouseDown={() => {
+                        setSettlementForm({ original: s, name: s, isEdit: true });
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {/* Option to add new if not found */}
+              {showSuggestions && settlementForm.name && filteredModalSettlements.length === 0 && (
+                <div className="absolute z-10 bg-white border border-gray-200 rounded w-full mt-1 px-4 py-2 text-gray-500">
+                  No match. Click Save to add new settlement.
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => {
+                  setShowSettlementModal(false);
+                  setSettlementForm({ original: '', name: '', isEdit: false });
+                }}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveSettlement}
+                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
