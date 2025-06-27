@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 import RoleBasedDashboard from './RoleBasedDashboard';
 import ViewProfileDashboard from './components/ViewProfile/ViewProfileDashboard';
 import AdminDashboard from './components/AdminProfile/AdminDashboard';
+import AdminManagement from './components/SuperAdminProfile/Admins.jsx';
 
 const AppRoutes = () => {
   const { language } = useLanguage();
@@ -76,7 +77,14 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/superadmin/admins"
+          element={
+            <ProtectedRoute>
+              <AdminManagement />
+            </ProtectedRoute>
+          }
+        />
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
