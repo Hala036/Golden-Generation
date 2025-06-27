@@ -876,9 +876,6 @@ const Retirees = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{t("admin.retirees.title")}</h1>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded">
-          {t("admin.retirees.addRetiree")}
-        </button>
       </div>
 
       {/* Search and Filters */}
