@@ -59,7 +59,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
       <div
         className={`transition-all duration-300 ${
           isSidebarExpanded ? "w-60" : "w-15"
-        } bg-gray-100 shadow-lg h-[calc(100vh-60px)] mt-15`}
+        } bg-gray-100 shadow-lg min-h-screen flex flex-col`}
       >
         {/* Toggle Button */}
         <button
@@ -79,8 +79,8 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
           </div>
         )}
 
-        {/* Navigation Items */}
-        <nav className="py-4">
+        {/* Navigation Items (Flexible) */}
+        <nav className="py-4 flex-1">
           {customIcons
             .filter(({ id }) => id !== "notifications" && id !== "messages" && id !== "add") // Exclude notifications and messages from sidebar
             .map(({ id, label, icon }) => (
@@ -101,12 +101,8 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
             ))}
         </nav>
 
-        {/* Bottom Section */}
-        <div
-          className={`absolute bottom-0 ${
-            isSidebarExpanded ? "w-64" : "w-20"
-          } border-t border-gray-200 bg-gray-100 p-4`}
-        >
+        {/* Bottom Section (Pinned) */}
+        <div className="border-t border-gray-200 bg-gray-100 p-4">
           {/* Custom Buttons */}
           {customButtons.map(({ id, label, onClick, icon }) => (
             <button
