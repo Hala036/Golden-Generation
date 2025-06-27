@@ -8,21 +8,25 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
+    // Listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setLoading(true);
+      if (user) {
+        try {
           const data = await getUserData(user.uid);
           setUserData(data);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setUserData(null);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
+      } else {
+        setUserData(null); // Reset on logout
         setLoading(false);
       }
-    };
-
-    fetchUserData();
+    });
+    return () => unsubscribe();
   }, []);
 
   return (
