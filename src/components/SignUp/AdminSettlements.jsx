@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase';
-import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { FaList, FaCheckCircle, FaMinusCircle, FaSearch, FaUserShield, FaEdit, FaPlus } from 'react-icons/fa';
@@ -31,22 +31,18 @@ const AdminSettlements = () => {
   const [settlementSearch, setSettlementSearch] = useState('');
   const navigate = useNavigate();
 
-  // Fetch settlements from local JSON file
+  // Real-time settlements from Firestore
   useEffect(() => {
-    const fetchSettlements = async () => {
-      try {
-        const response = await fetch('/data/cities.json');
-        const data = await response.json();
-        const settlements = data.slice(1).map(s => s.name);
-        setAllSettlements(settlements);
-      } catch (error) {
-        console.error('Failed to fetch settlements:', error);
-        toast.error('Failed to load settlements');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSettlements();
+    setLoading(true);
+    const unsub = onSnapshot(collection(db, 'settlements'), (snapshot) => {
+      const settlements = snapshot.docs.map(doc => doc.data().name);
+      setAllSettlements(settlements);
+      setLoading(false);
+    }, (error) => {
+      toast.error('Failed to load settlements');
+      setLoading(false);
+    });
+    return () => unsub();
   }, []);
 
   // Fetch availableSettlements and show assigned admins
@@ -151,19 +147,27 @@ const AdminSettlements = () => {
     }
   };
 
-  // Handle disabling a settlement
+  // Handle disabling a settlement (delete from Firestore)
   const handleDisableSettlement = async (settlement) => {
     try {
-      await deleteDoc(doc(db, 'availableSettlements', settlement));
+      // Find the doc to delete
+      const settlementsRef = collection(db, 'settlements');
+      const snapshot = await getDocs(settlementsRef);
+      const docToDelete = snapshot.docs.find(doc => doc.data().name === settlement);
+      if (docToDelete) {
+        await deleteDoc(doc(db, 'settlements', docToDelete.id));
+        toast.success(`${settlement} deleted.`);
+      } else {
+        toast.error('Settlement not found.');
+      }
       setAvailableSettlements(prev => prev.filter(s => s !== settlement));
       setSettlementAdmins(prev => {
         const newAdmins = { ...prev };
         delete newAdmins[settlement];
         return newAdmins;
       });
-      toast.success(`${settlement} disabled and removed.`);
     } catch (error) {
-      toast.error('Failed to disable settlement.');
+      toast.error('Failed to delete settlement.');
     }
   };
 
@@ -175,17 +179,23 @@ const AdminSettlements = () => {
       return;
     }
     try {
+      const settlementsRef = collection(db, 'settlements');
+      // Check if exists
+      const existing = allSettlements.find(s => s === name);
       if (settlementForm.isEdit && settlementForm.original && settlementForm.original !== name) {
         // Edit: Rename settlement
-        // Remove old, add new in allSettlements
-        setAllSettlements(prev => prev.map(s => s === settlementForm.original ? name : s));
-        // Update in Firestore (if you store settlements in a collection, update there)
-        // For demo, just update local state
-        toast.success('Settlement renamed!');
-      } else if (!allSettlements.includes(name)) {
+        // Find the doc to update
+        const snapshot = await getDocs(settlementsRef);
+        const docToUpdate = snapshot.docs.find(doc => doc.data().name === settlementForm.original);
+        if (docToUpdate) {
+          await updateDoc(doc(db, 'settlements', docToUpdate.id), { name });
+          toast.success('Settlement renamed!');
+        } else {
+          toast.error('Original settlement not found');
+        }
+      } else if (!existing) {
         // Add new
-        setAllSettlements(prev => [...prev, name]);
-        // Optionally add to Firestore if you store settlements there
+        await setDoc(doc(settlementsRef), { name });
         toast.success('Settlement added!');
       } else {
         toast.error('Settlement already exists');
