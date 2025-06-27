@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import { addSettlement } from '../../firebase';
 import { uploadFileToStorage } from '../../utils/uploadFileToStorage';
-import { useLanguage } from '../../context/LanguageContext';
+
 
 const AdminSettlements = () => {
   console.debug('[AdminSettlements] mounted');
