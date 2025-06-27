@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaEye, FaUsers } from 'react-icons/fa';
 import { db } from '../../firebase';
-import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 
 const AdminManagement = () => {
@@ -19,66 +19,47 @@ const AdminManagement = () => {
     phone: ''
   });
 
-  // Fetch admins and their data
+  // Real-time admins from Firestore
   useEffect(() => {
-    fetchAdmins();
-  }, []);
-
-  const fetchAdmins = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch all users with admin role
-      const usersRef = collection(db, 'users');
-      const adminQuery = query(usersRef, where('role', '==', 'admin'));
-      const adminSnapshot = await getDocs(adminQuery);
-      
+    setLoading(true);
+    const usersRef = collection(db, 'users');
+    const adminQuery = query(usersRef, where('role', '==', 'admin'));
+    const unsub = onSnapshot(adminQuery, (adminSnapshot) => {
       const adminsData = adminSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-
-      // Fetch retiree counts for each settlement
-      const retireeCountsData = {};
-      for (const admin of adminsData) {
-        // Normalize and trim settlement name
-        let settlement = admin.idVerification?.settlement || admin.settlement;
-        if (settlement) {
-          settlement = settlement.trim().normalize('NFC');
-          // Query retirees where idVerification.settlement == settlement
-          const retireeQuery1 = query(
-            collection(db, 'users'),
-            where('role', '==', 'retiree'),
-            where('idVerification.settlement', '==', settlement)
-          );
-          const retireeSnapshot1 = await getDocs(retireeQuery1);
-
-          // Query retirees where settlement == settlement (root field)
-          const retireeQuery2 = query(
-            collection(db, 'users'),
-            where('role', '==', 'retiree'),
-            where('settlement', '==', settlement)
-          );
-          const retireeSnapshot2 = await getDocs(retireeQuery2);
-
-          // Use a Set to avoid double-counting
-          const retireeIds = new Set();
-          retireeSnapshot1.forEach(doc => retireeIds.add(doc.id));
-          retireeSnapshot2.forEach(doc => retireeIds.add(doc.id));
-
-          retireeCountsData[settlement] = retireeIds.size;
-        }
-      }
-
       setAdmins(adminsData);
-      setRetireeCounts(retireeCountsData);
-    } catch (error) {
-      console.error('Error fetching admins:', error);
-      toast.error('Failed to fetch admins');
-    } finally {
       setLoading(false);
-    }
-  };
+    }, (error) => {
+      toast.error('Failed to fetch admins');
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  // Real-time retiree counts for each admin's settlement
+  useEffect(() => {
+    const usersRef = collection(db, 'users');
+    const retireeQuery = query(usersRef, where('role', '==', 'retiree'));
+    const unsub = onSnapshot(retireeQuery, (retireeSnapshot) => {
+      // Get all retirees
+      const retirees = retireeSnapshot.docs.map(doc => doc.data());
+      // Get all settlements assigned to admins
+      const settlements = admins.map(admin => admin.idVerification?.settlement || admin.settlement).filter(Boolean);
+      // Count retirees for each settlement
+      const counts = {};
+      for (const settlement of settlements) {
+        const normSettle = settlement.trim().normalize('NFC');
+        counts[normSettle] = retirees.filter(r =>
+          (r.idVerification?.settlement && r.idVerification.settlement.trim().normalize('NFC') === normSettle) ||
+          (r.settlement && r.settlement.trim().normalize('NFC') === normSettle)
+        ).length;
+      }
+      setRetireeCounts(counts);
+    });
+    return () => unsub();
+  }, [admins]);
 
   const handleAddAdmin = async () => {
     if (!formData.name || !formData.email || !formData.settlement) {
@@ -115,7 +96,6 @@ const AdminManagement = () => {
       toast.success('Admin added successfully!');
       setShowAddModal(false);
       resetForm();
-      fetchAdmins();
     } catch (error) {
       console.error('Error adding admin:', error);
       toast.error('Failed to add admin');
@@ -141,7 +121,6 @@ const AdminManagement = () => {
       toast.success('Admin updated successfully!');
       setShowEditModal(false);
       resetForm();
-      fetchAdmins();
     } catch (error) {
       console.error('Error updating admin:', error);
       toast.error('Failed to update admin');
@@ -166,7 +145,6 @@ const AdminManagement = () => {
       }
 
       toast.success('Admin deleted successfully!');
-      fetchAdmins();
     } catch (error) {
       console.error('Error deleting admin:', error);
       toast.error('Failed to delete admin');
