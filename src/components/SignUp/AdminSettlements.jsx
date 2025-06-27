@@ -3,10 +3,11 @@ import { db } from '../../firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { FaList, FaCheckCircle, FaMinusCircle, FaSearch } from 'react-icons/fa';
+import { FaList, FaCheckCircle, FaMinusCircle, FaSearch, FaUserShield } from 'react-icons/fa';
 import AssignAdminModal from './AssignAdminModal';
 import SettlementCard from './SettlementCard';
 import ConfirmDisableModal from './ConfirmDisableModal';
+import { useNavigate } from 'react-router-dom';
 
 const AdminSettlements = () => {
   const [allSettlements, setAllSettlements] = useState([]);
@@ -20,6 +21,7 @@ const AdminSettlements = () => {
   const [settlementToDisable, setSettlementToDisable] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState('all');
+  const navigate = useNavigate();
 
   // Fetch settlements from local JSON file
   useEffect(() => {
@@ -42,7 +44,7 @@ const AdminSettlements = () => {
   // Fetch availableSettlements and show assigned admins
   useEffect(() => {
     const fetchAvailableSettlements = async () => {
-      try {
+    try {
         const snapshot = await getDocs(collection(db, 'availableSettlements'));
         const available = [];
         const admins = {};
@@ -80,7 +82,7 @@ const AdminSettlements = () => {
       return data.registered === true;
     } catch {
       return false;
-    }
+      }
   };
 
   // Check if username exists in Firestore
@@ -108,7 +110,7 @@ const AdminSettlements = () => {
       const newUserRef = doc(usersRef, newUserId);
       await setDoc(newUserRef, {
         credentials: { email, username, phone },
-        role: 'Admin',
+        role: 'admin',
         settlement: selectedSettlement,
         createdAt: new Date().toISOString(),
         profileComplete: false,
@@ -172,7 +174,15 @@ const AdminSettlements = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
-      <h1 className="text-2xl font-bold mb-6">Manage Available Settlements</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Manage Available Settlements</h1>
+        <button
+          onClick={() => navigate('/superadmin/admins')}
+          className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
+        >
+          <FaUserShield /> Admin Management
+        </button>
+      </div>
       {/* Availability Filter Buttons */}
       <div className="mb-6 flex gap-3 justify-center">
         <button
@@ -189,14 +199,14 @@ const AdminSettlements = () => {
         >
           <FaCheckCircle /> Available
         </button>
-        <button
+          <button
           onClick={() => setAvailabilityFilter('disabled')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm transition font-semibold
             ${availabilityFilter === 'disabled' ? 'bg-red-400 text-white' : 'bg-gray-100 text-gray-700 hover:bg-red-100'}`}
-        >
+          >
           <FaMinusCircle /> Disabled
-        </button>
-      </div>
+          </button>
+        </div>
       {/* Search and Filter Input */}
       <div className="relative w-full max-w-md mx-auto mb-6">
         <input
@@ -212,7 +222,7 @@ const AdminSettlements = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredSettlements.map(settlement => (
           <SettlementCard
-            key={settlement}
+            key={settlement} 
             settlement={settlement}
             isAvailable={availableSettlements.includes(settlement)}
             adminInfo={settlementAdmins[settlement]}
