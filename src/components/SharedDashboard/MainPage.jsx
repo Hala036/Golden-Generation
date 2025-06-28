@@ -453,7 +453,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
             <p className="text-xs md:text-base text-gray-600">Here's what's happening in your community today</p>
           </div>
           {/* Quick Actions */}
-          <div className={`grid gap-1 md:gap-2 w-full max-w-xs grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
+          <div className={`grid gap-1 md:gap-2 w-full max-w-s md:mr-3 md:ml-3 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
             {allQuickActions.map((action, index) => (
               <button
                 key={index}
