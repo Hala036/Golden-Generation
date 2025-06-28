@@ -29,17 +29,17 @@ const RetireeDashboard = () => {
   console.debug('[SuperAdminDashboard] selected:', selected);
 
   const customIcons = [
-    { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
-    { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
+      { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
+      { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
     { id: "categoryManagement", label: "Category Management", icon: <FaTags /> },
     { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
     { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
-    { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
-    { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
-    { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
-    { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
-    { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
-  ];
+      { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
+      { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
+      { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
+      { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
+      { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
+    ];
 
   const customButtons = [];
 

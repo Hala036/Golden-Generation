@@ -21,9 +21,9 @@ const AdminManagement = () => {
 
   // Real-time admins from Firestore
   useEffect(() => {
-    setLoading(true);
-    const usersRef = collection(db, 'users');
-    const adminQuery = query(usersRef, where('role', '==', 'admin'));
+      setLoading(true);
+      const usersRef = collection(db, 'users');
+      const adminQuery = query(usersRef, where('role', '==', 'admin'));
     const unsub = onSnapshot(adminQuery, (adminSnapshot) => {
       const adminsData = adminSnapshot.docs.map(doc => ({
         id: doc.id,

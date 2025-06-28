@@ -67,12 +67,12 @@ const AdminSettlements = () => {
   useEffect(() => {
     const unsubSettlements = onSnapshot(collection(db, 'settlements'), (snapshot) => {
       const settlements = snapshot.docs.map(doc => doc.data());
-      setAllSettlements(settlements);
+        setAllSettlements(settlements);
       // Build a map for fast lookup
       const map = {};
       settlements.forEach(s => { if (s.name) map[s.name] = s; });
       setSettlementMap(map);
-      setLoading(false);
+        setLoading(false);
     });
     const unsubAvailable = onSnapshot(collection(db, 'availableSettlements'), (snapshot) => {
       setAvailableSettlements(snapshot.docs.map(doc => doc.data().name));
@@ -524,12 +524,12 @@ const AdminSettlements = () => {
             >
               <FaPlus /> Add/Edit Settlement
             </button>
-            <button
-              onClick={() => navigate('/superadmin/admins')}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
-            >
-              <FaUserShield /> Admin Management
-            </button>
+        <button
+          onClick={() => navigate('/superadmin/admins')}
+          className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
+        >
+          <FaUserShield /> Admin Management
+        </button>
           </div>
         </div>
       </div>
@@ -652,7 +652,7 @@ const AdminSettlements = () => {
             >
               Next {isRTL ? '←' : '→'}
             </button>
-          </div>
+      </div>
         )}
         </>
       )}
