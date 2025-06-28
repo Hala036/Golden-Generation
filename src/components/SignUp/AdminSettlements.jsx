@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import { addSettlement } from '../../firebase';
 import { uploadFileToStorage } from '../../utils/uploadFileToStorage';
+import { showSuccessToast, showErrorToast, showLoadingToast, showWarningToast, showInfoToast } from '../ToastManager';
 
 
 const AdminSettlements = () => {
@@ -27,6 +28,7 @@ const AdminSettlements = () => {
   const [settlementAdmins, setSettlementAdmins] = useState({});
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [settlementToDisable, setSettlementToDisable] = useState(null);
+  const [disablingSettlement, setDisablingSettlement] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState('all');
   const [showSettlementModal, setShowSettlementModal] = useState(false);
@@ -197,8 +199,9 @@ const AdminSettlements = () => {
 
   // Handle disabling a settlement (remove from availableSettlements, delete admin, delete retirees)
   const handleDisableSettlement = async (settlement) => {
-    if (!window.confirm(`Are you sure you want to disable "${settlement}"? This will remove it from available settlements and delete its admin and all retirees. This action cannot be undone.`)) return;
     console.debug('[handleDisableSettlement] settlement:', settlement);
+    setDisablingSettlement(true);
+    
     try {
       // 1. Remove from availableSettlements
       await deleteDoc(doc(db, 'availableSettlements', settlement));
@@ -208,18 +211,37 @@ const AdminSettlements = () => {
       const usersRef = collection(db, 'users');
       const adminQuery = query(usersRef, where('role', '==', 'admin'), where('settlement', '==', settlement));
       const adminSnapshot = await getDocs(adminQuery);
+      let adminCount = 0;
       for (const adminDoc of adminSnapshot.docs) {
         await deleteDoc(adminDoc.ref);
+        adminCount++;
       }
 
       // 3. Delete retirees for this settlement
       const retireeQuery = query(usersRef, where('role', '==', 'retiree'), where('idVerification.settlement', '==', settlement));
       const retireeSnapshot = await getDocs(retireeQuery);
+      let retireeCount = 0;
       for (const retireeDoc of retireeSnapshot.docs) {
         await deleteDoc(retireeDoc.ref);
+        retireeCount++;
       }
 
-      toast.success(`${settlement} disabled: removed from available, admin and retirees deleted.`);
+      // Show success toast with details
+      showSuccessToast(
+        t('auth.adminSettlements.messages.disabledSuccess') || 
+        `${settlement} has been disabled successfully. Removed ${adminCount} admin(s) and ${retireeCount} retiree(s).`,
+        t('auth.adminSettlements.messages.disabledTitle') || 'Settlement Disabled',
+        {
+          duration: 6000,
+          action: () => {
+            // Option to undo (could be implemented later)
+            showInfoToast('Undo functionality coming soon...', 'Feature Preview');
+          },
+          actionLabel: t('common.undo') || 'Undo'
+        }
+      );
+
+      // Update local state
       setAvailableSettlements(prev => prev.filter(s => s !== settlement));
       setSettlementAdmins(prev => {
         const newAdmins = { ...prev };
@@ -228,7 +250,20 @@ const AdminSettlements = () => {
       });
     } catch (error) {
       console.error('[handleDisableSettlement] error:', error);
-      toast.error('Failed to disable settlement.');
+      showErrorToast(
+        t('auth.adminSettlements.messages.disableError') || 'Failed to disable settlement. Please try again.',
+        t('auth.adminSettlements.messages.errorTitle') || 'Error',
+        {
+          duration: 8000,
+          action: () => {
+            // Retry functionality
+            handleDisableSettlement(settlement);
+          },
+          actionLabel: t('common.retry') || 'Retry'
+        }
+      );
+    } finally {
+      setDisablingSettlement(false);
     }
   };
 
@@ -237,7 +272,10 @@ const AdminSettlements = () => {
     const name = settlementForm.name.trim();
     console.debug('[handleSaveSettlement] name:', name, 'form:', settlementForm);
     if (!name) {
-      toast.error('Settlement name cannot be empty');
+      showErrorToast(
+        t('auth.adminSettlements.messages.emptyName') || 'Settlement name cannot be empty',
+        t('auth.adminSettlements.messages.validationError') || 'Validation Error'
+      );
       return;
     }
     try {
@@ -251,25 +289,40 @@ const AdminSettlements = () => {
         const docToUpdate = snapshot.docs.find(doc => doc.data().name === settlementForm.original);
         if (docToUpdate) {
           await updateDoc(doc(db, 'settlements', docToUpdate.id), { name });
-          toast.success('Settlement renamed!');
+          showSuccessToast(
+            t('auth.adminSettlements.messages.renamedSuccess') || `Settlement renamed from "${settlementForm.original}" to "${name}"`,
+            t('auth.adminSettlements.messages.renamedTitle') || 'Settlement Renamed'
+          );
           console.debug('[handleSaveSettlement] renamed:', settlementForm.original, 'to', name);
         } else {
-          toast.error('Original settlement not found');
+          showErrorToast(
+            t('auth.adminSettlements.messages.originalNotFound') || 'Original settlement not found',
+            t('auth.adminSettlements.messages.errorTitle') || 'Error'
+          );
         }
       } else if (!existing) {
         // Add new
         await setDoc(doc(settlementsRef), { name });
-        toast.success('Settlement added!');
+        showSuccessToast(
+          t('auth.adminSettlements.messages.addedSuccess') || `Settlement "${name}" added successfully`,
+          t('auth.adminSettlements.messages.addedTitle') || 'Settlement Added'
+        );
         console.debug('[handleSaveSettlement] added:', name);
       } else {
-        toast.error('Settlement already exists');
+        showWarningToast(
+          t('auth.adminSettlements.messages.alreadyExists') || `Settlement "${name}" already exists`,
+          t('auth.adminSettlements.messages.warningTitle') || 'Warning'
+        );
         return;
       }
       setShowSettlementModal(false);
       setSettlementForm({ original: '', name: '', isEdit: false });
     } catch (err) {
       console.error('[handleSaveSettlement] error:', err);
-      toast.error('Failed to save settlement');
+      showErrorToast(
+        t('auth.adminSettlements.messages.saveError') || 'Failed to save settlement. Please try again.',
+        t('auth.adminSettlements.messages.errorTitle') || 'Error'
+      );
     }
   };
 
@@ -645,7 +698,11 @@ const AdminSettlements = () => {
                 settlement={settlement.name}
                 isAvailable={enabled}
                 adminInfo={adminInfo}
-                onDisable={enabled ? () => handleDisableSettlement(settlement.name) : undefined}
+                onDisable={enabled ? () => {
+                  console.log('Disable button clicked for settlement:', settlement.name);
+                  setSettlementToDisable(settlement.name);
+                  setShowConfirmModal(true);
+                } : undefined}
                 onClick={!enabled ? () => openAdminModal(settlement) : undefined}
                 isRTL={isRTL}
               />
@@ -692,12 +749,18 @@ const AdminSettlements = () => {
       <ConfirmDisableModal
         open={showConfirmModal}
         settlement={settlementToDisable}
-        onCancel={() => setShowConfirmModal(false)}
+        onCancel={() => {
+          console.log('Modal cancelled');
+          setShowConfirmModal(false);
+          setSettlementToDisable(null);
+        }}
         onConfirm={async () => {
+          console.log('Modal confirmed for settlement:', settlementToDisable);
           await handleDisableSettlement(settlementToDisable);
           setShowConfirmModal(false);
           setSettlementToDisable(null);
         }}
+        loading={disablingSettlement}
       />
       {/* Settlement Modal */}
       {showSettlementModal && (
@@ -764,7 +827,7 @@ const AdminSettlements = () => {
         </div>
       )}
       {/* Confirmation Modal for Replace All */}
-      {showConfirmModal && (
+      {showConfirmModal && pendingFile && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg flex flex-col items-center">
             <FaExclamationTriangle className="text-4xl text-red-500 mb-4" />

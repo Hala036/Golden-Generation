@@ -15,7 +15,11 @@
       "switchLanguage": "החלף שפה",
       "step": "שלב",
       "of": "מתוך",
-      "select": "בחר"
+      "select": "בחר",
+      "close": "סגור",
+      "undo": "בטל",
+      "retry": "נסה שוב",
+      "processing": "מעבד..."
     },
     "auth": {
       "login": {
@@ -638,7 +642,35 @@
       "loadError": "טעינת היישובים נכשלה.",
       "updateError": "עדכון היישוב נכשל.",
       "addError": "הוספת היישוב נכשלה.",
-      "loading": "טוען יישובים..."
+      "loading": "טוען יישובים...",
+      "modals": {
+        "disable": {
+          "title": "אשר השבתה",
+          "subtitle": "פעולה זו אינה ניתנת לביטול",
+          "message": "האם אתה בטוח שברצונך להשבית ולהסיר",
+          "messageEnd": "?",
+          "warning": "זה יסיר את היישוב מהיישובים הזמינים וימחק את כל הנתונים הקשורים.",
+          "confirm": "כן, השבת"
+        }
+      },
+      "messages": {
+        "disabling": "משבית יישוב...",
+        "processing": "מעבד",
+        "disabledSuccess": "היישוב הושבת בהצלחה. הוסרו {adminCount} מנהל/ים ו-{retireeCount} גמלאי/ים.",
+        "disabledTitle": "יישוב הושבת",
+        "disableError": "נכשל בהשבתת היישוב. נסה שוב.",
+        "errorTitle": "שגיאה",
+        "emptyName": "שם היישוב לא יכול להיות ריק",
+        "validationError": "שגיאת אימות",
+        "renamedSuccess": "היישוב שונה מ-\"{original}\" ל-\"{name}\"",
+        "renamedTitle": "יישוב שונה",
+        "originalNotFound": "היישוב המקורי לא נמצא",
+        "addedSuccess": "היישוב \"{name}\" נוסף בהצלחה",
+        "addedTitle": "יישוב נוסף",
+        "alreadyExists": "היישוב \"{name}\" כבר קיים",
+        "warningTitle": "אזהרה",
+        "saveError": "נכשל בשמירת היישוב. נסה שוב."
+      }
     },
     "dashboard": {
       "welcome": "ברוך הבא",

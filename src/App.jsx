@@ -8,6 +8,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { CallProvider } from './context/callContext';
 import { UserProvider } from './context/UserContext'; // Import the UserProvider
 import GlobalCallModal from './components/GlobalCallModal';
+import ToastManager from './components/ToastManager';
 
 import Login from './components/Login';
 import SignUp from './components/SignUp/SignUp';
@@ -48,6 +49,7 @@ const App = () => {
             <CallProvider>
               <Router>
                 <Toaster position="top-right" />
+                <ToastManager />
                 <GlobalCallModal />
                 <AppRoutes />
               </Router>

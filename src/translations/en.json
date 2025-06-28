@@ -15,7 +15,11 @@
     "switchLanguage": "Switch Language",
     "step": "Step",
     "of": "of",
-    "select": "Select"
+    "select": "Select",
+    "close": "Close",
+    "undo": "Undo",
+    "retry": "Retry",
+    "processing": "Processing..."
   },
   "auth": {
     "login": {
@@ -680,7 +684,35 @@
       "loadError": "Failed to load settlements.",
       "updateError": "Failed to update settlement.",
       "addError": "Failed to add settlement.",
-      "loading": "Loading settlements..."
+      "loading": "Loading settlements...",
+      "modals": {
+        "disable": {
+          "title": "Confirm Disable",
+          "subtitle": "This action cannot be undone",
+          "message": "Are you sure you want to disable and remove",
+          "messageEnd": "?",
+          "warning": "This will remove the settlement from available settlements and delete all associated data.",
+          "confirm": "Yes, Disable"
+        }
+      },
+      "messages": {
+        "disabling": "Disabling settlement...",
+        "processing": "Processing",
+        "disabledSuccess": "Settlement has been disabled successfully. Removed {adminCount} admin(s) and {retireeCount} retiree(s).",
+        "disabledTitle": "Settlement Disabled",
+        "disableError": "Failed to disable settlement. Please try again.",
+        "errorTitle": "Error",
+        "emptyName": "Settlement name cannot be empty",
+        "validationError": "Validation Error",
+        "renamedSuccess": "Settlement renamed from \"{original}\" to \"{name}\"",
+        "renamedTitle": "Settlement Renamed",
+        "originalNotFound": "Original settlement not found",
+        "addedSuccess": "Settlement \"{name}\" added successfully",
+        "addedTitle": "Settlement Added",
+        "alreadyExists": "Settlement \"{name}\" already exists",
+        "warningTitle": "Warning",
+        "saveError": "Failed to save settlement. Please try again."
+      }
     }
   },
   "dashboard": {
