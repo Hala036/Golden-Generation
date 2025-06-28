@@ -216,7 +216,14 @@ const AdminSettlements = () => {
       const adminSnapshot = await getDocs(adminQuery);
       let adminCount = 0;
       for (const adminDoc of adminSnapshot.docs) {
+        const adminData = adminDoc.data();
+        const username = adminData.credentials?.username;
+        if (username) {
+          await deleteDoc(doc(db, 'usernames', username.toLowerCase()));
+        }
         await deleteDoc(adminDoc.ref);
+        // If you have access to the Firebase Admin SDK, you can also delete from Auth:
+        // await admin.auth().deleteUser(adminDoc.id);
         adminCount++;
       }
 

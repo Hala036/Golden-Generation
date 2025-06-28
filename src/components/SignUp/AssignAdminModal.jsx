@@ -22,32 +22,25 @@ const AssignAdminModal = ({
     checkExists: checkUsernameExists,
     existsError: 'Username is already taken',
   });
-  const [phone, setPhone] = useState('');
-  const [phoneError, setPhoneError] = useState('');
-
-  const handlePhoneChange = (e) => {
-    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-    setPhone(val);
-    setPhoneError('');
-  };
-
-  const handlePhoneBlur = () => {
-    setPhoneError(validatePhoneNumber(phone));
-  };
+  const phoneField = useFieldValidation({
+    validate: validatePhoneNumber,
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const valid = !emailField.error && !usernameField.error && !phoneError && phone;
-    if (!valid) {
-      emailField.onBlur();
-      usernameField.onBlur();
-      handlePhoneBlur();
-      return;
-    }
+    emailField.onBlur();
+    usernameField.onBlur();
+    phoneField.onBlur();
+    
+    const valid = !emailField.error && !usernameField.error && !phoneField.error
+      && emailField.value && usernameField.value && phoneField.value;
+    
+    if (!valid) return;
+    
     onAdminCreated({
       email: emailField.value,
       username: usernameField.value,
-      phone,
+      phone: phoneField.value,
     });
   };
 
@@ -123,26 +116,36 @@ const AssignAdminModal = ({
           </label>
           <input
             type="text"
-            placeholder="Phone"
-            value={phone}
-            onChange={handlePhoneChange}
-            onBlur={handlePhoneBlur}
-            className={`px-3 py-2 border rounded ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
+            placeholder="Phone (e.g., 05XXXXXXXX)"
+            value={phoneField.value}
+            onChange={phoneField.onChange}
+            onBlur={phoneField.onBlur}
+            className={`px-3 py-2 border rounded ${phoneField.error ? 'border-red-500' : 'border-gray-300'}`}
             disabled={creatingAdmin}
             aria-label="Admin Phone"
           />
-          {phoneError && (
+          {phoneField.error && (
             <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
               <FaInfoCircle className="flex-shrink-0" />
-              {phoneError}
+              {phoneField.error}
             </span>
           )}
 
           <div className="flex gap-2 justify-center mt-2">
             <button
               type="submit"
-              className="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition min-w-[120px]"
-              disabled={creatingAdmin || emailField.isChecking || usernameField.isChecking || emailField.error || usernameField.error || phoneError}
+              className="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition min-w-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={
+                creatingAdmin ||
+                emailField.isChecking ||
+                usernameField.isChecking ||
+                emailField.error ||
+                usernameField.error ||
+                phoneField.error ||
+                !emailField.value ||
+                !usernameField.value ||
+                !phoneField.value
+              }
             >
               {creatingAdmin ? (
                 <span className="flex items-center gap-2">
