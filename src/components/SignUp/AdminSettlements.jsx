@@ -52,7 +52,7 @@ const AdminSettlements = () => {
   // Filter settlements based on search
   const filteredSettlements = allSettlements.filter(settlement =>
     settlement.name && settlement.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   // Pagination state (must come after filteredSettlements)
   const [page, setPage] = useState(1);
@@ -81,30 +81,31 @@ const AdminSettlements = () => {
   }, []);
 
   // Fetch availableSettlements and show assigned admins
-  useEffect(() => {
-    const fetchAvailableSettlements = async () => {
+  const fetchAvailableSettlements = async () => {
     try {
-        const snapshot = await getDocs(collection(db, 'availableSettlements'));
-        const available = [];
-        const admins = {};
-        snapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          available.push(data.name);
-          if (data.adminEmail) {
-            admins[data.name] = {
-              email: data.adminEmail,
-              username: data.adminUsername,
-              phone: data.adminPhone,
-            };
-          }
-        });
-        console.debug('[fetchAvailableSettlements] available:', available, 'admins:', admins);
-        setAvailableSettlements(available);
-        setSettlementAdmins(admins);
-      } catch (error) {
-        console.error('Failed to fetch available settlements:', error);
-      }
-    };
+      const snapshot = await getDocs(collection(db, 'availableSettlements'));
+      const available = [];
+      const admins = {};
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        available.push(data.name);
+        if (data.adminEmail) {
+          admins[data.name] = {
+            email: data.adminEmail,
+            username: data.adminUsername,
+            phone: data.adminPhone,
+          };
+        }
+      });
+      console.debug('[fetchAvailableSettlements] available:', available, 'admins:', admins);
+      setAvailableSettlements(available);
+      setSettlementAdmins(admins);
+    } catch (error) {
+      console.error('Failed to fetch available settlements:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchAvailableSettlements();
   }, []);
 
@@ -174,6 +175,8 @@ const AdminSettlements = () => {
       toast.success('Admin created and password reset email sent!');
       setShowAdminForm(false);
       setSelectedSettlement('');
+      // Re-fetch settlements and admins to sync state
+      await fetchAvailableSettlements();
       console.debug('[handleAdminCreated] success', { email, username, phone, newUserId });
     } catch (err) {
       if (userCredential && newUserId) {
@@ -471,6 +474,8 @@ const AdminSettlements = () => {
       }, { merge: true });
       toast.success('Admin created and password reset email sent!');
       setAdminModal({ open: false, settlement: null });
+      // Re-fetch settlements and admins to sync state
+      await fetchAvailableSettlements();
     } catch (err) {
       if (userCredential && newUserId) {
         try { await userCredential.user.delete(); } catch (e) { /* ignore */ }
@@ -585,48 +590,27 @@ const AdminSettlements = () => {
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${isRTL ? 'rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
           {paginatedSettlements.map(settlement => {
             const enabled = availableSettlements.includes(settlement.name);
+            // Debugging logs
+            console.log('settlementAdmins keys:', Object.keys(settlementAdmins));
+            console.log('Current settlement.name:', settlement.name);
+            Object.keys(settlementAdmins).forEach(key => {
+              if (key.trim() === settlement.name.trim()) {
+                console.log('MATCH:', key, settlementAdmins[key]);
+              }
+            });
+            // Robust adminInfo lookup
+            const adminInfo = Object.entries(settlementAdmins).find(
+              ([key]) => key.trim() === settlement.name.trim()
+            )?.[1] || {};
             return (
-              <div key={settlement.name} className="bg-white shadow rounded p-4 flex flex-col items-center transition hover:shadow-lg">
-                <div className="font-bold text-lg mb-2 flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-yellow-500" />
-                  {settlement.name}
-                  {enabled && (
-                    <span className="ml-2 flex items-center gap-1 text-green-600 text-sm font-semibold">
-                      <FaCheckCircle /> Enabled
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-gray-500 mb-1">{settlement.english_name}</div>
-                <div className="text-xs text-gray-500 mb-1">{settlement.shem_napa}{settlement.shem_napa && settlement.shem_moaatza ? ' • ' : ''}{settlement.shem_moaatza}</div>
-                <div className="text-xs text-gray-400 mb-2">{settlement.lishka}</div>
-                {!enabled && (
-                  <button
-                    onClick={() => openAdminModal(settlement)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2 flex items-center gap-2"
-                    disabled={enablingSettlement === settlement.name}
-                    title="Enable this settlement"
-                  >
-                    <FaCheckCircle /> Enable
-                  </button>
-                )}
-                {/* Edit/Delete icons */}
-                <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={() => openEditModal(settlement)}
-                    className="text-blue-500 hover:text-blue-700 p-1"
-                    title="Edit settlement"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => openDeleteModal(settlement)}
-                    className="text-red-500 hover:text-red-700 p-1"
-                    title="Delete settlement"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </div>
+              <SettlementCard
+                key={settlement.name}
+                settlement={settlement.name}
+                isAvailable={enabled}
+                adminInfo={adminInfo}
+                onDisable={enabled ? () => handleDisableSettlement(settlement.name) : undefined}
+                onClick={!enabled ? () => openAdminModal(settlement) : undefined}
+              />
             );
           })}
         </div>
