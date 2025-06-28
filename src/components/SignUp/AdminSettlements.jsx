@@ -385,7 +385,7 @@ const AdminSettlements = () => {
       const docs = await getDocs(collection(db, 'settlements'));
       const docToDelete = docs.docs.find(doc => doc.data().name === deleteModal.settlement.name);
       if (docToDelete) {
-        await docToDelete.ref.delete();
+        await deleteDoc(docToDelete.ref);
         toast.success('Settlement deleted!');
         
       }
