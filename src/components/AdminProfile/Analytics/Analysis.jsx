@@ -21,18 +21,6 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 const Analysis = () => {
   const { users, jobs, events } = useFetchAnalysisData();
-  // Pass availableSettlements to useChartData
-  const {
-    jobByMonthData,
-    totalUsers,
-    totalVolunteers,
-    jobRequestsByStatus,
-    averageJobCompletionTime,
-    usersByRoleDistribution,
-    eventsByCategoryData,
-    eventsByMonthData,
-  } = useChartData(users, jobs, availableSettlements, events);
-
   // Real-time retiree counts for available settlements
   const [retireeCounts, setRetireeCounts] = useState({});
   const [availableSettlements, setAvailableSettlements] = useState([]);
@@ -83,6 +71,23 @@ const Analysis = () => {
   const primaryColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4"];
   const gradientColors = ["#6366F1", "#8B5CF6", "#EC4899", "#F59E0B", "#10B981", "#06B6D4"];
 
+  // Always call useChartData at the top level, passing fallback values if data is not ready
+  const {
+    jobByMonthData = [],
+    totalUsers = 0,
+    totalVolunteers = 0,
+    jobRequestsByStatus = [],
+    averageJobCompletionTime = 0,
+    usersByRoleDistribution = [],
+    eventsByCategoryData = [],
+    eventsByMonthData = [],
+  } = useChartData(
+    users || [],
+    jobs || [],
+    availableSettlements || [],
+    events || []
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -95,16 +100,7 @@ const Analysis = () => {
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="text-red-500 text-xl mb-4">⚠️ Error</div>
-            <div className="text-gray-700">{error}</div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="text-red-500 text-center py-8">{error}</div>;
   }
 
   const CustomTooltip = ({ active, payload, label }) => {
