@@ -5,22 +5,29 @@ import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
-import profile from "../../assets/profile.jpeg";
 import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
-import Notifications from './Notifications'; // Import the Notifications component
+import Notifications from './Notifications';
+import DefaultProfilePic from '../DefaultProfilePic'; // Import DefaultProfilePic
 
 const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selected, setSelected }) => {
-  // Remove local state for `selected` since it's now passed as a prop
   const { t } = useTranslation();
   const { currentUser } = auth;
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [userData, setUserData] = useState(null);
-  const [userRole, setUserRole] = useState(null); // Track user role
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false); // Track sidebar state
-  const [showNotificationsPopup, setShowNotificationsPopup] = useState(false); // State for notifications popup
+  const [userRole, setUserRole] = useState(null);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
+
+  // Define colors for different user types
+  const defaultColors = {
+    admin: '#4F46E5', // Indigo
+    superadmin: '#DC2626', // Red
+    retiree: '#059669', // Green
+    default: '#6B7280', // Gray
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,6 +43,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
           return;
         }
         setUserData(data.credentials);
+        setUserRole(data.role); // Set the user role
       } catch (error) {
         toast.error("Failed to load user data.");
       }
@@ -72,8 +80,15 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
         {/* Profile Section */}
         {isSidebarExpanded && (
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
-            <img src={profile} alt="Profile" className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2 md:mb-3" />
-            <span className="text-base md:text-lg font-semibold">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
+              <DefaultProfilePic 
+                name={userData?.username || "User"}
+                size={80}
+                fontSize="2rem"
+                bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
+              />
+            </div>
+            <span className="text-sm ml-3 mt-3 md:ml-0 md:mt-0 md:text-lg font-semibold text-center">
               {userData?.username || "User"}
             </span>
           </div>

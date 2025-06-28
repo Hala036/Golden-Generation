@@ -5,14 +5,24 @@ import { getServiceRequests } from "../../serviceRequestsService"; // Import ser
 import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
+import DefaultProfilePic from "../DefaultProfilePic"; // Import DefaultProfilePic component
 
 const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   const { userData, loading } = useContext(UserContext);
   if (loading) return <div>Loading...</div>;
   const user = auth.currentUser;
   const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
-  const userName = userData?.credentials?.username || "Admin";
-  const userRole = userData?.role || ""; // Get user role
+  const [userName, setUserName] = useState(""); // State for username
+  const userRole = userData?.role || "";
+  
+  // Define colors for different user types
+  const defaultColors = {
+    admin: '#4F46E5', // Indigo
+    superadmin: '#DC2626', // Red
+    retiree: '#059669', // Green
+    default: '#6B7280', // Gray
+  };
+
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -36,6 +46,34 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Fetch username from Firestore
+  useEffect(() => {
+    const fetchUserName = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          // Try to get display name from different possible locations in the user document
+          const name = userData?.personalDetails?.firstName || // First try to get first name
+                      userData?.credentials?.username?.split(/[_\s]/)[0] || // Then try username's first part
+                      userData?.username?.split(/[_\s]/)[0] || // Then try root username's first part
+                      userData?.name?.split(/[_\s]/)[0] || // Then try name's first part
+                      "User";
+          setUserName(name);
+        } else {
+          setUserName("User");
+        }
+      } catch (error) {
+        console.error("Error fetching username:", error);
+        setUserName("User");
+      }
+    };
+
+    fetchUserName();
+  }, [user?.uid]);
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
@@ -442,15 +480,29 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     }
   };
 
+  // Function to extract name from activity action
+  const extractNameFromAction = (action) => {
+    // Match pattern: starts with any word characters up to a space or 'joined'
+    const match = action.match(/^([^\s]+)(?=\s|joined)/);
+    return match ? match[1] : '';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6">
       {/* Header */}
       <div className="mb-4 md:mb-8">
-        {/* Clock for desktop only (md and up) */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-          <div>
-            <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">Welcome, {userName} 👋</h1>
-            <p className="text-xs md:text-base text-gray-600">Here's what's happening in your community today</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-4">
+            <DefaultProfilePic 
+              name={userName} 
+              size={50} 
+              fontSize="1.8rem"
+              bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
+            />
+            <div>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">Welcome, {userName} 👋</h1>
+              <p className="text-xs md:text-base text-gray-600">Here's what's happening in your community today</p>
+            </div>
           </div>
           {/* Quick Actions */}
           <div className={`grid gap-1 md:gap-2 w-full max-w-s md:mr-3 md:ml-3 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
@@ -513,7 +565,18 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
               {recentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-start space-x-2 md:space-x-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="flex-shrink-0 mt-1">
-                    {getActivityIcon(activity.type)}
+                    {activity.type === 'join' ? (
+                      <div className="w-8 h-8">
+                        <DefaultProfilePic 
+                          name={extractNameFromAction(activity.action)} 
+                          size={32} 
+                          fontSize="0.9rem"
+                          bgColor={defaultColors['retiree']}
+                        />
+                      </div>
+                    ) : (
+                      getActivityIcon(activity.type)
+                    )}
                   </div>
                   <div className="flex-grow">
                     <p className="text-xs md:text-sm text-gray-800">{activity.action}</p>
@@ -526,8 +589,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         </div>
 
         {/* Alerts & Quick Actions */}
-        {/* <div className="space-y-6"> */}
-          {/* Alerts */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center">
@@ -538,7 +599,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
               <Notifications 
                 setSelectedTab={setSelected} 
                 setShowNotificationsPopup={setShowNotificationsPopup} 
-                limit={3} // Limit notifications to 3
+                limit={3}
               />
             </div>
           </div>
