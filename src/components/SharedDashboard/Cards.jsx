@@ -121,7 +121,7 @@ const Cards = ({ userRole = 'retiree' }) => {
   };
 
   return (
-    <div className="bg-white p-4">
+    <div className="bg-white p-3">
           {/* Search Bar and Filter */}
           <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-1 shadow-sm w-full">
             <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
@@ -199,7 +199,7 @@ const Cards = ({ userRole = 'retiree' }) => {
                             </div>
                           </div>
                           {/* Time with Clock Icon */}
-                          <div className="flex items-center">
+                          <div className="flex mb-1 items-center">
                             <FaClock className="text-[#FFD966] mr-2 text-xs md:text-base" />
                             <p className="text-gray-700 font-medium text-xs md:text-base">{event.timeFrom} - {event.timeTo}</p>
                           </div>
