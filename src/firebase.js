@@ -116,7 +116,15 @@ export const getUsersBySettlement = async (settlement) => {
     const snapshot = await getDocs(usersRef);
     const users = snapshot.docs
       .map((doc) => doc.data())
-      .filter((user) => user.idVerification?.settlement === settlement); // Filter by settlement
+      .filter((user) => {
+        if (user?.role === "admin") {
+          // For admin, use user.settlement (or user.credentials.settlement if that's where it's stored)
+          return user?.settlement === settlement || user.settlement === settlement;
+        } else {
+          // For others, use idVerification.settlement (legacy)
+          return user.idVerification?.settlement === settlement;
+        }
+      });
     return users;
   } catch (error) {
     console.error("Error fetching users by settlement:", error);
