@@ -553,6 +553,32 @@
           "deleteAccountDesc": "Permanently delete your account",
           "editUserInfo": "Edit User Information",
           "editUserInfoDesc": "Edit all information entered during sign-up"
+        },
+        "modals": {
+          "editProfile": "Edit Profile",
+          "changePassword": "Change Password",
+          "profilePicture": "Update Profile Picture",
+          "fontSize": "Font Size",
+          "announcements": "System Announcements",
+          "notifications": "Notifications",
+          "theme": "Theme",
+          "deleteAccount": "Delete Account"
+        },
+        "buttons": {
+          "reauthenticate": "Re-authenticate",
+          "saveChanges": "Save Changes"
+        },
+        "placeholders": {
+          "name": "Name",
+          "username": "Username",
+          "phone": "Phone",
+          "email": "Email",
+          "currentPassword": "Current Password",
+          "newPassword": "New Password",
+          "confirmNewPassword": "Confirm New Password",
+          "reauthPassword": "Re-authenticate with current password",
+          "deleteConfirm": "Type DELETE to confirm",
+          "enterPassword": "Enter your password"
         }
       },
       "logout": "Logout",
@@ -774,6 +800,32 @@
         "deleteAccountDesc": "Permanently delete your account",
         "editUserInfo": "Edit User Information",
         "editUserInfoDesc": "Edit all information entered during sign-up"
+      },
+      "modals": {
+        "editProfile": "Edit Profile",
+        "changePassword": "Change Password",
+        "profilePicture": "Update Profile Picture",
+        "fontSize": "Font Size",
+        "announcements": "System Announcements",
+        "notifications": "Notifications",
+        "theme": "Theme",
+        "deleteAccount": "Delete Account"
+      },
+      "buttons": {
+        "reauthenticate": "Re-authenticate",
+        "saveChanges": "Save Changes"
+      },
+      "placeholders": {
+        "name": "Name",
+        "username": "Username",
+        "phone": "Phone",
+        "email": "Email",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password",
+        "reauthPassword": "Re-authenticate with current password",
+        "deleteConfirm": "Type DELETE to confirm",
+        "enterPassword": "Enter your password"
       }
     },
     "logout": "Logout",
@@ -991,7 +1043,8 @@
       "title": "Customer Support",
       "description": "If you have any questions or need assistance, feel free to reach out to us by sending a message below.",
       "placeholder": "Type your message here...",
-      "sendButton": "Send Message"
+      "sendButton": "Send Message",
+      "sending": "Sending..."
     },
     "errors": {
       "noUserLoggedIn": "No user is logged in.",

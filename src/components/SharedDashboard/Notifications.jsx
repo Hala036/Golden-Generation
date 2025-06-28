@@ -202,7 +202,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
                 {iconMap[n.type] || iconMap.info}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-800 truncate">{n.title || t('dashboard.notifications.notification')}</div>
+                <div className="font-semibold text-gray-800 truncate">{n.title || t('auth.dashboard.notifications.notification')}</div>
                 <div className="text-sm text-gray-600 truncate">{n.message}</div>
                 <div className="text-xs text-gray-400 mt-1">
                   {n.createdAt
@@ -230,7 +230,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowModal(false)}
               >
-                {t('dashboard.notifications.close')}
+                {t('auth.dashboard.notifications.close')}
               </button>
             </div>
             <p className="text-gray-700">{selectedNotification.message}</p>

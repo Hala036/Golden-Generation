@@ -138,7 +138,7 @@ const Support = () => {
         disabled={isSending}
       >
         <FaPaperPlane />
-        {isSending ? "Sending..." : "Send Message"}
+        {isSending ? t('retiree.support.sending') : t('retiree.support.sendButton')}
       </button>
     </div>
   );

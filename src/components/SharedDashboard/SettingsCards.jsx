@@ -465,7 +465,7 @@ const SettingsCards = () => {
 
       {/* Edit Profile Modal */}
       {showEditProfile && (
-        <Modal onClose={() => setShowEditProfile(false)} title="Edit Profile">
+        <Modal onClose={() => setShowEditProfile(false)} title={t('dashboard.settings.modals.editProfile')}>
           {loadingProfile && (
             <div className="flex justify-center items-center mb-4">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
@@ -481,7 +481,7 @@ const SettingsCards = () => {
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white border-gray-300'
                 }`}
-                placeholder="Re-authenticate with current password"
+                placeholder={t('dashboard.settings.placeholders.reauthPassword')}
                 autoComplete="current-password"
                 required
               />
@@ -501,7 +501,7 @@ const SettingsCards = () => {
                   type="submit" 
                   className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
                 >
-                  Re-authenticate
+                  {t('dashboard.settings.buttons.reauthenticate')}
                 </button>
               </div>
             </form>
@@ -515,7 +515,7 @@ const SettingsCards = () => {
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white border-gray-300'
                 }`}
-                placeholder="Name" 
+                placeholder={t('dashboard.settings.placeholders.name')}
                 value={profileData.name} 
                 onChange={e => setProfileData({ ...profileData, name: e.target.value })} 
                 required 
@@ -527,7 +527,7 @@ const SettingsCards = () => {
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white border-gray-300'
                 }`}
-                placeholder="Username" 
+                placeholder={t('dashboard.settings.placeholders.username')}
                 value={profileData.username} 
                 onChange={e => setProfileData({ ...profileData, username: e.target.value })} 
                 required 
@@ -539,7 +539,7 @@ const SettingsCards = () => {
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white border-gray-300'
                 }`}
-                placeholder="Phone" 
+                placeholder={t('dashboard.settings.placeholders.phone')}
                 value={profileData.phone} 
                 onChange={e => setProfileData({ ...profileData, phone: e.target.value })} 
               />
@@ -550,7 +550,7 @@ const SettingsCards = () => {
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white border-gray-300'
                 }`}
-                placeholder="Email" 
+                placeholder={t('dashboard.settings.placeholders.email')}
                 value={profileData.email} 
                 onChange={e => setProfileData({ ...profileData, email: e.target.value })} 
                 required 
@@ -571,7 +571,7 @@ const SettingsCards = () => {
                   type="submit" 
                   className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
                 >
-                  Save
+                  {t('common.save')}
                 </button>
               </div>
             </form>
@@ -580,7 +580,7 @@ const SettingsCards = () => {
       )}
       {/* Change Password Modal */}
       {showChangePassword && (
-        <Modal onClose={() => setShowChangePassword(false)} title="Change Password">
+        <Modal onClose={() => setShowChangePassword(false)} title={t('dashboard.settings.modals.changePassword')}>
           <form onSubmit={handlePasswordSave} className="space-y-4">
             <PasswordInput
               value={passwordData.currentPassword}
@@ -590,7 +590,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Current Password"
+              placeholder={t('dashboard.settings.placeholders.currentPassword')}
               autoComplete="current-password"
               required
             />
@@ -602,7 +602,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="New Password"
+              placeholder={t('dashboard.settings.placeholders.newPassword')}
               autoComplete="new-password"
               showStrengthIndicator={true}
               required
@@ -615,7 +615,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Confirm New Password"
+              placeholder={t('dashboard.settings.placeholders.confirmNewPassword')}
               autoComplete="new-password"
               required
             />
@@ -635,7 +635,7 @@ const SettingsCards = () => {
                 type="submit" 
                 className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
               >
-                Change
+                {t('common.change')}
               </button>
             </div>
           </form>
@@ -643,7 +643,7 @@ const SettingsCards = () => {
       )}
       {/* Profile Picture Modal */}
       {showProfilePicture && (
-        <Modal onClose={() => setShowProfilePicture(false)} title="Update Profile Picture">
+        <Modal onClose={() => setShowProfilePicture(false)} title={t('dashboard.settings.modals.profilePicture')}>
           <form onSubmit={handleProfilePicSave} className="space-y-6">
             {/* Current Profile Picture */}
             <div className="flex flex-col items-center">
@@ -739,7 +739,7 @@ const SettingsCards = () => {
                     Uploading...
                   </>
                 ) : (
-                  'Save Changes'
+                  t('dashboard.settings.buttons.saveChanges')
                 )}
               </button>
             </div>
@@ -748,7 +748,7 @@ const SettingsCards = () => {
       )}
       {/* Font Size Modal */}
       {showFontSize && (
-        <Modal onClose={() => setShowFontSize(false)} title="Font Size">
+        <Modal onClose={() => setShowFontSize(false)} title={t('dashboard.settings.modals.fontSize')}>
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2">
               <button
@@ -811,7 +811,7 @@ const SettingsCards = () => {
       )}
       {/* Announcements Modal */}
       {showAnnouncements && (
-        <Modal onClose={() => setShowAnnouncements(false)} title="System Announcements">
+        <Modal onClose={() => setShowAnnouncements(false)} title={t('dashboard.settings.modals.announcements')}>
           {loadingAnnouncements ? (
             <div className="flex justify-center items-center mb-4">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
@@ -837,7 +837,7 @@ const SettingsCards = () => {
       )}
       {/* Notifications Modal */}
       {showNotifications && (
-        <Modal onClose={() => setShowNotifications(false)} title="Notifications">
+        <Modal onClose={() => setShowNotifications(false)} title={t('dashboard.settings.modals.notifications')}>
           <div className="space-y-4">
             <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
               <input 
@@ -862,7 +862,7 @@ const SettingsCards = () => {
       )}
       {/* Theme Modal */}
       {showTheme && (
-        <Modal onClose={() => setShowTheme(false)} title="Theme">
+        <Modal onClose={() => setShowTheme(false)} title={t('dashboard.settings.modals.theme')}>
           <div className="space-y-3">
             <button 
               onClick={() => handleThemeChange("light")} 
@@ -893,7 +893,7 @@ const SettingsCards = () => {
       )}
       {/* Delete Account Modal */}
       {showDeleteAccount && (
-        <Modal onClose={() => setShowDeleteAccount(false)} title="Delete Account">
+        <Modal onClose={() => setShowDeleteAccount(false)} title={t('dashboard.settings.modals.deleteAccount')}>
           <form onSubmit={handleDeleteAccount} className="space-y-4">
             <div className={`text-red-600 font-semibold ${theme === 'dark' ? 'text-red-400' : ''}`}>
               This action is irreversible. Type <b>DELETE</b> to confirm.
@@ -901,7 +901,7 @@ const SettingsCards = () => {
             <input 
               type="text"
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Type DELETE to confirm"
+              placeholder={t('dashboard.settings.placeholders.deleteConfirm')}
               value={deleteConfirm}
               onChange={e => setDeleteConfirm(e.target.value)}
               required
@@ -910,7 +910,7 @@ const SettingsCards = () => {
               value={deletePassword}
               onChange={e => setDeletePassword(e.target.value)}
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your password"
+              placeholder={t('dashboard.settings.placeholders.enterPassword')}
               autoComplete="current-password"
             />
             <div className="flex justify-end gap-2">
@@ -929,7 +929,7 @@ const SettingsCards = () => {
                 type="submit" 
                 className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
               >
-                Delete
+                {t('common.delete')}
               </button>
             </div>
           </form>
