@@ -4,8 +4,10 @@ import { db, auth } from "../../firebase"; // Firebase configuration
 import { toast } from "react-hot-toast";
 import { Check, Calendar, Clock, MapPin, Star } from "lucide-react";
 import { updateJobRequest } from "../../jobRequestsService"; // Import Firestore update function
+import { useTranslation } from 'react-i18next';
 
 const Volunteer = () => {
+  const { t } = useTranslation();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -19,36 +21,40 @@ const Volunteer = () => {
   const [activeTab, setActiveTab] = useState("requests"); // State for active tab
 
   const volunteerAreaOptions = [
-    { id: "publicity", label: "Publicity", icon: "📢" },
-    { id: "health", label: "Health", icon: "🏥" },
-    { id: "catering", label: "Catering", icon: "🍽️" },
-    { id: "teaching", label: "Teaching", icon: "👨‍🏫" },
-    { id: "high-tech", label: "High Tech", icon: "💻" },
-    { id: "tourism", label: "Tourism", icon: "🗺️" },
-    { id: "safety", label: "Safety", icon: "🛡️" },
-    { id: "fundraising", label: "Fundraising", icon: "💰" },
-    { id: "special-events", label: "Special Events", icon: "🎉" },
-    { id: "craftsmanship", label: "Craftsmanship", icon: "🔨" },
-    { id: "aaliyah", label: "Aaliyah", icon: "✈️" },
-    { id: "culture", label: "Culture", icon: "🎭" },
+    { id: "publicity", label: t('volunteer.areas.publicity'), icon: "📢" },
+    { id: "health", label: t('volunteer.areas.health'), icon: "🏥" },
+    { id: "catering", label: t('volunteer.areas.catering'), icon: "🍽️" },
+    { id: "teaching", label: t('volunteer.areas.teaching'), icon: "👨‍🏫" },
+    { id: "high-tech", label: t('volunteer.areas.highTech'), icon: "💻" },
+    { id: "tourism", label: t('volunteer.areas.tourism'), icon: "🗺️" },
+    { id: "safety", label: t('volunteer.areas.safety'), icon: "🛡️" },
+    { id: "fundraising", label: t('volunteer.areas.fundraising'), icon: "💰" },
+    { id: "special-events", label: t('volunteer.areas.specialEvents'), icon: "🎉" },
+    { id: "craftsmanship", label: t('volunteer.areas.craftsmanship'), icon: "🔨" },
+    { id: "aaliyah", label: t('volunteer.areas.aaliyah'), icon: "✈️" },
+    { id: "culture", label: t('volunteer.areas.culture'), icon: "🎭" },
   ];
 
   const frequencyOptions = [
-    "Once a month",
-    "Once every two weeks",
-    "Once a week",
-    "Twice a week",
+    t('volunteer.frequency.onceMonth'),
+    t('volunteer.frequency.onceTwoWeeks'),
+    t('volunteer.frequency.onceWeek'),
+    t('volunteer.frequency.twiceWeek'),
   ];
 
-  const timeOptions = ["Morning hours", "Noon hours", "Evening hours"];
+  const timeOptions = [
+    t('volunteer.time.morning'),
+    t('volunteer.time.noon'),
+    t('volunteer.time.evening'),
+  ];
 
   const dayOptions = [
-    { id: "sunday", label: "Sunday", short: "Sun" },
-    { id: "monday", label: "Monday", short: "Mon" },
-    { id: "tuesday", label: "Tuesday", short: "Tue" },
-    { id: "wednesday", label: "Wednesday", short: "Wed" },
-    { id: "thursday", label: "Thursday", short: "Thu" },
-    { id: "friday", label: "Friday", short: "Fri" },
+    { id: "sunday", label: t('volunteer.days.sunday'), short: t('volunteer.days.sun') },
+    { id: "monday", label: t('volunteer.days.monday'), short: t('volunteer.days.mon') },
+    { id: "tuesday", label: t('volunteer.days.tuesday'), short: t('volunteer.days.tue') },
+    { id: "wednesday", label: t('volunteer.days.wednesday'), short: t('volunteer.days.wed') },
+    { id: "thursday", label: t('volunteer.days.thursday'), short: t('volunteer.days.thu') },
+    { id: "friday", label: t('volunteer.days.friday'), short: t('volunteer.days.fri') },
   ];
 
   useEffect(() => {
@@ -56,7 +62,7 @@ const Volunteer = () => {
       try {
         const user = auth.currentUser;
         if (!user) {
-          toast.error("No user is logged in.");
+          toast.error(t('volunteer.toast.noUser'));
           return;
         }
         setUserId(user.uid);
@@ -91,14 +97,14 @@ const Volunteer = () => {
         setRequests(fetchedRequests);
       } catch (err) {
         console.error("Error fetching volunteer information:", err);
-        toast.error("Failed to load volunteering information.");
+        toast.error(t('volunteer.toast.failedLoad'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchVeteransCommunityInfo();
-  }, []);
+  }, [t]);
 
   const handleArraySelection = (field, value) => {
     setVolunteerInfo((prev) => {
@@ -133,10 +139,10 @@ const Volunteer = () => {
         veteransCommunity: updatedData,
       });
 
-      toast.success("Volunteering information updated successfully!");
+      toast.success(t('volunteer.toast.updated'));
     } catch (err) {
       console.error("Error updating volunteering information:", err);
-      toast.error("Failed to update volunteering information.");
+      toast.error(t('volunteer.toast.failedUpdate'));
     }
   };
 
@@ -156,7 +162,7 @@ const Volunteer = () => {
       await updateJobRequest(jobRequestId, { assignedSeniors: updatedAssignedSeniors });
 
       console.log(`Accepted invite for job request ID: ${jobRequestId}`);
-      toast.success("You have accepted the volunteering request!");
+      toast.success(t('volunteer.toast.accepted'));
 
       // Update local state
       setRequests((prevRequests) =>
@@ -168,7 +174,7 @@ const Volunteer = () => {
       );
     } catch (err) {
       console.error("Error accepting invite:", err);
-      toast.error("Failed to accept the volunteering request.");
+      toast.error(t('volunteer.toast.failedAccept'));
     }
   };
 
@@ -188,7 +194,7 @@ const Volunteer = () => {
       await updateJobRequest(jobRequestId, { assignedSeniors: updatedAssignedSeniors });
 
       console.log(`Rejected invite for job request ID: ${jobRequestId}`);
-      toast.success("You have declined the volunteering request.");
+      toast.success(t('volunteer.toast.rejected'));
 
       // Update local state
       setRequests((prevRequests) =>
@@ -200,7 +206,7 @@ const Volunteer = () => {
       );
     } catch (err) {
       console.error("Error rejecting invite:", err);
-      toast.error("Failed to decline the volunteering request.");
+      toast.error(t('volunteer.toast.failedReject'));
     }
   };
 
@@ -225,7 +231,7 @@ const Volunteer = () => {
   );
 
   if (loading) {
-    return <p className="text-gray-500">Loading volunteering information...</p>;
+    return <p className="text-gray-500">{t('volunteer.toast.loading')}</p>;
   }
 
   return (
@@ -240,7 +246,7 @@ const Volunteer = () => {
           }`}
           onClick={() => setActiveTab("requests")}
         >
-          Volunteering Requests
+          {t('volunteer.tabs.requests')}
         </button>
         <button
           className={`px-6 py-3 w-full mr-7 font-bold rounded-t-lg ${
@@ -250,7 +256,7 @@ const Volunteer = () => {
           }`}
           onClick={() => setActiveTab("info")}
         >
-          Volunteering Information
+          {t('volunteer.tabs.info')}
         </button>
       </div>
 
@@ -259,7 +265,7 @@ const Volunteer = () => {
         <div className="bg-white rounded-b-2xl ml-6 mr-6 mb-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
-              Volunteering Requests
+              {t('volunteer.section.requests')}
             </h2>
             {requests && requests.length > 0 ? (
               <ul className="space-y-4">
@@ -274,17 +280,17 @@ const Volunteer = () => {
                       <h3 className="text-lg font-semibold">{request.title}</h3>
                       <p className="text-sm text-gray-600">{request.description}</p>
                       <p className="text-sm text-gray-500">
-                        <strong>Timing:</strong> {request.volunteerHours || "Not specified"}
+                        <strong>{t('volunteer.label.timing')}</strong> {request.volunteerHours || t('volunteer.label.notSpecified')}
                       </p>
                       <p className="text-sm text-gray-500">
-                        <strong>Location:</strong> {request.location || "Not specified"}
+                        <strong>{t('volunteer.label.location')}</strong> {request.location || t('volunteer.label.notSpecified')}
                       </p>
                       <p className="text-sm text-gray-500">
-                        <strong>Frequency:</strong> {request.volunteerFrequency || "Not specified"}
+                        <strong>{t('volunteer.label.frequency')}</strong> {request.volunteerFrequency || t('volunteer.label.notSpecified')}
                       </p>
                       <p className="text-sm text-gray-500">
-                        <strong>Professional Background Requirements:</strong>{" "}
-                        {request.professionalBackground || "Not specified"}
+                        <strong>{t('volunteer.label.professionalBackground')}</strong>{" "}
+                        {request.professionalBackground || t('volunteer.label.notSpecified')}
                       </p>
 
                       {/* Display status if the user is assigned */}
@@ -296,7 +302,7 @@ const Volunteer = () => {
                               : "text-red-500"
                           } text-center`}
                         >
-                          {userAssignment.status === "Accepted" ? "Accepted" : "Declined"}
+                          {userAssignment.status === "Accepted" ? t('volunteer.label.accepted') : t('volunteer.label.declined')}
                         </p>
                       ) : (
                         <div className="flex space-x-4 mt-4 justify-center">
@@ -304,13 +310,13 @@ const Volunteer = () => {
                             onClick={() => handleAcceptInvite(request.id)}
                             className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
                           >
-                            Accept
+                            {t('volunteer.label.accept')}
                           </button>
                           <button
                             onClick={() => handleRejectInvite(request.id)}
                             className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
                           >
-                            Reject
+                            {t('volunteer.label.reject')}
                           </button>
                         </div>
                       )}
@@ -319,7 +325,7 @@ const Volunteer = () => {
                 })}
               </ul>
             ) : (
-              <p className="text-gray-500">No volunteering requests available.</p>
+              <p className="text-gray-500">{t('volunteer.toast.noRequests')}</p>
             )}
           </div>
         </div>
@@ -335,19 +341,19 @@ const Volunteer = () => {
         >
           <div className="bg-white rounded-b-2xl ml-6 mr-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
-              Volunteering Information
+              {t('volunteer.section.info')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Manage your volunteering preferences and explore opportunities.
+              {t('volunteer.label.managePreferences')}
             </p>
             {/* Current Volunteering */}
             <div className="flex items-center mb-6">
               <Star className="w-8 h-8 text-yellow-500 mr-3" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Current Volunteering
+                  {t('volunteer.section.current')}
                 </h3>
-                <p className="text-gray-600 text-lg">Are you currently volunteering?</p>
+                <p className="text-gray-600 text-lg">{t('volunteer.label.currentlyVolunteering')}</p>
               </div>
             </div>
 
@@ -361,7 +367,7 @@ const Volunteer = () => {
                 className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
               />
               <span className="text-lg font-semibold text-gray-800">
-                Yes, I'm currently volunteering
+                {t('volunteer.label.yesCurrentlyVolunteering')}
               </span>
             </label>
 
@@ -369,7 +375,7 @@ const Volunteer = () => {
               <div className="mt-8 space-y-8">
                 {/* Volunteer Areas */}
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">Volunteer Areas</h4>
+                  <h4 className="text-xl font-bold text-gray-800 mb-4">{t('volunteer.section.areas')}</h4>
                   <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
                     {volunteerAreaOptions.map((area) => (
                       <SelectionCard
@@ -391,7 +397,7 @@ const Volunteer = () => {
                   <div>
                     <div className="flex items-center mb-4">
                       <Calendar className="w-6 h-6 text-blue-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">Frequency</h4>
+                      <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.frequency')}</h4>
                     </div>
                     <select
                       value={volunteerInfo.volunteerFrequency}
@@ -400,7 +406,7 @@ const Volunteer = () => {
                       }
                       className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
                     >
-                      <option value="">Select frequency</option>
+                      <option value="">{t('volunteer.placeholder.selectFrequency')}</option>
                       {frequencyOptions.map((freq) => (
                         <option key={freq} value={freq}>
                           {freq}
@@ -413,7 +419,7 @@ const Volunteer = () => {
                   <div>
                     <div className="flex items-center mb-4">
                       <Clock className="w-6 h-6 text-green-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">Preferred Hours</h4>
+                      <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.hours')}</h4>
                     </div>
                     <select
                       value={volunteerInfo.volunteerHours}
@@ -422,7 +428,7 @@ const Volunteer = () => {
                       }
                       className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
                     >
-                      <option value="">Select hours</option>
+                      <option value="">{t('volunteer.placeholder.selectHours')}</option>
                       {timeOptions.map((time) => (
                         <option key={time} value={time}>
                           {time}
@@ -436,7 +442,7 @@ const Volunteer = () => {
                 <div>
                   <div className="flex items-center mb-4">
                     <MapPin className="w-6 h-6 text-purple-500 mr-2" />
-                    <h4 className="text-xl font-bold text-gray-800">Available Days</h4>
+                    <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.days')}</h4>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     {dayOptions.map((day) => (
@@ -463,7 +469,7 @@ const Volunteer = () => {
               >
                 <span className="flex items-center justify-center space-x-2">
                   <Star className="w-6 h-6" />
-                  <span>Save Changes</span>
+                  <span>{t('volunteer.label.saveChanges')}</span>
                   <Star className="w-6 h-6" />
                 </span>
               </button>

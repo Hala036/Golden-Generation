@@ -4,6 +4,7 @@ import { getEventParticipants, leaveEvent, joinEvent } from '../../utils/partici
 import { collection, onSnapshot } from 'firebase/firestore';
 import { FaTimes, FaUsers, FaUser, FaCheck, FaCalendarAlt, FaClock, FaMapPin, FaInfoCircle } from 'react-icons/fa';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const BaseEventDetails = ({ 
   event, 
@@ -17,6 +18,7 @@ const BaseEventDetails = ({
 }) => {
   const [participants, setParticipants] = useState([]);
   const currentUser = auth.currentUser;
+  const { t } = useTranslation();
 
   const isJoined = participants.some(p => p.uid === currentUser?.uid);
 
@@ -56,7 +58,7 @@ const BaseEventDetails = ({
         {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
           <h2 className="text-3xl font-bold text-gray-800">{event.title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors" title={t('calendar.etails.close')}>
             <FaTimes size={24}/>
           </button>
         </div>
@@ -68,7 +70,7 @@ const BaseEventDetails = ({
             <div className="flex items-start">
               <FaCalendarAlt className="text-gray-400 mt-1 mr-3 flex-shrink-0" size={20}/>
               <div>
-                <h3 className="font-semibold text-gray-700">Date</h3>
+                <h3 className="font-semibold text-gray-700">{t('calendar.eventDetails.date')}</h3>
                 <p className="text-gray-600">
                   {formatDate(event.startDate || event.date)}
                   {event.endDate && event.endDate !== (event.startDate || event.date) && ` - ${formatDate(event.endDate)}`}
@@ -79,28 +81,28 @@ const BaseEventDetails = ({
             <div className="flex items-start">
               <FaClock className="text-gray-400 mt-1 mr-3 flex-shrink-0" size={20}/>
               <div>
-                <h3 className="font-semibold text-gray-700">Time</h3>
+                <h3 className="font-semibold text-gray-700">{t('calendar.eventDetails.time')}</h3>
                 {event.timeFrom ? (
                   <p className="text-gray-600">
-                    From {event.timeFrom} {event.timeTo && `to ${event.timeTo}`}
+                    {t('calendar.eventDetails.from')} {event.timeFrom} {event.timeTo && `${t('calendar.eventDetails.to')} ${event.timeTo}`}
                   </p>
-                ) : <p className="text-gray-500 italic">Not specified</p>}
+                ) : <p className="text-gray-500 italic">{t('calendar.etails.notSpecified')}</p>}
               </div>
             </div>
 
             <div className="flex items-start col-span-1 md:col-span-2">
               <FaMapPin className="text-gray-400 mt-1 mr-3 flex-shrink-0" size={20}/>
               <div>
-                <h3 className="font-semibold text-gray-700">Location</h3>
-                <p className="text-gray-600">{event.location || 'N/A'}</p>
+                <h3 className="font-semibold text-gray-700">{t('calendar.eventDetails.location')}</h3>
+                <p className="text-gray-600">{event.location || t('calendar.eventDetails.notAvailable')}</p>
               </div>
             </div>
 
             <div className="flex items-start col-span-1 md:col-span-2">
               <FaInfoCircle className="text-gray-400 mt-1 mr-3 flex-shrink-0" size={20}/>
               <div>
-                <h3 className="font-semibold text-gray-700">Description</h3>
-                <p className="text-gray-600 whitespace-pre-wrap">{event.description || 'No description provided.'}</p>
+                <h3 className="font-semibold text-gray-700">{t('calendar.eventDetails.description')}</h3>
+                <p className="text-gray-600 whitespace-pre-wrap">{event.description || t('calendar.eventDetails.noDescription')}</p>
               </div>
             </div>
           </div>
@@ -110,7 +112,7 @@ const BaseEventDetails = ({
             <div>
               <h3 className="font-semibold text-gray-700 mb-2 flex items-center">
                 <FaUsers className="text-gray-400 mr-3" size={20}/>
-                Participants ({participants.length}/{event.maxParticipants || event.capacity || '∞'})
+                {t('calendar.eventDetails.participants')} ({participants.length}/{event.maxParticipants || event.capacity || '∞'})
               </h3>
               
               {userRole === 'admin' ? (
@@ -126,7 +128,7 @@ const BaseEventDetails = ({
                           p.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                           'bg-gray-200 text-gray-700'
                         }`}>
-                          {p.status}
+                          {t(`calendar.eventDetails.status.${p.status}`)}
                         </span>
                       </span>
                       {p.status === 'pending' && (
@@ -134,14 +136,14 @@ const BaseEventDetails = ({
                           <button
                             onClick={() => onApproveParticipant?.(p.uid)}
                             className="p-1 rounded-full text-green-600 hover:bg-green-100 transition-colors"
-                            title="Approve"
+                            title={t('calendar.eventDetails.approve')}
                           >
                             <FaCheck size={14}/>
                           </button>
                           <button
                             onClick={() => onRejectParticipant?.(p.uid)}
                             className="p-1 rounded-full text-red-600 hover:bg-red-100 transition-colors"
-                            title="Reject"
+                            title={t('calendar.eventDetails.reject')}
                           >
                             <FaTimes size={14}/>
                           </button>
@@ -149,14 +151,14 @@ const BaseEventDetails = ({
                       )}
                     </li>
                   )) : (
-                    <p className="text-center text-gray-500 italic p-4">No participants yet.</p>
+                    <p className="text-center text-gray-500 italic p-4">{t('calendar.etails.noParticipants')}</p>
                   )}
                 </ul>
               ) : (
                 /* Retiree View: Simple participant count */
                 <p className="flex items-center gap-2 text-gray-600">
                   <FaUsers />
-                  {participants.length} participant{participants.length !== 1 ? 's' : ''} have joined.
+                  {t('calendar.eventDetails.joinedCount', { count: participants.length })}
                 </p>
               )}
             </div>
@@ -174,7 +176,7 @@ const BaseEventDetails = ({
                   : 'bg-green-600 hover:bg-green-700 text-white'
               }`}
             >
-              {isJoined ? 'Leave Event' : 'Join Event'}
+              {isJoined ? t('calendar.leaveEvent') : t('calendar.joinEvent')}
             </button>
           )}
           {children}

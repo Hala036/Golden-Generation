@@ -3,8 +3,10 @@ import { toast } from "react-hot-toast";
 import { db, auth } from "../../firebase"; // Adjust the import path as necessary
 import { doc, getDoc } from "firebase/firestore";
 import { createServiceRequest } from "../../serviceRequestsService";
+import { useTranslation } from 'react-i18next';
 
 const Services = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -19,16 +21,16 @@ const Services = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const volunteerFields = [
-    "Healthcare", "Education", "Technology", "Arts", "Social Services", "Administration",
-    "Consulting", "Mentoring", "Home Assistance", "Transportation", "Publicity", "Health",
-    "Teaching", "High Tech", "Tourism", "Safety", "Funds", "Craftsmanship", "Culture",
+    t('service.fields.healthcare'), t('service.fields.education'), t('service.fields.technology'), t('service.fields.arts'), t('service.fields.socialServices'), t('service.fields.administration'),
+    t('service.fields.consulting'), t('service.fields.mentoring'), t('service.fields.homeAssistance'), t('service.fields.transportation'), t('service.fields.publicity'), t('service.fields.health'),
+    t('service.fields.teaching'), t('service.fields.highTech'), t('service.fields.tourism'), t('service.fields.safety'), t('service.fields.funds'), t('service.fields.craftsmanship'), t('service.fields.culture'),
   ];
 
   const timingOptions = [
-    "Once a month", "Once every two weeks", "Once a week", "Twice a week", "Weekends", "Flexible",
+    t('service.timing.onceMonth'), t('service.timing.onceTwoWeeks'), t('service.timing.onceWeek'), t('service.timing.twiceWeek'), t('service.timing.weekends'), t('service.timing.flexible'),
   ];
 
-  const timeOptions = ["Morning hours", "Noon hours", "Evening hours"];
+  const timeOptions = [t('service.time.morning'), t('service.time.noon'), t('service.time.evening')];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +45,7 @@ const Services = () => {
     try {
       const user = auth.currentUser;
       if (!user) {
-        toast.error("You must be logged in to create events");
+        toast.error(t('service.errors.notLoggedIn'));
         setIsSubmitting(false);
         return;
       }
@@ -53,7 +55,7 @@ const Services = () => {
       console.log("User Settlement:", userSettlement);
 
       if (!userSettlement) {
-        toast.error("Failed to fetch user settlement.");
+        toast.error(t('service.errors.noSettlement'));
         setIsSubmitting(false);
         return;
       }
@@ -65,7 +67,7 @@ const Services = () => {
       };
 
       await createServiceRequest(serviceRequestData);
-      toast.success("Service request created successfully!");
+      toast.success(t('service.success.created'));
 
       setFormData({
         title: "",
@@ -80,43 +82,43 @@ const Services = () => {
       });
       setIsSubmitting(false);
     } catch (error) {
-      toast.error("Failed to create service request");
+      toast.error(t('service.errors.failedCreate'));
     }
   };
 
   return (
     <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-auto max-h-screen overflow-y-auto">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Create a Service Request</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('service.title')}</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.title')}</label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleInputChange}
               className="w-full p-2 border rounded"
-              placeholder="e.g., Medical Escort Needed"
+              placeholder={t('service.form.titlePlaceholder')}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.location')}</label>
             <input
               type="text"
               name="location"
               value={formData.location}
               onChange={handleInputChange}
               className="w-full p-2 border rounded"
-              placeholder="e.g., Community Center"
+              placeholder={t('service.form.locationPlaceholder')}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Field</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.volunteerField')}</label>
             <select
               name="volunteerField"
               value={formData.volunteerField}
@@ -124,7 +126,7 @@ const Services = () => {
               className="w-full p-2 border rounded"
               required
             >
-              <option value="">Select Field</option>
+              <option value="">{t('service.form.selectField')}</option>
               {volunteerFields.map((field) => (
                 <option key={field} value={field}>
                   {field}
@@ -134,26 +136,26 @@ const Services = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Professional Background</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.professionalBackground')}</label>
             <input
               type="text"
               name="professionalBackground"
               value={formData.professionalBackground}
               onChange={handleInputChange}
               className="w-full p-2 border rounded"
-              placeholder="e.g., Healthcare, Education"
+              placeholder={t('service.form.professionalBackgroundPlaceholder')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.frequency')}</label>
             <select
               name="frequency"
               value={formData.frequency}
               onChange={handleInputChange}
               className="w-full p-2 border rounded"
             >
-              <option value="">Select Frequency</option>
+              <option value="">{t('service.form.selectFrequency')}</option>
               {timingOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -163,14 +165,14 @@ const Services = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Timing</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.timing')}</label>
             <select
               name="timing"
               value={formData.timing}
               onChange={handleInputChange}
               className="w-full p-2 border rounded"
             >
-              <option value="">Select Timing</option>
+              <option value="">{t('service.form.selectTiming')}</option>
               {timeOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -182,10 +184,10 @@ const Services = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Select Days <span className="text-red-500">*</span>
+            {t('service.form.selectDays')} <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
+            {[t('service.days.sunday'), t('service.days.monday'), t('service.days.tuesday'), t('service.days.wednesday'), t('service.days.thursday'), t('service.days.friday')].map(day => (
               <div
                 key={day}
                 onClick={() =>
@@ -214,14 +216,14 @@ const Services = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('service.form.description')}</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
             className="w-full p-2 border rounded"
             rows="3"
-            placeholder="Describe the request in detail"
+            placeholder={t('service.form.descriptionPlaceholder')}
             required
           ></textarea>
         </div>
@@ -234,7 +236,7 @@ const Services = () => {
               isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
             }`}
           >
-            {isSubmitting ? "Submitting..." : "Create Request"}
+            {isSubmitting ? t('service.form.submitting') : t('service.form.createRequest')}
           </button>
         </div>
       </form>
