@@ -23,6 +23,7 @@ import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
 import PasswordInput from '../PasswordInput';
+import { useLanguage } from '../../context/LanguageContext';
 
 const mockAnnouncements = [
   { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
@@ -61,6 +62,7 @@ const SettingsCards = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const { theme, setTheme } = useTheme();
+  const { t } = useLanguage();
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -372,56 +374,56 @@ const SettingsCards = () => {
   // Move settingsOptions array here, after all handler functions
   const settingsOptions = [
     {
-      label: "Edit Profile",
-      description: "Update your name, username, phone, and email",
+      label: t('dashboard.settings.options.editProfile'),
+      description: t('dashboard.settings.options.editProfileDesc'),
       icon: <FiUser className="text-2xl" />,
       onClick: () => navigate("/edit-signup-data"),
     },
     {
-      label: "Change Password",
-      description: "Update your account password",
+      label: t('dashboard.settings.options.changePassword'),
+      description: t('dashboard.settings.options.changePasswordDesc'),
       icon: <FiKey className="text-2xl" />,
       onClick: () => setShowChangePassword(true),
     },
     {
-      label: "Profile Picture",
-      description: "Update your profile picture",
+      label: t('dashboard.settings.options.profilePicture'),
+      description: t('dashboard.settings.options.profilePictureDesc'),
       icon: <FiImage className="text-2xl" />,
       onClick: () => setShowProfilePicture(true),
     },
     {
-      label: "Font Size",
-      description: "Adjust the text size (Normal / Large / Extra large)",
+      label: t('dashboard.settings.options.fontSize'),
+      description: t('dashboard.settings.options.fontSizeDesc'),
       icon: <FiType className="text-2xl" />,
       onClick: () => setShowFontSize(true),
     },
     {
-      label: "System Announcements",
-      description: "View important system updates and announcements",
+      label: t('dashboard.settings.options.systemAnnouncements'),
+      description: t('dashboard.settings.options.systemAnnouncementsDesc'),
       icon: <FiAlertCircle className="text-2xl" />,
       onClick: handleOpenAnnouncements,
     },
     {
-      label: "Notifications",
-      description: "Manage your notification preferences",
+      label: t('dashboard.settings.options.notifications'),
+      description: t('dashboard.settings.options.notificationsDesc'),
       icon: <FiBell className="text-2xl" />,
       onClick: () => setShowNotifications(true),
     },
     {
-      label: "Theme",
-      description: "Switch between light and dark mode",
+      label: t('dashboard.settings.options.theme'),
+      description: t('dashboard.settings.options.themeDesc'),
       icon: <FiMoon className="text-2xl" />,
       onClick: () => setShowTheme(true),
     },
     {
-      label: "Delete Account",
-      description: "Permanently delete your account",
+      label: t('dashboard.settings.options.deleteAccount'),
+      description: t('dashboard.settings.options.deleteAccountDesc'),
       icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
       onClick: () => setShowDeleteAccount(true),
     },
     {
-      label: "Edit User Information",
-      description: "Edit all information entered during sign-up",
+      label: t('dashboard.settings.options.editUserInfo'),
+      description: t('dashboard.settings.options.editUserInfoDesc'),
       icon: <FiSettings className="text-2xl" />,
       onClick: handleOpenEditProfile,
     },
