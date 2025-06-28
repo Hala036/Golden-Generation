@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FiUser,
   FiKey,
@@ -62,6 +62,9 @@ const SettingsCards = () => {
   const navigate = useNavigate();
   const [deletePassword, setDeletePassword] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [autoSaveTimeout, setAutoSaveTimeout] = useState(null);
 
   const { theme, setTheme } = useTheme();
 
@@ -79,6 +82,85 @@ const SettingsCards = () => {
   const phoneField = useFieldValidation({
     validate: validatePhoneNumber,
   });
+
+  // Auto-save functionality
+  const debouncedAutoSave = useCallback(async (fieldName, value) => {
+    // Clear existing timeout
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+
+    // Set new timeout for auto-save
+    const timeout = setTimeout(async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      // Only auto-save if the field is valid and has a value
+      let isValid = false;
+      if (fieldName === 'username' && !usernameField.error && usernameField.value && usernameField.value.trim()) {
+        isValid = true;
+      } else if (fieldName === 'email' && !emailField.error && emailField.value && emailField.value.trim()) {
+        isValid = true;
+      } else if (fieldName === 'phone' && !phoneField.error && phoneField.value && phoneField.value.trim()) {
+        isValid = true;
+      }
+
+      if (!isValid) return;
+
+      setAutoSaving(true);
+      try {
+        // Don't auto-save email changes (require re-auth)
+        if (fieldName === 'email' && emailField.value !== user.email) {
+          setAutoSaving(false);
+          return;
+        }
+
+        const updateData = {};
+        if (fieldName === 'username' && usernameField.value && usernameField.value.trim()) {
+          updateData.username = usernameField.value.trim();
+        } else if (fieldName === 'email' && emailField.value && emailField.value.trim()) {
+          updateData.email = emailField.value.trim();
+        } else if (fieldName === 'phone' && phoneField.value && phoneField.value.trim()) {
+          updateData.phone = phoneField.value.trim();
+        }
+
+        // Only proceed if we have valid data to update
+        if (Object.keys(updateData).length > 0) {
+          await updateFirestoreProfile(user.uid, updateData);
+          setLastSaved(new Date());
+          
+          // Show subtle success indicator
+          toast.success(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated`, {
+            duration: 2000,
+            position: 'bottom-right',
+            style: {
+              background: '#10B981',
+              color: 'white',
+            },
+          });
+        }
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+        toast.error(`Failed to auto-save ${fieldName}`, {
+          duration: 3000,
+          position: 'bottom-right',
+        });
+      } finally {
+        setAutoSaving(false);
+      }
+    }, 1500); // 1.5 second delay
+
+    setAutoSaveTimeout(timeout);
+  }, [autoSaveTimeout, usernameField, emailField, phoneField]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+      }
+    };
+  }, [autoSaveTimeout]);
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -152,6 +234,7 @@ const SettingsCards = () => {
       phoneField.setValue(data.phone);
       
       setShowEditProfile(true);
+      setLastSaved(null);
     } catch (err) {
       toast.error("Failed to load profile");
     } finally {
@@ -164,6 +247,18 @@ const SettingsCards = () => {
     if (field === 'username') usernameField.onBlur();
     if (field === 'email') emailField.onBlur();
     if (field === 'phone') phoneField.onBlur();
+  };
+
+  // Enhanced field change handlers with auto-save
+  const handleFieldChange = (field, value, onChange) => {
+    // Create a mock event object for the onChange function
+    const mockEvent = { target: { value } };
+    onChange(mockEvent);
+    
+    // Trigger auto-save for valid fields
+    if (value && value.trim()) {
+      debouncedAutoSave(field, value);
+    }
   };
 
   const isValid =
@@ -208,6 +303,7 @@ const SettingsCards = () => {
       });
       toast.success("Profile updated");
       setShowEditProfile(false);
+      setLastSaved(new Date());
     } catch (err) {
       toast.error(err.message || "Failed to update profile");
     }
@@ -373,11 +469,23 @@ const SettingsCards = () => {
   // Update Firestore profile helper
   const updateFirestoreProfile = async (uid, data) => {
     const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
-      "credentials.username": data.username,
-      "credentials.email": data.email,
-      "personalDetails.phoneNumber": data.phone
-    });
+    const updateData = {};
+    
+    // Only add fields that have valid values
+    if (data.username && data.username.trim()) {
+      updateData["credentials.username"] = data.username.trim();
+    }
+    if (data.email && data.email.trim()) {
+      updateData["credentials.email"] = data.email.trim();
+    }
+    if (data.phone && data.phone.trim()) {
+      updateData["personalDetails.phoneNumber"] = data.phone.trim();
+    }
+    
+    // Only update if there are valid fields to update
+    if (Object.keys(updateData).length > 0) {
+      await updateDoc(userRef, updateData);
+    }
   };
 
   // Handle re-auth and email update
@@ -583,33 +691,24 @@ const SettingsCards = () => {
             
             {!showReauth && (
               <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
-                <div className="relative">
-                  <label htmlFor="profile-username" className="text-sm font-medium">Username</label>
-                  <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
-                  <input
-                    id="profile-username"
-                    name="username"
-                    type="text"
-                    placeholder="Username"
-                    value={usernameField.value}
-                    onChange={usernameField.onChange}
-                    onBlur={() => handleBlur('username')}
-                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.username && usernameField.error ? 'border-red-500' : touched.username && !usernameField.error && usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
-                    aria-label="Profile Username"
-                  />
+                {/* Auto-save status indicator */}
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                  <span>Auto-save enabled</span>
+                  <div className="flex items-center gap-2">
+                    {autoSaving && (
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Saving...</span>
+                      </div>
+                    )}
+                    {lastSaved && !autoSaving && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Saved {lastSaved.toLocaleTimeString()}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {touched.username && usernameField.isChecking && (
-                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />Checking...
-                  </span>
-                )}
-                {touched.username && usernameField.error && (
-                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />
-                    {usernameField.error}
-                  </span>
-                )}
 
                 <div className="relative">
                   <label htmlFor="profile-email" className="text-sm font-medium">Email</label>
@@ -620,7 +719,7 @@ const SettingsCards = () => {
                     type="email"
                     placeholder="Email"
                     value={emailField.value}
-                    onChange={emailField.onChange}
+                    onChange={(e) => handleFieldChange('email', e.target.value, emailField.onChange)}
                     onBlur={() => handleBlur('email')}
                     className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
                       ${touched.email && emailField.error ? 'border-red-500' : touched.email && !emailField.error && emailField.value ? 'border-green-500' : 'border-gray-300'}`}
@@ -640,6 +739,34 @@ const SettingsCards = () => {
                 )}
 
                 <div className="relative">
+                  <label htmlFor="profile-username" className="text-sm font-medium">Username</label>
+                  <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-username"
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    value={usernameField.value}
+                    onChange={(e) => handleFieldChange('username', e.target.value, usernameField.onChange)}
+                    onBlur={() => handleBlur('username')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.username && usernameField.error ? 'border-red-500' : touched.username && !usernameField.error && usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Username"
+                  />
+                </div>
+                {touched.username && usernameField.isChecking && (
+                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                  </span>
+                )}
+                {touched.username && usernameField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {usernameField.error}
+                  </span>
+                )}
+
+                <div className="relative">
                   <label htmlFor="profile-phone" className="text-sm font-medium">Phone</label>
                   <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
@@ -648,7 +775,7 @@ const SettingsCards = () => {
                     type="tel"
                     placeholder="Phone"
                     value={phoneField.value}
-                    onChange={phoneField.onChange}
+                    onChange={(e) => handleFieldChange('phone', e.target.value, phoneField.onChange)}
                     onBlur={() => handleBlur('phone')}
                     className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
                       ${touched.phone && phoneField.error ? 'border-red-500' : touched.phone && !phoneField.error && phoneField.value ? 'border-green-500' : 'border-gray-300'}`}
