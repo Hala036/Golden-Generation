@@ -4,7 +4,8 @@ import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp,
 import { toast } from 'react-hot-toast';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import profile from '../assets/profile.jpeg';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
+import { FaPhone, FaPhoneSlash, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash } from 'react-icons/fa';
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3';

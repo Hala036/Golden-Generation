@@ -7,6 +7,9 @@ import { toast } from 'react-hot-toast';
 import profile from '../../assets/profile.jpeg';
 import { useTheme } from '../../context/ThemeContext';
 import { triggerNotification } from './TriggerNotifications'; // Import the triggerNotification function
+import EmptyState from '../EmptyState'; // Import EmptyState component
+import Skeleton from 'react-loading-skeleton'; // Import Skeleton
+import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -544,6 +547,50 @@ const Messages = () => {
     </div>
   );
 
+  // Loading skeleton for conversation list
+  const ConversationSkeleton = () => (
+    <div className="animate-pulse">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center p-4 border-b border-gray-100">
+          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+          <div className="flex-1">
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Loading skeleton for messages
+  const MessagesSkeleton = () => (
+    <div className="space-y-4 p-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+          <div className={`max-w-[70%] ${i % 2 === 0 ? 'bg-gray-200' : 'bg-gray-300'} rounded-2xl p-3`}>
+            <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+            <div className="h-3 bg-gray-300 rounded w-1/3"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Loading skeleton for users list
+  const UsersSkeleton = () => (
+    <div className="animate-pulse">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center p-4 border-b border-gray-100">
+          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+          <div className="flex-1">
+            <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className={`flex h-[calc(100vh-200px)] rounded-lg shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'}`}>
       {/* Friend Requests Badge */}
@@ -581,7 +628,9 @@ const Messages = () => {
 
         {/* Users List */}
         <div className="overflow-y-auto h-[calc(100%-80px)]">
-          {searchQuery ? (
+          {loadingMessages ? (
+            <UsersSkeleton />
+          ) : searchQuery ? (
             filteredUsers.map(user => (
               <div
                 key={user.id}
@@ -676,11 +725,14 @@ const Messages = () => {
             {/* Messages */}
             <div className={`flex-1 overflow-y-auto p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               {loadingMessages ? (
-                <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>Loading messages...</div>
+                <MessagesSkeleton />
               ) : messages.length === 0 ? (
-                <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  {t('dashboard.messages.noMessages')}
-                </div>
+                <EmptyState
+                  icon={<FaComments className={`text-6xl ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
+                  title={t('dashboard.messages.noMessages')}
+                  message={t('dashboard.messages.startConversation')}
+                  className={`h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
+                />
               ) : (
                 messages.map(message => {
                   const isMe = message.senderId === auth.currentUser?.uid;
@@ -748,12 +800,12 @@ const Messages = () => {
             </form>
           </>
         ) : (
-          <div className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
-            <div className="text-center">
-              <FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />
-              <p className="text-lg">{t('dashboard.messages.selectChat')}</p>
-            </div>
-          </div>
+          <EmptyState
+            icon={<FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
+            title={t('dashboard.messages.selectChat')}
+            message={t('dashboard.messages.chooseConversation')}
+            className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}
+          />
         )}
       </div>
 
@@ -839,12 +891,12 @@ const Messages = () => {
             </form>
           </>
         ) : (
-          <div className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
-            <div className="text-center">
-              <FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />
-              <p className="text-lg">{t('dashboard.messages.selectChat')}</p>
-            </div>
-          </div>
+          <EmptyState
+            icon={<FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
+            title={t('dashboard.messages.selectChat')}
+            message={t('dashboard.messages.chooseConversation')}
+            className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}
+          />
         )}
       </div>
     </div>

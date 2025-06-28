@@ -1,32 +1,21 @@
-import React from 'react';
-import { FaPhone, FaPhoneSlash, FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaPhone, FaPhoneSlash, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaTimes } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
 import { useCall } from '../context/callContext';
 import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 import profile from '../assets/profile.jpeg';
 
 const GlobalCallModal = () => {
-  const { 
-    callState, 
-    inCall, 
-    isMuted, 
-    callError, 
-    callDuration, 
-    formatDuration, 
-    isSpeaker,
-    acceptCall, 
-    rejectCall, 
-    endCall, 
-    toggleMute, 
-    handleToggleSpeaker 
-  } = useCall();
+  const { user } = useAuth();
+  const { callState, endCall, toggleMute, toggleVideo } = useCall();
   const { theme } = useTheme();
-  const { currentUser } = useAuth();
+  const [isMinimized, setIsMinimized] = useState(false);
 
   // Don't render if no call state
   if (!callState) return null;
 
-  const isCaller = callState.caller?.uid === currentUser?.uid;
+  const isCaller = callState.caller?.uid === user?.uid;
   const peer = isCaller ? callState.callee : callState.caller;
 
   // Outgoing call (caller)

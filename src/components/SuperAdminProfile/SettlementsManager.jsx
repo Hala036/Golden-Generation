@@ -13,6 +13,8 @@ import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 
 import Papa from 'papaparse';
 import Modal from '../Modal';
 import { FaEdit, FaTrash, FaEye, FaUserPlus, FaUsers } from 'react-icons/fa';
+import EmptyState from '../EmptyState';
+import { FaSearch } from 'react-icons/fa';
 
 const SettlementsManager = () => {
   const [allSettlements, setAllSettlements] = useState([]);
@@ -377,10 +379,14 @@ const SettlementsManager = () => {
         )}
       </div>
 
-      {loading ? (
-        <p>Loading settlements...</p>
-      ) : filteredSettlements.length === 0 ? (
-        <p>No settlements found.</p>
+      {settlementDetails.length === 0 && !loading ? (
+        <EmptyState
+          icon={<FaSearch />}
+          title="No settlements found"
+          message="Try uploading a CSV or check your filters."
+          actionLabel="Upload CSV"
+          onAction={handleCSVUpload}
+        />
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredSettlements.map((settlement, index) => (

@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope } from 'react-icons/fa';
+import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope, FaBell } from 'react-icons/fa';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, getUserData } from '../../firebase';
-import { useAuth } from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
+import EmptyState from '../EmptyState';
+import { useLanguage } from '../../context/LanguageContext';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
 const iconMap = {
   info: <FaInfoCircle className="text-yellow-500 text-xl" />,
@@ -13,119 +18,120 @@ const iconMap = {
 };
 
 const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => { // Add setShowNotificationsPopup as a prop
-  const { currentUser } = useAuth();
-  const [userRole, setUserRole] = useState(null);
+  const { user } = useAuth();
+  const { t } = useLanguage();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateNotificationModal, setShowCreateNotificationModal] = useState(false); // Modal for creating notifications
   const [showModal, setShowModal] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
+  const [showSendNotification, setShowSendNotification] = useState(false);
 
-  // Fetch user role
+  // Fetch notifications based on user role
   useEffect(() => {
-    const fetchUserRole = async () => {
-      if (!currentUser?.uid) return;
-
-      try {
-        const userData = await getUserData(currentUser.uid);
-        if (userData?.role) {
-          setUserRole(userData.role);
-        } else {
-          console.error("User role not found for UID:", currentUser.uid);
-        }
-      } catch (err) {
-        console.error("Error fetching user role:", err);
-      }
-    };
-
-    fetchUserRole();
-  }, [currentUser]);
-
-  // Fetch notifications
-  useEffect(() => {
-    if (!currentUser) { return; }
-
     const fetchNotifications = async () => {
-      setLoading(true);
+      if (!user?.uid) return;
+
       try {
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        const userData = userDoc.data();
-        const userNotifications = userData?.notifs || [];
+        const userData = await getUserData(user.uid);
+        const userRole = userData?.role;
 
-        const enrichedNotifications = await Promise.all(
-          userNotifications.map(async (notif) => {
-            const notifDoc = await getDoc(doc(db, "notifications", notif.id));
-            return {
-              id: notif.id,
-              ...notifDoc.data(),
-              read: notif.read,
-            };
-          })
-        );
-        const displayedNotifications = limit ? enrichedNotifications.slice(0, limit) : enrichedNotifications;
+        if (!userRole) {
+          console.error("User role not found for UID:", user.uid);
+          return;
+        }
 
-        setNotifications(displayedNotifications);
-      } catch (err) {
-        console.error("Error fetching notifications:", err);
-      } finally {
+        let notificationsQuery;
+        if (userRole === 'superadmin') {
+          // Super admin sees all notifications
+          notificationsQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
+        } else if (userRole === 'admin') {
+          // Admin sees notifications for their settlement
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userSettlement = userDoc.data()?.idVerification?.settlement;
+          notificationsQuery = query(
+            collection(db, "notifications"),
+            where("settlement", "==", userSettlement),
+            orderBy("createdAt", "desc")
+          );
+        } else {
+          // Regular users see their own notifications
+          notificationsQuery = query(
+            collection(db, "notifications"),
+            where("recipientId", "==", user.uid),
+            orderBy("createdAt", "desc")
+          );
+        }
+
+        const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+          const notifs = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setNotifications(notifs);
+          setLoading(false);
+        });
+
+        return unsubscribe;
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
         setLoading(false);
       }
     };
 
     fetchNotifications();
-  }, [currentUser]);
+  }, [user]);
 
-  const handleMarkAsRead = async (notificationId) => {
+  // Mark notification as read
+  const markAsRead = async (notificationId) => {
+    if (!user) { return; }
+
     try {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      const userData = userDoc.data();
-      const updatedNotifs = userData.notifs.map((notif) =>
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const currentNotifs = userDoc.data()?.notifs || [];
+      
+      const updatedNotifs = currentNotifs.map(notif => 
         notif.id === notificationId ? { ...notif, read: true } : notif
       );
 
-      await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
-
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.id === notificationId ? { ...notif, read: true } : notif
-        )
-      );
-    } catch (err) {
-      console.error("Error marking notification as read:", err);
+      await updateDoc(doc(db, "users", user.uid), { notifs: updatedNotifs });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
     }
   };
 
-  const handleMarkAllAsRead = async () => {
+  // Mark all notifications as read
+  const markAllAsRead = async () => {
+    if (!user) { return; }
+
     try {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      const userData = userDoc.data();
-      const updatedNotifs = userData.notifs.map((notif) => ({
-        ...notif,
-        read: true,
-      }));
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const currentNotifs = userDoc.data()?.notifs || [];
+      
+      const updatedNotifs = currentNotifs.map(notif => ({ ...notif, read: true }));
 
-      await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
-
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, read: true }))
-      );
-    } catch (err) {
-      console.error("Error marking all notifications as read:", err);
+      await updateDoc(doc(db, "users", user.uid), { notifs: updatedNotifs });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
     }
   };
 
   const handleNotificationClick = (notification) => {
     // Mark the notification as read
-    handleMarkAsRead(notification.id);
+    markAsRead(notification.id);
 
     // Redirect based on notification type
     if (notification.type === "message" && setSelectedTab) {
       setSelectedTab("messages");
-      setShowNotificationsPopup(false); // Close the notifications popup
+      if (setShowNotificationsPopup) {
+        setShowNotificationsPopup(false); // Close the notifications popup
+      }
       setShowModal(false); // Close the notification modal
     } else if (notification.type === "request" && setSelectedTab) {
       setSelectedTab("volunteer"); // Redirect to Volunteer tab
-      setShowNotificationsPopup(false); // Close the notifications popup
+      if (setShowNotificationsPopup) {
+        setShowNotificationsPopup(false); // Close the notifications popup
+      }
       setShowModal(false); // Close the notification modal
     } else {
       setSelectedNotification(notification);
@@ -149,17 +155,35 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
     };
   }, [selectedNotification]);
 
+  // Loading skeleton for notifications
+  const NotificationsSkeleton = () => (
+    <div className="space-y-3">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="relative p-3 rounded-lg border-l-4 mb-3 shadow-lg bg-gray-50">
+          <div className="flex items-start">
+            <div className="w-6 h-6 bg-gray-200 rounded mr-3 mt-1"></div>
+            <div className="flex-1 min-w-0">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="w-full max-w-2xl mx-auto p-2 md:p-4">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-4">
           <button
             className="text-sm text-blue-500 hover:underline"
-            onClick={handleMarkAllAsRead}
+            onClick={markAllAsRead}
           >
             Mark all as read
           </button>
-          {userRole !== "retiree" && (
+          {user?.role !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
               onClick={() => setShowCreateNotificationModal(true)}
@@ -171,9 +195,14 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
       </div>
       <div className="bg-white rounded-xl divide-y">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <NotificationsSkeleton />
         ) : notifications.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No notifications</div>
+          <EmptyState
+            icon={<FaBell className="text-6xl text-gray-300" />}
+            title={t('emptyStates.noNotifications')}
+            message={t('emptyStates.noNotificationsMessage')}
+            className="p-8"
+          />
         ) : (
           notifications.map((n) => (
             <div

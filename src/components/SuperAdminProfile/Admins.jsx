@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaPlus, FaEye, FaUsers } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaEye, FaUsers, FaUserShield } from 'react-icons/fa';
 import { db } from '../../firebase';
 import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
+import EmptyState from '../EmptyState';
+import { useLanguage } from '../../context/LanguageContext';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const AdminManagement = () => {
+  const { t } = useLanguage();
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -212,6 +217,73 @@ const AdminManagement = () => {
     );
   };
 
+  // Loading skeleton for admins
+  const AdminsSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="p-4 border rounded-lg bg-white shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+              <div className="flex-1">
+                <div className="h-5 bg-gray-200 rounded w-32 mb-1"></div>
+                <div className="h-4 bg-gray-200 rounded w-48"></div>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <div className="h-6 bg-gray-200 rounded w-16"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <div className="h-3 bg-gray-200 rounded w-16 mb-1"></div>
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+            </div>
+            <div>
+              <div className="h-3 bg-gray-200 rounded w-20 mb-1"></div>
+              <div className="h-4 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div>
+              <div className="h-3 bg-gray-200 rounded w-16 mb-1"></div>
+              <div className="h-4 bg-gray-200 rounded w-18"></div>
+            </div>
+            <div>
+              <div className="h-3 bg-gray-200 rounded w-12 mb-1"></div>
+              <div className="h-4 bg-gray-200 rounded w-16"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Loading skeleton for table rows
+  const TableSkeleton = () => (
+    <div className="space-y-2">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex items-center p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-3 flex-1">
+            <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+            <div>
+              <div className="h-4 bg-gray-200 rounded w-32 mb-1"></div>
+              <div className="h-3 bg-gray-200 rounded w-40"></div>
+            </div>
+          </div>
+          <div className="h-6 bg-gray-200 rounded w-20 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-24 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-16 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-20 mx-4"></div>
+          <div className="flex space-x-2">
+            <div className="h-6 bg-gray-200 rounded w-6"></div>
+            <div className="h-6 bg-gray-200 rounded w-6"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -229,83 +301,96 @@ const AdminManagement = () => {
 
       {/* Admins Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Admin Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Settlement
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registered Retirees
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {admins.map((admin) => (
-              <tr key={admin.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {admin.credentials?.username || admin.idVerification?.firstName || 'N/A'}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {admin.idVerification?.settlement || admin.settlement || 'N/A'}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {admin.credentials?.email || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {admin.credentials?.phone || admin.idVerification?.phone || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    <FaUsers className="mr-1" />
-                    {retireeCounts[admin.idVerification?.settlement] || 0} retirees
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => openViewModal(admin)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title="View"
-                    >
-                      <FaEye />
-                    </button>
-                    <button
-                      onClick={() => openEditModal(admin)}
-                      className="text-yellow-600 hover:text-yellow-900"
-                      title="Edit"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAdmin(admin)}
-                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                      title="Delete admin"
-                  >
-                    <FaTrash />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {admins.length === 0 ? (
+          <EmptyState
+            icon={<FaUserShield className="text-6xl text-gray-300" />}
+            title={t('emptyStates.noAdmins')}
+            message={t('emptyStates.noAdminsMessage')}
+            actionLabel={t('emptyStates.addAdmin')}
+            onAction={openAddModal}
+            className="p-8"
+          />
+        ) : (
+          <>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Admin Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Settlement
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Phone
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Registered Retirees
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {admins.map((admin) => (
+                  <tr key={admin.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {admin.credentials?.username || admin.idVerification?.firstName || 'N/A'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {admin.idVerification?.settlement || admin.settlement || 'N/A'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {admin.credentials?.email || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {admin.credentials?.phone || admin.idVerification?.phone || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <FaUsers className="mr-1" />
+                        {retireeCounts[admin.idVerification?.settlement] || 0} retirees
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => openViewModal(admin)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="View"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => openEditModal(admin)}
+                          className="text-yellow-600 hover:text-yellow-900"
+                          title="Edit"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAdmin(admin)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                          title="Delete admin"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
 
       {/* Edit Admin Modal */}

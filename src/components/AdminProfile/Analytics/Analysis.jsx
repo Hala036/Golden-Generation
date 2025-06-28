@@ -18,6 +18,9 @@ import useFetchAnalysisData from "../../../hooks/useFetchAnalysisData";
 import { useChartData } from "../../../hooks/useChartData";
 import { db } from '../../../firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import EmptyState from '../../EmptyState';
 
 const Analysis = () => {
   const { users, jobs, events } = useFetchAnalysisData();
@@ -91,9 +94,27 @@ const Analysis = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span className="ml-4 text-lg text-gray-700">Loading analysis data...</span>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <Skeleton height={36} width={300} style={{ marginBottom: 24 }} />
+            <Skeleton height={32} width={180} style={{ marginBottom: 16 }} />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {Array.from({ length: 2 }).map((_, idx) => (
+              <div key={idx} className="bg-white rounded-xl shadow-lg p-6">
+                <Skeleton height={28} width={200} style={{ marginBottom: 16 }} />
+                <Skeleton height={300} width="100%" />
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {Array.from({ length: 2 }).map((_, idx) => (
+              <div key={idx} className="bg-white rounded-xl shadow-lg p-6">
+                <Skeleton height={28} width={200} style={{ marginBottom: 16 }} />
+                <Skeleton height={300} width="100%" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -177,7 +198,13 @@ const Analysis = () => {
               <span className="mr-2">🏘️</span>
               Retirees by Town
             </h3>
-            {townChartData.length > 0 ? (
+            {townChartData.length === 0 ? (
+              <EmptyState
+                icon={<span role="img" aria-label="chart">📊</span>}
+                title="No town data available"
+                message="Try selecting a different time range or settlement."
+              />
+            ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart 
                   data={townChartData.sort((a, b) => b.value - a.value)}
@@ -197,13 +224,6 @@ const Analysis = () => {
                   </defs>
                 </BarChart>
               </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">📊</div>
-                  <p>No town data available</p>
-                </div>
-              </div>
             )}
           </div>
 

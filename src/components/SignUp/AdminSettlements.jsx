@@ -13,6 +13,9 @@ import Papa from 'papaparse';
 import { addSettlement } from '../../firebase';
 import { uploadFileToStorage } from '../../utils/uploadFileToStorage';
 import { showSuccessToast, showErrorToast, showLoadingToast, showWarningToast, showInfoToast } from '../ToastManager';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import EmptyState from '../EmptyState';
 
 
 const AdminSettlements = () => {
@@ -660,21 +663,30 @@ const AdminSettlements = () => {
       </div>
       {/* Settlements List */}
       {loading ? (
-        <div className="flex flex-col items-center py-8 text-gray-500">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mb-4"></div>
-          <span className="text-lg">Loading settlements...</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx} className="p-6 m-2 border rounded-xl shadow min-h-[320px] flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2">
+                <Skeleton height={24} width={24} circle style={{ marginRight: 8 }} />
+                <div>
+                  <Skeleton height={24} width={100} style={{ marginBottom: 4 }} />
+                  <Skeleton height={18} width={60} />
+                </div>
+              </div>
+              <Skeleton height={18} width={80} style={{ marginBottom: 16 }} />
+              <Skeleton count={3} height={18} style={{ marginBottom: 8 }} />
+              <Skeleton height={36} width="100%" />
+            </div>
+          ))}
         </div>
       ) : filteredSettlements.length === 0 ? (
-        <div className="flex flex-col items-center py-12 text-gray-400">
-          <svg width="80" height="80" fill="none" viewBox="0 0 80 80" aria-hidden="true" className="mb-4">
-            <circle cx="40" cy="40" r="38" stroke="#FBBF24" strokeWidth="4" fill="#FEF3C7" />
-            <path d="M25 50 Q40 65 55 50" stroke="#FBBF24" strokeWidth="3" fill="none" />
-            <circle cx="32" cy="38" r="3" fill="#FBBF24" />
-            <circle cx="48" cy="38" r="3" fill="#FBBF24" />
-          </svg>
-          <div className="text-xl font-semibold mb-2">No settlements found</div>
-          <div className="text-sm">Try adjusting your search or filters.</div>
-        </div>
+        <EmptyState
+          icon={<FaSearch />}
+          title="No settlements found"
+          message="Try adjusting your search or filters."
+          actionLabel="Clear Search"
+          onAction={() => setSearchQuery('')}
+        />
       ) : (
         <>
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${isRTL ? 'rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>

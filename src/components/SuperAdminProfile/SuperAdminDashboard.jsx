@@ -11,7 +11,6 @@ import ServiceRequests from "../AdminProfile/ServiceRequests"; // Import Service
 import Analysis from "../AdminProfile/Analytics/Analysis";
 import ComprehensiveAnalytics from "../AdminProfile/Analytics/ComprehensiveAnalytics";
 import Settings from "../SharedDashboard/SettingsCards";
-import Notifications from "../SharedDashboard/Notifications";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
 import AdminCalendar from "../Calendar/AdminCalendar";
@@ -50,7 +49,6 @@ const RetireeDashboard = () => {
     calendar: <AdminCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
-    notifications: <Notifications />,
     retirees: <Retirees />,
     jobs: <Jobs />,
     service: <ServiceRequests />, // Link to ServiceRequests component

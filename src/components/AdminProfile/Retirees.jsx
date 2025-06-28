@@ -9,6 +9,8 @@ import interestsList from '../../data/interests.json';
 import hobbiesList from '../../data/hobbies.json';
 import jobsList from '../../data/jobs.json';
 import volunteerAreasList from '../../data/volunteerAreas.json';
+import EmptyState from '../EmptyState';
+import { FaUsers } from 'react-icons/fa';
 
 const fieldGroups = [
   {
@@ -1051,10 +1053,18 @@ const Retirees = () => {
         </table>
       </div>
       
-      {filteredRetirees.length === 0 && (
-        <div className="text-center text-gray-500 py-8">
-          No retirees found.
-        </div>
+      {retirees.length === 0 && !loading ? (
+        <EmptyState
+          icon={<FaUsers />}
+          title="No retirees found"
+          message="Try adjusting your filters or add a new retiree."
+        />
+      ) : (
+        filteredRetirees.length === 0 && (
+          <div className="text-center text-gray-500 py-8">
+            No retirees found.
+          </div>
+        )
       )}
 
       {/* Load Filter Modal */}

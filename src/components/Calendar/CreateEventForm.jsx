@@ -5,7 +5,7 @@ import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc, updateDoc } 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-hot-toast';
 import AddCategoryModal from "../AdminProfile/AddCategoryModal";
-import { useAuth } from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import CustomTimePickerWrapper from './CustomTimePicker';
 import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';

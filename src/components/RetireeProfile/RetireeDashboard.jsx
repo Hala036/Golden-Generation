@@ -10,7 +10,6 @@ import AddEvent from "../SharedDashboard/AddEvents";
 import Settings from "../SharedDashboard/SettingsCards";
 import RetireeCalendar from "../Calendar/RetireeCalendar";
 import Messages from "../SharedDashboard/Messages";
-import Notifications from "../SharedDashboard/Notifications";
 import CustomerSupport from "./Support";
 
 const RetireeDashboard = () => {
@@ -38,7 +37,6 @@ const RetireeDashboard = () => {
     calendar: <RetireeCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
-    notifications: <Notifications />,
     support: <CustomerSupport />,
     volunteer: <Volunteer />,
     service: <Services />, // Assuming service requests are handled in Messages
