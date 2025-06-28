@@ -679,7 +679,8 @@
       "add": "Add",
       "loadError": "Failed to load settlements.",
       "updateError": "Failed to update settlement.",
-      "addError": "Failed to add settlement."
+      "addError": "Failed to add settlement.",
+      "loading": "Loading settlements..."
     }
   },
   "dashboard": {

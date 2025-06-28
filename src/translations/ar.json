@@ -682,5 +682,8 @@
       "success": {
         "messageSent": "تم إرسال رسالتك بنجاح!"
       }
+    },
+    "adminSettlements": {
+      "loading": "جاري تحميل المستوطنات..."
     }
   } 
