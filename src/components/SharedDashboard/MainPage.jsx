@@ -493,12 +493,12 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       <div className="mb-4 md:mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4">
-            <DefaultProfilePic 
+            {/* <DefaultProfilePic 
               name={userName} 
               size={50} 
               fontSize="1.8rem"
               bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
-            />
+            /> */}
             <div>
               <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">Welcome, {userName} 👋</h1>
               <p className="text-xs md:text-base text-gray-600">Here's what's happening in your community today</p>
