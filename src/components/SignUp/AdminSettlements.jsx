@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { db } from '../../firebase';
-import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc, writeBatch, query, where } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { FaList, FaCheckCircle, FaMinusCircle, FaSearch, FaUserShield, FaEdit, FaPlus, FaUpload, FaExclamationTriangle, FaSpinner, FaMapMarkerAlt, FaTrash } from 'react-icons/fa';
@@ -49,10 +49,16 @@ const AdminSettlements = () => {
   const [usernameError, setUsernameError] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
 
-  // Filter settlements based on search
-  const filteredSettlements = allSettlements.filter(settlement =>
+  // Filter settlements based on search and availability
+  let filteredSettlements = allSettlements.filter(settlement =>
     settlement.name && settlement.name.toLowerCase().includes(searchQuery.toLowerCase())
-  ).sort((a, b) => a.name.localeCompare(b.name));
+  ).sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+  if (availabilityFilter === 'available') {
+    filteredSettlements = filteredSettlements.filter(s => availableSettlements.includes(s.name));
+  } else if (availabilityFilter === 'disabled') {
+    filteredSettlements = filteredSettlements.filter(s => !availableSettlements.includes(s.name));
+  }
 
   // Pagination state (must come after filteredSettlements)
   const [page, setPage] = useState(1);
@@ -189,21 +195,31 @@ const AdminSettlements = () => {
     }
   };
 
-  // Handle disabling a settlement (delete from Firestore)
+  // Handle disabling a settlement (remove from availableSettlements, delete admin, delete retirees)
   const handleDisableSettlement = async (settlement) => {
+    if (!window.confirm(`Are you sure you want to disable "${settlement}"? This will remove it from available settlements and delete its admin and all retirees. This action cannot be undone.`)) return;
     console.debug('[handleDisableSettlement] settlement:', settlement);
     try {
-      // Find the doc to delete
-      const settlementsRef = collection(db, 'settlements');
-      const snapshot = await getDocs(settlementsRef);
-      const docToDelete = snapshot.docs.find(doc => doc.data().name === settlement);
-      if (docToDelete) {
-        await deleteDoc(doc(db, 'settlements', docToDelete.id));
-        toast.success(`${settlement} deleted.`);
-        console.debug('[handleDisableSettlement] deleted:', settlement);
-      } else {
-        toast.error('Settlement not found.');
+      // 1. Remove from availableSettlements
+      await deleteDoc(doc(db, 'availableSettlements', settlement));
+
+      // 2. Delete admin user for this settlement
+      // Find the admin user by settlement
+      const usersRef = collection(db, 'users');
+      const adminQuery = query(usersRef, where('role', '==', 'admin'), where('settlement', '==', settlement));
+      const adminSnapshot = await getDocs(adminQuery);
+      for (const adminDoc of adminSnapshot.docs) {
+        await deleteDoc(adminDoc.ref);
       }
+
+      // 3. Delete retirees for this settlement
+      const retireeQuery = query(usersRef, where('role', '==', 'retiree'), where('idVerification.settlement', '==', settlement));
+      const retireeSnapshot = await getDocs(retireeQuery);
+      for (const retireeDoc of retireeSnapshot.docs) {
+        await deleteDoc(retireeDoc.ref);
+      }
+
+      toast.success(`${settlement} disabled: removed from available, admin and retirees deleted.`);
       setAvailableSettlements(prev => prev.filter(s => s !== settlement));
       setSettlementAdmins(prev => {
         const newAdmins = { ...prev };
@@ -212,7 +228,7 @@ const AdminSettlements = () => {
       });
     } catch (error) {
       console.error('[handleDisableSettlement] error:', error);
-      toast.error('Failed to delete settlement.');
+      toast.error('Failed to disable settlement.');
     }
   };
 
@@ -569,21 +585,42 @@ const AdminSettlements = () => {
           placeholder="Search settlements..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          className={`pl-10 pr-4 py-2 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 w-full ${isRTL ? 'text-right' : ''}`}
+          className={`pl-10 pr-10 py-2 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 w-full ${isRTL ? 'text-right' : ''}`}
           dir={isRTL ? 'rtl' : 'ltr'}
+          aria-label="Search settlements"
         />
         <FaMapMarkerAlt className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-yellow-400`} />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none`}
+            aria-label="Clear search"
+            tabIndex={0}
+          >
+            &#10005;
+          </button>
+        )}
+      </div>
+      {/* Results Count */}
+      <div className="text-sm text-gray-600 mb-4 text-center">
+        Showing {filteredSettlements.length} settlement{filteredSettlements.length !== 1 ? 's' : ''}
       </div>
       {/* Settlements List */}
       {loading ? (
         <div className="flex flex-col items-center py-8 text-gray-500">
-          <FaSpinner className="animate-spin text-3xl mb-2" />
-          Loading settlements...
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mb-4"></div>
+          <span className="text-lg">Loading settlements...</span>
         </div>
       ) : filteredSettlements.length === 0 ? (
-        <div className="flex flex-col items-center py-8 text-gray-400">
-          <FaMapMarkerAlt className="text-4xl mb-2" />
-          <div>No settlements found.</div>
+        <div className="flex flex-col items-center py-12 text-gray-400">
+          <svg width="80" height="80" fill="none" viewBox="0 0 80 80" aria-hidden="true" className="mb-4">
+            <circle cx="40" cy="40" r="38" stroke="#FBBF24" strokeWidth="4" fill="#FEF3C7" />
+            <path d="M25 50 Q40 65 55 50" stroke="#FBBF24" strokeWidth="3" fill="none" />
+            <circle cx="32" cy="38" r="3" fill="#FBBF24" />
+            <circle cx="48" cy="38" r="3" fill="#FBBF24" />
+          </svg>
+          <div className="text-xl font-semibold mb-2">No settlements found</div>
+          <div className="text-sm">Try adjusting your search or filters.</div>
         </div>
       ) : (
         <>
@@ -610,6 +647,7 @@ const AdminSettlements = () => {
                 adminInfo={adminInfo}
                 onDisable={enabled ? () => handleDisableSettlement(settlement.name) : undefined}
                 onClick={!enabled ? () => openAdminModal(settlement) : undefined}
+                isRTL={isRTL}
               />
             );
           })}
