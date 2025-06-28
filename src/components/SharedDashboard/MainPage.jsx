@@ -7,7 +7,6 @@ import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
 
 const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
-  console.log("MainPage mounted");
   const { userData, loading } = useContext(UserContext);
   if (loading) return <div>Loading...</div>;
   const user = auth.currentUser;
@@ -40,7 +39,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
-    console.log("MainPage useEffect running, userSettlement:", userSettlement);
     if (!userSettlement) return;
 
     // Pending Service Requests
@@ -86,7 +84,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           }
           return createdAt && createdAt >= lastWeek;
         });
-        console.log('All retiree docs for dashboard:', allDocs.map(doc => ({ id: doc.id, createdAt: doc.data().createdAt, role: doc.data().role, settlement: doc.data().settlement, idVerification: doc.data().idVerification })));
         setRetireesRegisteredCount(retireesRegisteredThisWeek.length);
       } catch (error) {
         console.error("Error fetching retirees registered count:", error);
@@ -241,7 +238,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           }
           return createdAt && createdAt >= lastWeekForActivity;
         });
-        console.log('Recent retirees for recent activity:', recentRetirees.map(r => ({ id: r.id, createdAt: r.data().createdAt })));
         recentRetirees.forEach((retiree) => {
           activity.push({
             id: retiree.id,
@@ -278,7 +274,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           where("status", "==", "active")
         );
         const eventsSnapshot = await getDocs(activeEventsQuery);
-        console.log('All event docs for dashboard:', eventsSnapshot.docs.map(doc => ({ id: doc.id, createdAt: doc.data().createdAt, status: doc.data().status, settlement: doc.data().settlement })));
         const recentEvents = eventsSnapshot.docs.filter((doc) => {
           let eventDate = doc.data().createdAt;
           if (eventDate && eventDate.toDate) {
@@ -448,28 +443,30 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-4 md:mb-8">
+        {/* Clock for desktop only (md and up) */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, {userName} 👋</h1>
-            <p className="text-gray-600">Here's what's happening in your community today</p>
+            <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">Welcome, {userName} 👋</h1>
+            <p className="text-xs md:text-base text-gray-600">Here's what's happening in your community today</p>
           </div>
           {/* Quick Actions */}
-          <div className={`grid gap-2 ${userRole && userRole.toLowerCase() === 'superadmin' ? 'grid-cols-6' : 'grid-cols-4'}`}>
+          <div className={`grid gap-1 md:gap-2 w-full max-w-xs grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
             {allQuickActions.map((action, index) => (
               <button
                 key={index}
                 onClick={action.onClick}
-                className={`${action.color} text-white p-2 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-1`}
+                className={`${action.color} text-white p-1 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-0.5 md:space-y-1`}
               >
-                <span className="text-lg md:text-xl">{action.icon}</span>
-                <span className="text-[10px] md:text-xs font-small text-center">{action.title}</span>
+                <span className="text-base md:text-xl">{action.icon}</span>
+                <span className="text-[9px] md:text-xs font-small text-center">{action.title}</span>
               </button>
             ))}
           </div>
-          <div className="text-right">
+          {/* Clock for desktop only */}
+          <div className="text-right hidden md:block">
             <div className="text-sm text-gray-500">Current Time</div>
             <div className="text-lg font-semibold text-gray-700">
               {currentTime.toLocaleTimeString()}
@@ -479,49 +476,48 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6">
         {overviewCards.map((card, index) => (
           <div
             key={index}
             onClick={card.onClick} // Handle card click
-            className={`${card.color} border-2 rounded-lg p-4 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
+            className={`${card.color} border-2 rounded-lg p-2 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
           >
             <div className="flex flex-col items-center justify-between h-full mb-1">
               {/* Title and Icon */}
               <div className="flex items-center justify-between w-full">
-                <p className="text-xs md:text-sm font-medium text-gray-600">{card.title}</p>
-                <div className="text-lg md:text-3xl">{card.icon}</div>
+                <p className="text-[11px] md:text-sm font-medium text-gray-600">{card.title}</p>
+                <div className="text-base md:text-3xl">{card.icon}</div>
               </div>
-              
               {/* Value */}
-              <p className="text-xl md:text-3xl font-bold text-gray-800 text-center">{card.value}</p>
+              <p className="text-lg md:text-3xl font-bold text-gray-800 text-center">{card.value}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-3">
         {/* Recent Activity Feed */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
+            <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
               Recent Activity Feed
             </h2>
-            <div className="space-y-4 max-h-80 overflow-y-auto">
+            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
               {recentActivity.length === 0 && (
-                <div className="text-center text-gray-500 py-4">
+                <div className="text-center text-gray-500 py-2 md:py-4">
                   No recent activity to show.
                 </div>
               )}
               {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div key={activity.id} className="flex items-start space-x-2 md:space-x-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="flex-shrink-0 mt-1">
                     {getActivityIcon(activity.type)}
                   </div>
                   <div className="flex-grow">
-                    <p className="text-sm text-gray-800">{activity.action}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                    <p className="text-xs md:text-sm text-gray-800">{activity.action}</p>
+                    <p className="text-[10px] md:text-xs text-gray-500 mt-1">{activity.time}</p>
                   </div>
                 </div>
               ))}
@@ -533,12 +529,12 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         {/* <div className="space-y-6"> */}
           {/* Alerts */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-1 p-3 flex items-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
+            <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center">
               <FaBell className="mr-2 text-red-500" />
               Alerts & Notifications
             </h2>
-            <div className="space-y-4 max-h-80 overflow-y-auto">
+            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
               <Notifications 
                 setSelectedTab={setSelected} 
                 setShowNotificationsPopup={setShowNotificationsPopup} 
