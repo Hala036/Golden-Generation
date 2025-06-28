@@ -12,6 +12,7 @@ import {
   FiEyeOff,
   FiTrash2
 } from "react-icons/fi";
+import { FaEnvelope, FaUser, FaPhone, FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { auth, storage, db } from "../../firebase";
 import { updateProfile, updateEmail, reauthenticateWithCredential, EmailAuthProvider, updatePassword, deleteUser } from "firebase/auth";
@@ -23,6 +24,8 @@ import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
 import PasswordInput from '../PasswordInput';
+import { useFieldValidation } from '../../hooks/useFieldValidation';
+import { validateEmail, validateUsername, validatePhoneNumber } from '../../utils/validation';
 
 const mockAnnouncements = [
   { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
@@ -47,7 +50,7 @@ const SettingsCards = () => {
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
 
   // Form states
-  const [profileData, setProfileData] = useState({ name: "John Doe", username: "johndoe", phone: "", email: "john@example.com" });
+  const [profileData, setProfileData] = useState({ username: "johndoe", phone: "", email: "john@example.com" });
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [fontSize, setFontSize] = useState(16);
   const [notifications, setNotifications] = useState({ email: true, push: false });
@@ -61,6 +64,21 @@ const SettingsCards = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const { theme, setTheme } = useTheme();
+
+  // Field validation states for edit profile
+  const [touched, setTouched] = useState({ username: false, phone: false, email: false });
+
+  const usernameField = useFieldValidation({
+    validate: validateUsername,
+  });
+
+  const emailField = useFieldValidation({
+    validate: validateEmail,
+  });
+
+  const phoneField = useFieldValidation({
+    validate: validatePhoneNumber,
+  });
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -121,12 +139,18 @@ const SettingsCards = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("Not logged in");
       const userDoc = await getUserData(user.uid);
-      setProfileData({
-        name: userDoc?.personalDetails?.name || "",
+      const data = {
         username: userDoc?.credentials?.username || "",
         phone: userDoc?.personalDetails?.phoneNumber || "",
         email: userDoc?.credentials?.email || user.email || ""
-      });
+      };
+      setProfileData(data);
+      
+      // Set field values for validation
+      usernameField.setValue(data.username);
+      emailField.setValue(data.email);
+      phoneField.setValue(data.phone);
+      
       setShowEditProfile(true);
     } catch (err) {
       toast.error("Failed to load profile");
@@ -135,18 +159,53 @@ const SettingsCards = () => {
     }
   };
 
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    if (field === 'username') usernameField.onBlur();
+    if (field === 'email') emailField.onBlur();
+    if (field === 'phone') phoneField.onBlur();
+  };
+
+  const isValid =
+    !usernameField.error &&
+    !emailField.error &&
+    !phoneField.error &&
+    usernameField.value &&
+    emailField.value &&
+    phoneField.value;
+
   const handleProfileSave = async (e) => {
     e.preventDefault();
+    setTouched({ username: true, email: true, phone: true });
+    usernameField.onBlur();
+    emailField.onBlur();
+    phoneField.onBlur();
+    
+    if (!isValid) {
+      toast.error("Please fix the errors above");
+      return;
+    }
+
     const user = auth.currentUser;
     if (!user) return toast.error("Not logged in");
+    
     try {
       // If email changed, require re-auth
-      if (profileData.email !== user.email) {
-        setPendingProfileData({ ...profileData });
+      if (emailField.value !== user.email) {
+        setPendingProfileData({ 
+          username: usernameField.value,
+          phone: phoneField.value,
+          email: emailField.value
+        });
         setShowReauth(true);
         return;
       }
-      await updateFirestoreProfile(user.uid, profileData);
+      
+      await updateFirestoreProfile(user.uid, {
+        username: usernameField.value,
+        phone: phoneField.value,
+        email: emailField.value
+      });
       toast.success("Profile updated");
       setShowEditProfile(false);
     } catch (err) {
@@ -317,8 +376,7 @@ const SettingsCards = () => {
     await updateDoc(userRef, {
       "credentials.username": data.username,
       "credentials.email": data.email,
-      "personalDetails.phoneNumber": data.phone,
-      "personalDetails.name": data.name
+      "personalDetails.phoneNumber": data.phone
     });
   };
 
@@ -461,120 +519,173 @@ const SettingsCards = () => {
         ))}
       </div>
 
-      {/* Edit Profile Modal */}
+      {/* Edit Profile Modal - Unified Design */}
       {showEditProfile && (
-        <Modal onClose={() => setShowEditProfile(false)} title="Edit Profile">
-          {loadingProfile && (
-            <div className="flex justify-center items-center mb-4">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
-            </div>
-          )}
-          {showReauth && (
-            <form onSubmit={handleReauthAndSave} className="space-y-4">
-              <PasswordInput
-                value={reauthPassword}
-                onChange={e => setReauthPassword(e.target.value)}
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Re-authenticate with current password"
-                autoComplete="current-password"
-                required
-              />
-              <div className="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => setShowReauth(false)} 
-                  className={`px-4 py-2 rounded ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-                >
-                  Re-authenticate
-                </button>
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-profile-title"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-30 z-40"></div>
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-50">
+            <button
+              className="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-600"
+              onClick={() => setShowEditProfile(false)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <h2
+              id="edit-profile-title"
+              className="text-2xl font-bold mb-8 text-yellow-600 text-left"
+            >
+              Edit Profile
+            </h2>
+            
+            {loadingProfile && (
+              <div className="flex justify-center items-center mb-4">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
               </div>
-            </form>
-          )}
-          {!showReauth && (
-            <form onSubmit={handleProfileSave} className="space-y-4">
-              <input 
-                type="text" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Name" 
-                value={profileData.name} 
-                onChange={e => setProfileData({ ...profileData, name: e.target.value })} 
-                required 
-              />
-              <input 
-                type="text" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Username" 
-                value={profileData.username} 
-                onChange={e => setProfileData({ ...profileData, username: e.target.value })} 
-                required 
-              />
-              <input 
-                type="tel" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Phone" 
-                value={profileData.phone} 
-                onChange={e => setProfileData({ ...profileData, phone: e.target.value })} 
-              />
-              <input 
-                type="email" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder="Email" 
-                value={profileData.email} 
-                onChange={e => setProfileData({ ...profileData, email: e.target.value })} 
-                required 
-              />
-              <div className="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => setShowEditProfile(false)} 
-                  className={`px-4 py-2 rounded ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          )}
-        </Modal>
+            )}
+            
+            {showReauth && (
+              <form onSubmit={handleReauthAndSave} className="flex flex-col gap-4">
+                <div className="relative">
+                  <label htmlFor="reauth-password" className="text-sm font-medium">Current Password</label>
+                  <PasswordInput
+                    id="reauth-password"
+                    value={reauthPassword}
+                    onChange={e => setReauthPassword(e.target.value)}
+                    className="w-full pl-3 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
+                    placeholder="Re-authenticate with current password"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    type="button"
+                    onClick={() => setShowReauth(false)}
+                    className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600"
+                  >
+                    Re-authenticate
+                  </button>
+                </div>
+              </form>
+            )}
+            
+            {!showReauth && (
+              <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
+                <div className="relative">
+                  <label htmlFor="profile-username" className="text-sm font-medium">Username</label>
+                  <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-username"
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    value={usernameField.value}
+                    onChange={usernameField.onChange}
+                    onBlur={() => handleBlur('username')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.username && usernameField.error ? 'border-red-500' : touched.username && !usernameField.error && usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Username"
+                  />
+                </div>
+                {touched.username && usernameField.isChecking && (
+                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                  </span>
+                )}
+                {touched.username && usernameField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {usernameField.error}
+                  </span>
+                )}
+
+                <div className="relative">
+                  <label htmlFor="profile-email" className="text-sm font-medium">Email</label>
+                  <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-email"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={emailField.value}
+                    onChange={emailField.onChange}
+                    onBlur={() => handleBlur('email')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.email && emailField.error ? 'border-red-500' : touched.email && !emailField.error && emailField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Email"
+                  />
+                </div>
+                {touched.email && emailField.isChecking && (
+                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                  </span>
+                )}
+                {touched.email && emailField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {emailField.error}
+                  </span>
+                )}
+
+                <div className="relative">
+                  <label htmlFor="profile-phone" className="text-sm font-medium">Phone</label>
+                  <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Phone"
+                    value={phoneField.value}
+                    onChange={phoneField.onChange}
+                    onBlur={() => handleBlur('phone')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.phone && phoneField.error ? 'border-red-500' : touched.phone && !phoneField.error && phoneField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Phone"
+                  />
+                </div>
+                {touched.phone && phoneField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {phoneField.error}
+                  </span>
+                )}
+
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditProfile(false)}
+                    className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 flex items-center justify-center"
+                    disabled={
+                      usernameField.isChecking ||
+                      emailField.isChecking ||
+                      !isValid
+                    }
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
       )}
       {/* Change Password Modal */}
       {showChangePassword && (
