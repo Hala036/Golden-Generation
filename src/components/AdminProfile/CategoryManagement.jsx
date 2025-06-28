@@ -314,7 +314,7 @@ const CategoryManagement = () => {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
           <h2 className="text-xl font-bold mb-4">{title}</h2>
           {children}
@@ -364,7 +364,7 @@ const CategoryManagement = () => {
           )}
           <button
             onClick={openAddModal}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-2.5 py-1.5 rounded-md flex items-center gap-1.5 text-sm"
+            className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-2.5 py-1.5 mr-1 rounded-md flex items-center gap-1.5 text-sm"
           >
             <FaPlus /> Add Category
           </button>
