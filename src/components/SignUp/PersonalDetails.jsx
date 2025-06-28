@@ -588,7 +588,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <FormField
                 label={t('auth.signup.personalDetails.phoneNumber')}
                 name="phoneNumber"
-                id="phoneNumber"
+                id="personalDetails-phoneNumber"
                 type="text"
                 autoComplete="tel"
                 placeholder={t('auth.signup.personalDetails.phoneNumber')}
@@ -613,7 +613,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <FormField
                 label={t('auth.signup.personalDetails.maritalStatus.label')}
                 name="maritalStatus"
-                id="maritalStatus"
+                id="personalDetails-maritalStatus"
                 type="select"
                 autoComplete="marital-status"
                 options={maritalStatusOptions}
@@ -640,7 +640,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <FormField
                 label={t('auth.signup.personalDetails.houseNumber')}
                 name="houseNumber"
-                id="houseNumber"
+                id="personalDetails-houseNumber"
                 required
                 type="text"
                 autoComplete="address-line1"
@@ -665,7 +665,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <FormField
                 label={t('auth.signup.personalDetails.streetName')}
                 name="streetName"
-                id="streetName"
+                id="personalDetails-streetName"
                 required
                 autoComplete="address-line2"
                 placeholder={t('auth.signup.personalDetails.streetName')}
@@ -679,7 +679,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
             <FormField
               label={t('auth.signup.personalDetails.additionalAddressDetails')}
               name="address"
-              id="address"
+              id="personalDetails-address"
               type="textarea"
               autoComplete="address-line3"
               placeholder={t('auth.signup.personalDetails.additionalAddressDetails')}
@@ -706,7 +706,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <FormField
                 label={t('auth.signup.personalDetails.nativeLanguage')}
                 name="nativeLanguage"
-                id="nativeLanguage"
+                id="personalDetails-nativeLanguage"
                 type="select"
                 autoComplete="language"
                 options={languages}
@@ -724,7 +724,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <FormField
                 label={t('auth.signup.personalDetails.hebrewLevel.label')}
                 name="hebrewLevel"
-                id="hebrewLevel"
+                id="personalDetails-hebrewLevel"
                 type="select"
                 autoComplete="hebrew-level"
                 options={hebrewLevels.map(level => ({ value: level, label: t(`auth.signup.personalDetails.hebrewLevel.${level}`) }))}
@@ -739,7 +739,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               <CheckboxField
                 label={t('auth.signup.personalDetails.isNewImmigrant')}
                 name="isNewImmigrant"
-                id="isNewImmigrant"
+                id="personalDetails-isNewImmigrant"
                 checked={formData.isNewImmigrant}
                 onChange={handleInputChange}
               />
@@ -750,7 +750,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 <FormField
                   label={t('auth.signup.personalDetails.arrivalDate')}
                   name="arrivalDate"
-                  id="arrivalDate"
+                  id="personalDetails-arrivalDate"
                   type="date"
                   required={true}
                   autoComplete="bday"
@@ -762,7 +762,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 <FormField
                   label={t('auth.signup.personalDetails.originCountry')}
                   name="originCountry"
-                  id="originCountry"
+                  id="personalDetails-originCountry"
                   type="select"
                   required={true}
                   autoComplete="country"
@@ -792,7 +792,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 <FormField
                   label={t('auth.signup.personalDetails.healthCondition')}
                   name="healthCondition"
-                  id="healthCondition"
+                  id="personalDetails-healthCondition"
                   type="textarea"
                   autoComplete="health-condition"
                   placeholder={t('auth.signup.personalDetails.healthConditionPlaceholder')}
@@ -804,7 +804,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 <FormField
                   label={t('auth.signup.personalDetails.militaryService')}
                   name="militaryService"
-                  id="militaryService"
+                  id="personalDetails-militaryService"
                   type="select"
                   autoComplete="military-service"
                   options={militaryOptions.map((option) => ({
@@ -822,28 +822,28 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   <CheckboxField
                     label={t('auth.signup.personalDetails.hasCar')}
                     name="hasCar"
-                    id="hasCar"
+                    id="personalDetails-hasCar"
                     checked={formData.hasCar}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
                     label={t('auth.signup.personalDetails.livingAlone')}
                     name="livingAlone"
-                    id="livingAlone"
+                    id="personalDetails-livingAlone"
                     checked={formData.livingAlone}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
                     label={t('auth.signup.personalDetails.familyInSettlement')}
                     name="familyInSettlement"
-                    id="familyInSettlement"
+                    id="personalDetails-familyInSettlement"
                     checked={formData.familyInSettlement}
                     onChange={handleInputChange}
                   />
                   <CheckboxField
                     label={t('auth.signup.personalDetails.hasWeapon')}
                     name="hasWeapon"
-                    id="hasWeapon"
+                    id="personalDetails-hasWeapon"
                     checked={formData.hasWeapon}
                     onChange={handleInputChange}
                   />
