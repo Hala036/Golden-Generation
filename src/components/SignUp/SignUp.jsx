@@ -87,8 +87,9 @@ const SignUp = () => {
         });
 
         // 5. Send welcome notification
+        const welcomeMessage = `${t('auth.signup.welcomeMessage')} ${credentialsData.username}! ${t('auth.signup.welcomeSubmessage')}`;
         await triggerNotification({
-          message: `${t('auth.signup.welcomeMessage')} ${credentialsData.username}! ${t('auth.signup.welcomeSubmessage')}`,
+          message: welcomeMessage,
           target: [userCredential.user.uid], // Send notification to the newly created user
           link: '/dashboard', // Link to the dashboard
           createdBy: 'system', // System-generated notification
