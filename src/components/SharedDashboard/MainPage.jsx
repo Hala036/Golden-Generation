@@ -75,34 +75,6 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     };
   }, []);
 
-  // Fetch username from Firestore
-  useEffect(() => {
-    const fetchUserName = async () => {
-      if (!user?.uid) return;
-      
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          // Try to get display name from different possible locations in the user document
-          const name = userData?.personalDetails?.firstName || // First try to get first name
-                      userData?.credentials?.username?.split(/[_\s]/)[0] || // Then try username's first part
-                      userData?.username?.split(/[_\s]/)[0] || // Then try root username's first part
-                      userData?.name?.split(/[_\s]/)[0] || // Then try name's first part
-                      "User";
-          setUserName(name);
-        } else {
-          setUserName("User");
-        }
-      } catch (error) {
-        console.error("Error fetching username:", error);
-        setUserName("User");
-      }
-    };
-
-    fetchUserName();
-  }, [user?.uid]);
-
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
     console.log("MainPage useEffect running, userSettlement:", userSettlement);
