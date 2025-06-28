@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, getUserData } from '../../firebase';
 import { useAuth } from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
+import { useLanguage } from '../../context/LanguageContext';
 
 const iconMap = {
   info: <FaInfoCircle className="text-yellow-500 text-xl" />,
@@ -14,6 +15,7 @@ const iconMap = {
 
 const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => { // Add setShowNotificationsPopup as a prop
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   const [userRole, setUserRole] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -157,23 +159,23 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
             className="text-sm text-blue-500 hover:underline"
             onClick={handleMarkAllAsRead}
           >
-            Mark all as read
+            {t('auth.dashboard.notifications.markAllAsRead')}
           </button>
           {userRole !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
               onClick={() => setShowCreateNotificationModal(true)}
             >
-              Create Notification
+              {t('auth.dashboard.notifications.createNotification')}
             </button>
           )}
         </div>
       </div>
       <div className="bg-white rounded-xl divide-y">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-gray-400">{t('dashboard.notifications.loading')}</div>
         ) : notifications.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No notifications</div>
+          <div className="p-8 text-center text-gray-400">{t('auth.dashboard.notifications.noNotifications')}</div>
         ) : (
           notifications.map((n) => (
             <div
@@ -200,7 +202,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
                 {iconMap[n.type] || iconMap.info}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-800 truncate">{n.title || "Notification"}</div>
+                <div className="font-semibold text-gray-800 truncate">{n.title || t('dashboard.notifications.notification')}</div>
                 <div className="text-sm text-gray-600 truncate">{n.message}</div>
                 <div className="text-xs text-gray-400 mt-1">
                   {n.createdAt
@@ -223,12 +225,12 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           <div className="absolute inset-0 bg-gray-200 opacity-50"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{selectedNotification.title || "Notification"}</h3>
+              <h3 className="text-xl font-bold">{selectedNotification.title || t('dashboard.notifications.notification')}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowModal(false)}
               >
-                &times;
+                {t('dashboard.notifications.close')}
               </button>
             </div>
             <p className="text-gray-700">{selectedNotification.message}</p>
@@ -242,12 +244,12 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           <div className="absolute inset-0 bg-gray-200"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Create Notification</h3>
+              <h3 className="text-xl font-bold">{t('dashboard.notifications.modalTitle')}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowCreateNotificationModal(false)} // Close the modal
               >
-                &times;
+                {t('dashboard.notifications.close')}
               </button>
             </div>
             <SendNotification onClose={() => setShowCreateNotificationModal(false)} /> {/* Pass onClose callback */}

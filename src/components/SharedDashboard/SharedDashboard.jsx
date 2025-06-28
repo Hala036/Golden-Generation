@@ -27,17 +27,17 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
       try {
         const user = auth.currentUser;
         if (!user) {
-          toast.error("No user is logged in.");
+          toast.error(t('dashboard.sidebar.noUserLoggedIn'));
           return;
         }
         const data = await getUserData(user.uid);
         if (!data) {
-          toast.error("Failed to load user data.");
+          toast.error(t('dashboard.sidebar.failedToLoadUser'));
           return;
         }
         setUserData(data.credentials);
       } catch (error) {
-        toast.error("Failed to load user data.");
+        toast.error(t('dashboard.sidebar.failedToLoadUser'));
       }
     };
     fetchUserData();
@@ -46,10 +46,10 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      toast.success('Logged out successfully!');
+      toast.success(t('dashboard.sidebar.loggedOut'));
       navigate('/login');
     } catch (error) {
-      toast.error('Failed to logout. Please try again.');
+      toast.error(t('dashboard.sidebar.failedToLogout'));
     }
   };
 
@@ -74,7 +74,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
           <div className="p-6 border-b border-gray-200 flex flex-col items-center">
             <img src={profile} alt="Profile" className="w-20 h-20 rounded-full mb-3" />
             <span className="text-lg font-semibold">
-              {userData?.username || "User"}
+              {userData?.username || t('dashboard.sidebar.user')}
             </span>
           </div>
         )}
@@ -171,19 +171,19 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
 
         {/* Scrollable Content */}
         <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
-          {componentsById[selected] || <div>No Component Found</div>}
+          {componentsById[selected] || <div>{t('dashboard.main.noComponent')}</div>}
         </div>
 
         {/* Notifications Popup */}
         {showNotificationsPopup && (
           <div className="absolute top-20 right-10 bg-white rounded-lg shadow-lg p-6 w-96 z-50">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Notifications</h3>
+              <h3 className="text-xl font-bold">{t('dashboard.notifications.title')}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowNotificationsPopup(false)} // Close the popup
               >
-                &times;
+                {t('dashboard.actions.close')}
               </button>
             </div>
             {/* Scrollable Notifications List */}

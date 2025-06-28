@@ -146,7 +146,7 @@ const Cards = ({ userRole = 'retiree' }) => {
               ))}
             </select>
           </div>
-          {loading && <p>Loading...</p>}
+          {loading && <p>{t("common.loading")}</p>}
 
           {/* Events Grid */}
           {!loading && (

@@ -4,6 +4,7 @@ import { db } from "../../firebase";
 import { triggerNotification } from "./TriggerNotifications"; // Import the helper function
 import { useAuth } from "../../hooks/useAuth"; // if you track current user
 import { toast, Toaster } from "react-hot-toast";
+import { useLanguage } from "../../context/LanguageContext";
 
 const SendNotification = ({ onClose }) => {
   const [message, setMessage] = useState("");
@@ -13,6 +14,7 @@ const SendNotification = ({ onClose }) => {
   const [uids, setUids] = useState([]); // Array of UIDs corresponding to selected usernames
   const [allUsernames, setAllUsernames] = useState([]); // Store all usernames for autofill
   const { currentUser } = useAuth(); // optional
+  const { t } = useLanguage();
 
   useEffect(() => {
     const fetchUsernames = async () => {
@@ -32,7 +34,7 @@ const SendNotification = ({ onClose }) => {
     if (!customUsername.trim()) return;
 
     if (selectedUsernames.includes(customUsername)) {
-      toast.error("Username already added!");
+      toast.error(t('dashboard.sendNotification.toast.usernameAdded'));
       return;
     }
 
@@ -41,7 +43,7 @@ const SendNotification = ({ onClose }) => {
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        toast.error("Username not found!");
+        toast.error(t('dashboard.sendNotification.toast.usernameNotFound'));
         return;
       }
 
@@ -51,7 +53,7 @@ const SendNotification = ({ onClose }) => {
       setCustomUsername(""); // Clear the input field
     } catch (err) {
       console.error("Failed to add username:", err);
-      toast.error("Failed to add username.");
+      toast.error(t('dashboard.sendNotification.toast.addUsernameFailed'));
     }
   };
 
@@ -79,13 +81,13 @@ const SendNotification = ({ onClose }) => {
         createdBy: currentUser?.uid || "system",
         type: "info",
       });
-      toast.success("Notification sent successfully");
+      toast.success(t('dashboard.sendNotification.toast.sent'));
       setMessage("");
       setSelectedUsernames([]);
       setUids([]);
       if (onClose) onClose(); // Close the modal
     } catch (err) {
-      toast.error("Failed to send notification");
+      toast.error(t('dashboard.sendNotification.toast.failed'));
       console.error("Error in handleSubmit:", err);
     }
   };
@@ -99,7 +101,7 @@ const SendNotification = ({ onClose }) => {
         rows="3"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Notification message"
+        placeholder={t('dashboard.sendNotification.messagePlaceholder')}
         required
       />
 
@@ -108,10 +110,10 @@ const SendNotification = ({ onClose }) => {
         value={targetType}
         onChange={(e) => setTargetType(e.target.value)}
       >
-        <option value="everyone">Everyone</option>
-        <option value="retiree">Retirees</option>
-        <option value="admin">Admins</option>
-        <option value="custom">Specific Users (Usernames)</option>
+        <option value="everyone">{t('dashboard.sendNotification.target.everyone')}</option>
+        <option value="retiree">{t('dashboard.sendNotification.target.retiree')}</option>
+        <option value="admin">{t('dashboard.sendNotification.target.admin')}</option>
+        <option value="custom">{t('dashboard.sendNotification.target.custom')}</option>
       </select>
 
       {targetType === "custom" && (
@@ -119,7 +121,7 @@ const SendNotification = ({ onClose }) => {
           <input
             type="text"
             className="w-full border p-2 rounded"
-            placeholder="Enter a username"
+            placeholder={t('dashboard.sendNotification.customUsernamePlaceholder')}
             value={customUsername}
             onChange={(e) => setCustomUsername(e.target.value)}
             list="usernames-list" // Enable autofill
@@ -129,7 +131,7 @@ const SendNotification = ({ onClose }) => {
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-2"
             onClick={handleAddUsername}
           >
-            Add Username
+            {t('dashboard.sendNotification.addUsername')}
           </button>
 
           {/* Autofill options */}
@@ -151,7 +153,7 @@ const SendNotification = ({ onClose }) => {
                   className="text-red-500 hover:text-red-700"
                   onClick={() => handleRemoveUsername(username)}
                 >
-                  &times;
+                  {t('dashboard.sendNotification.removeUsername')}
                 </button>
               </div>
             ))}
@@ -163,7 +165,7 @@ const SendNotification = ({ onClose }) => {
         type="submit"
         className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
       >
-        Send
+        {t('dashboard.sendNotification.send')}
       </button>
     </form>
   );

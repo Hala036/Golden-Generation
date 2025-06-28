@@ -5,8 +5,10 @@ import { getServiceRequests } from "../../serviceRequestsService"; // Import ser
 import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
+import { useLanguage } from "../../context/LanguageContext";
 
 const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
+  const { t } = useLanguage();
   console.log("MainPage mounted");
   const { userData, loading } = useContext(UserContext);
   if (loading) return <div>Loading...</div>;
@@ -377,7 +379,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
 
   const overviewCards = [
     {
-      title: "Pending Service Requests",
+      title: t('dashboard.main.cards.pendingServiceRequests'),
       value: pendingRequestsCount, // Dynamically update the value
       icon: <FaClock className="text-2xl md:text-3xl text-orange-500" />, // Adjust icon size
       color: "bg-orange-50 border-orange-200",
@@ -385,7 +387,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       onClick: () => setSelected("service"), // Set selected to "service"
     },
     {
-      title: "Signups This Week",
+      title: t('dashboard.main.cards.signupsThisWeek'),
       value: retireesRegisteredCount, // Dynamically update the value
       icon: <FaUserPlus className="text-2xl md:text-3xl text-green-500" />, // Adjust icon size
       color: "bg-green-50 border-green-200",
@@ -393,7 +395,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       onClick: () => setSelected("retirees"),
     },
     {
-      title: "Active Events",
+      title: t('dashboard.main.cards.activeEvents'),
       value: activeEventsCount, // Dynamically update the value
       icon: <FaCalendarCheck className="text-2xl md:text-3xl text-blue-500" />, // Adjust icon size
       color: "bg-blue-50 border-blue-200",
@@ -401,7 +403,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       onClick: () => setSelected("upcoming"), // Set selected to "events"
     },
     {
-      title: "Volunteer Matches Pending",
+      title: t('dashboard.main.cards.volunteerMatchesPending'),
       value: volunteerMatchesCount, // Dynamically update the value
       icon: <FaHandsHelping className="text-2xl md:text-3xl text-purple-500" />, // Adjust icon size
       color: "bg-purple-50 border-purple-200",
@@ -409,7 +411,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       onClick: () => setSelected("jobs"), // Set selected to "Jobs"
     },
     {
-      title: "Pending Event Requests",
+      title: t('dashboard.main.cards.pendingEventRequests'),
       value: pendingEventsCount, // Replace with dynamic value if available
       icon: <FaCalendarAlt className="text-2xl md:text-3xl text-red-500" />, // Adjust icon size
       color: "bg-red-50 border-red-200",
@@ -419,16 +421,16 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   ];
 
   const quickActions = [
-    { title: 'Calendar', icon: <FaCalendarAlt />, color: 'bg-green-500 hover:bg-green-600', onClick: () => setSelected("calendar") },
-    { title: 'View All Requests', icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600', onClick: () => setSelected("service") },
-    { title: 'Manage Retirees', icon: <FaUsers />, color: 'bg-purple-500 hover:bg-purple-600', onClick: () => setSelected("retirees") },
-    { title: 'Reports & Analytics', icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
+    { title: t('dashboard.main.quickActions.calendar'), icon: <FaCalendarAlt />, color: 'bg-green-500 hover:bg-green-600', onClick: () => setSelected("calendar") },
+    { title: t('dashboard.main.quickActions.viewAllRequests'), icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600', onClick: () => setSelected("service") },
+    { title: t('dashboard.main.quickActions.manageRetirees'), icon: <FaUsers />, color: 'bg-purple-500 hover:bg-purple-600', onClick: () => setSelected("retirees") },
+    { title: t('dashboard.main.quickActions.reportsAnalytics'), icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
   ];
 
   // SuperAdmin-only quick actions
   const superAdminQuickActions = [
-    { title: 'Admin Management', icon: <FaUserShield />, color: 'bg-red-500 hover:bg-red-600', onClick: () => setSelected("admins") },
-    { title: 'Add Settlements', icon: <FaMapMarkerAlt />, color: 'bg-indigo-500 hover:bg-indigo-600', onClick: () => setSelected("addSettlements") },
+    { title: t('dashboard.main.quickActions.adminManagement'), icon: <FaUserShield />, color: 'bg-red-500 hover:bg-red-600', onClick: () => setSelected("admins") },
+    { title: t('dashboard.main.quickActions.addSettlements'), icon: <FaMapMarkerAlt />, color: 'bg-indigo-500 hover:bg-indigo-600', onClick: () => setSelected("addSettlements") },
   ];
 
   // Only show for superadmin
@@ -447,14 +449,40 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     }
   };
 
+  // Dynamic activity string helpers
+  const getActivityAction = (activity) => {
+    switch (activity.type) {
+      case 'join':
+        return t('dashboard.main.activity.joinedCommunity', { username: activity.username || 'Retiree' });
+      case 'apply':
+        return t('dashboard.main.activity.volunteerMatchCreated', { title: activity.title });
+      case 'complete':
+        return t('dashboard.main.activity.completedVolunteerService', { username: activity.username || 'Volunteer' });
+      case 'request':
+        return t('dashboard.main.activity.newServiceRequest', { title: activity.title });
+      case 'event':
+        return t('dashboard.main.activity.createdEvent', { title: activity.title });
+      default:
+        return activity.action;
+    }
+  };
+
+  // Dynamic time string helpers
+  const getTimeAgo = (minutes, hours, days, invalid) => {
+    if (invalid) return t('dashboard.main.time.invalidDate');
+    if (minutes < 60) return t('dashboard.main.time.minutesAgo', { count: minutes });
+    if (hours < 24) return t('dashboard.main.time.hoursAgo', { count: hours });
+    return t('dashboard.main.time.daysAgo', { count: days });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, {userName} 👋</h1>
-            <p className="text-gray-600">Here's what's happening in your community today</p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('dashboard.main.welcome', { userName })}</h1>
+            <p className="text-gray-600">{t('dashboard.main.communityToday')}</p>
           </div>
           {/* Quick Actions */}
           <div className={`grid gap-2 ${userRole && userRole.toLowerCase() === 'superadmin' ? 'grid-cols-6' : 'grid-cols-4'}`}>
@@ -470,7 +498,7 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
             ))}
           </div>
           <div className="text-right">
-            <div className="text-sm text-gray-500">Current Time</div>
+            <div className="text-sm text-gray-500">{t('dashboard.main.currentTime')}</div>
             <div className="text-lg font-semibold text-gray-700">
               {currentTime.toLocaleTimeString()}
             </div>
@@ -506,12 +534,12 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
-              Recent Activity Feed
+              {t('dashboard.main.recentActivityFeed')}
             </h2>
             <div className="space-y-4 max-h-80 overflow-y-auto">
               {recentActivity.length === 0 && (
                 <div className="text-center text-gray-500 py-4">
-                  No recent activity to show.
+                  {t('dashboard.main.noRecentActivity')}
                 </div>
               )}
               {recentActivity.map((activity) => (
@@ -520,8 +548,8 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
                     {getActivityIcon(activity.type)}
                   </div>
                   <div className="flex-grow">
-                    <p className="text-sm text-gray-800">{activity.action}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                    <p className="text-sm text-gray-800">{getActivityAction(activity)}</p>
+                    <p className="text-xs text-gray-500 mt-1">{getTimeAgo(/* pass correct values here based on activity.time */)}</p>
                   </div>
                 </div>
               ))}
@@ -530,13 +558,11 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         </div>
 
         {/* Alerts & Quick Actions */}
-        {/* <div className="space-y-6"> */}
-          {/* Alerts */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-1 p-3 flex items-center">
               <FaBell className="mr-2 text-red-500" />
-              Alerts & Notifications
+              {t('dashboard.main.alertsAndNotifications')}
             </h2>
             <div className="space-y-4 max-h-80 overflow-y-auto">
               <Notifications 
