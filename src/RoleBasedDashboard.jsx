@@ -65,8 +65,40 @@ const RoleBasedDashboard = () => {
           setRole(firestoreRole ? firestoreRole.toLowerCase() : undefined);
           console.log('User role:', firestoreRole ? firestoreRole.toLowerCase() : undefined);
         } else {
-          console.error('User doc not found');
-          navigate('/login');
+          console.debug('User doc not found for UID:', currentUser.uid, '(This is normal during user creation)');
+          // Don't navigate to login immediately, give some time for the document to be created
+          // This can happen during the signup process
+          let retryCount = 0;
+          const maxRetries = 3;
+          
+          const retryFetchUserRole = async () => {
+            if (retryCount >= maxRetries) {
+              console.error('User doc still not found after', maxRetries, 'retries');
+              navigate('/login');
+              return;
+            }
+            
+            retryCount++;
+            console.log(`Retrying user role fetch (attempt ${retryCount}/${maxRetries})...`);
+            
+            setTimeout(async () => {
+              try {
+                const retryDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (retryDoc.exists()) {
+                  const retryRole = retryDoc.data().role;
+                  setRole(retryRole ? retryRole.toLowerCase() : undefined);
+                  console.log('User role found on retry:', retryRole ? retryRole.toLowerCase() : undefined);
+                } else {
+                  retryFetchUserRole();
+                }
+              } catch (error) {
+                console.error('Error during retry:', error);
+                retryFetchUserRole();
+              }
+            }, 1000 * retryCount); // Increasing delay for each retry
+          };
+          
+          retryFetchUserRole();
         }
       } catch (error) {
         console.error('Failed to fetch user role:', error);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFieldValidation } from '../../hooks/useFieldValidation';
 import { validateEmail, validateUsername, validatePhoneNumber } from '../../utils/validation';
 import { FaInfoCircle, FaEnvelope, FaUser, FaPhone } from 'react-icons/fa';
@@ -56,6 +56,15 @@ const AssignAdminModal = ({
       phone: phoneField.value,
     });
   };
+
+  useEffect(() => {
+    if (open) {
+      emailField.setValue('');
+      usernameField.setValue('');
+      phoneField.setValue('');
+      setTouched({ email: false, username: false, phone: false });
+    }
+  }, [open]);
 
   if (!open) return null;
 

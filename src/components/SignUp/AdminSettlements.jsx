@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { db } from '../../firebase';
 import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc, writeBatch, query, where } from 'firebase/firestore';
@@ -16,6 +16,9 @@ import { showSuccessToast, showErrorToast, showLoadingToast, showWarningToast, s
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import EmptyState from '../EmptyState';
+import { UserContext as AppUserContext } from "../../context/UserContext";
+import { useTranslation } from "react-i18next";
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 
 const AdminSettlements = () => {
@@ -53,6 +56,7 @@ const AdminSettlements = () => {
   const isRTL = rtlLanguages.includes(language);
   const [usernameError, setUsernameError] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const { refreshUserData } = useContext(AppUserContext);
 
   // Filter settlements based on search and availability
   let filteredSettlements = allSettlements.filter(settlement =>
@@ -147,17 +151,51 @@ const AdminSettlements = () => {
   // Handle admin creation
   const handleAdminCreated = async ({ email, username, phone }) => {
     setCreatingAdmin(true);
-    let newUserId = null;
-    let userCredential = null;
     console.debug('[handleAdminCreated] start', { email, username, phone, selectedSettlement });
+    
     try {
-      // 1. Create user in Firebase Auth
+      // 1. Create user using REST API (doesn't sign in automatically)
       const auth = getAuth();
-      const tempPassword = email + '_Temp123';
-      userCredential = await createUserWithEmailAndPassword(auth, email, tempPassword);
-      newUserId = userCredential.user.uid;
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('No authenticated user found');
+      }
+      
+      // Get the current user's ID token for authentication
+      const idToken = await currentUser.getIdToken();
+      
+      // Create user via REST API
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDKxXiBm3uiM5pBCGdHxWDdPEHY3zVSlBo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: email + '_Temp123',
+          returnSecureToken: false // Don't return auth tokens
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error?.message || 'Failed to create user');
+      }
+      
+      const newUserId = result.localId;
+      console.log('Admin created successfully:', newUserId);
+      
       // 2. Send password reset email
-      await sendPasswordResetEmail(auth, email);
+      try {
+        await sendPasswordResetEmail(auth, email);
+        console.log('Password reset email sent to:', email);
+        toast.success('Password reset email sent to admin: ' + email);
+      } catch (err) {
+        console.error('Failed to send password reset email:', err);
+        toast.error('Admin created, but failed to send password reset email: ' + (err.message || 'Unknown error'));
+      }
+      
       // 3. Create user in Firestore
       const usersRef = collection(db, 'users');
       const newUserRef = doc(usersRef, newUserId);
@@ -168,7 +206,14 @@ const AdminSettlements = () => {
         createdAt: new Date().toISOString(),
         profileComplete: false,
       });
-      // 4. Update the availableSettlements doc with admin info
+      
+      // 4. Create username document
+      await setDoc(doc(db, 'usernames', username.toLowerCase()), {
+        uid: newUserId,
+        username: username,
+      });
+      
+      // 5. Update the availableSettlements doc with admin info
       await setDoc(doc(db, 'availableSettlements', selectedSettlement), {
         name: selectedSettlement,
         available: true,
@@ -178,6 +223,7 @@ const AdminSettlements = () => {
         adminUsername: username,
         adminPhone: phone,
       }, { merge: true });
+      
       setAvailableSettlements(prev => [...new Set([...prev, selectedSettlement])]);
       setSettlementAdmins(prev => ({
         ...prev,
@@ -186,13 +232,19 @@ const AdminSettlements = () => {
       toast.success('Admin created and password reset email sent!');
       setShowAdminForm(false);
       setSelectedSettlement('');
+      
+      // Add a shorter delay to ensure Firestore writes are complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Re-fetch settlements and admins to sync state
       await fetchAvailableSettlements();
       console.debug('[handleAdminCreated] success', { email, username, phone, newUserId });
+      
+      // Refresh user data with a small delay to ensure document is available
+      setTimeout(async () => {
+        await refreshUserData();
+      }, 1000);
     } catch (err) {
-      if (userCredential && newUserId) {
-        try { await userCredential.user.delete(); } catch (e) { /* ignore */ }
-      }
       console.error('[handleAdminCreated] error:', err);
       toast.error('Failed to create admin: ' + (err.message || 'Unknown error'));
     } finally {
