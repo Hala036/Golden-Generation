@@ -586,5 +586,23 @@ function analyzeJobDistribution(jobs) {
   };
 }
 
+// Cloud Function to delete a user from Firebase Auth by UID
+export const deleteUserByUid = https.onCall(async (data, context) => {
+  // Security: Only allow superadmins
+  if (!context.auth || context.auth.token.role !== 'superadmin') {
+    throw new https.HttpsError('permission-denied', 'Only superadmins can delete users.');
+  }
+  const { uid } = data;
+  if (!uid) {
+    throw new https.HttpsError('invalid-argument', 'UID is required');
+  }
+  try {
+    await auth.deleteUser(uid);
+    return { success: true };
+  } catch (error) {
+    throw new https.HttpsError('internal', error.message);
+  }
+});
+
 // Export an empty object if no functions are currently needed
 export {};

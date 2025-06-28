@@ -46,9 +46,13 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           // Super admin sees all notifications
           notificationsQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
         } else if (userRole === 'admin') {
-          // Admin sees notifications for their settlement
           const userDoc = await getDoc(doc(db, "users", user.uid));
           const userSettlement = userDoc.data()?.idVerification?.settlement;
+          if (!userSettlement) {
+            setNotifications([]);
+            setLoading(false);
+            return;
+          }
           notificationsQuery = query(
             collection(db, "notifications"),
             where("settlement", "==", userSettlement),

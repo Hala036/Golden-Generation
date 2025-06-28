@@ -222,8 +222,9 @@ const AdminSettlements = () => {
           await deleteDoc(doc(db, 'usernames', username.toLowerCase()));
         }
         await deleteDoc(adminDoc.ref);
-        // If you have access to the Firebase Admin SDK, you can also delete from Auth:
-        // await admin.auth().deleteUser(adminDoc.id);
+        // NOTE: To delete a user from Firebase Auth by UID, you must use the Admin SDK (server-side):
+        // admin.auth().deleteUser(adminDoc.id)
+        // See: https://firebase.google.com/docs/auth/admin/manage-users#delete_a_user
         adminCount++;
       }
 
@@ -410,19 +411,10 @@ const AdminSettlements = () => {
     }
   };
 
-  // Enable a settlement: copy to 'availableSettlements'
-  const handleEnableSettlement = async (name) => {
-    try {
-      await setDoc(doc(db, 'availableSettlements', name), {
-        name,
-        available: true,
-        createdAt: new Date().toISOString(),
-      });
-      toast.success(`${name} enabled and added to availableSettlements!`);
-      
-    } catch (err) {
-      toast.error('Failed to enable settlement: ' + err.message);
-    }
+  // When enabling a settlement, open AssignAdminModal:
+  const handleEnableSettlement = (settlement) => {
+    setSelectedSettlement(settlement.name || settlement);
+    setShowAdminForm(true);
   };
 
   const [editModal, setEditModal] = useState({ open: false, settlement: null });
@@ -474,94 +466,6 @@ const AdminSettlements = () => {
       setDeleteModal({ open: false, settlement: null });
     } catch (err) {
       toast.error('Failed to delete settlement: ' + err.message);
-    }
-  };
-
-  const [adminModal, setAdminModal] = useState({ open: false, settlement: null });
-  const [adminForm, setAdminForm] = useState({ email: '', username: '', phone: '' });
-  const [enablingSettlement, setEnablingSettlement] = useState('');
-
-  // Open admin creation modal when enabling
-  const openAdminModal = (settlement) => {
-    setAdminForm({ email: '', username: '', phone: '' });
-    setAdminModal({ open: true, settlement });
-  };
-
-  // Username uniqueness check
-  useEffect(() => {
-    const check = async () => {
-      if (!adminForm.username) {
-        setUsernameError('');
-        return;
-      }
-      setCheckingUsername(true);
-      const usernameDoc = await getDoc(doc(db, 'usernames', adminForm.username.toLowerCase()));
-      if (usernameDoc.exists()) {
-        setUsernameError('Username is already taken');
-      } else {
-        setUsernameError('');
-      }
-      setCheckingUsername(false);
-    };
-    check();
-  }, [adminForm.username]);
-
-  // Handle admin creation and enable settlement
-  const handleCreateAdminAndEnable = async () => {
-    setEnablingSettlement(adminModal.settlement.name);
-    let newUserId = null;
-    let userCredential = null;
-    try {
-      const { email, username, phone } = adminForm;
-      if (!email || !username || !phone) {
-        toast.error('All fields are required');
-        return;
-      }
-      // 1. Create user in Firebase Auth
-      const auth = getAuth();
-      const tempPassword = email + '_Temp123';
-      userCredential = await createUserWithEmailAndPassword(auth, email, tempPassword);
-      newUserId = userCredential.user.uid;
-      // 2. Send password reset email
-      await sendPasswordResetEmail(auth, email);
-      // 3. Create user in Firestore
-      const usersRef = collection(db, 'users');
-      const newUserRef = doc(usersRef, newUserId);
-      await setDoc(newUserRef, {
-        credentials: { email, username, phone },
-        role: 'admin',
-        settlement: adminModal.settlement.name,
-        createdAt: new Date().toISOString(),
-        profileComplete: false,
-      });
-      // 4. Add username to 'usernames' collection for uniqueness and lookup
-      await setDoc(doc(db, 'usernames', username.toLowerCase()), {
-        uid: newUserId,
-        email,
-        createdAt: new Date().toISOString(),
-        role: 'admin',
-      });
-      // 5. Update the availableSettlements doc with admin info
-      await setDoc(doc(db, 'availableSettlements', adminModal.settlement.name), {
-        name: adminModal.settlement.name,
-        available: true,
-        createdAt: new Date().toISOString(),
-        adminId: newUserId,
-        adminEmail: email,
-        adminUsername: username,
-        adminPhone: phone,
-      }, { merge: true });
-      toast.success('Admin created and password reset email sent!');
-      setAdminModal({ open: false, settlement: null });
-      // Re-fetch settlements and admins to sync state
-      await fetchAvailableSettlements();
-    } catch (err) {
-      if (userCredential && newUserId) {
-        try { await userCredential.user.delete(); } catch (e) { /* ignore */ }
-      }
-      toast.error('Failed to create admin: ' + (err.message || 'Unknown error'));
-    } finally {
-      setEnablingSettlement('');
     }
   };
 
@@ -699,14 +603,6 @@ const AdminSettlements = () => {
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${isRTL ? 'rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
           {paginatedSettlements.map(settlement => {
             const enabled = availableSettlements.includes(settlement.name);
-            // Debugging logs
-            console.log('settlementAdmins keys:', Object.keys(settlementAdmins));
-            console.log('Current settlement.name:', settlement.name);
-            Object.keys(settlementAdmins).forEach(key => {
-              if (key.trim() === settlement.name.trim()) {
-                console.log('MATCH:', key, settlementAdmins[key]);
-              }
-            });
             // Robust adminInfo lookup
             const adminInfo = Object.entries(settlementAdmins).find(
               ([key]) => key.trim() === settlement.name.trim()
@@ -722,7 +618,7 @@ const AdminSettlements = () => {
                   setSettlementToDisable(settlement.name);
                   setShowConfirmModal(true);
                 } : undefined}
-                onClick={!enabled ? () => openAdminModal(settlement) : undefined}
+                onEnable={!enabled ? () => handleEnableSettlement(settlement) : undefined}
                 isRTL={isRTL}
               />
             );
@@ -932,43 +828,6 @@ const AdminSettlements = () => {
                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
               >
                 Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Admin Creation Modal */}
-      {adminModal.open && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Create Admin for {adminModal.settlement.name}</h2>
-            <div className="mb-4 grid grid-cols-1 gap-2">
-              <label className="text-sm font-medium">Email
-                <input name="email" value={adminForm.email} onChange={e => setAdminForm({ ...adminForm, email: e.target.value })} className="border px-2 py-1 rounded w-full" type="email" />
-              </label>
-              <label className="text-sm font-medium">Username
-                <input name="username" value={adminForm.username} onChange={e => setAdminForm({ ...adminForm, username: e.target.value })} className="border px-2 py-1 rounded w-full" />
-                {checkingUsername && <span className="text-xs text-gray-500 ml-2">Checking...</span>}
-                {usernameError && <span className="text-xs text-red-600 ml-2">{usernameError}</span>}
-              </label>
-              <label className="text-sm font-medium">Phone
-                <input name="phone" value={adminForm.phone} onChange={e => setAdminForm({ ...adminForm, phone: e.target.value })} className="border px-2 py-1 rounded w-full" />
-              </label>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                onClick={() => setAdminModal({ open: false, settlement: null })}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
-                disabled={enablingSettlement === adminModal.settlement.name || !!usernameError || checkingUsername}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateAdminAndEnable}
-                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                disabled={enablingSettlement === adminModal.settlement.name || !!usernameError || checkingUsername}
-              >
-                {enablingSettlement === adminModal.settlement.name ? 'Enabling...' : 'Create & Enable'}
               </button>
             </div>
           </div>
