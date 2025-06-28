@@ -7,6 +7,7 @@ const SettlementCard = ({
   adminInfo,
   onClick,
   onDisable,
+  onEnable,
   isRTL = false,
 }) => (
   <div
@@ -67,6 +68,18 @@ const SettlementCard = ({
         </div>
       )}
     </div>
+    {!isAvailable && onEnable && (
+      <button
+        onClick={e => {
+          e.stopPropagation();
+          onEnable();
+        }}
+        className="mt-4 px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 text-base font-semibold w-full flex items-center justify-center gap-2"
+        aria-label="Enable settlement"
+      >
+        Enable
+      </button>
+    )}
     {isAvailable && onDisable && (
       <button
         onClick={e => { 

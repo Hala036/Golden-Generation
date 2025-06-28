@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo, useRef } from "react";
 import { UserContext } from "../../context/UserContext"; // Import UserContext
 import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay, FaUserShield, FaMapMarkerAlt } from 'react-icons/fa';
 import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
@@ -6,15 +6,27 @@ import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timesta
 import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
 import DefaultProfilePic from "../DefaultProfilePic"; // Import DefaultProfilePic component
-
-const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
-  const { userData, loading } = useContext(UserContext);
-  if (loading) return <div>Loading...</div>;
-  const user = auth.currentUser;
-  const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
-  const [userName, setUserName] = useState(""); // State for username
-  const userRole = userData?.role || "";
+const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) => {
+  const mountedRef = useRef(false);
   
+  if (!mountedRef.current) {
+    console.log("MainPage mounted");
+    mountedRef.current = true;
+  }
+  
+  const { userData, loading } = useContext(UserContext);
+  const user = auth.currentUser;
+
+  // Memoize user data calculations to prevent unnecessary re-renders
+  const userInfo = useMemo(() => {
+    const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
+    const userName = userData?.credentials?.username || "Admin";
+    const userRole = userData?.role || "";
+    return { userSettlement, userName, userRole };
+  }, [userData]);
+
+  const { userSettlement, userName, userRole } = userInfo;
+
   // Define colors for different user types
   const defaultColors = {
     admin: '#4F46E5', // Indigo
@@ -23,6 +35,18 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     default: '#6B7280', // Gray
   };
 
+  // Debug logging for user data - only log when data changes
+  useEffect(() => {
+    console.log("MainPage userData:", {
+      userData,
+      userSettlement,
+      userName,
+      userRole,
+      idVerificationSettlement: userData?.idVerification?.settlement,
+      directSettlement: userData?.settlement
+    });
+  }, [userData, userSettlement, userName, userRole]);
+  
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -42,42 +66,24 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     { id: 5, action: 'Event "Music Workshop" fully booked', time: '3 hours ago', type: 'event' }
   ];
 
-  useState(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Fetch username from Firestore
   useEffect(() => {
-    const fetchUserName = async () => {
-      if (!user?.uid) return;
-      
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          // Try to get display name from different possible locations in the user document
-          const name = userData?.personalDetails?.firstName || // First try to get first name
-                      userData?.credentials?.username?.split(/[_\s]/)[0] || // Then try username's first part
-                      userData?.username?.split(/[_\s]/)[0] || // Then try root username's first part
-                      userData?.name?.split(/[_\s]/)[0] || // Then try name's first part
-                      "User";
-          setUserName(name);
-        } else {
-          setUserName("User");
-        }
-      } catch (error) {
-        console.error("Error fetching username:", error);
-        setUserName("User");
-      }
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => {
+      clearInterval(timer);
+      mountedRef.current = false;
     };
-
-    fetchUserName();
-  }, [user?.uid]);
+  }, []);
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
-    if (!userSettlement) return;
+    console.log("MainPage useEffect running, userSettlement:", userSettlement);
+    
+    // Don't run if still loading or if userData is null
+    if (loading || !userData) return;
+    
+    // For admin users without settlement, show global data
+    // For retiree users, require settlement
+    if (!userSettlement && userRole !== 'admin' && userRole !== 'superadmin') return;
 
     // Pending Service Requests
     const fetchPendingRequestsCount = async () => {
@@ -96,22 +102,35 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
 
-        // Query by idVerification.settlement
-        const allUsersQuery1 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("idVerification.settlement", "==", userSettlement)
-        );
-        const querySnapshot1 = await getDocs(allUsersQuery1);
-        // Query by settlement (root)
-        const allUsersQuery2 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("settlement", "==", userSettlement)
-        );
-        const querySnapshot2 = await getDocs(allUsersQuery2);
-        // Merge and deduplicate
-        const allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        let allDocs = [];
+        
+        if (userSettlement) {
+          // Query by idVerification.settlement
+          const allUsersQuery1 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("idVerification.settlement", "==", userSettlement)
+          );
+          const querySnapshot1 = await getDocs(allUsersQuery1);
+          // Query by settlement (root)
+          const allUsersQuery2 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("settlement", "==", userSettlement)
+          );
+          const querySnapshot2 = await getDocs(allUsersQuery2);
+          // Merge and deduplicate
+          allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        } else {
+          // For admin users without settlement, get all retirees
+          const allUsersQuery = query(
+            collection(db, "users"),
+            where("role", "==", "retiree")
+          );
+          const querySnapshot = await getDocs(allUsersQuery);
+          allDocs = querySnapshot.docs;
+        }
+        
         // Filter users manually based on the `createdAt` field
         const retireesRegisteredThisWeek = allDocs.filter((doc) => {
           let createdAt = doc.data().createdAt;
@@ -165,11 +184,20 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     // Pending Event Requests Count
     const fetchPendingEventRequestsCount = async () => {
       try {
-        const pendingEventsQuery = query(
-          collection(db, "events"),
-          where("status", "==", "pending"), // Query for pending events
-          where("settlement", "==", userSettlement)
-        );
+        let pendingEventsQuery;
+        if (userSettlement) {
+          pendingEventsQuery = query(
+            collection(db, "events"),
+            where("status", "==", "pending"), // Query for pending events
+            where("settlement", "==", userSettlement)
+          );
+        } else {
+          // For admin users without settlement, get all pending events
+          pendingEventsQuery = query(
+            collection(db, "events"),
+            where("status", "==", "pending") // Query for pending events
+          );
+        }
         const querySnapshot = await getDocs(pendingEventsQuery);
         setPendingEventsCount(querySnapshot.size);
       } catch (error) {
@@ -249,22 +277,35 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         // Fetch actions from retirees
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
-        // Query by idVerification.settlement
-        const allUsersQuery1 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("idVerification.settlement", "==", userSettlement)
-        );
-        const querySnapshot1 = await getDocs(allUsersQuery1);
-        // Query by settlement (root)
-        const allUsersQuery2 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("settlement", "==", userSettlement)
-        );
-        const querySnapshot2 = await getDocs(allUsersQuery2);
-        // Merge and deduplicate
-        const allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        
+        let allDocs = [];
+        if (userSettlement) {
+          // Query by idVerification.settlement
+          const allUsersQuery1 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("idVerification.settlement", "==", userSettlement)
+          );
+          const querySnapshot1 = await getDocs(allUsersQuery1);
+          // Query by settlement (root)
+          const allUsersQuery2 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("settlement", "==", userSettlement)
+          );
+          const querySnapshot2 = await getDocs(allUsersQuery2);
+          // Merge and deduplicate
+          allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        } else {
+          // For admin users without settlement, get all retirees
+          const allUsersQuery = query(
+            collection(db, "users"),
+            where("role", "==", "retiree")
+          );
+          const querySnapshot = await getDocs(allUsersQuery);
+          allDocs = querySnapshot.docs;
+        }
+        
         const lastWeekForActivity = new Date();
         lastWeekForActivity.setDate(lastWeekForActivity.getDate() - 7);
         const recentRetirees = allDocs.filter((doc) => {
@@ -406,7 +447,10 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     fetchActiveEventsCount();
     fetchVolunteerMatchesCount();
     fetchRecentActivity();
-  }, [userSettlement, userData?.uid]); // Dependencies on userSettlement and current user's UID
+  }, [userSettlement, user?.uid, userRole, loading]); // Include loading dependency
+
+  // Loading check after all hooks are declared
+  if (loading) return <div>Loading...</div>;
 
   const overviewCards = [
     {
@@ -607,6 +651,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       </div>
     </div>
   );
-};
+});
 
 export default AdminHomepage;

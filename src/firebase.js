@@ -38,11 +38,17 @@ const db = initializeFirestore(app, {
  */
 const getUserData = async (uid) => {
   try {
+    console.debug('[getUserData] Fetching user data for UID:', uid);
     const userDoc = await getDoc(doc(db, 'users', uid));
     if (userDoc.exists()) {
-      return userDoc.data();
+      const userData = userDoc.data();
+      console.debug('[getUserData] User data found:', { uid, role: userData.role, settlement: userData.settlement, idVerification: userData.idVerification });
+      return userData;
     }
-    console.warn("No user document found for UID:", uid);
+    // Only log this warning in development and reduce frequency
+    if (import.meta.env.DEV && Math.random() < 0.1) { // Only log 10% of the time
+      console.debug("No user document found for UID:", uid, "(This is normal during user creation)");
+    }
     return null;
   } catch (error) {
     console.error("Error fetching user data:", error);

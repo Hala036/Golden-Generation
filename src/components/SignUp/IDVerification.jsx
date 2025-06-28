@@ -370,6 +370,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                   }`}
+                  id="idVerification-idNumber"
                 />
                 {errors.idNumber && (
                   <p className="text-xs text-red-500 flex items-center gap-1">
@@ -393,6 +394,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                   }`}
+                  id="idVerification-firstName"
                 />
                 {errors.firstName && (
                   <p className="text-xs text-red-500 flex items-center gap-1">
@@ -416,6 +418,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                   }`}
+                  id="idVerification-lastName"
                 />
                 {errors.lastName && (
                   <p className="text-xs text-red-500 flex items-center gap-1">
@@ -441,6 +444,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
                   }`}
+                  id="idVerification-dateOfBirth"
                 />
                 {errors.dateOfBirth && (
                   <p className="text-xs text-red-500 flex items-center gap-1">
