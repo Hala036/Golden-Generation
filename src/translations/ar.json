@@ -15,7 +15,11 @@
       "switchLanguage": "تغيير اللغة",
       "step": "خطوة",
       "of": "من",
-      "select": "اختر"
+      "select": "اختر",
+      "close": "إغلاق",
+      "undo": "تراجع",
+      "retry": "إعادة المحاولة",
+      "processing": "جاري المعالجة..."
     },
     "auth": {
       "login": {
@@ -681,6 +685,84 @@
       },
       "success": {
         "messageSent": "تم إرسال رسالتك بنجاح!"
+      }
+    },
+    "adminSettlements": {
+      "loading": "جاري تحميل المستوطنات...",
+      "modals": {
+        "disable": {
+          "title": "تأكيد التعطيل",
+          "subtitle": "لا يمكن التراجع عن هذا الإجراء",
+          "message": "هل أنت متأكد من أنك تريد تعطيل وإزالة",
+          "messageEnd": "؟",
+          "warning": "سيتم إزالة المستوطنة من المستوطنات المتاحة وحذف جميع البيانات المرتبطة بها.",
+          "confirm": "نعم، تعطيل"
+        }
+      },
+      "messages": {
+        "disabling": "جاري تعطيل المستوطنة...",
+        "processing": "معالجة",
+        "disabledSuccess": "تم تعطيل المستوطنة بنجاح. تم إزالة {adminCount} مسؤول/ين و{retireeCount} متقاعد/ين.",
+        "disabledTitle": "تم تعطيل المستوطنة",
+        "disableError": "فشل في تعطيل المستوطنة. يرجى المحاولة مرة أخرى.",
+        "errorTitle": "خطأ",
+        "emptyName": "لا يمكن أن يكون اسم المستوطنة فارغاً",
+        "validationError": "خطأ في التحقق",
+        "renamedSuccess": "تم تغيير اسم المستوطنة من \"{original}\" إلى \"{name}\"",
+        "renamedTitle": "تم تغيير اسم المستوطنة",
+        "originalNotFound": "لم يتم العثور على المستوطنة الأصلية",
+        "addedSuccess": "تم إضافة المستوطنة \"{name}\" بنجاح",
+        "addedTitle": "تم إضافة المستوطنة",
+        "alreadyExists": "المستوطنة \"{name}\" موجودة بالفعل",
+        "warningTitle": "تحذير",
+        "saveError": "فشل في حفظ المستوطنة. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "theme": {
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "النظام",
+      "toggleTheme": "تبديل المظهر",
+      "openMenu": "فتح قائمة المظهر"
+    },
+    "analytics": {
+      "comprehensive": {
+        "title": "تحليلات شاملة",
+        "subtitle": "رؤى عميقة في أداء المنصة ومشاركة المستخدمين"
+      },
+      "timeRanges": {
+        "7d": "آخر 7 أيام",
+        "30d": "آخر 30 يوم",
+        "90d": "آخر 90 يوم",
+        "1y": "آخر سنة"
+      },
+      "filters": {
+        "allSettlements": "جميع المستوطنات",
+        "allCategories": "جميع الفئات"
+      },
+      "metrics": {
+        "totalUsers": "إجمالي المستخدمين",
+        "activeEvents": "الأحداث النشطة",
+        "engagementRate": "معدل المشاركة",
+        "avgSessionTime": "متوسط وقت الجلسة"
+      },
+      "charts": {
+        "userGrowth": "نمو المستخدمين",
+        "eventCategories": "فئات الأحداث",
+        "comingSoon": "الرسم البياني قادم قريباً..."
+      },
+      "topPerformers": {
+        "title": "أفضل الأداء",
+        "settlements": "أفضل المستوطنات",
+        "events": "أفضل الأحداث",
+        "users": "أفضل المستخدمين"
+      },
+      "export": "تصدير البيانات",
+      "exporting": "جاري التصدير...",
+      "error": {
+        "title": "خطأ في التحليلات",
+        "message": "فشل في تحميل بيانات التحليلات. يرجى المحاولة مرة أخرى.",
+        "retry": "إعادة المحاولة"
       }
     }
   } 

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from "react-icons/fa";
+import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaCalendarCheck } from "react-icons/fa";
 import { db } from "../../firebase"; // Import Firebase configuration
 import { collection, onSnapshot } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Admin modal
 import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
+import EmptyState from "../EmptyState"; // Import EmptyState component
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -150,50 +151,64 @@ const Cards = ({ userRole = 'retiree' }) => {
 
           {/* Events Grid */}
           {!loading && (
-            <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
-              {filteredEvents.map((event) => {
-            const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
-                return (
-              <div key={event.id} className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4">
-                    {/* Event Title */}
-                    <h3 className="text-base font-bold mb-2">{event.title}</h3>
+            <>
+              {filteredEvents.length === 0 ? (
+                <EmptyState
+                  icon={<FaCalendarCheck className="text-6xl text-gray-300" />}
+                  title={t("dashboard.events.noEvents")}
+                  message={searchQuery || selectedCategory !== "all" 
+                    ? t('emptyStates.noEventsFilterMessage')
+                    : t('emptyStates.noEventsMessage')
+                  }
+                  className="p-8"
+                />
+              ) : (
+                <div className="grid grid-cols-2 gap-6 h-full overflow-y-auto">
+                  {filteredEvents.map((event) => {
+                    const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
+                    return (
+                      <div key={event.id} className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-4">
+                        {/* Event Title */}
+                        <h3 className="text-base font-bold mb-2">{event.title}</h3>
 
-                    {/* Event Image */}
-                    <div className="mb-4">
-                      <img
-                        src={backgroundImage}
-                        alt={event.title}
-                        className="w-full h-48 object-cover rounded-md"
-                      />
-                    </div>
-                    {/* Date with Calendar Icon */}
-                    <div className="flex items-center mb-2">
-                      <FaCalendarAlt className="text-[#FFD966] mr-2" />
-                      <p className="text-gray-700 font-medium">
-                        {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                      </p>
-                    </div>
+                        {/* Event Image */}
+                        <div className="mb-4">
+                          <img
+                            src={backgroundImage}
+                            alt={event.title}
+                            className="w-full h-48 object-cover rounded-md"
+                          />
+                        </div>
+                        {/* Date with Calendar Icon */}
+                        <div className="flex items-center mb-2">
+                          <FaCalendarAlt className="text-[#FFD966] mr-2" />
+                          <p className="text-gray-700 font-medium">
+                            {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
+                          </p>
+                        </div>
 
-                    {/* Location with Pin Icon */}
-                    <div className="flex items-center mb-3">
-                      <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
-                      <p className="text-gray-700 font-medium">{event.location}</p>
-                    </div>
+                        {/* Location with Pin Icon */}
+                        <div className="flex items-center mb-3">
+                          <FaMapMarkerAlt className="text-[#FFD966] mr-2" />
+                          <p className="text-gray-700 font-medium">{event.location}</p>
+                        </div>
 
-                    {/* Description */}
-                    <p className="text-gray-500 text-sm">{event.description}</p>
-                <div className="flex justify-center mt-4">
-                      <button
-                    className="bg-[#FFD966] hover:bg-yellow-500 text-black font-bold px-6 py-2 rounded-md transition-colors duration-200"
-                    onClick={() => setSelectedEvent(event)}
-                      >
-                        {t("dashboard.events.moreDetails")}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                        {/* Description */}
+                        <p className="text-gray-500 text-sm">{event.description}</p>
+                        <div className="flex justify-center mt-4">
+                          <button
+                            className="bg-[#FFD966] hover:bg-yellow-500 text-black font-bold px-6 py-2 rounded-md transition-colors duration-200"
+                            onClick={() => setSelectedEvent(event)}
+                          >
+                            {t("dashboard.events.moreDetails")}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
 
       {/* Centralized Event Details Modal */}

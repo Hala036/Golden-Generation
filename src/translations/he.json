@@ -15,7 +15,11 @@
       "switchLanguage": "החלף שפה",
       "step": "שלב",
       "of": "מתוך",
-      "select": "בחר"
+      "select": "בחר",
+      "close": "סגור",
+      "undo": "בטל",
+      "retry": "נסה שוב",
+      "processing": "מעבד..."
     },
     "auth": {
       "login": {
@@ -637,7 +641,35 @@
       "add": "הוסף",
       "loadError": "טעינת היישובים נכשלה.",
       "updateError": "עדכון היישוב נכשל.",
-      "addError": "הוספת היישוב נכשלה."
+      "addError": "הוספת היישוב נכשלה.",
+      "loading": "טוען יישובים...",
+      "modals": {
+        "disable": {
+          "title": "אשר השבתה",
+          "subtitle": "פעולה זו אינה ניתנת לביטול",
+          "message": "האם אתה בטוח שברצונך להשבית ולהסיר",
+          "messageEnd": "?",
+          "warning": "זה יסיר את היישוב מהיישובים הזמינים וימחק את כל הנתונים הקשורים.",
+          "confirm": "כן, השבת"
+        }
+      },
+      "messages": {
+        "disabling": "משבית יישוב...",
+        "processing": "מעבד",
+        "disabledSuccess": "היישוב הושבת בהצלחה. הוסרו {adminCount} מנהל/ים ו-{retireeCount} גמלאי/ים.",
+        "disabledTitle": "יישוב הושבת",
+        "disableError": "נכשל בהשבתת היישוב. נסה שוב.",
+        "errorTitle": "שגיאה",
+        "emptyName": "שם היישוב לא יכול להיות ריק",
+        "validationError": "שגיאת אימות",
+        "renamedSuccess": "היישוב שונה מ-\"{original}\" ל-\"{name}\"",
+        "renamedTitle": "יישוב שונה",
+        "originalNotFound": "היישוב המקורי לא נמצא",
+        "addedSuccess": "היישוב \"{name}\" נוסף בהצלחה",
+        "addedTitle": "יישוב נוסף",
+        "alreadyExists": "היישוב \"{name}\" כבר קיים",
+        "warningTitle": "אזהרה",
+        "saveError": "נכשל בשמירת היישוב. נסה שוב."
       }
     },
     "dashboard": {
@@ -705,10 +737,10 @@
       },
       "messages": {
         "title": "הודעות",
-        "search": "חפש משתמשים...",
-      "noMessages": "אין עדיין הודעות.",
-      "typeMessage": "הקלד את הודעתך...",
-      "selectChat": "בחר צ'אט כדי להתחיל בשיחה.",
+        "search": "חפש שיחות...",
+      "noMessages": "אין הודעות עדיין",
+      "typeMessage": "הקלד הודעה...",
+      "selectChat": "בחר צ'אט כדי להתחיל לשלוח הודעות",
         "friendRequestSent": "בקשת חברות נשלחה בהצלחה.",
         "friendRequestExists": "בקשת חברות כבר קיימת.",
         "friendRequestAccepted": "בקשת חברות התקבלה.",
@@ -819,5 +851,94 @@
       "success": {
       "messageSent": "הודעתך נשלחה בהצלחה!"
       }
+    },
+    "emptyStates": {
+      "noMessages": "אין הודעות עדיין",
+      "noMessagesMessage": "התחל שיחה עם משתמשים אחרים כדי לראות הודעות כאן.",
+      "startConversation": "התחל שיחה",
+      "noNotifications": "אין התראות",
+      "noNotificationsMessage": "אתה מעודכן! בדוק שוב מאוחר יותר לעדכונים חדשים.",
+      "noJobs": "אין בקשות עבודה",
+      "noJobsMessage": "לא נוצרו עדיין בקשות עבודה התנדבותית.",
+      "createJobRequest": "צור בקשת עבודה",
+      "noServiceRequests": "אין בקשות שירות",
+      "noServiceRequestsMessage": "לא הוגשו עדיין בקשות שירות.",
+      "createServiceRequest": "צור בקשת שירות",
+      "noEvents": "אין אירועים",
+      "noEventsMessage": "לא נוצרו עדיין אירועים. התחל ביצירת האירוע הראשון שלך!",
+      "createEvent": "צור אירוע",
+      "noAdmins": "אין מנהלים",
+      "noAdminsMessage": "לא נוספו עדיין מנהלים למערכת.",
+      "addAdmin": "הוסף מנהל",
+      "noTowns": "אין ערים",
+      "noTownsMessage": "לא נוספו עדיין ערים למערכת.",
+      "addTown": "הוסף עיר",
+      "noSettlements": "אין יישובים",
+      "noSettlementsMessage": "לא נוספו עדיין יישובים למערכת.",
+      "addSettlement": "הוסף יישוב",
+      "noRetirees": "אין גמלאים",
+      "noRetireesMessage": "לא נרשמו עדיין גמלאים.",
+      "addRetiree": "הוסף גמלאי",
+      "noVolunteers": "אין מתנדבים",
+      "noVolunteersMessage": "לא נרשמו עדיין מתנדבים.",
+      "addVolunteer": "הוסף מתנדב",
+      "noAnalytics": "אין נתוני אנליטיקה",
+      "noAnalyticsMessage": "אין עדיין נתוני אנליטיקה זמינים. נתונים יופיעו כאן לאחר יצירת אירועים ופעילויות.",
+      "noPendingEvents": "אין אירועים ממתינים",
+      "noPendingEventsMessage": "כל האירועים נבדקו ואושרו.",
+      "noCategories": "אין קטגוריות",
+      "noCategoriesMessage": "לא נוצרו עדיין קטגוריות אירועים.",
+      "addCategory": "הוסף קטגוריה",
+      "noCandidates": "אין מועמדים",
+      "noCandidatesMessage": "לא נרשמו עדיין מועמדים.",
+      "addCandidate": "הוסף מועמד"
     }
+},
+  "theme": {
+    "light": "בהיר",
+    "dark": "כהה",
+    "system": "מערכת",
+    "toggleTheme": "החלף ערכת נושא",
+    "openMenu": "פתח תפריט ערכת נושא"
+  },
+  "analytics": {
+    "comprehensive": {
+      "title": "אנליטיקה מקיפה",
+      "subtitle": "תובנות עמוקות על ביצועי הפלטפורמה ומעורבות המשתמשים"
+    },
+    "timeRanges": {
+      "7d": "7 ימים אחרונים",
+      "30d": "30 ימים אחרונים",
+      "90d": "90 ימים אחרונים",
+      "1y": "שנה אחרונה"
+    },
+    "filters": {
+      "allSettlements": "כל היישובים",
+      "allCategories": "כל הקטגוריות"
+    },
+    "metrics": {
+      "totalUsers": "סך המשתמשים",
+      "activeEvents": "אירועים פעילים",
+      "engagementRate": "שיעור המעורבות",
+      "avgSessionTime": "זמן ממוצע לסשן"
+    },
+    "charts": {
+      "userGrowth": "צמיחת משתמשים",
+      "eventCategories": "קטגוריות אירועים",
+      "comingSoon": "גרף יגיע בקרוב..."
+    },
+    "topPerformers": {
+      "title": "הביצועים הטובים ביותר",
+      "settlements": "יישובים מובילים",
+      "events": "אירועים מובילים",
+      "users": "משתמשים מובילים"
+    },
+    "export": "ייצא נתונים",
+    "exporting": "מייצא...",
+    "error": {
+      "title": "שגיאת אנליטיקה",
+      "message": "נכשל בטעינת נתוני האנליטיקה. אנא נסה שוב.",
+      "retry": "נסה שוב"
+    }
+  }
 }

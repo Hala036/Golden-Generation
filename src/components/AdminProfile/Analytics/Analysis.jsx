@@ -18,21 +18,12 @@ import useFetchAnalysisData from "../../../hooks/useFetchAnalysisData";
 import { useChartData } from "../../../hooks/useChartData";
 import { db } from '../../../firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import EmptyState from '../../EmptyState';
 
 const Analysis = () => {
   const { users, jobs, events } = useFetchAnalysisData();
-  // Pass availableSettlements to useChartData
-  const {
-    jobByMonthData,
-    totalUsers,
-    totalVolunteers,
-    jobRequestsByStatus,
-    averageJobCompletionTime,
-    usersByRoleDistribution,
-    eventsByCategoryData,
-    eventsByMonthData,
-  } = useChartData(users, jobs, availableSettlements, events);
-
   // Real-time retiree counts for available settlements
   const [retireeCounts, setRetireeCounts] = useState({});
   const [availableSettlements, setAvailableSettlements] = useState([]);
@@ -83,28 +74,54 @@ const Analysis = () => {
   const primaryColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4"];
   const gradientColors = ["#6366F1", "#8B5CF6", "#EC4899", "#F59E0B", "#10B981", "#06B6D4"];
 
+  // Always call useChartData at the top level, passing fallback values if data is not ready
+  const {
+    jobByMonthData = [],
+    totalUsers = 0,
+    totalVolunteers = 0,
+    jobRequestsByStatus = [],
+    averageJobCompletionTime = 0,
+    usersByRoleDistribution = [],
+    eventsByCategoryData = [],
+    eventsByMonthData = [],
+  } = useChartData(
+    users || [],
+    jobs || [],
+    availableSettlements || [],
+    events || []
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span className="ml-4 text-lg text-gray-700">Loading analysis data...</span>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <Skeleton height={36} width={300} style={{ marginBottom: 24 }} />
+            <Skeleton height={32} width={180} style={{ marginBottom: 16 }} />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {Array.from({ length: 2 }).map((_, idx) => (
+              <div key={idx} className="bg-white rounded-xl shadow-lg p-6">
+                <Skeleton height={28} width={200} style={{ marginBottom: 16 }} />
+                <Skeleton height={300} width="100%" />
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {Array.from({ length: 2 }).map((_, idx) => (
+              <div key={idx} className="bg-white rounded-xl shadow-lg p-6">
+                <Skeleton height={28} width={200} style={{ marginBottom: 16 }} />
+                <Skeleton height={300} width="100%" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="text-red-500 text-xl mb-4">⚠️ Error</div>
-            <div className="text-gray-700">{error}</div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="text-red-500 text-center py-8">{error}</div>;
   }
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -181,7 +198,13 @@ const Analysis = () => {
               <span className="mr-2">🏘️</span>
               Retirees by Town
             </h3>
-            {townChartData.length > 0 ? (
+            {townChartData.length === 0 ? (
+              <EmptyState
+                icon={<span role="img" aria-label="chart">📊</span>}
+                title="No town data available"
+                message="Try selecting a different time range or settlement."
+              />
+            ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart 
                   data={townChartData.sort((a, b) => b.value - a.value)}
@@ -201,13 +224,6 @@ const Analysis = () => {
                   </defs>
                 </BarChart>
               </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">📊</div>
-                  <p>No town data available</p>
-                </div>
-              </div>
             )}
           </div>
 

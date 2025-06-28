@@ -9,6 +9,8 @@ import interestsList from '../../data/interests.json';
 import hobbiesList from '../../data/hobbies.json';
 import jobsList from '../../data/jobs.json';
 import volunteerAreasList from '../../data/volunteerAreas.json';
+import EmptyState from '../EmptyState';
+import { FaUsers } from 'react-icons/fa';
 
 const fieldGroups = [
   {
@@ -206,9 +208,9 @@ const Retirees = () => {
       path: ["personalDetails", "maritalStatus"]
     },
     "personalDetails.education": {
-      label: "Education",
+      label: "Education Level",
       type: "select",
-      options: ["High School", "Bachelor's", "Master's", "PhD", "Other"],
+      options: ["None", "Primary", "Secondary", "Tertiary", "Other"],
       path: ["personalDetails", "education"]
     },
     "workBackground.customJobInfo.originalSelection.jobTitle": {
@@ -235,7 +237,13 @@ const Retirees = () => {
       label: "Registration Date",
       type: "date",
       path: ["createdAt"]
-    }
+    },
+    "status": {
+      label: "Status",
+      type: "select",
+      options: ["Active", "Inactive", "Pending", "Suspended"],
+      path: ["status"]
+    },
   };
 
   // Fetch settlements for dropdown
@@ -798,7 +806,8 @@ const Retirees = () => {
           <div className="flex space-x-2 flex-1">
             <input
               type="number"
-              placeholder="Min"
+              placeholder="Min Age"
+              min={0}
               className="p-2 border rounded flex-1"
               value={filter.value}
               onChange={(e) => updateFilter(index, "value", e.target.value)}
@@ -806,7 +815,8 @@ const Retirees = () => {
             <span className="self-center">to</span>
             <input
               type="number"
-              placeholder="Max"
+              placeholder="Max Age"
+              min={0}
               className="p-2 border rounded flex-1"
               value={filter.value2}
               onChange={(e) => updateFilter(index, "value2", e.target.value)}
@@ -1043,10 +1053,18 @@ const Retirees = () => {
         </table>
       </div>
       
-      {filteredRetirees.length === 0 && (
-        <div className="text-center text-gray-500 py-8">
-          No retirees found.
-        </div>
+      {retirees.length === 0 && !loading ? (
+        <EmptyState
+          icon={<FaUsers />}
+          title="No retirees found"
+          message="Try adjusting your filters or add a new retiree."
+        />
+      ) : (
+        filteredRetirees.length === 0 && (
+          <div className="text-center text-gray-500 py-8">
+            No retirees found.
+          </div>
+        )
       )}
 
       {/* Load Filter Modal */}

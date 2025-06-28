@@ -6,8 +6,17 @@ import {
   PolarRadiusAxis, Radar
 } from "recharts";
 import analyticsService from "../../../services/analyticsService";
+import { useLanguage } from '../../../context/LanguageContext';
+import { useTheme } from '../../../context/ThemeContext';
+import { useChartData } from '../../../hooks/useChartData';
+import useFetchAnalysisData from '../../../hooks/useFetchAnalysisData';
+import EmptyState from '../../EmptyState';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const ComprehensiveAnalytics = () => {
+  const { t } = useLanguage();
+  const { theme } = useTheme();
   const [analyticsData, setAnalyticsData] = useState(null);
   const [realTimeData, setRealTimeData] = useState(null);
   const [predictiveData, setPredictiveData] = useState(null);

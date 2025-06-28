@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaPlus, FaEdit, FaTrash, FaUserPlus, FaCheck, FaTimes, FaHistory, FaInfoCircle } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaUserPlus, FaCheck, FaTimes, FaHistory, FaInfoCircle, FaBriefcase } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { 
   createJobRequest, 
@@ -12,11 +12,16 @@ import {
 import { getAvailableSettlements } from "../../firebase";
 import MatchDetails from "./MatchDetails";
 import StatusHistory from "./StatusHistory";
-import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification
-import { useAuth } from "../../hooks/useAuth"; // Import useAuth hook
+import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification function
+import useAuth from "../../hooks/useAuth"; // Import useAuth hook
+import EmptyState from "../EmptyState"; // Import EmptyState component
+import { useLanguage } from "../../context/LanguageContext"; // Import useLanguage
+import Skeleton from 'react-loading-skeleton'; // Import Skeleton
+import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 
 const Jobs = () => {
   const { currentUser } = useAuth(); // Access currentUser from useAuth
+  const { t } = useLanguage(); // Add translation hook
 
   // State for job requests
   const [jobRequests, setJobRequests] = useState([]);
@@ -306,13 +311,72 @@ const Jobs = () => {
     setSelectedJobRequest(null);
   };
 
+  // Loading skeleton for job requests
+  const JobRequestsSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="p-4 border rounded-lg bg-white shadow-sm">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex-1">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="flex space-x-2 mb-1">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-16"></div>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <div className="h-6 bg-gray-200 rounded w-16"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+            </div>
+          </div>
+          <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
+          <div className="flex justify-between items-center">
+            <div className="h-3 bg-gray-200 rounded w-32"></div>
+            <div className="flex space-x-2">
+              <div className="h-6 bg-gray-200 rounded w-24"></div>
+              <div className="h-6 bg-gray-200 rounded w-16"></div>
+              <div className="h-6 bg-gray-200 rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Loading skeleton for table rows
+  const TableSkeleton = () => (
+    <div className="space-y-2">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center p-4 border-b border-gray-200">
+          <div className="flex-1">
+            <div className="h-4 bg-gray-200 rounded w-1/3 mb-1"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+          </div>
+          <div className="h-6 bg-gray-200 rounded w-20 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-24 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-16 mx-4"></div>
+          <div className="flex space-x-2">
+            <div className="h-6 bg-gray-200 rounded w-6"></div>
+            <div className="h-6 bg-gray-200 rounded w-6"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   // Render loading state
   if (loading && !jobRequests.length) {
     return (
       <div className="p-6">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-xl text-gray-500">Loading voluntary requests...</div>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Voluntary Requests</h1>
+          <div className="flex space-x-4">
+            <div className="h-10 bg-gray-200 rounded w-40"></div>
+          </div>
         </div>
+        <JobRequestsSkeleton />
       </div>
     );
   }
@@ -675,7 +739,14 @@ const Jobs = () => {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-gray-500 italic">No matching seniors found.</p>
+                  <EmptyState
+                    icon={<FaUserPlus className="text-4xl text-gray-300" />}
+                    title={t('emptyStates.noMatchingSeniors')}
+                    message={t('emptyStates.noMatchingSeniorsMessage')}
+                    actionLabel={t('emptyStates.rerunMatching')}
+                    onAction={() => handleRerunMatching(selectedJobRequest.id)}
+                    className="p-4"
+                  />
                 )}
               </div>
               
@@ -721,7 +792,12 @@ const Jobs = () => {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-gray-500 italic">No seniors assigned yet.</p>
+                  <EmptyState
+                    icon={<FaUserPlus className="text-4xl text-gray-300" />}
+                    title={t('emptyStates.noSeniorsAssigned')}
+                    message={t('emptyStates.noSeniorsAssignedMessage')}
+                    className="p-4"
+                  />
                 )}
               </div>
               
@@ -765,7 +841,17 @@ const Jobs = () => {
         </h3>
         
         {jobRequests.length === 0 ? (
-          <p className="p-6 text-gray-500 italic">No voluntary requests found.</p>
+          <EmptyState
+            icon={<FaBriefcase className="text-6xl text-gray-300" />}
+            title={t('emptyStates.noVoluntaryRequests')}
+            message={t('emptyStates.noVoluntaryRequestsMessage')}
+            actionLabel={t('emptyStates.createNewRequest')}
+            onAction={() => {
+              resetForm();
+              setShowForm(true);
+            }}
+            className="p-6"
+          />
         ) : (
           <div className="divide-y">
             {jobRequests.map((jobRequest) => (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { db } from '../../firebase';
-import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, onSnapshot, updateDoc, writeBatch, query, where } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { FaList, FaCheckCircle, FaMinusCircle, FaSearch, FaUserShield, FaEdit, FaPlus, FaUpload, FaExclamationTriangle, FaSpinner, FaMapMarkerAlt, FaTrash } from 'react-icons/fa';
@@ -12,6 +12,10 @@ import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import { addSettlement } from '../../firebase';
 import { uploadFileToStorage } from '../../utils/uploadFileToStorage';
+import { showSuccessToast, showErrorToast, showLoadingToast, showWarningToast, showInfoToast } from '../ToastManager';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import EmptyState from '../EmptyState';
 
 
 const AdminSettlements = () => {
@@ -27,6 +31,7 @@ const AdminSettlements = () => {
   const [settlementAdmins, setSettlementAdmins] = useState({});
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [settlementToDisable, setSettlementToDisable] = useState(null);
+  const [disablingSettlement, setDisablingSettlement] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState('all');
   const [showSettlementModal, setShowSettlementModal] = useState(false);
@@ -49,10 +54,16 @@ const AdminSettlements = () => {
   const [usernameError, setUsernameError] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
 
-  // Filter settlements based on search
-  const filteredSettlements = allSettlements.filter(settlement =>
+  // Filter settlements based on search and availability
+  let filteredSettlements = allSettlements.filter(settlement =>
     settlement.name && settlement.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
+  if (availabilityFilter === 'available') {
+    filteredSettlements = filteredSettlements.filter(s => availableSettlements.includes(s.name));
+  } else if (availabilityFilter === 'disabled') {
+    filteredSettlements = filteredSettlements.filter(s => !availableSettlements.includes(s.name));
+  }
 
   // Pagination state (must come after filteredSettlements)
   const [page, setPage] = useState(1);
@@ -67,12 +78,12 @@ const AdminSettlements = () => {
   useEffect(() => {
     const unsubSettlements = onSnapshot(collection(db, 'settlements'), (snapshot) => {
       const settlements = snapshot.docs.map(doc => doc.data());
-      setAllSettlements(settlements);
+        setAllSettlements(settlements);
       // Build a map for fast lookup
       const map = {};
       settlements.forEach(s => { if (s.name) map[s.name] = s; });
       setSettlementMap(map);
-      setLoading(false);
+        setLoading(false);
     });
     const unsubAvailable = onSnapshot(collection(db, 'availableSettlements'), (snapshot) => {
       setAvailableSettlements(snapshot.docs.map(doc => doc.data().name));
@@ -81,30 +92,31 @@ const AdminSettlements = () => {
   }, []);
 
   // Fetch availableSettlements and show assigned admins
-  useEffect(() => {
-    const fetchAvailableSettlements = async () => {
+  const fetchAvailableSettlements = async () => {
     try {
-        const snapshot = await getDocs(collection(db, 'availableSettlements'));
-        const available = [];
-        const admins = {};
-        snapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          available.push(data.name);
-          if (data.adminEmail) {
-            admins[data.name] = {
-              email: data.adminEmail,
-              username: data.adminUsername,
-              phone: data.adminPhone,
-            };
-          }
-        });
-        console.debug('[fetchAvailableSettlements] available:', available, 'admins:', admins);
-        setAvailableSettlements(available);
-        setSettlementAdmins(admins);
-      } catch (error) {
-        console.error('Failed to fetch available settlements:', error);
-      }
-    };
+      const snapshot = await getDocs(collection(db, 'availableSettlements'));
+      const available = [];
+      const admins = {};
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        available.push(data.name);
+        if (data.adminEmail) {
+          admins[data.name] = {
+            email: data.adminEmail,
+            username: data.adminUsername,
+            phone: data.adminPhone,
+          };
+        }
+      });
+      console.debug('[fetchAvailableSettlements] available:', available, 'admins:', admins);
+      setAvailableSettlements(available);
+      setSettlementAdmins(admins);
+    } catch (error) {
+      console.error('Failed to fetch available settlements:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchAvailableSettlements();
   }, []);
 
@@ -174,6 +186,8 @@ const AdminSettlements = () => {
       toast.success('Admin created and password reset email sent!');
       setShowAdminForm(false);
       setSelectedSettlement('');
+      // Re-fetch settlements and admins to sync state
+      await fetchAvailableSettlements();
       console.debug('[handleAdminCreated] success', { email, username, phone, newUserId });
     } catch (err) {
       if (userCredential && newUserId) {
@@ -186,21 +200,51 @@ const AdminSettlements = () => {
     }
   };
 
-  // Handle disabling a settlement (delete from Firestore)
+  // Handle disabling a settlement (remove from availableSettlements, delete admin, delete retirees)
   const handleDisableSettlement = async (settlement) => {
     console.debug('[handleDisableSettlement] settlement:', settlement);
+    setDisablingSettlement(true);
+    
     try {
-      // Find the doc to delete
-      const settlementsRef = collection(db, 'settlements');
-      const snapshot = await getDocs(settlementsRef);
-      const docToDelete = snapshot.docs.find(doc => doc.data().name === settlement);
-      if (docToDelete) {
-        await deleteDoc(doc(db, 'settlements', docToDelete.id));
-        toast.success(`${settlement} deleted.`);
-        console.debug('[handleDisableSettlement] deleted:', settlement);
-      } else {
-        toast.error('Settlement not found.');
+      // 1. Remove from availableSettlements
+      await deleteDoc(doc(db, 'availableSettlements', settlement));
+
+      // 2. Delete admin user for this settlement
+      // Find the admin user by settlement
+      const usersRef = collection(db, 'users');
+      const adminQuery = query(usersRef, where('role', '==', 'admin'), where('settlement', '==', settlement));
+      const adminSnapshot = await getDocs(adminQuery);
+      let adminCount = 0;
+      for (const adminDoc of adminSnapshot.docs) {
+        await deleteDoc(adminDoc.ref);
+        adminCount++;
       }
+
+      // 3. Delete retirees for this settlement
+      const retireeQuery = query(usersRef, where('role', '==', 'retiree'), where('idVerification.settlement', '==', settlement));
+      const retireeSnapshot = await getDocs(retireeQuery);
+      let retireeCount = 0;
+      for (const retireeDoc of retireeSnapshot.docs) {
+        await deleteDoc(retireeDoc.ref);
+        retireeCount++;
+      }
+
+      // Show success toast with details
+      showSuccessToast(
+        t('auth.adminSettlements.messages.disabledSuccess') || 
+        `${settlement} has been disabled successfully. Removed ${adminCount} admin(s) and ${retireeCount} retiree(s).`,
+        t('auth.adminSettlements.messages.disabledTitle') || 'Settlement Disabled',
+        {
+          duration: 6000,
+          action: () => {
+            // Option to undo (could be implemented later)
+            showInfoToast('Undo functionality coming soon...', 'Feature Preview');
+          },
+          actionLabel: t('common.undo') || 'Undo'
+        }
+      );
+
+      // Update local state
       setAvailableSettlements(prev => prev.filter(s => s !== settlement));
       setSettlementAdmins(prev => {
         const newAdmins = { ...prev };
@@ -209,7 +253,20 @@ const AdminSettlements = () => {
       });
     } catch (error) {
       console.error('[handleDisableSettlement] error:', error);
-      toast.error('Failed to delete settlement.');
+      showErrorToast(
+        t('auth.adminSettlements.messages.disableError') || 'Failed to disable settlement. Please try again.',
+        t('auth.adminSettlements.messages.errorTitle') || 'Error',
+        {
+          duration: 8000,
+          action: () => {
+            // Retry functionality
+            handleDisableSettlement(settlement);
+          },
+          actionLabel: t('common.retry') || 'Retry'
+        }
+      );
+    } finally {
+      setDisablingSettlement(false);
     }
   };
 
@@ -218,7 +275,10 @@ const AdminSettlements = () => {
     const name = settlementForm.name.trim();
     console.debug('[handleSaveSettlement] name:', name, 'form:', settlementForm);
     if (!name) {
-      toast.error('Settlement name cannot be empty');
+      showErrorToast(
+        t('auth.adminSettlements.messages.emptyName') || 'Settlement name cannot be empty',
+        t('auth.adminSettlements.messages.validationError') || 'Validation Error'
+      );
       return;
     }
     try {
@@ -232,25 +292,40 @@ const AdminSettlements = () => {
         const docToUpdate = snapshot.docs.find(doc => doc.data().name === settlementForm.original);
         if (docToUpdate) {
           await updateDoc(doc(db, 'settlements', docToUpdate.id), { name });
-          toast.success('Settlement renamed!');
+          showSuccessToast(
+            t('auth.adminSettlements.messages.renamedSuccess') || `Settlement renamed from "${settlementForm.original}" to "${name}"`,
+            t('auth.adminSettlements.messages.renamedTitle') || 'Settlement Renamed'
+          );
           console.debug('[handleSaveSettlement] renamed:', settlementForm.original, 'to', name);
         } else {
-          toast.error('Original settlement not found');
+          showErrorToast(
+            t('auth.adminSettlements.messages.originalNotFound') || 'Original settlement not found',
+            t('auth.adminSettlements.messages.errorTitle') || 'Error'
+          );
         }
       } else if (!existing) {
         // Add new
         await setDoc(doc(settlementsRef), { name });
-        toast.success('Settlement added!');
+        showSuccessToast(
+          t('auth.adminSettlements.messages.addedSuccess') || `Settlement "${name}" added successfully`,
+          t('auth.adminSettlements.messages.addedTitle') || 'Settlement Added'
+        );
         console.debug('[handleSaveSettlement] added:', name);
       } else {
-        toast.error('Settlement already exists');
+        showWarningToast(
+          t('auth.adminSettlements.messages.alreadyExists') || `Settlement "${name}" already exists`,
+          t('auth.adminSettlements.messages.warningTitle') || 'Warning'
+        );
         return;
       }
       setShowSettlementModal(false);
       setSettlementForm({ original: '', name: '', isEdit: false });
     } catch (err) {
       console.error('[handleSaveSettlement] error:', err);
-      toast.error('Failed to save settlement');
+      showErrorToast(
+        t('auth.adminSettlements.messages.saveError') || 'Failed to save settlement. Please try again.',
+        t('auth.adminSettlements.messages.errorTitle') || 'Error'
+      );
     }
   };
 
@@ -385,7 +460,7 @@ const AdminSettlements = () => {
       const docs = await getDocs(collection(db, 'settlements'));
       const docToDelete = docs.docs.find(doc => doc.data().name === deleteModal.settlement.name);
       if (docToDelete) {
-        await docToDelete.ref.delete();
+        await deleteDoc(docToDelete.ref);
         toast.success('Settlement deleted!');
         
       }
@@ -471,6 +546,8 @@ const AdminSettlements = () => {
       }, { merge: true });
       toast.success('Admin created and password reset email sent!');
       setAdminModal({ open: false, settlement: null });
+      // Re-fetch settlements and admins to sync state
+      await fetchAvailableSettlements();
     } catch (err) {
       if (userCredential && newUserId) {
         try { await userCredential.user.delete(); } catch (e) { /* ignore */ }
@@ -524,12 +601,12 @@ const AdminSettlements = () => {
             >
               <FaPlus /> Add/Edit Settlement
             </button>
-            <button
-              onClick={() => navigate('/superadmin/admins')}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
-            >
-              <FaUserShield /> Admin Management
-            </button>
+        <button
+          onClick={() => navigate('/superadmin/admins')}
+          className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
+        >
+          <FaUserShield /> Admin Management
+        </button>
           </div>
         </div>
       </div>
@@ -564,69 +641,83 @@ const AdminSettlements = () => {
           placeholder="Search settlements..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          className={`pl-10 pr-4 py-2 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 w-full ${isRTL ? 'text-right' : ''}`}
+          className={`pl-10 pr-10 py-2 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 w-full ${isRTL ? 'text-right' : ''}`}
           dir={isRTL ? 'rtl' : 'ltr'}
+          aria-label="Search settlements"
         />
         <FaMapMarkerAlt className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-yellow-400`} />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none`}
+            aria-label="Clear search"
+            tabIndex={0}
+          >
+            &#10005;
+          </button>
+        )}
+      </div>
+      {/* Results Count */}
+      <div className="text-sm text-gray-600 mb-4 text-center">
+        Showing {filteredSettlements.length} settlement{filteredSettlements.length !== 1 ? 's' : ''}
       </div>
       {/* Settlements List */}
       {loading ? (
-        <div className="flex flex-col items-center py-8 text-gray-500">
-          <FaSpinner className="animate-spin text-3xl mb-2" />
-          Loading settlements...
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx} className="p-6 m-2 border rounded-xl shadow min-h-[320px] flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2">
+                <Skeleton height={24} width={24} circle style={{ marginRight: 8 }} />
+                <div>
+                  <Skeleton height={24} width={100} style={{ marginBottom: 4 }} />
+                  <Skeleton height={18} width={60} />
+                </div>
+              </div>
+              <Skeleton height={18} width={80} style={{ marginBottom: 16 }} />
+              <Skeleton count={3} height={18} style={{ marginBottom: 8 }} />
+              <Skeleton height={36} width="100%" />
+            </div>
+          ))}
         </div>
       ) : filteredSettlements.length === 0 ? (
-        <div className="flex flex-col items-center py-8 text-gray-400">
-          <FaMapMarkerAlt className="text-4xl mb-2" />
-          <div>No settlements found.</div>
-        </div>
+        <EmptyState
+          icon={<FaSearch />}
+          title="No settlements found"
+          message="Try adjusting your search or filters."
+          actionLabel="Clear Search"
+          onAction={() => setSearchQuery('')}
+        />
       ) : (
         <>
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${isRTL ? 'rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
           {paginatedSettlements.map(settlement => {
             const enabled = availableSettlements.includes(settlement.name);
+            // Debugging logs
+            console.log('settlementAdmins keys:', Object.keys(settlementAdmins));
+            console.log('Current settlement.name:', settlement.name);
+            Object.keys(settlementAdmins).forEach(key => {
+              if (key.trim() === settlement.name.trim()) {
+                console.log('MATCH:', key, settlementAdmins[key]);
+              }
+            });
+            // Robust adminInfo lookup
+            const adminInfo = Object.entries(settlementAdmins).find(
+              ([key]) => key.trim() === settlement.name.trim()
+            )?.[1] || {};
             return (
-              <div key={settlement.name} className="bg-white shadow rounded p-4 flex flex-col items-center transition hover:shadow-lg">
-                <div className="font-bold text-lg mb-2 flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-yellow-500" />
-                  {settlement.name}
-                  {enabled && (
-                    <span className="ml-2 flex items-center gap-1 text-green-600 text-sm font-semibold">
-                      <FaCheckCircle /> Enabled
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-gray-500 mb-1">{settlement.english_name}</div>
-                <div className="text-xs text-gray-500 mb-1">{settlement.shem_napa}{settlement.shem_napa && settlement.shem_moaatza ? ' • ' : ''}{settlement.shem_moaatza}</div>
-                <div className="text-xs text-gray-400 mb-2">{settlement.lishka}</div>
-                {!enabled && (
-                  <button
-                    onClick={() => openAdminModal(settlement)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2 flex items-center gap-2"
-                    disabled={enablingSettlement === settlement.name}
-                    title="Enable this settlement"
-                  >
-                    <FaCheckCircle /> Enable
-                  </button>
-                )}
-                {/* Edit/Delete icons */}
-                <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={() => openEditModal(settlement)}
-                    className="text-blue-500 hover:text-blue-700 p-1"
-                    title="Edit settlement"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => openDeleteModal(settlement)}
-                    className="text-red-500 hover:text-red-700 p-1"
-                    title="Delete settlement"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </div>
+              <SettlementCard
+                key={settlement.name}
+                settlement={settlement.name}
+                isAvailable={enabled}
+                adminInfo={adminInfo}
+                onDisable={enabled ? () => {
+                  console.log('Disable button clicked for settlement:', settlement.name);
+                  setSettlementToDisable(settlement.name);
+                  setShowConfirmModal(true);
+                } : undefined}
+                onClick={!enabled ? () => openAdminModal(settlement) : undefined}
+                isRTL={isRTL}
+              />
             );
           })}
         </div>
@@ -652,7 +743,7 @@ const AdminSettlements = () => {
             >
               Next {isRTL ? '←' : '→'}
             </button>
-          </div>
+      </div>
         )}
         </>
       )}
@@ -670,12 +761,18 @@ const AdminSettlements = () => {
       <ConfirmDisableModal
         open={showConfirmModal}
         settlement={settlementToDisable}
-        onCancel={() => setShowConfirmModal(false)}
+        onCancel={() => {
+          console.log('Modal cancelled');
+          setShowConfirmModal(false);
+          setSettlementToDisable(null);
+        }}
         onConfirm={async () => {
+          console.log('Modal confirmed for settlement:', settlementToDisable);
           await handleDisableSettlement(settlementToDisable);
           setShowConfirmModal(false);
           setSettlementToDisable(null);
         }}
+        loading={disablingSettlement}
       />
       {/* Settlement Modal */}
       {showSettlementModal && (
@@ -742,7 +839,7 @@ const AdminSettlements = () => {
         </div>
       )}
       {/* Confirmation Modal for Replace All */}
-      {showConfirmModal && (
+      {showConfirmModal && pendingFile && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg flex flex-col items-center">
             <FaExclamationTriangle className="text-4xl text-red-500 mb-4" />
