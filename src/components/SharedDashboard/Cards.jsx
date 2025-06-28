@@ -34,6 +34,7 @@ const Cards = ({ userRole = 'retiree' }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [expandedImage, setExpandedImage] = useState(null);
 
   // Fetch categories and events from Firestore in real-time
   useEffect(() => {
@@ -163,7 +164,7 @@ const Cards = ({ userRole = 'retiree' }) => {
                   className="p-8"
                 />
               ) : (
-                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 gap-2 md:gap-6 h-full overflow-y-auto">
+                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 gap-1 md:gap-6 h-full overflow-y-auto">
                   {filteredEvents.map((event) => {
                     const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
                     return (
@@ -171,14 +172,36 @@ const Cards = ({ userRole = 'retiree' }) => {
                         {/* Event Title */}
                         <h3 className="text-sm md:text-base font-bold mb-1 md:mb-2">{event.title}</h3>
 
-                        {/* Event Image */}
-                        <div className="mb-2 md:mb-4">
+                        {/* Event Image (clickable to expand) */}
+                        <div className="mb-2 md:mb-2 cursor-pointer" onClick={() => setExpandedImage(backgroundImage)}>
                           <img
                             src={backgroundImage}
                             alt={event.title}
-                            className="w-full h-26 md:h-20 object-cover rounded-md"
+                            className="w-full h-26 md:h-28 object-cover rounded-md transition-transform duration-200 hover:scale-105"
                           />
                         </div>
+                        {/* Expanded Image Modal */}
+                        {expandedImage && (
+                          <div
+                            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+                            onClick={() => setExpandedImage(null)}
+                          >
+                            <div className="relative max-w-full max-h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                              <button
+                                className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
+                                onClick={() => setExpandedImage(null)}
+                                aria-label="Close"
+                              >
+                                <span className="text-xl font-bold">&times;</span>
+                              </button>
+                              <img
+                                src={expandedImage}
+                                alt="Expanded Event"
+                                className="rounded-lg max-h-[80vh] max-w-[90vw] shadow-2xl border-4 border-white"
+                              />
+                            </div>
+                          </div>
+      )}
                         {/* Date, Time, Location Grouped */}
                         <div className="flex flex-col gap-y-1">
                           {/* Date with Calendar Icon */}
