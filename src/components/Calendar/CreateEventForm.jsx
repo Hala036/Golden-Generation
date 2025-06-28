@@ -371,7 +371,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
       console.log('Fetching user settlement...');
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.exists() ? userDoc.data().idVerification?.settlement : "";
+      const userSettlement = userDoc.data()?.idVerification?.settlement || "";
       console.log('User settlement:', userSettlement);
       
       let eventStatus = "active";
@@ -400,9 +400,14 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         participants: [],
         status: eventStatus,
         color: eventColor,
-        settlement: userSettlement,
+        settlement: userSettlement || "",
         imageUrl: imageUrl
       };
+
+      // Remove any undefined fields (extra safety)
+      Object.keys(newEvent).forEach(key => {
+        if (newEvent[key] === undefined) delete newEvent[key];
+      });
 
       console.log('Preparing to save event:', newEvent);
 
