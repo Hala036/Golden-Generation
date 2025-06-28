@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import useSignupStore from '../../store/signupStore';
 import { Users, Star, Check } from 'lucide-react';
+import { useEffect } from 'react';
 
-const Lifestyle = ({ onComplete }) => {
+const Lifestyle = ({ onComplete, editMode, data }) => {
   const { t } = useLanguage();
 
   const { lifestyleData, setLifestyleData } = useSignupStore();
