@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, MapPin, Bell, Plus, Edit, Trash2, Eye, Check, X, Filter, Search, Settings, Award, BarChart3 } from 'lucide-react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+// Firestore imports
+import { db } from '../../firebase';
+import { collection, onSnapshot, addDoc } from 'firebase/firestore';
 
 const RetireeCalendar = () => {
   const [currentUser] = useState({
@@ -19,57 +22,8 @@ const RetireeCalendar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Sample events data
-  const [events, setEvents] = useState([
-    {
-      id: '1',
-      title: 'Morning Yoga Class',
-      date: '2025-06-12',
-      time: '09:00',
-      duration: 60,
-      location: 'Community Center - Room A',
-      description: 'Gentle yoga session for all fitness levels',
-      category: 'fitness',
-      createdBy: 'admin1',
-      maxParticipants: 15,
-      participants: ['ret1', 'ret2', 'ret3'],
-      status: 'open',
-      recurring: 'weekly',
-      color: 'blue'
-    },
-    {
-      id: '2',
-      title: 'Book Club Discussion',
-      date: '2025-06-15',
-      time: '14:00',
-      duration: 90,
-      location: 'Library Meeting Room',
-      description: 'Discussing "The Thursday Murder Club"',
-      category: 'social',
-      createdBy: 'admin2',
-      maxParticipants: 12,
-      participants: ['ret1', 'ret4', 'ret5', 'ret6'],
-      status: 'open',
-      recurring: 'monthly',
-      color: 'green'
-    },
-    {
-      id: '3',
-      title: 'Garden Club Meet',
-      date: '2025-06-18',
-      time: '10:30',
-      duration: 120,
-      location: 'Community Garden',
-      description: 'Spring planting and maintenance',
-      category: 'hobby',
-      createdBy: 'ret1',
-      maxParticipants: 8,
-      participants: ['ret1', 'ret2'],
-      status: 'pending',
-      recurring: 'none',
-      color: 'yellow'
-    }
-  ]);
+  // Events state: now fetched from Firestore
+  const [events, setEvents] = useState([]);
 
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -82,6 +36,17 @@ const RetireeCalendar = () => {
     maxParticipants: 10,
     recurring: 'none'
   });
+
+  // Fetch events from Firestore in real-time
+  useEffect(() => {
+    setLoading(true);
+    const unsubscribe = onSnapshot(collection(db, 'events'), (snapshot) => {
+      const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setEvents(eventsData);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Get calendar days for current month
   const getDaysInMonth = () => {
@@ -174,29 +139,31 @@ const RetireeCalendar = () => {
     ));
   };
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     const event = {
       ...newEvent,
-      id: Date.now().toString(),
       createdBy: currentUser.id,
       participants: [currentUser.id],
       status: currentUser.role === 'admin' ? 'open' : 'pending',
       color: currentUser.role === 'admin' ? 'blue' : 'yellow'
     };
-    
-    setEvents(prev => [...prev, event]);
-    setNewEvent({
-      title: '',
-      date: '',
-      time: '',
-      duration: 60,
-      location: '',
-      description: '',
-      category: 'social',
-      maxParticipants: 10,
-      recurring: 'none'
-    });
-    setShowCreateModal(false);
+    try {
+      await addDoc(collection(db, 'events'), event);
+      setNewEvent({
+        title: '',
+        date: '',
+        time: '',
+        duration: 60,
+        location: '',
+        description: '',
+        category: 'social',
+        maxParticipants: 10,
+        recurring: 'none'
+      });
+      setShowCreateModal(false);
+    } catch (error) {
+      alert('Error creating event: ' + error.message);
+    }
   };
 
   const navigateMonth = (direction) => {

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, Clock, Search } from 'lucide-react';
+import { Calendar, Clock, Search, Filter, X } from 'lucide-react';
 import {
   getDaysInMonth,
   dayNames,
@@ -27,8 +27,15 @@ const BaseCalendar = ({
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  
+  // Advanced filter states
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [dateRangeFilter, setDateRangeFilter] = useState('all');
+  const [settlementFilter, setSettlementFilter] = useState('all');
 
-  const { events, loading, getFilteredEvents } = useCalendarEvents(userRole);
+  const { events, loading, getFilteredEvents, categories } = useCalendarEvents(userRole);
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -45,15 +52,24 @@ const BaseCalendar = ({
 
   const days = getDaysInMonth(currentDate);
 
+  // Prepare additional filters object
+  const additionalFiltersObj = {
+    statusFilter,
+    categoryFilter,
+    dateRange: dateRangeFilter,
+    settlementFilter
+  };
+
   const dayEvents = useMemo(() => {
     return days.map((day) =>
       getFilteredEvents(
         day ? new Date(currentDate.getFullYear(), currentDate.getMonth(), day) : null,
         filter,
-        searchTerm
+        searchTerm,
+        additionalFiltersObj
       )
     );
-  }, [days, events, filter, searchTerm, getFilteredEvents, currentDate]);
+  }, [days, events, filter, searchTerm, getFilteredEvents, currentDate, additionalFiltersObj]);
 
   // For week view
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -63,15 +79,15 @@ const BaseCalendar = ({
   // Events for week view
   const weekEvents = useMemo(() => {
     return weekDays.map((date) =>
-      getFilteredEvents(date, filter, searchTerm)
+      getFilteredEvents(date, filter, searchTerm, additionalFiltersObj)
     );
-  }, [weekDays, events, filter, searchTerm, getFilteredEvents]);
+  }, [weekDays, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj]);
 
   // Events for day view
   const dayViewEvents = useMemo(() => {
-    const filtered = getFilteredEvents(currentDate, filter, searchTerm);
+    const filtered = getFilteredEvents(currentDate, filter, searchTerm, additionalFiltersObj);
     return processEventsForDayView(filtered);
-  }, [currentDate, events, filter, searchTerm, getFilteredEvents]);
+  }, [currentDate, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj]);
 
   // Function to position events in the day view
   const getEventPositionAndDimensions = (event) => {
@@ -90,6 +106,20 @@ const BaseCalendar = ({
 
     return { top, height };
   };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setFilter('all');
+    setStatusFilter('all');
+    setCategoryFilter('all');
+    setDateRangeFilter('all');
+    setSettlementFilter('all');
+    setSearchTerm('');
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = filter !== 'all' || statusFilter !== 'all' || categoryFilter !== 'all' || 
+                          dateRangeFilter !== 'all' || settlementFilter !== 'all' || searchTerm;
 
   return (
     <Tooltip.Provider delayDuration={200}>
@@ -115,62 +145,181 @@ const BaseCalendar = ({
           </div>
 
           {/* Filters & Search */}
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <Search size={20} className="text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded-lg px-3 py-2 w-64"
-              />
-            </div>
-            
-            <select 
-              value={filter} 
-              onChange={(e) => setFilter(e.target.value)}
-              className="border rounded-lg px-3 py-2"
-            >
-              <option value="all">All Events</option>
-              {userRole === 'admin' ? (
-                <>
-                  <option value="created">Created by Me</option>
-                  <option value="pending">Pending Approval</option>
-                </>
-              ) : (
-                <>
-                  <option value="joined">My Events</option>
-                  <option value="created">Created by Me</option>
-                </>
-              )}
-              <option value="fitness">Fitness</option>
-              <option value="social">Social</option>
-              <option value="hobby">Hobbies</option>
-              <option value="educational">Educational</option>
-              {additionalFilters}
-            </select>
+          <div className="space-y-4">
+            {/* Basic Filters Row */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <Search size={20} className="text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search events..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border rounded-lg px-3 py-2 w-64"
+                />
+              </div>
 
-            <div className="flex items-center gap-2 ml-auto">
               <button
-                onClick={() => setViewMode('month')}
-                className={`px-3 py-1 rounded ${viewMode === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
+                  showAdvancedFilters ? 'bg-blue-100 border-blue-300 text-blue-700' : 'bg-gray-50 border-gray-300'
+                }`}
               >
-                Month
+                <Filter size={16} />
+                Advanced Filters
               </button>
-              <button
-                onClick={() => setViewMode('week')}
-                className={`px-3 py-1 rounded ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-              >
-                Week
-              </button>
-              <button
-                onClick={() => setViewMode('day')}
-                className={`px-3 py-1 rounded ${viewMode === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-              >
-                Day
-              </button>
+
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  <X size={16} />
+                  Clear Filters
+                </button>
+              )}
+
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  onClick={() => setViewMode('month')}
+                  className={`px-3 py-1 rounded ${viewMode === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                >
+                  Month
+                </button>
+                <button
+                  onClick={() => setViewMode('week')}
+                  className={`px-3 py-1 rounded ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                >
+                  Week
+                </button>
+                <button
+                  onClick={() => setViewMode('day')}
+                  className={`px-3 py-1 rounded ${viewMode === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                >
+                  Day
+                </button>
+              </div>
             </div>
+
+            {/* Advanced Filters Row */}
+            {showAdvancedFilters && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+                {/* Status Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="all">All Events</option>
+                    <option value="created">Created by Me</option>
+                    <option value="joined">My Events</option>
+                    <option value="pending">Pending Approval</option>
+                    <option value="upcoming">Upcoming Events</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="my-pending">My Pending</option>
+                    <option value="my-approved">My Approved</option>
+                  </select>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date Range Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                  <select
+                    value={dateRangeFilter}
+                    onChange={(e) => setDateRangeFilter(e.target.value)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="all">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                    <option value="this-week">This Week</option>
+                    <option value="next-week">Next Week</option>
+                    <option value="this-month">This Month</option>
+                  </select>
+                </div>
+
+                {/* Settlement Filter (Admin only) */}
+                {userRole === 'admin' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Settlement</label>
+                    <select
+                      value={settlementFilter}
+                      onChange={(e) => setSettlementFilter(e.target.value)}
+                      className="w-full border rounded-lg px-3 py-2 text-sm"
+                    >
+                      <option value="all">All Settlements</option>
+                      <option value="my-settlement">My Settlement</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Active Filters Display */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap gap-2">
+                {statusFilter !== 'all' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                    Status: {statusFilter}
+                    <button onClick={() => setStatusFilter('all')} className="ml-1">
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {categoryFilter !== 'all' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                    Category: {categories.find(c => c.id === categoryFilter)?.name || categoryFilter}
+                    <button onClick={() => setCategoryFilter('all')} className="ml-1">
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {dateRangeFilter !== 'all' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
+                    Date: {dateRangeFilter}
+                    <button onClick={() => setDateRangeFilter('all')} className="ml-1">
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {settlementFilter !== 'all' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                    Settlement: {settlementFilter}
+                    <button onClick={() => setSettlementFilter('all')} className="ml-1">
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+                {searchTerm && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+                    Search: "{searchTerm}"
+                    <button onClick={() => setSearchTerm('')} className="ml-1">
+                      <X size={12} />
+                    </button>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

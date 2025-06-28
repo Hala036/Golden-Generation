@@ -519,6 +519,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     label: cat.name,
   }));
 
+  // Handle SearchableDropdown change
+  const handleCategoryChange = (selectedOption) => {
+    setEventData(prev => ({
+      ...prev,
+      categoryId: selectedOption.value
+    }));
+    setTouched(prev => ({
+      ...prev,
+      categoryId: true
+    }));
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
@@ -541,18 +553,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Category <span className="text-red-500">*</span>
             </label>
-             <SearchableDropdown
-                name="category"
-                options={categoryOptions}
-                value={eventData.category}
-          onChange={handleChange}
-                onBlur={handleBlur}
-                touched={touched.category}
-                error={validationErrors.category}
-                placeholder="Select a category"
+            <SearchableDropdown
+              name="categoryId"
+              options={categoryOptions}
+              value={eventData.categoryId}
+              onChange={handleCategoryChange}
+              onBlur={handleBlur}
+              touched={touched.categoryId}
+              error={validationErrors.categoryId}
+              placeholder="Select a category"
             />
-            {touched.category && validationErrors.category && (
-              <p className="text-red-500 text-xs mt-1">{validationErrors.category}</p>
+            {touched.categoryId && validationErrors.categoryId && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.categoryId}</p>
             )}
           </div>
           <div className="ml-2">
