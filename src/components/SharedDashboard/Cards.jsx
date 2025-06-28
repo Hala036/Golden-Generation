@@ -167,7 +167,7 @@ const Cards = ({ userRole = 'retiree' }) => {
                   {filteredEvents.map((event) => {
                     const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
                     return (
-                      <div key={event.id} className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-2 md:p-4 min-h-[250px] md:min-h-[280px] flex flex-col justify-between">
+                      <div key={event.id} className="bg-white shadow-md rounded-lg overflow-hidden flex-shrink-0 p-2 md:p-4 min-h-[270px] md:min-h-[280px] flex flex-col justify-between">
                         {/* Event Title */}
                         <h3 className="text-sm md:text-base font-bold mb-1 md:mb-2">{event.title}</h3>
 
@@ -176,7 +176,7 @@ const Cards = ({ userRole = 'retiree' }) => {
                           <img
                             src={backgroundImage}
                             alt={event.title}
-                            className="w-full h-22 md:h-20 object-cover rounded-md"
+                            className="w-full h-26 md:h-20 object-cover rounded-md"
                           />
                         </div>
                         {/* Date, Time, Location Grouped */}
@@ -185,7 +185,7 @@ const Cards = ({ userRole = 'retiree' }) => {
                           <div className="flex justify-between items-center">
                             <div className="flex items-center">
                               <FaCalendarAlt className="text-[#FFD966] mr-2 text-xs md:text-base" />
-                              <p className="text-gray-700 font-medium text-xs md:text-base">
+                              <p className="text-gray-800 font-medium text-xs md:text-base">
                                 {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
                               </p>
                             </div>
@@ -201,17 +201,33 @@ const Cards = ({ userRole = 'retiree' }) => {
                           {/* Time with Clock Icon */}
                           <div className="flex mb-1 items-center">
                             <FaClock className="text-[#FFD966] mr-2 text-xs md:text-base" />
-                            <p className="text-gray-700 font-medium text-xs md:text-base">{event.timeFrom} - {event.timeTo}</p>
+                            <p className="text-gray-800 font-medium text-xs md:text-base">{event.timeFrom} - {event.timeTo}</p>
                           </div>
                           {/* Location with Pin Icon */}
                           <div className="flex items-center">
                             <FaMapMarkerAlt className="text-[#FFD966] mr-2 text-xs md:text-base" />
-                            <p className="text-gray-700 font-medium text-xs md:text-base">{event.location}</p>
+                            <p className="text-gray-800 font-medium text-xs md:text-base">{event.location}</p>
                           </div>
                         </div>
 
-                        {/* Description */}
-                        <p className="text-gray-500 text-xs md:text-sm flex-1 mt-2">{event.description}</p>
+                        {/* Description (truncated to 100 chars with ellipsis and read more) */}
+                        <p className="text-gray-500 text-xs md:text-sm flex-1 mt-2">
+                          {event.description && event.description.length > 100 ? (
+                            <>
+                              {event.description.slice(0, 100)}
+                              ...
+                              <button
+                                className="ml-1 text-yellow-600 hover:underline text-xs font-medium focus:outline-none"
+                                onClick={() => setSelectedEvent(event)}
+                                tabIndex={0}
+                              >
+                                {'Read more'}
+                              </button>
+                            </>
+                          ) : (
+                            event.description
+                          )}
+                        </p>
                         
                       </div>
                     );
