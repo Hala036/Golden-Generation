@@ -4,8 +4,14 @@ import { createJobRequest } from "../../jobRequestsService"; // Import jobReques
 import { toast } from "react-hot-toast";
 import { auth, db } from "../../firebase"; // Import Firebase auth and db
 import { doc, getDoc } from "firebase/firestore";
+import { FaHandsHelping, FaEye } from "react-icons/fa"; // Import icons
+import EmptyState from "../EmptyState"; // Import EmptyState component
+import { useLanguage } from "../../context/LanguageContext"; // Import useLanguage
+import Skeleton from 'react-loading-skeleton'; // Import Skeleton
+import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 
 const ServiceRequests = () => {
+  const { t } = useLanguage(); // Add translation hook
   const [requests, setRequests] = useState([]);
   const [adminSettlement, setAdminSettlement] = useState("");
   const [loading, setLoading] = useState(true);
@@ -20,10 +26,24 @@ const ServiceRequests = () => {
         }
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        const settlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+        
+        if (!userDoc.exists()) {
+          toast.error("User document not found.");
+          return;
+        }
+
+        const userData = userDoc.data();
+        console.log("ServiceRequests - Admin data:", userData);
+        
+        // Try different possible locations for settlement
+        const settlement = userData.idVerification?.settlement || 
+                         userData.settlement || 
+                         userData.credentials?.settlement;
+        
+        console.log("ServiceRequests - Found admin settlement:", settlement);
 
         if (!settlement) {
-          toast.error("Failed to fetch admin settlement.");
+          toast.error("No settlement found for admin user.");
           return;
         }
 
@@ -106,6 +126,76 @@ const ServiceRequests = () => {
   const pendingRequests = requests.filter((request) => request.status === "pending");
   const viewedRequests = requests.filter((request) => request.status === "viewed");
 
+  // Loading skeleton for service requests
+  const ServiceRequestsSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="p-4 border rounded-lg bg-white shadow-sm">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex-1">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="flex space-x-2 mb-1">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-16"></div>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <div className="h-6 bg-gray-200 rounded w-16"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+            </div>
+          </div>
+          <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
+          <div className="flex justify-between items-center">
+            <div className="h-3 bg-gray-200 rounded w-32"></div>
+            <div className="flex space-x-2">
+              <div className="h-6 bg-gray-200 rounded w-24"></div>
+              <div className="h-6 bg-gray-200 rounded w-16"></div>
+              <div className="h-6 bg-gray-200 rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Loading skeleton for table rows
+  const TableSkeleton = () => (
+    <div className="space-y-2">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center p-4 border-b border-gray-200">
+          <div className="flex-1">
+            <div className="h-4 bg-gray-200 rounded w-1/3 mb-1"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+          </div>
+          <div className="h-6 bg-gray-200 rounded w-20 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-24 mx-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-16 mx-4"></div>
+          <div className="flex space-x-2">
+            <div className="h-6 bg-gray-200 rounded w-6"></div>
+            <div className="h-6 bg-gray-200 rounded w-6"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Render loading state
+  if (loading && !requests.length) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Service Requests</h1>
+          <div className="flex space-x-4">
+            <div className="h-10 bg-gray-200 rounded w-40"></div>
+          </div>
+        </div>
+        <ServiceRequestsSkeleton />
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Service Requests</h1>
@@ -116,7 +206,12 @@ const ServiceRequests = () => {
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-yellow-500 mb-4">Pending Requests</h2>
             {pendingRequests.length === 0 ? (
-              <p>No pending requests found.</p>
+              <EmptyState
+                icon={<FaHandsHelping className="text-6xl text-gray-300" />}
+                title={t('emptyStates.noPendingRequests')}
+                message={t('emptyStates.noPendingRequestsMessage')}
+                className="p-6"
+              />
             ) : (
               <ul className="space-y-4">
                 {pendingRequests.map((request) => (
@@ -146,7 +241,12 @@ const ServiceRequests = () => {
           <div>
             <h2 className="text-2xl font-semibold text-yellow-600 mb-4">Viewed Requests</h2>
             {viewedRequests.length === 0 ? (
-              <p>No viewed requests found.</p>
+              <EmptyState
+                icon={<FaEye className="text-6xl text-gray-300" />}
+                title={t('emptyStates.noViewedRequests')}
+                message={t('emptyStates.noViewedRequestsMessage')}
+                className="p-6"
+              />
             ) : (
               <ul className="space-y-4">
                 {viewedRequests.map((request) => (

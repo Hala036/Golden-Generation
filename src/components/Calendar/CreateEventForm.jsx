@@ -5,7 +5,7 @@ import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc, updateDoc } 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-hot-toast';
 import AddCategoryModal from "../AdminProfile/AddCategoryModal";
-import { useAuth } from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import CustomTimePickerWrapper from './CustomTimePicker';
 import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -371,7 +371,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
       console.log('Fetching user settlement...');
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.exists() ? userDoc.data().idVerification?.settlement : "";
+      const userSettlement = userDoc.data()?.idVerification?.settlement || "";
       console.log('User settlement:', userSettlement);
       
       let eventStatus = "active";
@@ -400,9 +400,14 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         participants: [],
         status: eventStatus,
         color: eventColor,
-        settlement: userSettlement,
+        settlement: userSettlement || "",
         imageUrl: imageUrl
       };
+
+      // Remove any undefined fields (extra safety)
+      Object.keys(newEvent).forEach(key => {
+        if (newEvent[key] === undefined) delete newEvent[key];
+      });
 
       console.log('Preparing to save event:', newEvent);
 
@@ -514,6 +519,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     label: cat.name,
   }));
 
+  // Handle SearchableDropdown change
+  const handleCategoryChange = (selectedOption) => {
+    setEventData(prev => ({
+      ...prev,
+      categoryId: selectedOption.value
+    }));
+    setTouched(prev => ({
+      ...prev,
+      categoryId: true
+    }));
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
@@ -536,18 +553,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Category <span className="text-red-500">*</span>
             </label>
-             <SearchableDropdown
-                name="category"
-                options={categoryOptions}
-                value={eventData.category}
-          onChange={handleChange}
-                onBlur={handleBlur}
-                touched={touched.category}
-                error={validationErrors.category}
-                placeholder="Select a category"
+            <SearchableDropdown
+              name="categoryId"
+              options={categoryOptions}
+              value={eventData.categoryId}
+              onChange={handleCategoryChange}
+              onBlur={handleBlur}
+              touched={touched.categoryId}
+              error={validationErrors.categoryId}
+              placeholder="Select a category"
             />
-            {touched.category && validationErrors.category && (
-              <p className="text-red-500 text-xs mt-1">{validationErrors.category}</p>
+            {touched.categoryId && validationErrors.categoryId && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.categoryId}</p>
             )}
           </div>
           <div className="ml-2">

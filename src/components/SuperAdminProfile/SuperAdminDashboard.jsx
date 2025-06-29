@@ -11,7 +11,6 @@ import ServiceRequests from "../AdminProfile/ServiceRequests"; // Import Service
 import Analysis from "../AdminProfile/Analytics/Analysis";
 import ComprehensiveAnalytics from "../AdminProfile/Analytics/ComprehensiveAnalytics";
 import Settings from "../SharedDashboard/SettingsCards";
-import Notifications from "../SharedDashboard/Notifications";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
 import AdminCalendar from "../Calendar/AdminCalendar";
@@ -29,8 +28,8 @@ const RetireeDashboard = () => {
   console.debug('[SuperAdminDashboard] selected:', selected);
 
   const customIcons = [
-    { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
-    { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
+      { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
+      { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
     { id: "categoryManagement", label: "Category Management", icon: <FaTags /> },
     { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
     { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
@@ -41,6 +40,7 @@ const RetireeDashboard = () => {
     { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
   ];
 
+
   const customButtons = [];
 
   const componentsById = {
@@ -50,7 +50,6 @@ const RetireeDashboard = () => {
     calendar: <AdminCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
-    notifications: <Notifications />,
     retirees: <Retirees />,
     jobs: <Jobs />,
     service: <ServiceRequests />, // Link to ServiceRequests component

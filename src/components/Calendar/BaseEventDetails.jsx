@@ -53,7 +53,7 @@ const BaseEventDetails = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4">
       <div className="bg-white p-6 rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">

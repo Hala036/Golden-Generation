@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { FaCalendar, FaClock, FaMapMarkerAlt, FaUsers, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
+import useAuth from '../../hooks/useAuth';
 import BaseCalendar from './BaseCalendar';
 import AdminEventDetails from '../AdminProfile/AdminEventDetails';
 import CreateEventForm from './CreateEventForm';
-import { useAuth } from '../../hooks/useAuth';
 
 const AdminCalendar = () => {
   const { currentUser } = useAuth();

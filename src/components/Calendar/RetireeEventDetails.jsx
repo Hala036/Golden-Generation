@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../firebase';
 import { doc, deleteDoc, writeBatch, collection, getDocs } from 'firebase/firestore';
 import { FaTrash, FaEdit } from 'react-icons/fa';
-import { useAuth } from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import BaseEventDetails from './BaseEventDetails';
 import CreateEventForm from './CreateEventForm';
 

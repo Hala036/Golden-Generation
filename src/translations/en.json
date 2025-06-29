@@ -17,6 +17,7 @@
     "of": "of",
     "select": "Select",
     "change":"change"
+
   },
   "auth": {
     "errors": {
@@ -913,6 +914,7 @@
         "adding": "Adding...",
         "addCategory": "Add Category",
         "failedToAddCategory": "Failed to add category. Please try again."
+
       }
     }
   },
@@ -1521,6 +1523,110 @@
       "loading": "Loading volunteering information...",
       "noRequests": "No volunteering requests available.",
       "noUser": "No user is logged in."
+    }
+  },
+  "emptyStates": {
+    "noMessages": "No Messages Yet",
+    "noMessagesMessage": "Start a conversation with other users to see messages here.",
+    "startConversation": "Start a conversation",
+    "noNotifications": "No Notifications",
+    "noNotificationsMessage": "You're all caught up! Check back later for new updates.",
+    "noJobs": "No Job Requests",
+    "noJobsMessage": "No voluntary job requests have been created yet.",
+    "createJobRequest": "Create Job Request",
+    "noServiceRequests": "No Service Requests",
+    "noServiceRequestsMessage": "No service requests have been submitted yet.",
+    "createServiceRequest": "Create Service Request",
+    "noEvents": "No Events",
+    "noEventsMessage": "No events have been created yet. Start by creating your first event!",
+    "createEvent": "Create Event",
+    "noAdmins": "No Admins",
+    "noAdminsMessage": "No administrators have been added to the system yet.",
+    "addAdmin": "Add Admin",
+    "noTowns": "No Towns",
+    "noTownsMessage": "No towns have been added to the system yet.",
+    "addTown": "Add Town",
+    "noSettlements": "No Settlements",
+    "noSettlementsMessage": "No settlements have been added to the system yet.",
+    "addSettlement": "Add Settlement",
+    "noRetirees": "No Retirees",
+    "noRetireesMessage": "No retirees have been registered yet.",
+    "addRetiree": "Add Retiree",
+    "noVolunteers": "No Volunteers",
+    "noVolunteersMessage": "No volunteers have been registered yet.",
+    "addVolunteer": "Add Volunteer",
+    "noAnalytics": "No Analytics Data",
+    "noAnalyticsMessage": "No analytics data available yet. Data will appear here once events and activities are created.",
+    "noPendingEvents": "No Pending Events",
+    "noPendingEventsMessage": "All events have been reviewed and approved.",
+    "noCategories": "No Categories",
+    "noCategoriesMessage": "No event categories have been created yet.",
+    "addCategory": "Add Category",
+    "noCandidates": "No Candidates",
+    "noCandidatesMessage": "No candidates have been registered yet.",
+    "addCandidate": "Add Candidate"
+  },
+  "loading": {
+    "messages": "Loading messages...",
+    "notifications": "Loading notifications...",
+    "jobs": "Loading job requests...",
+    "serviceRequests": "Loading service requests...",
+    "events": "Loading events...",
+    "admins": "Loading admins...",
+    "towns": "Loading towns...",
+    "settlements": "Loading settlements...",
+    "retirees": "Loading retirees...",
+    "volunteers": "Loading volunteers...",
+    "analytics": "Loading analytics...",
+    "calendar": "Loading calendar...",
+    "categories": "Loading categories...",
+    "candidates": "Loading candidates..."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggleTheme": "Toggle theme",
+    "openMenu": "Open theme menu"
+  },
+  "analytics": {
+    "comprehensive": {
+      "title": "Comprehensive Analytics",
+      "subtitle": "Deep insights into platform performance and user engagement"
+    },
+    "timeRanges": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "1y": "Last year"
+    },
+    "filters": {
+      "allSettlements": "All Settlements",
+      "allCategories": "All Categories"
+    },
+    "metrics": {
+      "totalUsers": "Total Users",
+      "activeEvents": "Active Events",
+      "engagementRate": "Engagement Rate",
+      "avgSessionTime": "Avg Session Time"
+    },
+    "charts": {
+      "userGrowth": "User Growth",
+      "eventCategories": "Event Categories",
+      "comingSoon": "Chart coming soon..."
+    },
+    "topPerformers": {
+      "title": "Top Performers",
+      "settlements": "Top Settlements",
+      "events": "Top Events",
+      "users": "Top Users"
+    },
+    "export": "Export Data",
+    "exporting": "Exporting...",
+    "error": {
+      "title": "Analytics Error",
+      "message": "Failed to load analytics data. Please try again.",
+      "retry": "Retry"
     }
   }
 }

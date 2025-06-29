@@ -9,6 +9,8 @@ import interestsList from '../../data/interests.json';
 import hobbiesList from '../../data/hobbies.json';
 import jobsList from '../../data/jobs.json';
 import volunteerAreasList from '../../data/volunteerAreas.json';
+import EmptyState from '../EmptyState';
+import { FaUsers } from 'react-icons/fa';
 
 const fieldGroups = [
   {
@@ -206,9 +208,9 @@ const Retirees = () => {
       path: ["personalDetails", "maritalStatus"]
     },
     "personalDetails.education": {
-      label: "Education",
+      label: "Education Level",
       type: "select",
-      options: ["High School", "Bachelor's", "Master's", "PhD", "Other"],
+      options: ["None", "Primary", "Secondary", "Tertiary", "Other"],
       path: ["personalDetails", "education"]
     },
     "workBackground.customJobInfo.originalSelection.jobTitle": {
@@ -235,7 +237,13 @@ const Retirees = () => {
       label: "Registration Date",
       type: "date",
       path: ["createdAt"]
-    }
+    },
+    "status": {
+      label: "Status",
+      type: "select",
+      options: ["Active", "Inactive", "Pending", "Suspended"],
+      path: ["status"]
+    },
   };
 
   // Fetch settlements for dropdown
@@ -277,16 +285,50 @@ const Retirees = () => {
 
         if (adminDoc.exists()) {
           const adminData = adminDoc.data();
-          setAdminSettlement(adminData.idVerification?.settlement || null);
+          console.log("Admin data:", adminData);
+          
+          // Try different possible locations for settlement
+          const settlement = adminData.idVerification?.settlement || 
+                           adminData.settlement || 
+                           adminData.credentials?.settlement;
+          
+          console.log("Found admin settlement:", settlement);
+          setAdminSettlement(settlement || null);
           setUserRole(adminData.role);
+        } else {
+          console.error("Admin document not found.");
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching admin settlement:", error);
+        setLoading(false);
       }
     };
 
     fetchAdminSettlement();
   }, []);
+
+  // Handle loading state when userRole is determined
+  useEffect(() => {
+    if (userRole && !loading) {
+      // If we have a userRole but loading is false, it means the fetchRetirees effect
+      // has already run and completed, so we don't need to do anything
+      return;
+    }
+    
+    // If we have a userRole but loading is still true, the fetchRetirees effect
+    // will handle the loading state
+    if (userRole === null && !fetchAdminSettlementCalled.current) {
+      // Still waiting for userRole to be determined
+      return;
+    }
+    
+    // If userRole is null but we've already tried to fetch admin settlement,
+    // it means there was an error or no user found
+    if (userRole === null && fetchAdminSettlementCalled.current) {
+      setLoading(false);
+    }
+  }, [userRole, loading]);
 
   // Fetch retirees from Firestore
   useEffect(() => {
@@ -296,29 +338,90 @@ const Retirees = () => {
         let q;
         if (userRole === "superadmin") {
           q = query(collection(db, "users"), where("role", "==", "retiree"));
-        } else if (userRole === "admin" && adminSettlement) {
+        } else if (userRole === "admin") {
+          // For admin users, if no settlement is found, show empty list instead of infinite loading
+          if (!adminSettlement) {
+            setRetirees([]);
+            setLoading(false);
+            return;
+          }
+          
+          console.log("Admin settlement:", adminSettlement);
           q = query(
             collection(db, "users"),
             where("role", "==", "retiree"),
             where("idVerification.settlement", "==", adminSettlement)
           );
         } else {
+          setRetirees([]);
           setLoading(false);
           return;
         }
+        
         const querySnapshot = await getDocs(q);
         const fetchedRetirees = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setRetirees(fetchedRetirees);
+        
+        console.log("Fetched retirees:", fetchedRetirees.length);
+        console.log("Admin settlement being searched:", adminSettlement);
+        
+        // If no retirees found and admin has a settlement, try alternative queries
+        if (fetchedRetirees.length === 0 && userRole === "admin" && adminSettlement) {
+          console.log("No retirees found with exact settlement match, trying alternative queries...");
+          
+          // Try case-insensitive search by getting all retirees and filtering
+          const allRetireesQuery = query(collection(db, "users"), where("role", "==", "retiree"));
+          const allRetireesSnapshot = await getDocs(allRetireesQuery);
+          const allRetirees = allRetireesSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          
+          console.log("All retirees found:", allRetirees.length);
+          console.log("All retiree settlements:", allRetirees.map(r => r.idVerification?.settlement).filter(Boolean));
+          
+          // Filter retirees by settlement (case-insensitive)
+          const matchingRetirees = allRetirees.filter(retiree => {
+            // Try different possible locations for settlement in retiree data
+            const retireeSettlement = retiree.idVerification?.settlement || 
+                                    retiree.settlement || 
+                                    retiree.credentials?.settlement;
+            
+            if (!retireeSettlement) {
+              console.log("Retiree has no settlement:", retiree.idVerification?.firstName);
+              return false;
+            }
+            
+            // Normalize both settlements for comparison
+            const normalizedRetireeSettlement = retireeSettlement.toString().toLowerCase().trim();
+            const normalizedAdminSettlement = adminSettlement.toString().toLowerCase().trim();
+            
+            const match = normalizedRetireeSettlement === normalizedAdminSettlement;
+            if (match) {
+              console.log("Found matching retiree:", retiree.idVerification?.firstName, "with settlement:", retireeSettlement);
+            } else {
+              console.log("Settlement mismatch - Retiree:", normalizedRetireeSettlement, "Admin:", normalizedAdminSettlement);
+            }
+            return match;
+          });
+          
+          console.log("Matching retirees after case-insensitive search:", matchingRetirees.length);
+          setRetirees(matchingRetirees);
+        } else {
+          setRetirees(fetchedRetirees);
+        }
       } catch (error) {
+        console.error("Error fetching retirees:", error);
         setRetirees([]);
       } finally {
         setLoading(false);
       }
     };
-    if (userRole === "superadmin" || (userRole === "admin" && adminSettlement)) {
+    
+    // Only fetch if we have a valid user role
+    if (userRole) {
       fetchRetirees();
     }
   }, [userRole, adminSettlement]);
@@ -798,7 +901,8 @@ const Retirees = () => {
           <div className="flex space-x-2 flex-1">
             <input
               type="number"
-              placeholder="Min"
+              placeholder="Min Age"
+              min={0}
               className="p-2 border rounded flex-1"
               value={filter.value}
               onChange={(e) => updateFilter(index, "value", e.target.value)}
@@ -806,7 +910,8 @@ const Retirees = () => {
             <span className="self-center">to</span>
             <input
               type="number"
-              placeholder="Max"
+              placeholder="Max Age"
+              min={0}
               className="p-2 border rounded flex-1"
               value={filter.value2}
               onChange={(e) => updateFilter(index, "value2", e.target.value)}
@@ -1043,10 +1148,26 @@ const Retirees = () => {
         </table>
       </div>
       
-      {filteredRetirees.length === 0 && (
-        <div className="text-center text-gray-500 py-8">
-          No retirees found.
-        </div>
+      {retirees.length === 0 && !loading ? (
+        userRole === "admin" && !adminSettlement ? (
+          <EmptyState
+            icon={<FaUsers />}
+            title="No settlement assigned"
+            message="You don't have a settlement assigned. Please contact your administrator to assign you to a settlement."
+          />
+        ) : (
+          <EmptyState
+            icon={<FaUsers />}
+            title="No retirees found"
+            message="Try adjusting your filters or add a new retiree."
+          />
+        )
+      ) : (
+        filteredRetirees.length === 0 && (
+          <div className="text-center text-gray-500 py-8">
+            No retirees found.
+          </div>
+        )
       )}
 
       {/* Load Filter Modal */}

@@ -98,7 +98,12 @@ const AddEvents = () => {
       }
 
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+      const userData = userDoc.exists() ? userDoc.data() : {};
+      
+      // Try different possible locations for settlement
+      const userSettlement = userData.idVerification?.settlement || 
+                           userData.settlement || 
+                           userData.credentials?.settlement || "";
 
       const formatDate = (date) => {
         const [year, month, day] = date.split("-");

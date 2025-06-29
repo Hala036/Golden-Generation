@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Check, Users, Heart, Calendar, Clock, MapPin, Star } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
 
-const VeteransCommunity = ({ onComplete }) => {
+const VeteransCommunity = ({ onComplete, editMode, data }) => {
   const { t } = useLanguage();
 
   const { veteransData, setVeteransData } = useSignupStore();

@@ -54,12 +54,12 @@ const Support = () => {
 
         // Include the admin's document ID (uid) in the adminInfo object
         setAdminInfo({
-          uid: adminDoc.idVerification.idNumber, // Document ID (admin's UID)
+          // uid: adminDoc.idVerification.idNumber, // Document ID (admin's UID)
           username: adminDoc.credentials?.username || t("retiree.admin.defaultUsername"),
-          firstname: adminDoc.idVerification?.firstName || t("retiree.admin.defaultFirstName"),
+          // firstname: adminDoc?.firstName || t("retiree.admin.defaultFirstName"),
           lastname: adminDoc.idVerification?.lastName || t("retiree.admin.defaultLastName"),
           email: adminDoc.credentials?.email || t("retiree.admin.defaultEmail"),
-          phone: adminDoc.personalDetails?.phoneNumber || t("retiree.admin.defaultPhone"),
+          phone: adminDoc.credentials?.phone || t("retiree.admin.defaultPhone"),
         });
       } catch (error) {
         console.error(t("retiree.errors.fetchAdminError"), error);

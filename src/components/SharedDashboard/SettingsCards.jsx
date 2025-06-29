@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FiUser,
   FiKey,
@@ -12,6 +13,7 @@ import {
   FiEyeOff,
   FiTrash2
 } from "react-icons/fi";
+import { FaEnvelope, FaUser, FaPhone, FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { auth, storage, db } from "../../firebase";
 import { updateProfile, updateEmail, reauthenticateWithCredential, EmailAuthProvider, updatePassword, deleteUser } from "firebase/auth";
@@ -23,7 +25,13 @@ import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
 import PasswordInput from '../PasswordInput';
-import { useLanguage } from '../../context/LanguageContext';
+import { useFieldValidation } from '../../hooks/useFieldValidation';
+import { validateEmail, validateUsername, validatePhoneNumber } from '../../utils/validation';
+
+const mockAnnouncements = [
+  { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
+  { id: 2, title: "New Feature: Dark Mode", date: "2024-06-10", content: "You can now switch between light and dark themes in your settings." },
+];
 
 const SettingsCards = () => {
   // Modal states
@@ -43,7 +51,7 @@ const SettingsCards = () => {
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
 
   // Form states
-  const [profileData, setProfileData] = useState({ name: "John Doe", username: "johndoe", phone: "", email: "john@example.com" });
+  const [profileData, setProfileData] = useState({ username: "johndoe", phone: "", email: "john@example.com" });
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [fontSize, setFontSize] = useState(16);
   const [notifications, setNotifications] = useState({ email: true, push: false });
@@ -55,15 +63,105 @@ const SettingsCards = () => {
   const navigate = useNavigate();
   const [deletePassword, setDeletePassword] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [autoSaveTimeout, setAutoSaveTimeout] = useState(null);
 
   const { theme, setTheme } = useTheme();
-  const { t } = useLanguage();
 
-  // Mock announcements - moved inside component to access t function
-  const mockAnnouncements = [
-    { id: 1, title: t('dashboard.settings.announcements.welcome.title'), date: "2024-06-01", content: t('dashboard.settings.announcements.welcome.content') },
-    { id: 2, title: t('dashboard.settings.announcements.darkMode.title'), date: "2024-06-10", content: t('dashboard.settings.announcements.darkMode.content') },
-  ];
+  // Field validation states for edit profile
+  const [touched, setTouched] = useState({ username: false, phone: false, email: false });
+
+  const usernameField = useFieldValidation({
+    validate: validateUsername,
+  });
+
+  const emailField = useFieldValidation({
+    validate: validateEmail,
+  });
+
+  const phoneField = useFieldValidation({
+    validate: validatePhoneNumber,
+  });
+
+  // Auto-save functionality
+  const debouncedAutoSave = useCallback(async (fieldName, value) => {
+    // Clear existing timeout
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+
+    // Set new timeout for auto-save
+    const timeout = setTimeout(async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      // Only auto-save if the field is valid and has a value
+      let isValid = false;
+      if (fieldName === 'username' && !usernameField.error && usernameField.value && usernameField.value.trim()) {
+        isValid = true;
+      } else if (fieldName === 'email' && !emailField.error && emailField.value && emailField.value.trim()) {
+        isValid = true;
+      } else if (fieldName === 'phone' && !phoneField.error && phoneField.value && phoneField.value.trim()) {
+        isValid = true;
+      }
+
+      if (!isValid) return;
+
+      setAutoSaving(true);
+      try {
+        // Don't auto-save email changes (require re-auth)
+        if (fieldName === 'email' && emailField.value !== user.email) {
+          setAutoSaving(false);
+          return;
+        }
+
+        const updateData = {};
+        if (fieldName === 'username' && usernameField.value && usernameField.value.trim()) {
+          updateData.username = usernameField.value.trim();
+        } else if (fieldName === 'email' && emailField.value && emailField.value.trim()) {
+          updateData.email = emailField.value.trim();
+        } else if (fieldName === 'phone' && phoneField.value && phoneField.value.trim()) {
+          updateData.phone = phoneField.value.trim();
+        }
+
+        // Only proceed if we have valid data to update
+        if (Object.keys(updateData).length > 0) {
+          await updateFirestoreProfile(user.uid, updateData);
+          setLastSaved(new Date());
+          
+          // Show subtle success indicator
+          toast.success(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated`, {
+            duration: 2000,
+            position: 'bottom-right',
+            style: {
+              background: '#10B981',
+              color: 'white',
+            },
+          });
+        }
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+        toast.error(`Failed to auto-save ${fieldName}`, {
+          duration: 3000,
+          position: 'bottom-right',
+        });
+      } finally {
+        setAutoSaving(false);
+      }
+    }, 1500); // 1.5 second delay
+
+    setAutoSaveTimeout(timeout);
+  }, [autoSaveTimeout, usernameField, emailField, phoneField]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+      }
+    };
+  }, [autoSaveTimeout]);
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -111,7 +209,7 @@ const SettingsCards = () => {
           setCurrentProfilePic(userDoc.personalDetails.photoURL);
         }
       } catch (err) {
-        console.error(t('dashboard.settings.errors.fetchingProfilePicture'), err);
+        console.error("Error fetching profile picture:", err);
       }
     };
     fetchCurrentProfilePic();
@@ -122,47 +220,102 @@ const SettingsCards = () => {
     setLoadingProfile(true);
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error(t('auth.errors.notLoggedIn'));
+      if (!user) throw new Error("Not logged in");
       const userDoc = await getUserData(user.uid);
-      setProfileData({
-        name: userDoc?.personalDetails?.name || "",
+      const data = {
         username: userDoc?.credentials?.username || "",
         phone: userDoc?.personalDetails?.phoneNumber || "",
         email: userDoc?.credentials?.email || user.email || ""
-      });
+      };
+      setProfileData(data);
+      
+      // Set field values for validation
+      usernameField.setValue(data.username);
+      emailField.setValue(data.email);
+      phoneField.setValue(data.phone);
+      
       setShowEditProfile(true);
+      setLastSaved(null);
     } catch (err) {
-      toast.error(t('auth.dashboard.toast.failedToLoadProfile'));
+      toast.error("Failed to load profile");
     } finally {
       setLoadingProfile(false);
     }
   };
 
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    if (field === 'username') usernameField.onBlur();
+    if (field === 'email') emailField.onBlur();
+    if (field === 'phone') phoneField.onBlur();
+  };
+
+  // Enhanced field change handlers with auto-save
+  const handleFieldChange = (field, value, onChange) => {
+    // Create a mock event object for the onChange function
+    const mockEvent = { target: { value } };
+    onChange(mockEvent);
+    
+    // Trigger auto-save for valid fields
+    if (value && value.trim()) {
+      debouncedAutoSave(field, value);
+    }
+  };
+
+  const isValid =
+    !usernameField.error &&
+    !emailField.error &&
+    !phoneField.error &&
+    usernameField.value &&
+    emailField.value &&
+    phoneField.value;
+
   const handleProfileSave = async (e) => {
     e.preventDefault();
+    setTouched({ username: true, email: true, phone: true });
+    usernameField.onBlur();
+    emailField.onBlur();
+    phoneField.onBlur();
+    
+    if (!isValid) {
+      toast.error("Please fix the errors above");
+      return;
+    }
+
     const user = auth.currentUser;
-    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
+    if (!user) return toast.error("Not logged in");
+    
     try {
       // If email changed, require re-auth
-      if (profileData.email !== user.email) {
-        setPendingProfileData({ ...profileData });
+      if (emailField.value !== user.email) {
+        setPendingProfileData({ 
+          username: usernameField.value,
+          phone: phoneField.value,
+          email: emailField.value
+        });
         setShowReauth(true);
         return;
       }
-      await updateFirestoreProfile(user.uid, profileData);
-      toast.success(t('auth.dashboard.toast.profileUpdated'));
+      
+      await updateFirestoreProfile(user.uid, {
+        username: usernameField.value,
+        phone: phoneField.value,
+        email: emailField.value
+      });
+      toast.success("Profile updated");
       setShowEditProfile(false);
+      setLastSaved(new Date());
     } catch (err) {
-      toast.error(err.message || t('auth.dashboard.toast.failedToUpdateProfile'));
+      toast.error(err.message || "Failed to update profile");
     }
   };
 
   const handlePasswordSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
+    if (!user) return toast.error("Not logged in");
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error(t('auth.dashboard.toast.passwordsDoNotMatch'));
+      toast.error("Passwords do not match");
       return;
     }
     try {
@@ -170,11 +323,11 @@ const SettingsCards = () => {
       const cred = EmailAuthProvider.credential(user.email, passwordData.currentPassword);
       await reauthenticateWithCredential(user, cred);
       await updatePassword(user, passwordData.newPassword);
-      toast.success(t('auth.dashboard.toast.passwordUpdated'));
+      toast.success("Password updated successfully");
       setShowChangePassword(false);
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      toast.error(err.message || t('auth.dashboard.toast.failedToUpdatePassword'));
+      toast.error(err.message || "Failed to update password");
     }
   };
   const handleProfilePicChange = (e) => {
@@ -184,14 +337,14 @@ const SettingsCards = () => {
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      toast.error(t('auth.dashboard.toast.invalidImageFile'));
+      toast.error('Please upload a valid image file (JPG, JPEG, PNG, or GIF)');
       return;
     }
 
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      toast.error(t('auth.dashboard.toast.fileSizeLimit'));
+      toast.error('File size must be less than 5MB');
       return;
     }
 
@@ -215,13 +368,13 @@ const SettingsCards = () => {
       );
 
       if (!response.ok) {
-        throw new Error(t('auth.dashboard.settings.profilePicture.uploadFailed'));
+        throw new Error('Upload failed');
       }
 
       const data = await response.json();
       return data.secure_url;
     } catch (error) {
-      console.error(t('dashboard.settings.errors.uploadingToCloudinary'), error);
+      console.error('Error uploading to Cloudinary:', error);
       throw error;
     }
   };
@@ -229,8 +382,8 @@ const SettingsCards = () => {
   const handleProfilePicSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
-    if (!profilePic) return toast.error(t('auth.dashboard.toast.pleaseSelectPicture'));
+    if (!user) return toast.error("Not logged in");
+    if (!profilePic) return toast.error("Please select a picture");
 
     setUploadingProfilePic(true);
     setUploadProgress(0);
@@ -251,13 +404,13 @@ const SettingsCards = () => {
 
       // Update local state
       setCurrentProfilePic(imageUrl);
-      toast.success(t('auth.dashboard.toast.profilePictureUpdated'));
+      toast.success("Profile picture updated successfully");
       setShowProfilePicture(false);
       setProfilePic(null);
       setProfilePicPreview(null);
     } catch (err) {
-      console.error(t('dashboard.settings.errors.updatingProfilePicture'), err);
-      toast.error(err.message || t('auth.dashboard.toast.failedToUpdateProfilePicture'));
+      console.error("Error updating profile picture:", err);
+      toast.error(err.message || "Failed to update profile picture");
     } finally {
       setUploadingProfilePic(false);
       setUploadProgress(0);
@@ -268,26 +421,26 @@ const SettingsCards = () => {
     if (size > 40) size = 40;
     setFontSize(size);
     updatePreference("fontSize", size);
-    toast.success(t('auth.dashboard.toast.fontSizeUpdated'));
+    toast.success("Font size updated");
   };
   const handleThemeChange = (mode) => {
     setTheme(mode);
     updatePreference("theme", mode);
-    toast.success(t('auth.dashboard.toast.themeSetTo', { mode }));
+    toast.success(`Theme set to ${mode}`);
     setShowTheme(false);
   };
   const handleNotificationsChange = (field) => {
     const newNotifications = { ...notifications, [field]: !notifications[field] };
     setNotifications(newNotifications);
     updatePreference("notifications", newNotifications);
-    toast.success(t('auth.dashboard.toast.notificationPreferenceUpdated'));
+    toast.success("Notification preference updated");
   };
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
-    if (deleteConfirm !== "DELETE") return toast.error(t('auth.dashboard.toast.typeDeleteToConfirm'));
-    if (!deletePassword) return toast.error(t('auth.dashboard.toast.enterYourPassword'));
+    if (!user) return toast.error("Not logged in");
+    if (deleteConfirm !== "DELETE") return toast.error("Type DELETE to confirm");
+    if (!deletePassword) return toast.error("Enter your password");
     try {
       // Re-authenticate
       const cred = EmailAuthProvider.credential(user.email, deletePassword);
@@ -299,17 +452,17 @@ const SettingsCards = () => {
       // Delete Auth user
       await deleteUser(user);
       
-      toast.success(t('auth.dashboard.toast.accountDeleted'));
+      toast.success("Account deleted successfully");
       setShowDeleteAccount(false);
       setDeleteConfirm("");
       setDeletePassword("");
       navigate("/login");
     } catch (err) {
-      console.error(t('dashboard.settings.errors.deletingAccount'), err);
+      console.error("Error deleting account:", err);
       if (err.code === 'auth/requires-recent-login') {
-        toast.error(t('auth.dashboard.toast.requiresRecentLogin'));
+        toast.error("Please log out and log in again before deleting your account");
       } else {
-        toast.error(err.message || t('auth.dashboard.toast.failedToDeleteAccount'));
+        toast.error(err.message || "Failed to delete account");
       }
     }
   };
@@ -317,12 +470,23 @@ const SettingsCards = () => {
   // Update Firestore profile helper
   const updateFirestoreProfile = async (uid, data) => {
     const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, {
-      "credentials.username": data.username,
-      "credentials.email": data.email,
-      "personalDetails.phoneNumber": data.phone,
-      "personalDetails.name": data.name
-    });
+    const updateData = {};
+    
+    // Only add fields that have valid values
+    if (data.username && data.username.trim()) {
+      updateData["credentials.username"] = data.username.trim();
+    }
+    if (data.email && data.email.trim()) {
+      updateData["credentials.email"] = data.email.trim();
+    }
+    if (data.phone && data.phone.trim()) {
+      updateData["personalDetails.phoneNumber"] = data.phone.trim();
+    }
+    
+    // Only update if there are valid fields to update
+    if (Object.keys(updateData).length > 0) {
+      await updateDoc(userRef, updateData);
+    }
   };
 
   // Handle re-auth and email update
@@ -335,25 +499,25 @@ const SettingsCards = () => {
       await reauthenticateWithCredential(user, cred);
       await updateEmail(user, pendingProfileData.email);
       await updateFirestoreProfile(user.uid, pendingProfileData);
-      toast.success(t('auth.dashboard.toast.profileAndEmailUpdated'));
+      toast.success("Profile and email updated");
       setShowReauth(false);
       setShowEditProfile(false);
       setPendingProfileData(null);
       setReauthPassword("");
     } catch (err) {
-      toast.error(err.message || t('auth.dashboard.toast.reauthenticationFailed'));
+      toast.error(err.message || "Re-authentication failed");
     }
   };
 
   // Helper to update preferences in Firestore
   const updatePreference = async (field, value) => {
     const user = auth.currentUser;
-    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
+    if (!user) return toast.error("Not logged in");
     try {
       const userRef = doc(db, "users", user.uid);
       await updateDoc(userRef, { [`preferences.${field}`]: value });
     } catch (err) {
-      toast.error(t('auth.dashboard.toast.failedToSavePreference'));
+      toast.error("Failed to save preference");
     }
   };
 
@@ -375,56 +539,56 @@ const SettingsCards = () => {
   // Move settingsOptions array here, after all handler functions
   const settingsOptions = [
     {
-      label: t('dashboard.settings.options.editProfile'),
-      description: t('dashboard.settings.options.editProfileDesc'),
+      label: "Edit Profile",
+      description: "Update your name, username, phone, and email",
       icon: <FiUser className="text-2xl" />,
       onClick: () => navigate("/edit-signup-data"),
     },
     {
-      label: t('dashboard.settings.options.changePassword'),
-      description: t('dashboard.settings.options.changePasswordDesc'),
+      label: "Change Password",
+      description: "Update your account password",
       icon: <FiKey className="text-2xl" />,
       onClick: () => setShowChangePassword(true),
     },
     {
-      label: t('dashboard.settings.options.profilePicture'),
-      description: t('dashboard.settings.options.profilePictureDesc'),
+      label: "Profile Picture",
+      description: "Update your profile picture",
       icon: <FiImage className="text-2xl" />,
       onClick: () => setShowProfilePicture(true),
     },
     {
-      label: t('dashboard.settings.options.fontSize'),
-      description: t('dashboard.settings.options.fontSizeDesc'),
+      label: "Font Size",
+      description: "Adjust the text size (Normal / Large / Extra large)",
       icon: <FiType className="text-2xl" />,
       onClick: () => setShowFontSize(true),
     },
     {
-      label: t('dashboard.settings.options.systemAnnouncements'),
-      description: t('dashboard.settings.options.systemAnnouncementsDesc'),
+      label: "System Announcements",
+      description: "View important system updates and announcements",
       icon: <FiAlertCircle className="text-2xl" />,
       onClick: handleOpenAnnouncements,
     },
     {
-      label: t('dashboard.settings.options.notifications'),
-      description: t('dashboard.settings.options.notificationsDesc'),
+      label: "Notifications",
+      description: "Manage your notification preferences",
       icon: <FiBell className="text-2xl" />,
       onClick: () => setShowNotifications(true),
     },
     {
-      label: t('dashboard.settings.options.theme'),
-      description: t('dashboard.settings.options.themeDesc'),
+      label: "Theme",
+      description: "Switch between light and dark mode",
       icon: <FiMoon className="text-2xl" />,
       onClick: () => setShowTheme(true),
     },
     {
-      label: t('dashboard.settings.options.deleteAccount'),
-      description: t('dashboard.settings.options.deleteAccountDesc'),
+      label: "Delete Account",
+      description: "Permanently delete your account",
       icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
       onClick: () => setShowDeleteAccount(true),
     },
     {
-      label: t('dashboard.settings.options.editUserInfo'),
-      description: t('dashboard.settings.options.editUserInfoDesc'),
+      label: "Edit User Information",
+      description: "Edit all information entered during sign-up",
       icon: <FiSettings className="text-2xl" />,
       onClick: handleOpenEditProfile,
     },
@@ -464,124 +628,196 @@ const SettingsCards = () => {
         ))}
       </div>
 
-      {/* Edit Profile Modal */}
+      {/* Edit Profile Modal - Unified Design */}
       {showEditProfile && (
-        <Modal onClose={() => setShowEditProfile(false)} title={t('dashboard.settings.modals.editProfile')}>
-          {loadingProfile && (
-            <div className="flex justify-center items-center mb-4">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
-            </div>
-          )}
-          {showReauth && (
-            <form onSubmit={handleReauthAndSave} className="space-y-4">
-              <PasswordInput
-                value={reauthPassword}
-                onChange={e => setReauthPassword(e.target.value)}
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder={t('dashboard.settings.placeholders.reauthPassword')}
-                autoComplete="current-password"
-                required
-              />
-              <div className="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => setShowReauth(false)} 
-                  className={`px-4 py-2 rounded ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  {t('common.cancel')}
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-                >
-                  {t('dashboard.settings.buttons.reauthenticate')}
-                </button>
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-profile-title"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-30 z-40"></div>
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-50">
+            <button
+              className="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-600"
+              onClick={() => setShowEditProfile(false)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <h2
+              id="edit-profile-title"
+              className="text-2xl font-bold mb-8 text-yellow-600 text-left"
+            >
+              Edit Profile
+            </h2>
+            
+            {loadingProfile && (
+              <div className="flex justify-center items-center mb-4">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
               </div>
-            </form>
-          )}
-          {!showReauth && (
-            <form onSubmit={handleProfileSave} className="space-y-4">
-              <input 
-                type="text" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder={t('dashboard.settings.placeholders.name')}
-                value={profileData.name} 
-                onChange={e => setProfileData({ ...profileData, name: e.target.value })} 
-                required 
-              />
-              <input 
-                type="text" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder={t('dashboard.settings.placeholders.username')}
-                value={profileData.username} 
-                onChange={e => setProfileData({ ...profileData, username: e.target.value })} 
-                required 
-              />
-              <input 
-                type="tel" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder={t('dashboard.settings.placeholders.phone')}
-                value={profileData.phone} 
-                onChange={e => setProfileData({ ...profileData, phone: e.target.value })} 
-              />
-              <input 
-                type="email" 
-                className={`w-full p-2 border rounded ${
-                  theme === 'dark' 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'bg-white border-gray-300'
-                }`}
-                placeholder={t('dashboard.settings.placeholders.email')}
-                value={profileData.email} 
-                onChange={e => setProfileData({ ...profileData, email: e.target.value })} 
-                required 
-              />
-              <div className="flex justify-end gap-2">
-                <button 
-                  type="button" 
-                  onClick={() => setShowEditProfile(false)} 
-                  className={`px-4 py-2 rounded ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  {t('common.cancel')}
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
-                >
-                  {t('common.save')}
-                </button>
-              </div>
-            </form>
-          )}
-        </Modal>
+            )}
+            
+            {showReauth && (
+              <form onSubmit={handleReauthAndSave} className="flex flex-col gap-4">
+                <div className="relative">
+                  <label htmlFor="reauth-password" className="text-sm font-medium">Current Password</label>
+                  <PasswordInput
+                    id="reauth-password"
+                    value={reauthPassword}
+                    onChange={e => setReauthPassword(e.target.value)}
+                    className="w-full pl-3 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
+                    placeholder="Re-authenticate with current password"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    type="button"
+                    onClick={() => setShowReauth(false)}
+                    className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600"
+                  >
+                    Re-authenticate
+                  </button>
+                </div>
+              </form>
+            )}
+            
+            {!showReauth && (
+              <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
+                {/* Auto-save status indicator */}
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                  <span>Auto-save enabled</span>
+                  <div className="flex items-center gap-2">
+                    {autoSaving && (
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Saving...</span>
+                      </div>
+                    )}
+                    {lastSaved && !autoSaving && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Saved {lastSaved.toLocaleTimeString()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <label htmlFor="profile-email" className="text-sm font-medium">Email</label>
+                  <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-email"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={emailField.value}
+                    onChange={(e) => handleFieldChange('email', e.target.value, emailField.onChange)}
+                    onBlur={() => handleBlur('email')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.email && emailField.error ? 'border-red-500' : touched.email && !emailField.error && emailField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Email"
+                  />
+                </div>
+                {touched.email && emailField.isChecking && (
+                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                  </span>
+                )}
+                {touched.email && emailField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {emailField.error}
+                  </span>
+                )}
+
+                <div className="relative">
+                  <label htmlFor="profile-username" className="text-sm font-medium">Username</label>
+                  <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-username"
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    value={usernameField.value}
+                    onChange={(e) => handleFieldChange('username', e.target.value, usernameField.onChange)}
+                    onBlur={() => handleBlur('username')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.username && usernameField.error ? 'border-red-500' : touched.username && !usernameField.error && usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Username"
+                  />
+                </div>
+                {touched.username && usernameField.isChecking && (
+                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                  </span>
+                )}
+                {touched.username && usernameField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {usernameField.error}
+                  </span>
+                )}
+
+                <div className="relative">
+                  <label htmlFor="profile-phone" className="text-sm font-medium">Phone</label>
+                  <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    id="profile-phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Phone"
+                    value={phoneField.value}
+                    onChange={(e) => handleFieldChange('phone', e.target.value, phoneField.onChange)}
+                    onBlur={() => handleBlur('phone')}
+                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
+                      ${touched.phone && phoneField.error ? 'border-red-500' : touched.phone && !phoneField.error && phoneField.value ? 'border-green-500' : 'border-gray-300'}`}
+                    aria-label="Profile Phone"
+                  />
+                </div>
+                {touched.phone && phoneField.error && (
+                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {phoneField.error}
+                  </span>
+                )}
+
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditProfile(false)}
+                    className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 flex items-center justify-center"
+                    disabled={
+                      usernameField.isChecking ||
+                      emailField.isChecking ||
+                      !isValid
+                    }
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
       )}
       {/* Change Password Modal */}
       {showChangePassword && (
-        <Modal onClose={() => setShowChangePassword(false)} title={t('dashboard.settings.modals.changePassword')}>
+        <Modal onClose={() => setShowChangePassword(false)} title="Change Password">
           <form onSubmit={handlePasswordSave} className="space-y-4">
             <PasswordInput
               value={passwordData.currentPassword}
@@ -591,7 +827,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder={t('dashboard.settings.placeholders.currentPassword')}
+              placeholder="Current Password"
               autoComplete="current-password"
               required
             />
@@ -603,7 +839,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder={t('dashboard.settings.placeholders.newPassword')}
+              placeholder="New Password"
               autoComplete="new-password"
               showStrengthIndicator={true}
               required
@@ -616,7 +852,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder={t('dashboard.settings.placeholders.confirmNewPassword')}
+              placeholder="Confirm New Password"
               autoComplete="new-password"
               required
             />
@@ -630,13 +866,13 @@ const SettingsCards = () => {
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
-                {t('common.cancel')}
+                Cancel
               </button>
               <button 
                 type="submit" 
                 className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
               >
-                {t('common.change')}
+                Change
               </button>
             </div>
           </form>
@@ -644,19 +880,19 @@ const SettingsCards = () => {
       )}
       {/* Profile Picture Modal */}
       {showProfilePicture && (
-        <Modal onClose={() => setShowProfilePicture(false)} title={t('dashboard.settings.modals.profilePicture')}>
+        <Modal onClose={() => setShowProfilePicture(false)} title="Update Profile Picture">
           <form onSubmit={handleProfilePicSave} className="space-y-6">
             {/* Current Profile Picture */}
             <div className="flex flex-col items-center">
               <div className="relative w-32 h-32 mb-4">
                 <img 
                   src={currentProfilePic || profile} 
-                  alt={t('auth.dashboard.settings.profilePicture.currentProfile')} 
+                  alt="Current Profile" 
                   className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
                 />
               </div>
               <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                {t('auth.dashboard.settings.profilePicture.currentProfile')}
+                Current Profile Picture
               </p>
             </div>
 
@@ -671,10 +907,10 @@ const SettingsCards = () => {
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <FiImage className={`w-8 h-8 mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
                     <p className={`mb-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      <span className="font-semibold">{t('auth.dashboard.settings.profilePicture.clickToUpload')}</span> {t('auth.dashboard.settings.profilePicture.orDragAndDrop')}
+                      <span className="font-semibold">Click to upload</span> or drag and drop
                     </p>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {t('auth.dashboard.settings.profilePicture.fileTypes')}
+                      PNG, JPG, JPEG or GIF (MAX. 5MB)
                     </p>
                   </div>
                   <input 
@@ -704,12 +940,12 @@ const SettingsCards = () => {
                   <div className="relative w-32 h-32">
                     <img 
                       src={profilePicPreview} 
-                      alt={t('auth.dashboard.settings.profilePicture.preview')} 
+                      alt="Preview" 
                       className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
                     />
                   </div>
                   <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {t('auth.dashboard.settings.profilePicture.newProfilePicturePreview')}
+                    New Profile Picture Preview
                   </p>
                 </div>
               )}
@@ -727,7 +963,7 @@ const SettingsCards = () => {
                 }`}
                 disabled={uploadingProfilePic}
               >
-                {t('common.cancel')}
+                Cancel
               </button>
               <button 
                 type="submit" 
@@ -737,10 +973,10 @@ const SettingsCards = () => {
                 {uploadingProfilePic ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {t('auth.dashboard.settings.profilePicture.uploading')}
+                    Uploading...
                   </>
                 ) : (
-                  t('dashboard.settings.buttons.saveChanges')
+                  'Save Changes'
                 )}
               </button>
             </div>
@@ -749,7 +985,7 @@ const SettingsCards = () => {
       )}
       {/* Font Size Modal */}
       {showFontSize && (
-        <Modal onClose={() => setShowFontSize(false)} title={t('dashboard.settings.modals.fontSize')}>
+        <Modal onClose={() => setShowFontSize(false)} title="Font Size">
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2">
               <button
@@ -805,14 +1041,14 @@ const SettingsCards = () => {
               ))}
             </div>
             <div className={`mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`} style={{ fontSize: fontSize }}>
-              {t('auth.dashboard.settings.fontSize.livePreview')}: {t('auth.dashboard.settings.fontSize.sampleText')}
+              Live preview: The quick brown fox jumps over the lazy dog.
             </div>
           </div>
         </Modal>
       )}
       {/* Announcements Modal */}
       {showAnnouncements && (
-        <Modal onClose={() => setShowAnnouncements(false)} title={t('dashboard.settings.modals.announcements')}>
+        <Modal onClose={() => setShowAnnouncements(false)} title="System Announcements">
           {loadingAnnouncements ? (
             <div className="flex justify-center items-center mb-4">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
@@ -838,7 +1074,7 @@ const SettingsCards = () => {
       )}
       {/* Notifications Modal */}
       {showNotifications && (
-        <Modal onClose={() => setShowNotifications(false)} title={t('dashboard.settings.modals.notifications')}>
+        <Modal onClose={() => setShowNotifications(false)} title="Notifications">
           <div className="space-y-4">
             <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
               <input 
@@ -847,7 +1083,7 @@ const SettingsCards = () => {
                 onChange={() => handleNotificationsChange("email")} 
                 className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
               />
-              {t('auth.dashboard.settings.notifications.emailNotifications')}
+              Email Notifications
             </label>
             <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
               <input 
@@ -856,14 +1092,14 @@ const SettingsCards = () => {
                 onChange={() => handleNotificationsChange("push")} 
                 className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
               />
-              {t('auth.dashboard.settings.notifications.pushNotifications')}
+              Push Notifications
             </label>
           </div>
         </Modal>
       )}
       {/* Theme Modal */}
       {showTheme && (
-        <Modal onClose={() => setShowTheme(false)} title={t('dashboard.settings.modals.theme')}>
+        <Modal onClose={() => setShowTheme(false)} title="Theme">
           <div className="space-y-3">
             <button 
               onClick={() => handleThemeChange("light")} 
@@ -875,7 +1111,7 @@ const SettingsCards = () => {
                     : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              {t('auth.dashboard.settings.theme.light')}
+              Light
             </button>
             <button 
               onClick={() => handleThemeChange("dark")} 
@@ -887,22 +1123,22 @@ const SettingsCards = () => {
                     : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              {t('auth.dashboard.settings.theme.dark')}
+              Dark
             </button>
           </div>
         </Modal>
       )}
       {/* Delete Account Modal */}
       {showDeleteAccount && (
-        <Modal onClose={() => setShowDeleteAccount(false)} title={t('dashboard.settings.modals.deleteAccount')}>
+        <Modal onClose={() => setShowDeleteAccount(false)} title="Delete Account">
           <form onSubmit={handleDeleteAccount} className="space-y-4">
             <div className={`text-red-600 font-semibold ${theme === 'dark' ? 'text-red-400' : ''}`}>
-              {t('auth.dashboard.settings.deleteAccountWarning')}
+              This action is irreversible. Type <b>DELETE</b> to confirm.
             </div>
             <input 
               type="text"
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder={t('dashboard.settings.placeholders.deleteConfirm')}
+              placeholder="Type DELETE to confirm"
               value={deleteConfirm}
               onChange={e => setDeleteConfirm(e.target.value)}
               required
@@ -911,7 +1147,7 @@ const SettingsCards = () => {
               value={deletePassword}
               onChange={e => setDeletePassword(e.target.value)}
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder={t('dashboard.settings.placeholders.enterPassword')}
+              placeholder="Enter your password"
               autoComplete="current-password"
             />
             <div className="flex justify-end gap-2">
@@ -924,13 +1160,13 @@ const SettingsCards = () => {
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
-                {t('common.cancel')}
+                Cancel
               </button>
               <button 
                 type="submit" 
                 className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
               >
-                {t('common.delete')}
+                Delete
               </button>
             </div>
           </form>

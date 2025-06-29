@@ -1047,6 +1047,7 @@
             "moreDetails": "מידע נוסף",
             "participants": "משתתפים",
             "noParticipants": "עדיין אין משתתפים"
+
     },
     "filter": {
             "allCategories": "כל הקטגוריות",
@@ -1536,3 +1537,4 @@
     }
   }
 } 
+

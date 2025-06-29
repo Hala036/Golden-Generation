@@ -318,7 +318,7 @@ const CategoryManagement = () => {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
           <h2 className="text-xl font-bold mb-4">{title}</h2>
           {children}
@@ -368,18 +368,19 @@ const CategoryManagement = () => {
           )}
           <button
             onClick={openAddModal}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md flex items-center gap-2"
+            className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-2.5 py-1.5 mr-1 rounded-md flex items-center gap-1.5 text-sm"
           >
             <FaPlus /> {t("auth.categoryManagement.addCategory")}
           </button>
         </div>
       </div>
 
-      {/* Categories Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+      {/* Categories Table for md+ */}
+      <div className="bg-white rounded-lg shadow overflow-x-auto hidden md:block">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-50">
             <tr>
+
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {t("auth.categoryManagement.tableHeaders.category")}
               </th>
@@ -395,13 +396,20 @@ const CategoryManagement = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {t("auth.categoryManagement.tableHeaders.actions")}
               </th>
+
+              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Category</th>
+              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Color</th>
+              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Translations</th>
+              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Events Using</th>
+              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Actions</th>
+
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {categories.map((category) => (
               <tr key={category.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis">
+                  <div className="font-medium text-gray-900">
                     {category.translations?.[language] || category.translations?.en || category.name}
                   </div>
                 </td>
@@ -411,17 +419,17 @@ const CategoryManagement = () => {
                       className="w-6 h-6 rounded-full border border-gray-300"
                       style={{ backgroundColor: category.color }}
                     ></div>
-                    <span className="ml-2 text-sm text-gray-500">{category.color}</span>
+                    <span className="ml-2 text-gray-500">{category.color}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500 max-w-md overflow-hidden text-ellipsis">
                   <div className="space-y-1">
                     <div>EN: {category.translations?.en || "N/A"}</div>
                     <div>HE: {category.translations?.he || "N/A"}</div>
                     <div>AR: {category.translations?.ar || "N/A"}</div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     (categoryUsage[category.id] || 0) > 0 
                       ? 'bg-yellow-100 text-yellow-800' 
@@ -430,7 +438,7 @@ const CategoryManagement = () => {
                     {t("auth.categoryManagement.eventsCount", { count: categoryUsage[category.id] || 0 })}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap font-medium">
                   <div className="flex space-x-2">
                     <button
                       onClick={() => openViewModal(category)}
@@ -459,6 +467,65 @@ const CategoryManagement = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Category List (below md) */}
+      <div className="block md:hidden">
+        <div className="space-y-3 flex flex-col items-center">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="bg-white rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
+              style={{ minWidth: '220px' }}
+            >
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-6 h-6 rounded-full border border-gray-300" style={{ backgroundColor: category.color }}></div>
+                <div className="font-medium text-gray-900 text-sm flex-1">
+                  {category.translations?.[language] || category.translations?.en || category.name}
+                </div>
+              </div>
+              <div className="flex items-start justify-between mb-1">
+                <div className="text-xs text-gray-500">
+                  <div>EN: {category.translations?.en || "N/A"}</div>
+                  <div>HE: {category.translations?.he || "N/A"}</div>
+                  <div>AR: {category.translations?.ar || "N/A"}</div>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium mt-1 ml-2 ${
+                  (categoryUsage[category.id] || 0) > 0 
+                    ? 'bg-yellow-100 text-yellow-800' 
+                    : 'bg-green-100 text-green-800'
+                }`}>
+                  {categoryUsage[category.id] || 0} events
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 mt-1 justify-end">
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => openViewModal(category)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title="View"
+                  >
+                    <FaEye />
+                  </button>
+                  <button
+                    onClick={() => openEditModal(category)}
+                    className="text-yellow-600 hover:text-yellow-900"
+                    title="Edit"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCategory(category)}
+                    className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                    title="Delete category"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Add Category Modal */}

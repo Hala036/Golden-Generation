@@ -1,10 +1,10 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import useAuth from '../hooks/useAuth';
 import { useLanguage } from '../context/LanguageContext';
 
 const PublicRoute = ({ children }) => {
-  const { currentUser, loading } = useAuth();
+  const { user, loading } = useAuth();
   const { t } = useLanguage();
 
   if (loading) {
@@ -15,7 +15,7 @@ const PublicRoute = ({ children }) => {
     );
   }
 
-  return !currentUser ? children : <Navigate to="/dashboard" />;
+  return !user ? children : <Navigate to="/dashboard" />;
 };
 
 export default PublicRoute; 

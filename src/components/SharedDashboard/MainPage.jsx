@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo, useRef } from "react";
 import { UserContext } from "../../context/UserContext"; // Import UserContext
 import { FaBell, FaPlus, FaSearch, FaUsers, FaChartBar, FaCalendarAlt, FaClock, FaExclamationTriangle, FaCheckCircle, FaUserPlus, FaHandshake, FaHandsHelping, FaCalendarCheck, FaCalendarDay, FaUserShield, FaMapMarkerAlt } from 'react-icons/fa';
 import { getServiceRequests } from "../../serviceRequestsService"; // Import serviceRequests logic
@@ -7,15 +7,50 @@ import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
 import { useLanguage } from "../../context/LanguageContext";
 
-const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
   const { t } = useLanguage();
-  console.log("MainPage mounted");
+import DefaultProfilePic from "../DefaultProfilePic"; // Import DefaultProfilePic component
+const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) => {
+  const mountedRef = useRef(false);
+  
+  if (!mountedRef.current) {
+    console.log("MainPage mounted");
+    mountedRef.current = true;
+  }
+  
+
   const { userData, loading } = useContext(UserContext);
-  if (loading) return <div>Loading...</div>;
   const user = auth.currentUser;
-  const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
-  const userName = userData?.credentials?.username || "Admin";
-  const userRole = userData?.role || ""; // Get user role
+
+  // Memoize user data calculations to prevent unnecessary re-renders
+  const userInfo = useMemo(() => {
+    const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
+    const userName = userData?.credentials?.username || "Admin";
+    const userRole = userData?.role || "";
+    return { userSettlement, userName, userRole };
+  }, [userData]);
+
+  const { userSettlement, userName, userRole } = userInfo;
+
+  // Define colors for different user types
+  const defaultColors = {
+    admin: '#4F46E5', // Indigo
+    superadmin: '#DC2626', // Red
+    retiree: '#059669', // Green
+    default: '#6B7280', // Gray
+  };
+
+  // Debug logging for user data - only log when data changes
+  useEffect(() => {
+    console.log("MainPage userData:", {
+      userData,
+      userSettlement,
+      userName,
+      userRole,
+      idVerificationSettlement: userData?.idVerification?.settlement,
+      directSettlement: userData?.settlement
+    });
+  }, [userData, userSettlement, userName, userRole]);
+  
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -35,15 +70,24 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     { id: 5, action: 'Event "Music Workshop" fully booked', time: '3 hours ago', type: 'event' }
   ];
 
-  useState(() => {
+  useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      mountedRef.current = false;
+    };
   }, []);
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
   useEffect(() => {
     console.log("MainPage useEffect running, userSettlement:", userSettlement);
-    if (!userSettlement) return;
+    
+    // Don't run if still loading or if userData is null
+    if (loading || !userData) return;
+    
+    // For admin users without settlement, show global data
+    // For retiree users, require settlement
+    if (!userSettlement && userRole !== 'admin' && userRole !== 'superadmin') return;
 
     // Pending Service Requests
     const fetchPendingRequestsCount = async () => {
@@ -62,22 +106,35 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
 
-        // Query by idVerification.settlement
-        const allUsersQuery1 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("idVerification.settlement", "==", userSettlement)
-        );
-        const querySnapshot1 = await getDocs(allUsersQuery1);
-        // Query by settlement (root)
-        const allUsersQuery2 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("settlement", "==", userSettlement)
-        );
-        const querySnapshot2 = await getDocs(allUsersQuery2);
-        // Merge and deduplicate
-        const allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        let allDocs = [];
+        
+        if (userSettlement) {
+          // Query by idVerification.settlement
+          const allUsersQuery1 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("idVerification.settlement", "==", userSettlement)
+          );
+          const querySnapshot1 = await getDocs(allUsersQuery1);
+          // Query by settlement (root)
+          const allUsersQuery2 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("settlement", "==", userSettlement)
+          );
+          const querySnapshot2 = await getDocs(allUsersQuery2);
+          // Merge and deduplicate
+          allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        } else {
+          // For admin users without settlement, get all retirees
+          const allUsersQuery = query(
+            collection(db, "users"),
+            where("role", "==", "retiree")
+          );
+          const querySnapshot = await getDocs(allUsersQuery);
+          allDocs = querySnapshot.docs;
+        }
+        
         // Filter users manually based on the `createdAt` field
         const retireesRegisteredThisWeek = allDocs.filter((doc) => {
           let createdAt = doc.data().createdAt;
@@ -88,7 +145,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           }
           return createdAt && createdAt >= lastWeek;
         });
-        console.log('All retiree docs for dashboard:', allDocs.map(doc => ({ id: doc.id, createdAt: doc.data().createdAt, role: doc.data().role, settlement: doc.data().settlement, idVerification: doc.data().idVerification })));
         setRetireesRegisteredCount(retireesRegisteredThisWeek.length);
       } catch (error) {
         console.error("Error fetching retirees registered count:", error);
@@ -132,11 +188,20 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     // Pending Event Requests Count
     const fetchPendingEventRequestsCount = async () => {
       try {
-        const pendingEventsQuery = query(
-          collection(db, "events"),
-          where("status", "==", "pending"), // Query for pending events
-          where("settlement", "==", userSettlement)
-        );
+        let pendingEventsQuery;
+        if (userSettlement) {
+          pendingEventsQuery = query(
+            collection(db, "events"),
+            where("status", "==", "pending"), // Query for pending events
+            where("settlement", "==", userSettlement)
+          );
+        } else {
+          // For admin users without settlement, get all pending events
+          pendingEventsQuery = query(
+            collection(db, "events"),
+            where("status", "==", "pending") // Query for pending events
+          );
+        }
         const querySnapshot = await getDocs(pendingEventsQuery);
         setPendingEventsCount(querySnapshot.size);
       } catch (error) {
@@ -216,22 +281,35 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
         // Fetch actions from retirees
         const lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 7);
-        // Query by idVerification.settlement
-        const allUsersQuery1 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("idVerification.settlement", "==", userSettlement)
-        );
-        const querySnapshot1 = await getDocs(allUsersQuery1);
-        // Query by settlement (root)
-        const allUsersQuery2 = query(
-          collection(db, "users"),
-          where("role", "==", "retiree"),
-          where("settlement", "==", userSettlement)
-        );
-        const querySnapshot2 = await getDocs(allUsersQuery2);
-        // Merge and deduplicate
-        const allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        
+        let allDocs = [];
+        if (userSettlement) {
+          // Query by idVerification.settlement
+          const allUsersQuery1 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("idVerification.settlement", "==", userSettlement)
+          );
+          const querySnapshot1 = await getDocs(allUsersQuery1);
+          // Query by settlement (root)
+          const allUsersQuery2 = query(
+            collection(db, "users"),
+            where("role", "==", "retiree"),
+            where("settlement", "==", userSettlement)
+          );
+          const querySnapshot2 = await getDocs(allUsersQuery2);
+          // Merge and deduplicate
+          allDocs = [...querySnapshot1.docs, ...querySnapshot2.docs.filter(doc2 => !querySnapshot1.docs.some(doc1 => doc1.id === doc2.id))];
+        } else {
+          // For admin users without settlement, get all retirees
+          const allUsersQuery = query(
+            collection(db, "users"),
+            where("role", "==", "retiree")
+          );
+          const querySnapshot = await getDocs(allUsersQuery);
+          allDocs = querySnapshot.docs;
+        }
+        
         const lastWeekForActivity = new Date();
         lastWeekForActivity.setDate(lastWeekForActivity.getDate() - 7);
         const recentRetirees = allDocs.filter((doc) => {
@@ -243,7 +321,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           }
           return createdAt && createdAt >= lastWeekForActivity;
         });
-        console.log('Recent retirees for recent activity:', recentRetirees.map(r => ({ id: r.id, createdAt: r.data().createdAt })));
         recentRetirees.forEach((retiree) => {
           activity.push({
             id: retiree.id,
@@ -280,7 +357,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
           where("status", "==", "active")
         );
         const eventsSnapshot = await getDocs(activeEventsQuery);
-        console.log('All event docs for dashboard:', eventsSnapshot.docs.map(doc => ({ id: doc.id, createdAt: doc.data().createdAt, status: doc.data().status, settlement: doc.data().settlement })));
         const recentEvents = eventsSnapshot.docs.filter((doc) => {
           let eventDate = doc.data().createdAt;
           if (eventDate && eventDate.toDate) {
@@ -375,7 +451,10 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     fetchActiveEventsCount();
     fetchVolunteerMatchesCount();
     fetchRecentActivity();
-  }, [userSettlement, userData?.uid]); // Dependencies on userSettlement and current user's UID
+  }, [userSettlement, user?.uid, userRole, loading]); // Include loading dependency
+
+  // Loading check after all hooks are declared
+  if (loading) return <div>Loading...</div>;
 
   const overviewCards = [
     {
@@ -473,32 +552,39 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
     if (minutes < 60) return t('dashboard.main.time.minutesAgo', { count: minutes });
     if (hours < 24) return t('dashboard.main.time.hoursAgo', { count: hours });
     return t('dashboard.main.time.daysAgo', { count: days });
+  // Function to extract name from activity action
+  const extractNameFromAction = (action) => {
+    // Match pattern: starts with any word characters up to a space or 'joined'
+    const match = action.match(/^([^\s]+)(?=\s|joined)/);
+    return match ? match[1] : '';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-4 md:mb-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('dashboard.main.welcome', { userName })}</h1>
             <p className="text-gray-600">{t('dashboard.main.communityToday')}</p>
+
           </div>
           {/* Quick Actions */}
-          <div className={`grid gap-2 ${userRole && userRole.toLowerCase() === 'superadmin' ? 'grid-cols-6' : 'grid-cols-4'}`}>
+          <div className={`grid gap-1 md:gap-2 w-full max-w-s md:mr-3 md:ml-3 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
             {allQuickActions.map((action, index) => (
               <button
                 key={index}
                 onClick={action.onClick}
-                className={`${action.color} text-white p-2 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-1`}
+                className={`${action.color} text-white p-1 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-0.5 md:space-y-1`}
               >
-                <span className="text-lg md:text-xl">{action.icon}</span>
-                <span className="text-[10px] md:text-xs font-small text-center">{action.title}</span>
+                <span className="text-base md:text-xl">{action.icon}</span>
+                <span className="text-[9px] md:text-xs font-small text-center">{action.title}</span>
               </button>
             ))}
           </div>
           <div className="text-right">
             <div className="text-sm text-gray-500">{t('dashboard.main.currentTime')}</div>
+
             <div className="text-lg font-semibold text-gray-700">
               {currentTime.toLocaleTimeString()}
             </div>
@@ -507,49 +593,61 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6">
         {overviewCards.map((card, index) => (
           <div
             key={index}
             onClick={card.onClick} // Handle card click
-            className={`${card.color} border-2 rounded-lg p-4 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
+            className={`${card.color} border-2 rounded-lg p-2 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
           >
             <div className="flex flex-col items-center justify-between h-full mb-1">
               {/* Title and Icon */}
               <div className="flex items-center justify-between w-full">
-                <p className="text-xs md:text-sm font-medium text-gray-600">{card.title}</p>
-                <div className="text-lg md:text-3xl">{card.icon}</div>
+                <p className="text-[11px] md:text-sm font-medium text-gray-600">{card.title}</p>
+                <div className="text-base md:text-3xl">{card.icon}</div>
               </div>
-              
               {/* Value */}
-              <p className="text-xl md:text-3xl font-bold text-gray-800 text-center">{card.value}</p>
+              <p className="text-lg md:text-3xl font-bold text-gray-800 text-center">{card.value}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-3">
         {/* Recent Activity Feed */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
+            <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
               {t('dashboard.main.recentActivityFeed')}
             </h2>
-            <div className="space-y-4 max-h-80 overflow-y-auto">
+            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
               {recentActivity.length === 0 && (
                 <div className="text-center text-gray-500 py-4">
                   {t('dashboard.main.noRecentActivity')}
+
                 </div>
               )}
               {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div key={activity.id} className="flex items-start space-x-2 md:space-x-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div className="flex-shrink-0 mt-1">
-                    {getActivityIcon(activity.type)}
+                    {activity.type === 'join' ? (
+                      <div className="w-8 h-8">
+                        <DefaultProfilePic 
+                          name={extractNameFromAction(activity.action)} 
+                          size={32} 
+                          fontSize="0.9rem"
+                          bgColor={defaultColors['retiree']}
+                        />
+                      </div>
+                    ) : (
+                      getActivityIcon(activity.type)
+                    )}
                   </div>
                   <div className="flex-grow">
                     <p className="text-sm text-gray-800">{getActivityAction(activity)}</p>
                     <p className="text-xs text-gray-500 mt-1">{getTimeAgo(/* pass correct values here based on activity.time */)}</p>
+
                   </div>
                 </div>
               ))}
@@ -559,16 +657,16 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
 
         {/* Alerts & Quick Actions */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-1 p-3 flex items-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
+            <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center">
               <FaBell className="mr-2 text-red-500" />
               {t('dashboard.main.alertsAndNotifications')}
             </h2>
-            <div className="space-y-4 max-h-80 overflow-y-auto">
+            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
               <Notifications 
                 setSelectedTab={setSelected} 
                 setShowNotificationsPopup={setShowNotificationsPopup} 
-                limit={3} // Limit notifications to 3
+                limit={3}
               />
             </div>
           </div>
@@ -576,6 +674,6 @@ const AdminHomepage = ({ setSelected, setShowNotificationsPopup }) => {
       </div>
     </div>
   );
-};
+});
 
 export default AdminHomepage;

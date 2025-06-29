@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, MapPin, Bell, Plus, Edit, Trash2, Eye, Check, X, Filter, Search, Settings, Award, BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+// Firestore imports
+import { db } from '../../firebase';
+import { collection, onSnapshot, addDoc } from 'firebase/firestore';
 
 const RetireeCalendar = () => {
   const { t } = useTranslation();
@@ -17,6 +22,7 @@ const RetireeCalendar = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
   // Sample events data
   const [events, setEvents] = useState([
@@ -70,6 +76,7 @@ const RetireeCalendar = () => {
     }
   ]);
 
+
   const [newEvent, setNewEvent] = useState({
     title: '',
     date: '',
@@ -81,6 +88,17 @@ const RetireeCalendar = () => {
     maxParticipants: 10,
     recurring: 'none'
   });
+
+  // Fetch events from Firestore in real-time
+  useEffect(() => {
+    setLoading(true);
+    const unsubscribe = onSnapshot(collection(db, 'events'), (snapshot) => {
+      const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setEvents(eventsData);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Get calendar days for current month
   const getDaysInMonth = () => {
@@ -173,29 +191,31 @@ const RetireeCalendar = () => {
     ));
   };
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     const event = {
       ...newEvent,
-      id: Date.now().toString(),
       createdBy: currentUser.id,
       participants: [currentUser.id],
       status: currentUser.role === 'admin' ? 'open' : 'pending',
       color: currentUser.role === 'admin' ? 'blue' : 'yellow'
     };
-    
-    setEvents(prev => [...prev, event]);
-    setNewEvent({
-      title: '',
-      date: '',
-      time: '',
-      duration: 60,
-      location: '',
-      description: '',
-      category: 'social',
-      maxParticipants: 10,
-      recurring: 'none'
-    });
-    setShowCreateModal(false);
+    try {
+      await addDoc(collection(db, 'events'), event);
+      setNewEvent({
+        title: '',
+        date: '',
+        time: '',
+        duration: 60,
+        location: '',
+        description: '',
+        category: 'social',
+        maxParticipants: 10,
+        recurring: 'none'
+      });
+      setShowCreateModal(false);
+    } catch (error) {
+      alert('Error creating event: ' + error.message);
+    }
   };
 
   const navigateMonth = (direction) => {
@@ -232,6 +252,49 @@ const RetireeCalendar = () => {
   ];
 
   const isAdmin = currentUser.role === 'admin';
+
+  // Loading skeleton for calendar grid
+  const CalendarSkeleton = () => (
+    <div className="grid grid-cols-7 gap-1">
+      {Array.from({ length: 42 }, (_, i) => (
+        <div key={i} className="h-24 border border-gray-200 p-1">
+          <div className="h-4 bg-gray-200 rounded w-6 mb-1"></div>
+          <div className="space-y-1">
+            <div className="h-3 bg-gray-200 rounded w-full"></div>
+            <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Loading skeleton for events list
+  const EventsListSkeleton = () => (
+    <div className="space-y-3">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="p-3 border rounded-lg bg-white shadow-sm">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex-1">
+              <div className="h-5 bg-gray-200 rounded w-3/4 mb-1"></div>
+              <div className="flex items-center space-x-2 mb-1">
+                <div className="h-3 bg-gray-200 rounded w-4"></div>
+                <div className="h-3 bg-gray-200 rounded w-20"></div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="h-3 bg-gray-200 rounded w-4"></div>
+                <div className="h-3 bg-gray-200 rounded w-24"></div>
+              </div>
+            </div>
+            <div className="flex space-x-1">
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-6"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

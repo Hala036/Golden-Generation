@@ -38,11 +38,17 @@ const db = initializeFirestore(app, {
  */
 const getUserData = async (uid) => {
   try {
+    console.debug('[getUserData] Fetching user data for UID:', uid);
     const userDoc = await getDoc(doc(db, 'users', uid));
     if (userDoc.exists()) {
-      return userDoc.data();
+      const userData = userDoc.data();
+      console.debug('[getUserData] User data found:', { uid, role: userData.role, settlement: userData.settlement, idVerification: userData.idVerification });
+      return userData;
     }
-    console.warn("No user document found for UID:", uid);
+    // Only log this warning in development and reduce frequency
+    if (import.meta.env.DEV && Math.random() < 0.1) { // Only log 10% of the time
+      console.debug("No user document found for UID:", uid, "(This is normal during user creation)");
+    }
     return null;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -116,7 +122,15 @@ export const getUsersBySettlement = async (settlement) => {
     const snapshot = await getDocs(usersRef);
     const users = snapshot.docs
       .map((doc) => doc.data())
-      .filter((user) => user.idVerification?.settlement === settlement); // Filter by settlement
+      .filter((user) => {
+        if (user?.role === "admin") {
+          // For admin, use user.settlement (or user.credentials.settlement if that's where it's stored)
+          return user?.settlement === settlement || user.settlement === settlement;
+        } else {
+          // For others, use idVerification.settlement (legacy)
+          return user.idVerification?.settlement === settlement;
+        }
+      });
     return users;
   } catch (error) {
     console.error("Error fetching users by settlement:", error);

@@ -19,14 +19,6 @@ const Credentials = ({ onComplete }) => {
   const [isChecking, setIsChecking] = useState(false);
   const { credentialsData, updateCredentialsData } = useSignupStore();
 
-  // Prefill form in edit mode
-  useEffect(() => {
-    if (editMode && data && Object.keys(data).length > 0) {
-      updateCredentialsData(data);
-    }
-    // eslint-disable-next-line
-  }, [editMode, data]);
-
   // Debounced email check
   const checkEmailAvailability = debounce(async (email) => {
     if (!email) return;
