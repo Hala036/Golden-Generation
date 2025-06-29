@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../../firebase';
 import { getEventParticipants, leaveEvent, joinEvent } from '../../utils/participants';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, writeBatch } from 'firebase/firestore';
 import { FaTimes, FaUsers, FaUser, FaCheck, FaCalendarAlt, FaClock, FaMapPin, FaInfoCircle, FaStar } from 'react-icons/fa';
 import { format } from 'date-fns';
+import CreateEventForm from './CreateEventForm';
 
 const getInitials = (username = '') => {
   if (!username) return '?';
@@ -26,6 +27,8 @@ const BaseEventDetails = ({
   const [participantUsers, setParticipantUsers] = useState([]); // [{uid, username, ...}]
   const [loadingAction, setLoadingAction] = useState(false);
   const currentUser = auth.currentUser;
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const isJoined = participants.some(p => p.uid === currentUser?.uid);
   const isCreator = event.createdBy === currentUser?.uid;
@@ -92,6 +95,36 @@ const BaseEventDetails = ({
 
   // Status badge color
   const statusColor = event.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : event.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700';
+
+  const formatToYyyyMmDd = (dateStr) => {
+    if (!dateStr || typeof dateStr !== 'string' || !dateStr.includes('-')) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return '';
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  };
+
+  const handleEdit = () => {
+    setShowEditModal(true);
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!window.confirm('Are you sure you want to delete this event? This cannot be undone.')) return;
+    try {
+      const eventRef = doc(db, 'events', event.id);
+      // Batch delete participants subcollection and the event itself
+      const participantsSnapshot = await getDocs(collection(db, `events/${event.id}/participants`));
+      const batch = writeBatch(db);
+      participantsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      batch.delete(eventRef);
+      await batch.commit();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Failed to delete event.');
+    }
+  };
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
@@ -214,14 +247,14 @@ const BaseEventDetails = ({
           {(userRole === 'admin' || userRole === 'superadmin' || (userRole === 'retiree' && isCreator)) && (
             <>
               <button
-                onClick={() => { /* TODO: Implement edit logic */ alert('Edit event (not implemented)'); }}
+                onClick={handleEdit}
                 className="px-4 py-2 rounded font-semibold bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors duration-200 w-full md:w-auto"
                 aria-label="Edit Event"
               >
                 Edit
               </button>
               <button
-                onClick={() => { /* TODO: Implement delete logic */ alert('Delete event (not implemented)'); }}
+                onClick={handleDeleteEvent}
                 className="px-4 py-2 rounded font-semibold bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors duration-200 w-full md:w-auto"
                 aria-label="Delete Event"
               >
@@ -249,6 +282,24 @@ const BaseEventDetails = ({
           )}
           {children}
         </div>
+
+        {/* Edit Modal */}
+        {showEditModal && (
+          <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+              <CreateEventForm
+                onClose={() => setShowEditModal(false)}
+                userRole={userRole}
+                initialData={{
+                  ...event,
+                  startDate: formatToYyyyMmDd(event.startDate),
+                  endDate: formatToYyyyMmDd(event.endDate),
+                }}
+                isEditing={true}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
