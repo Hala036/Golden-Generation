@@ -10,6 +10,7 @@ import { triggerNotification } from './TriggerNotifications'; // Import the trig
 import EmptyState from '../EmptyState'; // Import EmptyState component
 import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
+import useAuth from '../../hooks/useAuth'; // Import useAuth hook
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -159,6 +160,7 @@ const initiateCall = async (currentUser, otherUser) => {
 };
 
 const Messages = () => {
+  const { user, isAuthenticated, loading: authLoading } = useAuth(); // Use useAuth hook
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -177,11 +179,11 @@ const Messages = () => {
 
   // Fetch friend requests
   useEffect(() => {
-    if (!auth.currentUser) return;
+    if (!user) return; // Use user from useAuth instead of auth.currentUser
 
     const q = query(
       collection(db, 'friendRequests'),
-      where('receiverId', '==', auth.currentUser.uid),
+      where('receiverId', '==', user.uid), // Use user.uid instead of auth.currentUser.uid
       where('status', '==', 'pending')
     );
 
@@ -194,7 +196,7 @@ const Messages = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]); // Add user as dependency
 
   // Fetch users for chat
   useEffect(() => {
@@ -239,7 +241,7 @@ const Messages = () => {
   const sendFriendRequest = async (receiverId) => {
     try {
       // Check if request already exists
-      const requestExists = await checkExistingRequest(auth.currentUser.uid, receiverId);
+      const requestExists = await checkExistingRequest(user.uid, receiverId);
       if (requestExists) {
         toast.error('A friend request already exists');
         setShowRequestModal(false);
@@ -247,7 +249,7 @@ const Messages = () => {
       }
 
       const requestData = {
-        senderId: auth.currentUser.uid,
+        senderId: user.uid,
         receiverId,
         status: 'pending',
         timestamp: serverTimestamp()
@@ -271,14 +273,14 @@ const Messages = () => {
 
       // Add to friends collection
       const friendData = {
-        users: [auth.currentUser.uid, senderId].sort().join('_'),
+        users: [user.uid, senderId].sort().join('_'),
         timestamp: serverTimestamp()
       };
       await addDoc(collection(db, 'friends'), friendData);
 
       // Create new conversation
       const conversationData = {
-        participants: [auth.currentUser.uid, senderId],
+        participants: [user.uid, senderId],
         lastMessageTime: serverTimestamp(),
         lastMessage: '',
         createdAt: serverTimestamp()
@@ -311,11 +313,11 @@ const Messages = () => {
 
   // Fetch conversations
   useEffect(() => {
-    if (!auth.currentUser) return;
+    if (!user) return;
 
     const q = query(
       collection(db, 'conversations'),
-      where('participants', 'array-contains', auth.currentUser.uid),
+      where('participants', 'array-contains', user.uid),
       orderBy('lastMessageTime', 'desc')
     );
 
@@ -328,7 +330,7 @@ const Messages = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Fetch messages for selected chat
   useEffect(() => {
@@ -362,7 +364,7 @@ const Messages = () => {
     try {
       const messageData = {
         conversationId: selectedChat.id,
-        senderId: auth.currentUser.uid,
+        senderId: user.uid,
         text: newMessage.trim(),
         timestamp: serverTimestamp()
       };
@@ -371,12 +373,12 @@ const Messages = () => {
       await addDoc(collection(db, 'messages'), messageData);
 
       // Trigger a notification for the recipient
-      const recipientId = selectedChat.participants.find((p) => p !== auth.currentUser.uid);
+      const recipientId = selectedChat.participants.find((p) => p !== user.uid);
       await triggerNotification({
-        message: `New message from ${auth.currentUser.displayName || 'a user'}`,
+        message: `New message from ${user.displayName || 'a user'}`,
         target: [recipientId], // Send notification to the recipient
         link: `/messages/${selectedChat.id}`, // Link to the conversation
-        createdBy: auth.currentUser.uid,
+        createdBy: user.uid,
         type: 'message'
       });
 
@@ -390,8 +392,8 @@ const Messages = () => {
   // Modified startNewChat function
   const startNewChat = async (userId) => {
     try {
-      const isFriend = await areUsersFriends(auth.currentUser.uid, userId);
-      const hasPendingRequest = await checkExistingRequest(auth.currentUser.uid, userId);
+      const isFriend = await areUsersFriends(user.uid, userId);
+      const hasPendingRequest = await checkExistingRequest(user.uid, userId);
       
       if (!isFriend) {
         if (hasPendingRequest) {
@@ -406,7 +408,7 @@ const Messages = () => {
       // If they are friends, find or create conversation
       const existing = conversations.find(conv =>
         conv.participants.length === 2 &&
-        conv.participants.includes(auth.currentUser.uid) &&
+        conv.participants.includes(user.uid) &&
         conv.participants.includes(userId)
       );
 
@@ -417,7 +419,7 @@ const Messages = () => {
 
       // Create new conversation if it doesn't exist
       const conversationData = {
-        participants: [auth.currentUser.uid, userId],
+        participants: [user.uid, userId],
         lastMessageTime: serverTimestamp(),
         lastMessage: '',
         createdAt: serverTimestamp()
@@ -430,19 +432,19 @@ const Messages = () => {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    (user.username || '').toLowerCase().includes(searchQuery.toLowerCase()) &&
-    user.id !== auth.currentUser?.uid
-  );  
+  const filteredUsers = users.filter(userItem => 
+    (userItem.username || '').toLowerCase().includes(searchQuery.toLowerCase()) &&
+    userItem.id !== user?.uid
+  );
 
   // Find the other user in the selected chat
-  const otherUser = selectedChat && users.find(u => u.id === selectedChat.participants.find(p => p !== auth.currentUser?.uid));
+  const otherUser = selectedChat && users.find(u => u.id === selectedChat.participants.find(p => p !== user.uid));
 
   // Handle initiating a call
   const handleInitiateCall = async () => {
     if (!otherUser) return;
     try {
-      await initiateCall(auth.currentUser, otherUser);
+      await initiateCall(user, otherUser);
     } catch (error) {
       console.error('Error initiating call:', error);
       toast.error('Failed to initiate call');
@@ -591,6 +593,28 @@ const Messages = () => {
     </div>
   );
 
+  // Render authentication loading state
+  if (authLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl">Loading authentication...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render authentication error state
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-red-500">You must be logged in to access messages.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex h-[calc(100vh-200px)] rounded-lg shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'}`}>
       {/* Friend Requests Badge */}
@@ -654,7 +678,7 @@ const Messages = () => {
           ) : (
             conversations.map(conv => {
               const otherUser = users.find(u => 
-                u.id === conv.participants.find(p => p !== auth.currentUser?.uid)
+                u.id === conv.participants.find(p => p !== user.uid)
               );
               return (
                 <div
@@ -735,8 +759,8 @@ const Messages = () => {
                 />
               ) : (
                 messages.map(message => {
-                  const isMe = message.senderId === auth.currentUser?.uid;
-                  const sender = isMe ? auth.currentUser : otherUser;
+                  const isMe = message.senderId === user.uid;
+                  const sender = isMe ? user : otherUser;
                   return (
                     <div
                       key={message.id}
@@ -844,11 +868,11 @@ const Messages = () => {
               {messages.map(message => (
                 <div
                   key={message.id}
-                  className={`flex ${message.senderId === auth.currentUser?.uid ? 'justify-end' : 'justify-start'} mb-4`}
+                  className={`flex ${message.senderId === user.uid ? 'justify-end' : 'justify-start'} mb-4`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${
-                      message.senderId === auth.currentUser?.uid
+                      message.senderId === user.uid
                         ? 'bg-orange-500 text-white rounded-tr-none'
                         : theme === 'dark' 
                           ? 'bg-gray-700 text-gray-200 rounded-tl-none' 
@@ -856,7 +880,7 @@ const Messages = () => {
                     }`}
                   >
                     <p className="text-sm">{message.text}</p>
-                    <span className={`text-xs ${message.senderId === auth.currentUser?.uid ? 'text-orange-100' : (theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}`}>
+                    <span className={`text-xs ${message.senderId === user.uid ? 'text-orange-100' : (theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}`}>
                       {message.timestamp?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>

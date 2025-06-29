@@ -1566,7 +1566,12 @@
       "noPendingRequests": "No pending requests",
       "noPendingRequestsMessage": "There are no pending service requests to review.",
       "noViewedRequests": "No viewed requests",
-      "noViewedRequestsMessage": "There are no viewed service requests."
+      "noViewedRequestsMessage": "There are no viewed service requests.",
+      "noMatchingSeniors": "No matching seniors found",
+      "noMatchingSeniorsMessage": "No seniors match the criteria for this job request. Try adjusting the requirements or re-running the matching algorithm.",
+      "rerunMatching": "Re-run Matching",
+      "noSeniorsAssigned": "No seniors assigned",
+      "noSeniorsAssignedMessage": "No seniors have been assigned to this job request yet."
     },
     "candidates": {
       "title": "Candidates Section",

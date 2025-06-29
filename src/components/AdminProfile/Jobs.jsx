@@ -20,7 +20,7 @@ import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 
 const Jobs = () => {
-  const { currentUser } = useAuth(); // Access currentUser from useAuth
+  const { user, userData, loading: authLoading, isAuthenticated, isAdmin } = useAuth(); // Access user from useAuth
   const { t } = useLanguage(); // Add translation hook
 
   // State for job requests
@@ -108,6 +108,18 @@ const Jobs = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if user is authenticated
+    if (!isAuthenticated || !user) {
+      toast.error("You must be logged in to create job requests");
+      return;
+    }
+
+    // Check if user is admin
+    if (!isAdmin) {
+      toast.error("You must be an admin to create job requests");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -116,14 +128,14 @@ const Jobs = () => {
         volunteerDays: formData.days || [], // Add volunteerDays
         volunteerHours: formData.timing || "", // Add volunteerHours
         volunteerFrequency: formData.frequency || "", // Add volunteerFrequency
-        createdBy: currentUser.uid, // Admin ID
+        createdBy: user.uid, // Use user.uid instead of currentUser.uid
         createdAt: new Date(), // Timestamp
         status: "Active", // Default status
         statusHistory: [
           {
             status: "Active",
             timestamp: new Date(),
-            changedBy: currentUser.uid,
+            changedBy: user.uid, // Use user.uid instead of currentUser.uid
             notes: "Job request created",
           },
         ],
@@ -217,7 +229,7 @@ const Jobs = () => {
         target: [seniorId], // Target specific senior
         type: "request", // Notification type
         link: `/jobs/${jobRequestId}`, // Link to job details
-        createdBy: currentUser.uid // Admin who invited
+        createdBy: user.uid // Admin who invited
       });
 
       toast.success("Senior invited successfully");
@@ -377,6 +389,39 @@ const Jobs = () => {
           </div>
         </div>
         <JobRequestsSkeleton />
+      </div>
+    );
+  }
+
+  // Render authentication loading state
+  if (authLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl">Loading authentication...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render authentication error state
+  if (!isAuthenticated) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-red-500">You must be logged in to access this page.</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render authorization error state
+  if (!isAdmin) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-red-500">You must be an admin to access this page.</div>
+        </div>
       </div>
     );
   }

@@ -352,8 +352,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     setIsSubmitting(true);
     
     try {
-      const user = auth.currentUser;
-      if (!user) {
+      if (!currentUser) {
         toast.error('You must be logged in to create an event');
         return;
       }
@@ -370,7 +369,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
       }
 
       console.log('Fetching user settlement...');
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       const userSettlement = userDoc.data()?.idVerification?.settlement || "";
       console.log('User settlement:', userSettlement);
       
@@ -395,7 +394,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         startDate: formatDate(eventData.startDate),
         endDate: formatDate(eventData.endDate || eventData.startDate),
         date: formatDate(eventData.startDate), // Keep for backward compatibility
-        createdBy: user.uid,
+        createdBy: currentUser.uid,
         createdAt: serverTimestamp(),
         participants: [],
         status: eventStatus,

@@ -16,6 +16,48 @@ const jobRequestsCollection = collection(db, "jobRequests");
 const usersCollection = collection(db, "users");
 
 /**
+ * Map volunteer field from service request to veterans community volunteer areas
+ * @param {string} volunteerField - Volunteer field from service request
+ * @returns {Array} - Array of corresponding volunteer area IDs
+ */
+const mapVolunteerFieldToAreas = (volunteerField) => {
+  const field = volunteerField.toLowerCase();
+  
+  // Mapping from service request volunteer fields to veterans community volunteer areas
+  const fieldMapping = {
+    'healthcare': ['health'],
+    'health': ['health'],
+    'education': ['teaching'],
+    'teaching': ['teaching'],
+    'technology': ['high-tech'],
+    'high tech': ['high-tech'],
+    'high-tech': ['high-tech'],
+    'arts': ['culture'],
+    'culture': ['culture'],
+    'social services': ['publicity', 'health'],
+    'administration': ['publicity'],
+    'consulting': ['publicity'],
+    'mentoring': ['teaching'],
+    'home assistance': ['eater', 'craftsmanship'],
+    'transportation': ['aaliyah'],
+    'publicity': ['publicity'],
+    'tourism': ['tourism'],
+    'safety': ['safety'],
+    'funds': ['funds'],
+    'fundraising': ['funds'],
+    'craftsmanship': ['craftsmanship'],
+    'aaliyah': ['aaliyah'],
+    'special events': ['special-treat'],
+    'special treats': ['special-treat'],
+    'catering': ['eater'],
+    'food service': ['eater'],
+    'eater': ['eater']
+  };
+  
+  return fieldMapping[field] || [];
+};
+
+/**
  * Match seniors to a job request based on criteria
  * @param {string} jobRequestId - ID of the job request
  * @returns {Promise<Array>} - Array of matched seniors with scores
@@ -62,9 +104,7 @@ export const performSeniorMatching = async (jobRequestId) => {
           seniorLocation: senior.personalDetails?.settlement || "Unknown",
           seniorBackground: senior.workBackground?.category || "",
           seniorInterests: senior.lifestyle?.interests || [],
-          seniorDays: senior.volunteerDays && senior.volunteerDays.length > 0
-            ? senior.volunteerDays
-            : (senior.additionalVolunteerDays || []),
+          seniorDays: getSeniorVolunteerDays(senior),
           score: totalScore,
           scoreDetails: scoreDetails,
           matchedAt: timestampNow
@@ -92,6 +132,90 @@ export const performSeniorMatching = async (jobRequestId) => {
 };
 
 /**
+ * Get senior's volunteer days from the correct data structure
+ * @param {Object} senior - Senior data
+ * @returns {Array} - Array of volunteer days
+ */
+const getSeniorVolunteerDays = (senior) => {
+  const veteransCommunity = senior.veteransCommunity || {};
+  
+  // Check current volunteer days first
+  if (veteransCommunity.volunteerDays && veteransCommunity.volunteerDays.length > 0) {
+    return veteransCommunity.volunteerDays;
+  }
+  
+  // Check additional volunteer days as fallback
+  if (veteransCommunity.additionalVolunteerDays && veteransCommunity.additionalVolunteerDays.length > 0) {
+    return veteransCommunity.additionalVolunteerDays;
+  }
+  
+  return [];
+};
+
+/**
+ * Get senior's volunteer frequency from the correct data structure
+ * @param {Object} senior - Senior data
+ * @returns {string} - Volunteer frequency
+ */
+const getSeniorVolunteerFrequency = (senior) => {
+  const veteransCommunity = senior.veteransCommunity || {};
+  
+  // Check current volunteer frequency first
+  if (veteransCommunity.volunteerFrequency) {
+    return veteransCommunity.volunteerFrequency;
+  }
+  
+  // Check additional volunteer frequency as fallback
+  if (veteransCommunity.additionalVolunteerFrequency) {
+    return veteransCommunity.additionalVolunteerFrequency;
+  }
+  
+  return "";
+};
+
+/**
+ * Get senior's volunteer hours from the correct data structure
+ * @param {Object} senior - Senior data
+ * @returns {string} - Volunteer hours
+ */
+const getSeniorVolunteerHours = (senior) => {
+  const veteransCommunity = senior.veteransCommunity || {};
+  
+  // Check current volunteer hours first
+  if (veteransCommunity.volunteerHours) {
+    return veteransCommunity.volunteerHours;
+  }
+  
+  // Check additional volunteer hours as fallback
+  if (veteransCommunity.additionalVolunteerHours) {
+    return veteransCommunity.additionalVolunteerHours;
+  }
+  
+  return "";
+};
+
+/**
+ * Get senior's volunteer areas from the correct data structure
+ * @param {Object} senior - Senior data
+ * @returns {Array} - Array of volunteer areas
+ */
+const getSeniorVolunteerAreas = (senior) => {
+  const veteransCommunity = senior.veteransCommunity || {};
+  
+  // Check current volunteer areas first
+  if (veteransCommunity.volunteerAreas && veteransCommunity.volunteerAreas.length > 0) {
+    return veteransCommunity.volunteerAreas;
+  }
+  
+  // Check additional volunteer fields as fallback
+  if (veteransCommunity.additionalVolunteerFields && veteransCommunity.additionalVolunteerFields.length > 0) {
+    return veteransCommunity.additionalVolunteerFields;
+  }
+  
+  return [];
+};
+
+/**
  * Calculate match score between a job request and a senior
  * @param {Object} jobRequest - Job request data
  * @param {Object} senior - Senior data
@@ -105,42 +229,92 @@ export const calculateMatchScore = (jobRequest, senior) => {
     availabilityScore: 0,
     frequencyScore: 0,
     timingScore: 0,
+    volunteerAreasScore: 0,
     totalScore: 0
   };
 
-  // Location match (40%)
+  // Debug logging
+  console.log("=== MATCHING DEBUG ===");
+  console.log("Job Request:", {
+    title: jobRequest.title,
+    location: jobRequest.location,
+    volunteerField: jobRequest.volunteerField,
+    professionalBackground: jobRequest.professionalBackground,
+    frequency: jobRequest.frequency,
+    timing: jobRequest.timing,
+    days: jobRequest.days
+  });
+
+  console.log("Senior Data:", {
+    id: senior.id,
+    location: senior.personalDetails?.settlement,
+    background: senior.workBackground?.category,
+    veteransCommunity: senior.veteransCommunity
+  });
+
+  // Location match (30%)
   const seniorLocation = senior.personalDetails?.settlement || "";
   if (seniorLocation && seniorLocation === jobRequest.location) {
-    scoreDetails.locationScore = 40;
+    scoreDetails.locationScore = 30;
+    console.log("✅ Location match:", seniorLocation);
+  } else {
+    console.log("❌ Location mismatch:", { senior: seniorLocation, job: jobRequest.location });
   }
 
-  // Interests match (25%)
-  const seniorInterests = senior.lifestyle?.interests || [];
-  if (Array.isArray(seniorInterests)) {
-    if (seniorInterests.includes(jobRequest.volunteerField)) {
-      scoreDetails.interestsScore = 25;
+  // Volunteer areas match (25%)
+  const seniorVolunteerAreas = getSeniorVolunteerAreas(senior);
+  const jobVolunteerField = jobRequest.volunteerField || "";
+  
+  console.log("Volunteer Areas Comparison:", {
+    seniorAreas: seniorVolunteerAreas,
+    jobField: jobVolunteerField
+  });
+  
+  if (seniorVolunteerAreas.length > 0 && jobVolunteerField) {
+    // Map the job volunteer field to corresponding volunteer areas
+    const mappedAreas = mapVolunteerFieldToAreas(jobVolunteerField);
+    console.log("Mapped areas for job field:", mappedAreas);
+    
+    // Check for exact matches with mapped areas
+    const exactMatches = seniorVolunteerAreas.filter(area => 
+      mappedAreas.includes(area)
+    );
+    
+    console.log("Exact matches found:", exactMatches);
+    
+    if (exactMatches.length > 0) {
+      scoreDetails.volunteerAreasScore = 25;
+      console.log("✅ Volunteer areas exact match:", exactMatches);
     } else {
-      const interestKeywords = (jobRequest.volunteerField || "").toLowerCase().split(/\s+/);
-      let partialMatches = 0;
-      seniorInterests.forEach(interest => {
-        const interestLower = interest.toLowerCase();
-        interestKeywords.forEach(keyword => {
-          if (interestLower.includes(keyword) && keyword.length > 3) {
-            partialMatches++;
-          }
-        });
-      });
-      if (partialMatches > 0) {
-        scoreDetails.interestsScore = Math.min(15, partialMatches * 5);
+      // Check for partial matches
+      const jobFieldLower = jobVolunteerField.toLowerCase();
+      const partialMatches = seniorVolunteerAreas.filter(area => 
+        area.toLowerCase().includes(jobFieldLower) || 
+        jobFieldLower.includes(area.toLowerCase())
+      );
+      
+      console.log("Partial matches found:", partialMatches);
+      
+      if (partialMatches.length > 0) {
+        scoreDetails.volunteerAreasScore = Math.min(15, partialMatches.length * 5);
+        console.log("✅ Volunteer areas partial match:", partialMatches);
+      } else {
+        console.log("❌ No volunteer areas match");
       }
     }
+  } else {
+    console.log("❌ Missing volunteer data:", { 
+      seniorAreas: seniorVolunteerAreas.length, 
+      jobField: !!jobVolunteerField 
+    });
   }
 
-  // Professional background match (25%)
-  const seniorBackground = senior.workBackground?.category ?? "";
-  const jobBackground = jobRequest.professionalBackground ?? "";
+  // Professional background match (20%)
+  const seniorBackground = senior.workBackground?.category || "";
+  const jobBackground = jobRequest.professionalBackground || "";
   if (seniorBackground && jobBackground && seniorBackground === jobBackground) {
-    scoreDetails.backgroundScore = 25;
+    scoreDetails.backgroundScore = 20;
+    console.log("✅ Background exact match:", seniorBackground);
   } else if (
     seniorBackground &&
     jobBackground &&
@@ -149,28 +323,50 @@ export const calculateMatchScore = (jobRequest, senior) => {
     (seniorBackground.toLowerCase().includes(jobBackground.toLowerCase()) ||
       jobBackground.toLowerCase().includes(seniorBackground.toLowerCase()))
   ) {
-    scoreDetails.backgroundScore = 15;
+    scoreDetails.backgroundScore = 10;
+    console.log("✅ Background partial match:", { senior: seniorBackground, job: jobBackground });
+  } else {
+    console.log("❌ Background mismatch:", { senior: seniorBackground, job: jobBackground });
   }
 
   // Availability match (days) (10%)
   const jobDays = Array.isArray(jobRequest.days) ? jobRequest.days : [];
-  const seniorDays = Array.isArray(senior.volunteerDays) && senior.volunteerDays.length > 0
-    ? senior.volunteerDays
-    : (Array.isArray(senior.additionalVolunteerDays) ? senior.additionalVolunteerDays : []);
+  const seniorDays = getSeniorVolunteerDays(senior);
+  
+  console.log("Days Comparison:", {
+    jobDays: jobDays,
+    seniorDays: seniorDays
+  });
+  
   if (jobDays.length && seniorDays.length) {
     const overlap = jobDays.filter(day => seniorDays.includes(day));
+    console.log("Days overlap:", overlap);
+    
     if (overlap.length === jobDays.length) {
       scoreDetails.availabilityScore = 10;
+      console.log("✅ Days perfect match");
     } else if (overlap.length > 0) {
       scoreDetails.availabilityScore = 5;
+      console.log("✅ Days partial match:", overlap);
+    } else {
+      console.log("❌ No days overlap");
     }
+  } else {
+    console.log("❌ Missing days data:", { jobDays: jobDays.length, seniorDays: seniorDays.length });
   }
 
   // Frequency match (10%)
-  const seniorFrequency = senior.volunteerFrequency || senior.additionalVolunteerFrequency || "";
+  const seniorFrequency = getSeniorVolunteerFrequency(senior);
   const jobFrequency = jobRequest.frequency || "";
+  
+  console.log("Frequency Comparison:", {
+    senior: seniorFrequency,
+    job: jobFrequency
+  });
+  
   if (seniorFrequency && jobFrequency && seniorFrequency === jobFrequency) {
     scoreDetails.frequencyScore = 10;
+    console.log("✅ Frequency exact match:", seniorFrequency);
   } else if (
     seniorFrequency &&
     jobFrequency &&
@@ -179,13 +375,23 @@ export const calculateMatchScore = (jobRequest, senior) => {
     seniorFrequency.toLowerCase().includes(jobFrequency.toLowerCase())
   ) {
     scoreDetails.frequencyScore = 5;
+    console.log("✅ Frequency partial match");
+  } else {
+    console.log("❌ Frequency mismatch");
   }
 
-  // Timing match (10%)
-  const seniorTiming = senior.volunteerHours || senior.additionalVolunteerHours || "";
+  // Timing match (5%)
+  const seniorTiming = getSeniorVolunteerHours(senior);
   const jobTiming = jobRequest.timing || "";
+  
+  console.log("Timing Comparison:", {
+    senior: seniorTiming,
+    job: jobTiming
+  });
+  
   if (seniorTiming && jobTiming && seniorTiming === jobTiming) {
-    scoreDetails.timingScore = 10;
+    scoreDetails.timingScore = 5;
+    console.log("✅ Timing exact match:", seniorTiming);
   } else if (
     seniorTiming &&
     jobTiming &&
@@ -193,17 +399,23 @@ export const calculateMatchScore = (jobRequest, senior) => {
     typeof jobTiming === "string" &&
     seniorTiming.toLowerCase().includes(jobTiming.toLowerCase())
   ) {
-    scoreDetails.timingScore = 5;
+    scoreDetails.timingScore = 2;
+    console.log("✅ Timing partial match");
+  } else {
+    console.log("❌ Timing mismatch");
   }
 
   // Calculate total score
   scoreDetails.totalScore =
     scoreDetails.locationScore +
-    scoreDetails.interestsScore +
+    scoreDetails.volunteerAreasScore +
     scoreDetails.backgroundScore +
     scoreDetails.availabilityScore +
     scoreDetails.frequencyScore +
     scoreDetails.timingScore;
+
+  console.log("Final Score Breakdown:", scoreDetails);
+  console.log("=== END MATCHING DEBUG ===");
 
   return scoreDetails;
 };
