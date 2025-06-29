@@ -26,10 +26,24 @@ const ServiceRequests = () => {
         }
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        const settlement = userDoc.exists() ? userDoc.data().idVerification.settlement : "";
+        
+        if (!userDoc.exists()) {
+          toast.error("User document not found.");
+          return;
+        }
+
+        const userData = userDoc.data();
+        console.log("ServiceRequests - Admin data:", userData);
+        
+        // Try different possible locations for settlement
+        const settlement = userData.idVerification?.settlement || 
+                         userData.settlement || 
+                         userData.credentials?.settlement;
+        
+        console.log("ServiceRequests - Found admin settlement:", settlement);
 
         if (!settlement) {
-          toast.error("Failed to fetch admin settlement.");
+          toast.error("No settlement found for admin user.");
           return;
         }
 
