@@ -73,11 +73,21 @@ const BaseEventDetails = ({
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    try {
-      return format(new Date(dateString), 'E, d MMM yyyy');
-    } catch {
-      return dateString;
+    let dateObj;
+    // Parse DD-MM-YYYY
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('-');
+      dateObj = new Date(year, month - 1, day);
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      // Parse YYYY-MM-DD
+      const [year, month, day] = dateString.split('-');
+      dateObj = new Date(year, month - 1, day);
+    } else {
+      // Try native Date
+      dateObj = new Date(dateString);
     }
+    if (isNaN(dateObj)) return dateString;
+    return format(dateObj, 'E, d MMM yyyy');
   };
 
   // Status badge color
@@ -200,7 +210,28 @@ const BaseEventDetails = ({
 
         {/* Action Buttons Footer */}
         <div className="flex flex-col md:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-          {showJoinLeave && userRole === 'retiree' && (
+          {/* Edit/Delete for admin, superadmin, or retiree creator */}
+          {(userRole === 'admin' || userRole === 'superadmin' || (userRole === 'retiree' && isCreator)) && (
+            <>
+              <button
+                onClick={() => { /* TODO: Implement edit logic */ alert('Edit event (not implemented)'); }}
+                className="px-4 py-2 rounded font-semibold bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors duration-200 w-full md:w-auto"
+                aria-label="Edit Event"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => { /* TODO: Implement delete logic */ alert('Delete event (not implemented)'); }}
+                className="px-4 py-2 rounded font-semibold bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors duration-200 w-full md:w-auto"
+                aria-label="Delete Event"
+              >
+                Delete
+              </button>
+            </>
+          )}
+
+          {/* Join/Leave for other retirees */}
+          {userRole === 'retiree' && !isCreator && (
             <button
               onClick={isJoined ? handleLeave : handleJoin}
               className={`px-4 py-2 rounded font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors duration-200 w-full md:w-auto ${
