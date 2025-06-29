@@ -29,7 +29,7 @@ const AdminDashboard = () => {
     { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
     { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
     { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
-    { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
+    { id: "settings", label: t("dashboard.settings.title"), icon: <FaCog /> },
     //{ id: "comprehensiveAnalytics", label: t("dashboard.advancedAnalytics"), icon: <FaChartLine /> },
   ];
 
