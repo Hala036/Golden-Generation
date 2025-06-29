@@ -274,6 +274,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     fetchCategories();
   }, [isEditing]);
 
+  // Check for selected date from calendar grid
+  useEffect(() => {
+    if (!isEditing) {
+      const selectedDate = sessionStorage.getItem('selectedEventDate');
+      if (selectedDate) {
+        setEventData(prev => ({ ...prev, startDate: selectedDate }));
+        // Clear the selected date from sessionStorage
+        sessionStorage.removeItem('selectedEventDate');
+      }
+    }
+  }, [isEditing]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEventData(prev => {

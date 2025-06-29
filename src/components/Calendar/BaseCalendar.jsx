@@ -45,6 +45,17 @@ const BaseCalendar = ({
     if (onEventClick) onEventClick(event);
   };
 
+  const handleCreateEventForDate = (date) => {
+    if (onCreateEvent) {
+      setShowCreateModal(true);
+      // Pass the selected date to the create event form
+      const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), date);
+      const formattedDate = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      // Store the selected date in a way that CreateEventForm can access it
+      sessionStorage.setItem('selectedEventDate', formattedDate);
+    }
+  };
+
   const navigateMonth = (direction) => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
@@ -607,12 +618,33 @@ const BaseCalendar = ({
                   return (
                     <div
                       key={index}
-                      className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50"
+                      className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50 relative"
                     >
                       {day && (
                         <>
-                          <div className="text-sm font-semibold text-gray-700 mb-2">
-                            {day}
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="text-sm font-semibold text-gray-700">
+                              {day}
+                            </div>
+                            {/* Add Event Button - only show for future dates and when user can create events */}
+                            {showCreateButton && onCreateEvent && (() => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              const eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                              eventDate.setHours(0, 0, 0, 0);
+                              return eventDate >= today;
+                            })() && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCreateEventForDate(day);
+                                }}
+                                className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-200 hover:scale-110"
+                                title="Add event for this date"
+                              >
+                                +
+                              </button>
+                            )}
                           </div>
                           <div className="space-y-1">
                             {eventsForDay.slice(0, 3).map(event => {
@@ -669,8 +701,29 @@ const BaseCalendar = ({
                   return (
                     <div
                       key={date.toISOString()}
-                      className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50"
+                      className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50 relative"
                     >
+                      {/* Add Event Button - only show for future dates and when user can create events */}
+                      {showCreateButton && onCreateEvent && (() => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const eventDate = new Date(date);
+                        eventDate.setHours(0, 0, 0, 0);
+                        return eventDate >= today;
+                      })() && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const selectedDate = date.toISOString().split('T')[0];
+                            sessionStorage.setItem('selectedEventDate', selectedDate);
+                            setShowCreateModal(true);
+                          }}
+                          className="absolute top-1 right-1 w-5 h-5 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-200 hover:scale-110 z-10"
+                          title="Add event for this date"
+                        >
+                          +
+                        </button>
+                      )}
                       <div className="space-y-1">
                         {eventsForDay.length === 0 && (
                           <div className="text-xs text-gray-400">No events</div>
@@ -849,7 +902,28 @@ const BaseCalendar = ({
                     <div className="text-center text-gray-500">
                       <Calendar size={48} className="mx-auto mb-2 opacity-50" />
                       <p className="text-sm">No events scheduled for this day</p>
-                      <p className="text-xs opacity-70">Click "Create Event" to add an activity</p>
+                      <p className="text-xs opacity-70 mb-4">Click "Create Event" to add an activity</p>
+                      {/* Add Event Button for day view */}
+                      {showCreateButton && onCreateEvent && (() => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const eventDate = new Date(currentDate);
+                        eventDate.setHours(0, 0, 0, 0);
+                        return eventDate >= today;
+                      })() && (
+                        <button
+                          onClick={() => {
+                            const selectedDate = currentDate.toISOString().split('T')[0];
+                            sessionStorage.setItem('selectedEventDate', selectedDate);
+                            setShowCreateModal(true);
+                          }}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto transition-colors duration-200"
+                          title="Add event for today"
+                        >
+                          <span className="text-lg font-bold">+</span>
+                          Add Event
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
