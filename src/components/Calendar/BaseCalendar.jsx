@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, Clock, Search, Filter, X } from 'lucide-react';
+import { Calendar, Clock, Search, Filter, X, BarChart3, TrendingUp } from 'lucide-react';
 import {
   getDaysInMonth,
   dayNames,
@@ -29,6 +29,8 @@ const BaseCalendar = ({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [analyticsView, setAnalyticsView] = useState('daily'); // 'daily', 'hourly', 'weekly'
   
   // Advanced filter states
   const [statusFilter, setStatusFilter] = useState('all');
@@ -95,6 +97,121 @@ const BaseCalendar = ({
       return 'bg-gray-400';
     }
   };
+
+  // Analytics functions
+  const getAnalyticsData = () => {
+    const allEvents = getFilteredEvents(null, filter, searchTerm, additionalFiltersObj);
+    
+    if (analyticsView === 'daily') {
+      // Daily event frequency for current month
+      const dailyData = {};
+      days.forEach((day, index) => {
+        if (day) {
+          const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const dayEvents = allEvents.filter(event => event.date === dateStr);
+          dailyData[day] = dayEvents.length;
+        }
+      });
+      return dailyData;
+    } else if (analyticsView === 'hourly') {
+      // Hourly event frequency
+      const hourlyData = {};
+      for (let hour = 0; hour < 24; hour++) {
+        const hourStr = `${hour.toString().padStart(2, '0')}:00`;
+        const hourEvents = allEvents.filter(event => {
+          if (!event.timeFrom) return false;
+          const eventHour = parseInt(event.timeFrom.split(':')[0]);
+          return eventHour === hour;
+        });
+        hourlyData[hourStr] = hourEvents.length;
+      }
+      return hourlyData;
+    } else if (analyticsView === 'weekly') {
+      // Weekly event frequency for current month
+      const weeklyData = {};
+      const weeks = Math.ceil(days.length / 7);
+      for (let week = 1; week <= weeks; week++) {
+        const weekEvents = allEvents.filter(event => {
+          if (!event.date) return false;
+          const eventDay = parseInt(event.date.split('-')[2]);
+          const eventWeek = Math.ceil(eventDay / 7);
+          return eventWeek === week;
+        });
+        weeklyData[`Week ${week}`] = weekEvents.length;
+      }
+      return weeklyData;
+    }
+    return {};
+  };
+
+  // Collision detection and handling
+  const processEventsWithCollisions = (eventsForDay) => {
+    if (!eventsForDay || eventsForDay.length === 0) return [];
+
+    // Sort events by start time
+    const sortedEvents = [...eventsForDay].sort((a, b) => {
+      const timeA = a.timeFrom ? a.timeFrom : '00:00';
+      const timeB = b.timeFrom ? b.timeFrom : '00:00';
+      return timeA.localeCompare(timeB);
+    });
+
+    const processedEvents = [];
+    const collisionGroups = [];
+
+    sortedEvents.forEach(event => {
+      const eventStart = event.timeFrom ? event.timeFrom : '00:00';
+      const eventEnd = event.timeTo ? event.timeTo : '01:00';
+      
+      // Find overlapping events
+      const overlappingEvents = sortedEvents.filter(otherEvent => {
+        if (event.id === otherEvent.id) return false;
+        
+        const otherStart = otherEvent.timeFrom ? otherEvent.timeFrom : '00:00';
+        const otherEnd = otherEvent.timeTo ? otherEvent.timeTo : '01:00';
+        
+        // Check for overlap
+        return (
+          (eventStart < otherEnd && eventEnd > otherStart) ||
+          (otherStart < eventEnd && otherEnd > eventStart)
+        );
+      });
+
+      if (overlappingEvents.length > 0) {
+        // Add to collision group
+        const collisionGroup = [event, ...overlappingEvents];
+        const groupId = collisionGroup.map(e => e.id).sort().join('-');
+        
+        if (!collisionGroups.find(group => group.id === groupId)) {
+          collisionGroups.push({
+            id: groupId,
+            events: collisionGroup
+          });
+        }
+      }
+
+      // Calculate position for collision handling
+      const totalColumns = Math.max(1, overlappingEvents.length + 1);
+      const column = processedEvents.filter(e => 
+        overlappingEvents.some(oe => oe.id === e.id)
+      ).length;
+
+      processedEvents.push({
+        ...event,
+        totalColumns,
+        column,
+        hasCollision: overlappingEvents.length > 0
+      });
+    });
+
+    return processedEvents;
+  };
+
+  // Get collision-aware events for day view
+  const dayViewEventsWithCollisions = useMemo(() => {
+    const filtered = getFilteredEvents(currentDate, filter, searchTerm, additionalFiltersObj);
+    const processed = processEventsWithCollisions(filtered);
+    return processEventsForDayView(processed);
+  }, [currentDate, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj]);
 
   const dayEvents = useMemo(() => {
     return days.map((day) =>
@@ -233,6 +350,15 @@ const BaseCalendar = ({
                   className={`px-3 py-1 rounded ${viewMode === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
                 >
                   Day
+                </button>
+                <button
+                  onClick={() => setShowAnalytics(!showAnalytics)}
+                  className={`flex items-center gap-2 px-3 py-1 rounded ${
+                    showAnalytics ? 'bg-purple-600 text-white' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  <BarChart3 size={16} />
+                  Analytics
                 </button>
               </div>
             </div>
@@ -392,6 +518,87 @@ const BaseCalendar = ({
           </div>
         </div>
 
+        {/* Analytics Bar Chart */}
+        {showAnalytics && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <TrendingUp className="text-purple-600" />
+                Event Analytics
+              </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAnalyticsView('daily')}
+                  className={`px-3 py-1 rounded text-sm ${
+                    analyticsView === 'daily' ? 'bg-purple-600 text-white' : 'bg-gray-200'
+                  }`}
+                >
+                  Daily
+                </button>
+                <button
+                  onClick={() => setAnalyticsView('hourly')}
+                  className={`px-3 py-1 rounded text-sm ${
+                    analyticsView === 'hourly' ? 'bg-purple-600 text-white' : 'bg-gray-200'
+                  }`}
+                >
+                  Hourly
+                </button>
+                <button
+                  onClick={() => setAnalyticsView('weekly')}
+                  className={`px-3 py-1 rounded text-sm ${
+                    analyticsView === 'weekly' ? 'bg-purple-600 text-white' : 'bg-gray-200'
+                  }`}
+                >
+                  Weekly
+                </button>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              {(() => {
+                const analyticsData = getAnalyticsData();
+                const maxValue = Math.max(...Object.values(analyticsData), 1);
+                const entries = Object.entries(analyticsData);
+                
+                return (
+                  <div className="space-y-3">
+                    {entries.map(([key, value]) => (
+                      <div key={key} className="flex items-center gap-3">
+                        <div className="w-16 text-sm font-medium text-gray-600">
+                          {key}
+                        </div>
+                        <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
+                          <div
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 h-6 rounded-full transition-all duration-300"
+                            style={{ width: `${(value / maxValue) * 100}%` }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-xs font-medium text-white drop-shadow-sm">
+                              {value} {value === 1 ? 'event' : 'events'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="w-12 text-sm text-gray-500 text-right">
+                          {value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+            
+            <div className="mt-4 p-3 bg-purple-50 rounded-lg">
+              <p className="text-xs text-purple-700">
+                <strong>Insight:</strong> This chart shows event frequency distribution. 
+                {analyticsView === 'daily' && ' Higher bars indicate busier days.'}
+                {analyticsView === 'hourly' && ' Higher bars indicate peak activity hours.'}
+                {analyticsView === 'weekly' && ' Higher bars indicate busier weeks.'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Calendar Grid */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {viewMode === 'month' && (
@@ -527,7 +734,7 @@ const BaseCalendar = ({
 
                 {/* Events */}
                 <div className="absolute top-0 left-0 w-full h-full">
-                  {dayViewEvents.map(event => {
+                  {dayViewEventsWithCollisions.map(event => {
                     const { top, height } = getEventPositionAndDimensions(event);
                     const appearance = getCategoryAppearance(event.category);
                     const isPending = event.status === 'pending';
@@ -540,10 +747,21 @@ const BaseCalendar = ({
                         <Tooltip.Trigger asChild>
                           <button
                             onClick={() => handleEventClick(event)}
-                            className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                            className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''} ${event.hasCollision ? 'border-2 border-white shadow-lg' : ''}`}
+                            style={{
+                              position: 'absolute',
+                              top: `${top}px`,
+                              left: left,
+                              width: width,
+                              height: `${height}px`,
+                              zIndex: event.hasCollision ? 10 : 1
+                            }}
                           >
                             <p className="font-bold text-sm leading-tight">{event.title}</p>
                             <p className="text-xs opacity-90">{event.timeFrom} - {event.timeTo}</p>
+                            {event.hasCollision && (
+                              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                            )}
                             {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
                           </button>
                         </Tooltip.Trigger>
@@ -636,6 +854,13 @@ const BaseCalendar = ({
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 bg-purple-500 rounded"></div>
                 <span className="text-sm text-gray-600">Special events</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-4 h-4 bg-blue-500 rounded border-2 border-white shadow-lg"></div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                </div>
+                <span className="text-sm text-gray-600">Overlapping events</span>
               </div>
             </div>
           </div>
