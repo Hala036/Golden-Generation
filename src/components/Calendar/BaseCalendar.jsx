@@ -891,45 +891,31 @@ const BaseCalendar = ({
             <div className="w-4 h-4 bg-blue-500 rounded"></div>
             Event Color Guide
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {userRole === 'admin' ? (
-              <>
-                <div className="space-y-3">
-                  <h4 className="font-medium text-gray-700 mb-2">Admin View</h4>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                    <span className="text-sm text-gray-600">Created by me</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-green-500 rounded"></div>
-                    <span className="text-sm text-gray-600">Created by other admins</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                    <span className="text-sm text-gray-600">Retiree submissions</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  <h4 className="font-medium text-gray-700 mb-2">Retiree View</h4>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-green-500 rounded"></div>
-                    <span className="text-sm text-gray-600">Joined events</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                    <span className="text-sm text-gray-600">Pending approval</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-gray-400 rounded"></div>
-                    <span className="text-sm text-gray-600">Available events</span>
-                  </div>
-                </div>
-              </>
-            )}
-            
+          <div className="space-y-6">
+            {/* Dynamic category color legend */}
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Event Categories</h4>
+              <div className="flex flex-wrap gap-4">
+                {categories && categories.length > 0 ? (
+                  categories.map(category => (
+                    <div key={category.id} className="flex items-center gap-2 mb-2">
+                      <div
+                        className="w-5 h-5 rounded-full border border-gray-300"
+                        style={{ backgroundColor: category.color || '#CCCCCC' }}
+                        title={category.translations?.en || category.name}
+                      ></div>
+                      <span className="text-sm text-gray-700">
+                        {category.translations?.en || category.name}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-gray-400 text-sm">No categories found</span>
+                )}
+              </div>
+            </div>
+
+            {/* General legend */}
             <div className="space-y-3">
               <h4 className="font-medium text-gray-700 mb-2">General</h4>
               <div className="flex items-center gap-3">
@@ -961,7 +947,6 @@ const BaseCalendar = ({
               </div>
             </div>
           </div>
-          
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-xs text-blue-700">
               <strong>Tip:</strong> Click on any event to view details. Past events are faded and cannot be interacted with.
