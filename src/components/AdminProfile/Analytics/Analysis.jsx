@@ -137,29 +137,29 @@ const Analysis = () => {
   };
 
   const StatCard = ({ title, value, icon, color, subtitle }) => (
-    <div className={`bg-gradient-to-r ${color} rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-white/80 text-sm font-medium">{title}</p>
-          <p className="text-3xl font-bold mt-1">{value}</p>
-          {subtitle && <p className="text-white/70 text-xs mt-1">{subtitle}</p>}
+    <div className={`bg-gradient-to-r ${color} rounded-xl shadow-lg p-4 sm:p-6 text-white transform hover:scale-105 transition-transform duration-200 w-full`}>
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="min-w-0">
+          <p className="text-white/80 text-xs sm:text-sm font-medium truncate">{title}</p>
+          <p className="text-2xl sm:text-3xl font-bold mt-1 break-words">{value}</p>
+          {subtitle && <p className="text-white/70 text-xs mt-1 truncate">{subtitle}</p>}
         </div>
-        <div className="text-4xl opacity-80">{icon}</div>
+        <div className="text-3xl sm:text-4xl opacity-80 flex-shrink-0">{icon}</div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">System Analysis Dashboard</h1>
-          <p className="text-gray-600">Comprehensive insights into your platform's performance and user engagement</p>
+        <div className="mb-4 sm:mb-8 px-1">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">System Analysis Dashboard</h1>
+          <p className="text-gray-600 text-xs sm:text-base">Comprehensive insights into your platform's performance and user engagement</p>
         </div>
 
         {/* Key Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
           <StatCard
             title="Total Users"
             value={totalUsers.toLocaleString()}
@@ -191,10 +191,10 @@ const Analysis = () => {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 mb-4 sm:mb-8">
           {/* Retirees by Town */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
               <span className="mr-2">🏘️</span>
               Retirees by Town
             </h3>
@@ -205,15 +205,15 @@ const Analysis = () => {
                 message="Try selecting a different time range or settlement."
               />
             ) : (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <BarChart 
                   data={townChartData.sort((a, b) => b.value - a.value)}
                   layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis type="number" allowDecimals={false} />
-                  <YAxis type="category" dataKey="name" width={100} />
+                  <XAxis type="number" allowDecimals={false} fontSize={10} />
+                  <YAxis type="category" dataKey="name" width={70} fontSize={10} />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="value" fill="url(#townGradient)" radius={[0, 4, 4, 0]} />
                   <defs>
@@ -228,53 +228,53 @@ const Analysis = () => {
           </div>
 
           {/* Job Requests Over Time */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
               <span className="mr-2">📈</span>
               Job Requests Over Time
             </h3>
             {jobByMonthData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <LineChart data={jobByMonthData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" />
-                  <YAxis allowDecimals={false} />
+                  <XAxis dataKey="name" fontSize={10} />
+                  <YAxis allowDecimals={false} fontSize={10} />
                   <Tooltip content={<CustomTooltip />} />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke="#10B981" 
                     strokeWidth={3}
-                    dot={{ fill: "#10B981", strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, fill: "#059669" }}
+                    dot={{ fill: "#10B981", strokeWidth: 2, r: 5 }}
+                    activeDot={{ r: 7, fill: "#059669" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">📈</div>
-                  <p>No time series data available</p>
+                  <div className="text-3xl sm:text-4xl mb-2">📈</div>
+                  <p className="text-xs sm:text-base">No time series data available</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Job Requests by Status */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
               <span className="mr-2">📋</span>
               Job Requests by Status
             </h3>
             {jobRequestsByStatus.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <PieChart>
                   <Pie
                     data={jobRequestsByStatus}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={120}
+                    innerRadius={40}
+                    outerRadius={80}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -283,34 +283,34 @@ const Analysis = () => {
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">📋</div>
-                  <p>No status data available</p>
+                  <div className="text-3xl sm:text-4xl mb-2">📋</div>
+                  <p className="text-xs sm:text-base">No status data available</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Users by Role Distribution */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
               <span className="mr-2">👥</span>
               Users by Role
             </h3>
             {usersByRoleDistribution.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <PieChart>
                   <Pie
                     data={usersByRoleDistribution}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={120}
+                    innerRadius={40}
+                    outerRadius={80}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -319,36 +319,36 @@ const Analysis = () => {
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">👥</div>
-                  <p>No role data available</p>
+                  <div className="text-3xl sm:text-4xl mb-2">👥</div>
+                  <p className="text-xs sm:text-base">No role data available</p>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 mb-4 sm:mb-8">
           {/* Events by Category */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
               <span className="mr-2">🎉</span>
               Events by Category
             </h3>
             {eventsByCategoryData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <PieChart>
                   <Pie
                     data={eventsByCategoryData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={120}
+                    innerRadius={40}
+                    outerRadius={80}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -357,47 +357,47 @@ const Analysis = () => {
                     ))}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">🎉</div>
-                  <p>No event category data available</p>
+                  <div className="text-3xl sm:text-4xl mb-2">🎉</div>
+                  <p className="text-xs sm:text-base">No event category data available</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Events Over Time */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
               <span className="mr-2">🗓️</span>
               Events Over Time
             </h3>
             {eventsByMonthData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <LineChart data={eventsByMonthData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" />
-                  <YAxis allowDecimals={false} />
+                  <XAxis dataKey="name" fontSize={10} />
+                  <YAxis allowDecimals={false} fontSize={10} />
                   <Tooltip content={<CustomTooltip />} />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke="#8B5CF6" 
                     strokeWidth={3}
-                    dot={{ fill: "#8B5CF6", strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, fill: "#7C3AED" }}
+                    dot={{ fill: "#8B5CF6", strokeWidth: 2, r: 5 }}
+                    activeDot={{ r: 7, fill: "#7C3AED" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
-                  <div className="text-4xl mb-2">🗓️</div>
-                  <p>No event time series data available</p>
+                  <div className="text-3xl sm:text-4xl mb-2">🗓️</div>
+                  <p className="text-xs sm:text-base">No event time series data available</p>
                 </div>
               </div>
             )}
@@ -405,7 +405,7 @@ const Analysis = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-gray-500 text-sm">
+        <div className="text-center text-gray-500 text-xs sm:text-sm">
           <p>Dashboard last updated: {new Date().toLocaleString()}</p>
         </div>
       </div>
