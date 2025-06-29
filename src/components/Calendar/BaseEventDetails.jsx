@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../../firebase';
 import { getEventParticipants, leaveEvent, joinEvent } from '../../utils/participants';
 import { doc, getDoc, getDocs, collection, writeBatch } from 'firebase/firestore';
-import { FaTimes, FaUsers, FaUser, FaCheck, FaCalendarAlt, FaClock, FaMapPin, FaInfoCircle, FaStar } from 'react-icons/fa';
+import { FaTimes, FaUsers, FaUser, FaCheck, FaCalendarAlt, FaClock, FaMapPin, FaInfoCircle, FaStar, FaTrash, FaEdit } from 'react-icons/fa';
 import { format } from 'date-fns';
 import CreateEventForm from './CreateEventForm';
 
@@ -133,7 +133,7 @@ const BaseEventDetails = ({
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <span className={`px-3 py-1 text-xs font-bold rounded-full capitalize ${statusColor} mr-2`} aria-label={`Status: ${event.status}`}>{event.status}</span>
-            {isCreator && userRole === 'retiree' && (
+            {isCreator && (
               <span className="flex items-center px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800 border border-blue-300 mr-2 relative group cursor-pointer" tabIndex={0} aria-label="You are the creator of this event">
                 <FaStar className="mr-1 text-yellow-400" />
                 Created by me
@@ -243,26 +243,25 @@ const BaseEventDetails = ({
 
         {/* Action Buttons Footer */}
         <div className="flex flex-col md:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-          {/* Edit/Delete for admin, superadmin, or retiree creator */}
-          {(userRole === 'admin' || userRole === 'superadmin' || (userRole === 'retiree' && isCreator)) && (
+          {/* Edit/Delete for creator, admin, or superadmin */}
+          {(isCreator || userRole === 'admin' || userRole === 'superadmin') && (
             <>
               <button
                 onClick={handleEdit}
                 className="px-4 py-2 rounded font-semibold bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors duration-200 w-full md:w-auto"
                 aria-label="Edit Event"
               >
-                Edit
+                <FaEdit className="inline mr-2" /> Edit
               </button>
               <button
                 onClick={handleDeleteEvent}
                 className="px-4 py-2 rounded font-semibold bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors duration-200 w-full md:w-auto"
                 aria-label="Delete Event"
               >
-                Delete
+                <FaTrash className="inline mr-2" /> Delete
               </button>
             </>
           )}
-
           {/* Join/Leave for other retirees */}
           {userRole === 'retiree' && !isCreator && (
             <button
@@ -280,26 +279,8 @@ const BaseEventDetails = ({
               ) : isJoined ? 'Leave Event' : 'Join Event'}
             </button>
           )}
-          {children}
         </div>
-
-        {/* Edit Modal */}
-        {showEditModal && (
-          <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-              <CreateEventForm
-                onClose={() => setShowEditModal(false)}
-                userRole={userRole}
-                initialData={{
-                  ...event,
-                  startDate: formatToYyyyMmDd(event.startDate),
-                  endDate: formatToYyyyMmDd(event.endDate),
-                }}
-                isEditing={true}
-              />
-            </div>
-          </div>
-        )}
+        {children}
       </div>
     </div>
   );

@@ -65,42 +65,7 @@ const AdminEventDetails = ({ event, onClose }) => {
           await updateDoc(participantRef, { status: 'confirmed' });
         }}
         onRejectParticipant={leaveEvent}
-      >
-        {/* Admin Controls */}
-        <div className="flex w-full gap-3">
-          {isConfirmingDelete ? (
-            <>
-              <button
-                onClick={handleDeleteEvent}
-                className="flex-grow bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
-              >
-                Confirm Delete
-              </button>
-              <button
-                onClick={handleCancelDelete}
-                className="flex-grow bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleEdit}
-                className="flex-grow bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out flex items-center justify-center gap-2"
-              >
-                <FaEdit /> Edit
-              </button>
-              <button
-                onClick={handleInitialDeleteClick}
-                className="flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out flex items-center justify-center gap-2"
-              >
-                <FaTrash /> Delete
-              </button>
-            </>
-          )}
-        </div>
-      </BaseEventDetails>
+      />
 
       {/* Edit Modal */}
       {showEditModal && (
