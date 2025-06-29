@@ -93,9 +93,9 @@ const BaseCalendar = ({
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6 flex flex-col w-full min-w-0">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 w-full min-w-0">
           <div className="flex justify-between items-center mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
@@ -175,7 +175,7 @@ const BaseCalendar = ({
         </div>
 
         {/* Calendar Navigation */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-2 sm:p-3 md:p-4 mb-4 sm:mb-6 w-full min-w-0">
           <div className="flex justify-between items-center">
             <button 
               onClick={() => navigateMonth(-1)}
@@ -196,32 +196,32 @@ const BaseCalendar = ({
         </div>
 
         {/* Calendar Grid */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm overflow-x-auto w-full min-w-0 flex-1 flex flex-col">
           {viewMode === 'month' && (
             <>
               {/* Day Headers */}
-              <div className="grid grid-cols-7 bg-gray-100">
+              <div className="grid grid-cols-7 bg-gray-100 w-full min-w-0">
                 {dayNames.map(day => (
-                  <div key={day} className="p-4 text-center font-semibold text-gray-700">
+                  <div key={day} className="p-2 sm:p-3 md:p-4 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                     {day}
                   </div>
                 ))}
               </div>
               {/* Calendar Days */}
-              <div className="grid grid-cols-7">
+              <div className="grid grid-cols-7 w-full min-w-0 flex-1">
                 {days.map((day, index) => {
                   const eventsForDay = dayEvents[index] || [];
                   return (
                     <div
                       key={index}
-                      className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50"
+                      className="min-h-24 sm:min-h-32 p-1 sm:p-2 md:p-3 border-b border-r border-gray-200 bg-white hover:bg-gray-50 flex flex-col w-full min-w-0"
                     >
                       {day && (
                         <>
-                          <div className="text-sm font-semibold text-gray-700 mb-2">
+                          <div className="text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
                             {day}
                           </div>
-                          <div className="space-y-1">
+                          <div className="space-y-0.5 sm:space-y-1">
                             {eventsForDay.slice(0, 3).map(event => {
                               const appearance = getCategoryAppearance(event.category);
                               const isPending = event.status === 'pending';
@@ -230,7 +230,7 @@ const BaseCalendar = ({
                                   <Tooltip.Trigger asChild>
                                     <div
                                       onClick={() => handleEventClick(event)}
-                                      className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
+                                      className={`p-0.5 sm:p-1 rounded-md text-white text-left text-xs sm:text-xs md:text-sm cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
                                       style={appearance.style}
                                     >
                                       <span className="font-semibold">{event.timeFrom}</span> {event.title}
@@ -261,23 +261,23 @@ const BaseCalendar = ({
           {viewMode === 'week' && (
             <>
               {/* Week Day Headers */}
-              <div className="grid grid-cols-7 bg-gray-100">
+              <div className="grid grid-cols-7 bg-gray-100 w-full min-w-0">
                 {weekDays.map(date => (
-                  <div key={date.toISOString()} className="p-4 text-center font-semibold text-gray-700">
+                  <div key={date.toISOString()} className="p-2 sm:p-3 md:p-4 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                     {dayNames[date.getDay()]} {date.getDate()}
                   </div>
                 ))}
               </div>
               {/* Week Days */}
-              <div className="grid grid-cols-7">
+              <div className="grid grid-cols-7 w-full min-w-0 flex-1">
                 {weekDays.map((date, index) => {
                   const eventsForDay = weekEvents[index] || [];
                   return (
                     <div
                       key={date.toISOString()}
-                      className="min-h-32 p-2 border-b border-r border-gray-200 bg-white hover:bg-gray-50"
+                      className="min-h-24 sm:min-h-32 p-1 sm:p-2 md:p-3 border-b border-r border-gray-200 bg-white hover:bg-gray-50 flex flex-col w-full min-w-0"
                     >
-                      <div className="space-y-1">
+                      <div className="space-y-0.5 sm:space-y-1">
                         {eventsForDay.length === 0 && (
                           <div className="text-xs text-gray-400">No events</div>
                         )}
@@ -289,7 +289,7 @@ const BaseCalendar = ({
                               <Tooltip.Trigger asChild>
                                 <div
                                   onClick={() => handleEventClick(event)}
-                                  className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
+                                  className={`p-0.5 sm:p-1 rounded-md text-white text-left text-xs sm:text-xs md:text-sm cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
                                   style={appearance.style}
                                 >
                                   <span className="font-semibold">{event.timeFrom}</span> {event.title}
@@ -311,18 +311,18 @@ const BaseCalendar = ({
             </>
           )}
           {viewMode === 'day' && (
-            <div className="relative pl-16"> {/* Padded container for timeline */}
+            <div className="relative pl-10 sm:pl-14 md:pl-16 w-full min-w-0 flex-1">
               {/* Hour labels (absolutely positioned into the padding) */}
-              <div className="absolute left-0 top-0 w-16 h-full">
+              <div className="absolute left-0 top-0 w-10 sm:w-14 md:w-16 h-full">
                 {dayHours.map((hour, index) => (
-                  <div key={index} className="h-[60px] text-right pr-2 -mt-2.5 text-xs text-gray-500 relative">
-                    <span className="absolute right-2">{hour}</span>
+                  <div key={index} className="h-[60px] text-right pr-1 sm:pr-2 -mt-2.5 text-xs text-gray-500 relative">
+                    <span className="absolute right-1 sm:right-2">{hour}</span>
                   </div>
                 ))}
               </div>
 
               {/* Event container with background lines */}
-              <div className="relative h-[1440px] ml-1">
+              <div className="relative h-[1440px] ml-0.5 w-full min-w-0">
                 {/* Background Lines */}
                 {dayHours.map((_, index) => (
                   <div key={index} className="h-[60px] border-t border-gray-200" />
@@ -335,7 +335,7 @@ const BaseCalendar = ({
                     const appearance = getCategoryAppearance(event.category);
                     const isPending = event.status === 'pending';
                     
-                    const width = `calc(${100 / event.totalColumns}% - 8px)`;
+                    const width = `calc(${100 / event.totalColumns}% - 6px)`;
                     const left = `calc(${event.column * (100 / event.totalColumns)}%)`;
 
                     return (
@@ -343,7 +343,7 @@ const BaseCalendar = ({
                         <Tooltip.Trigger asChild>
                           <button
                             onClick={() => handleEventClick(event)}
-                            className={`absolute p-2 rounded-lg text-white shadow-md cursor-pointer transition-all duration-200 ease-in-out ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
+                            className={`absolute p-1.5 sm:p-2 rounded-lg text-white shadow-md cursor-pointer transition-all duration-200 ease-in-out text-xs sm:text-sm md:text-base ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
                             style={{
                               top: `${top}px`,
                               height: `${height}px`,
@@ -353,8 +353,8 @@ const BaseCalendar = ({
                             }}
                             type="button"
                           >
-                            <p className="font-bold text-sm leading-tight">{event.title}</p>
-                            <p className="text-xs opacity-90">{event.timeFrom} - {event.timeTo}</p>
+                            <p className="font-bold text-xs sm:text-sm md:text-base leading-tight">{event.title}</p>
+                            <p className="text-[10px] sm:text-xs opacity-90">{event.timeFrom} - {event.timeTo}</p>
                           </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
