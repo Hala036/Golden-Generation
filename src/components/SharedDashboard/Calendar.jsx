@@ -21,6 +21,7 @@ const RetireeCalendar = () => {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   // Events state: now fetched from Firestore
   const [events, setEvents] = useState([]);
@@ -72,6 +73,29 @@ const RetireeCalendar = () => {
     return days;
   };
 
+  // Helper to determine if event is past
+  const isPastEvent = (event) => {
+    // Support both date and endDate
+    const now = new Date();
+    let eventDate;
+    const dateStr = event.endDate || event.date;
+    if (dateStr && dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        if (parts[0].length === 2) {
+          // DD-MM-YYYY
+          const [day, month, year] = parts;
+          eventDate = new Date(year, month - 1, day);
+        } else {
+          // YYYY-MM-DD
+          const [year, month, day] = parts;
+          eventDate = new Date(year, month - 1, day);
+        }
+      }
+    }
+    return eventDate && eventDate < now;
+  };
+
   // Get events for a specific date
   const getEventsForDate = (day) => {
     if (!day) return [];
@@ -94,7 +118,10 @@ const RetireeCalendar = () => {
     }).filter(event => 
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ).filter(event => {
+      if (!showPastEvents && isPastEvent(event)) return false;
+      return true;
+    });
   };
 
   // Event color mapping
@@ -330,6 +357,18 @@ const RetireeCalendar = () => {
         </div>
       </div>
 
+      {/* Toggle to show/hide past events */}
+      <div className="flex items-center gap-2 mb-4">
+        <input
+          type="checkbox"
+          id="showPastEvents"
+          checked={showPastEvents}
+          onChange={() => setShowPastEvents(v => !v)}
+          className="form-checkbox h-4 w-4 text-blue-600"
+        />
+        <label htmlFor="showPastEvents" className="text-sm text-gray-700">Show Past Events</label>
+      </div>
+
       {/* Calendar Grid */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Day Headers */}
@@ -361,11 +400,12 @@ const RetireeCalendar = () => {
                         <div
                           key={event.id}
                           onClick={() => handleEventClick(event)}
-                          className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity`}
+                          className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
                         >
                           <div className="flex items-center gap-1">
                             <Clock size={10} />
                             {event.time}
+                            {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
                           </div>
                           <div className="truncate font-medium">
                             {event.title}
@@ -416,7 +456,7 @@ const RetireeCalendar = () => {
                 <span className="text-sm">Pending approval</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-400 rounded"></div>
+                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
                 <span className="text-sm">Past events</span>
               </div>
             </>
@@ -452,11 +492,14 @@ const RetireeCalendar = () => {
                 {selectedEvent.participants.length}/{selectedEvent.maxParticipants} participants
               </div>
               <p className="text-gray-700">{selectedEvent.description}</p>
+              {isPastEvent(selectedEvent) && (
+                <div className="text-xs text-gray-500 font-bold">This event has ended.</div>
+              )}
             </div>
 
             <div className="flex gap-2">
               {isAdmin ? (
-                <>
+                !isPastEvent(selectedEvent) && <>
                   {selectedEvent.status === 'pending' && (
                     <button
                       onClick={() => {
@@ -479,7 +522,7 @@ const RetireeCalendar = () => {
                   </button>
                 </>
               ) : (
-                <>
+                !isPastEvent(selectedEvent) && <>
                   {selectedEvent.participants.includes(currentUser.id) ? (
                     <button
                       onClick={() => {

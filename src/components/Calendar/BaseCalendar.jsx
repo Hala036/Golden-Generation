@@ -28,6 +28,7 @@ const BaseCalendar = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   
   // Advanced filter states
   const [statusFilter, setStatusFilter] = useState('all');
@@ -58,6 +59,41 @@ const BaseCalendar = ({
     categoryFilter,
     dateRange: dateRangeFilter,
     settlementFilter
+  };
+
+  // Helper to determine if event is past
+  const isPastEvent = (event) => {
+    const now = new Date();
+    let eventDate;
+    const dateStr = event.endDate || event.date;
+    if (dateStr && dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        if (parts[0].length === 2) {
+          // DD-MM-YYYY
+          const [day, month, year] = parts;
+          eventDate = new Date(year, month - 1, day);
+        } else {
+          // YYYY-MM-DD
+          const [year, month, day] = parts;
+          eventDate = new Date(year, month - 1, day);
+        }
+      }
+    }
+    return eventDate && eventDate < now;
+  };
+
+  // Event color mapping based on user role and event properties
+  const getEventColor = (event) => {
+    if (userRole === 'admin') {
+      if (event.createdBy === 'admin') return 'bg-blue-500';
+      if (event.createdBy && event.createdBy.startsWith('admin')) return 'bg-green-500';
+      return 'bg-yellow-500'; // Retiree submitted
+    } else {
+      if (event.participants && event.participants.includes('retiree')) return 'bg-green-500';
+      if (event.status === 'pending') return 'bg-orange-500';
+      return 'bg-gray-400';
+    }
   };
 
   const dayEvents = useMemo(() => {
@@ -199,6 +235,18 @@ const BaseCalendar = ({
                   Day
                 </button>
               </div>
+            </div>
+
+            {/* Toggle to show/hide past events */}
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="checkbox"
+                id="showPastEvents"
+                checked={showPastEvents}
+                onChange={() => setShowPastEvents(v => !v)}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <label htmlFor="showPastEvents" className="text-sm text-gray-700">Show Past Events</label>
             </div>
 
             {/* Advanced Filters Row */}
@@ -379,10 +427,10 @@ const BaseCalendar = ({
                                   <Tooltip.Trigger asChild>
                                     <div
                                       onClick={() => handleEventClick(event)}
-                                      className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
-                                      style={appearance.style}
+                                      className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
                                     >
                                       <span className="font-semibold">{event.timeFrom}</span> {event.title}
+                                      {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
                                     </div>
                                   </Tooltip.Trigger>
                                   <Tooltip.Portal>
@@ -438,10 +486,10 @@ const BaseCalendar = ({
                               <Tooltip.Trigger asChild>
                                 <div
                                   onClick={() => handleEventClick(event)}
-                                  className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
-                                  style={appearance.style}
+                                  className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
                                 >
                                   <span className="font-semibold">{event.timeFrom}</span> {event.title}
+                                  {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
                                 </div>
                               </Tooltip.Trigger>
                               <Tooltip.Portal>
@@ -492,18 +540,11 @@ const BaseCalendar = ({
                         <Tooltip.Trigger asChild>
                           <button
                             onClick={() => handleEventClick(event)}
-                            className={`absolute p-2 rounded-lg text-white shadow-md cursor-pointer transition-all duration-200 ease-in-out ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''}`}
-                            style={{
-                              top: `${top}px`,
-                              height: `${height}px`,
-                              left: left,
-                              width: width,
-                              ...appearance.style,
-                            }}
-                            type="button"
+                            className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
                           >
                             <p className="font-bold text-sm leading-tight">{event.title}</p>
                             <p className="text-xs opacity-90">{event.timeFrom} - {event.timeTo}</p>
+                            {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
                           </button>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
@@ -536,6 +577,75 @@ const BaseCalendar = ({
             </div>
           </div>
         )}
+
+        {/* Color Guidance Legend */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+          <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <div className="w-4 h-4 bg-blue-500 rounded"></div>
+            Event Color Guide
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {userRole === 'admin' ? (
+              <>
+                <div className="space-y-3">
+                  <h4 className="font-medium text-gray-700 mb-2">Admin View</h4>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                    <span className="text-sm text-gray-600">Created by me</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-green-500 rounded"></div>
+                    <span className="text-sm text-gray-600">Created by other admins</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+                    <span className="text-sm text-gray-600">Retiree submissions</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  <h4 className="font-medium text-gray-700 mb-2">Retiree View</h4>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-green-500 rounded"></div>
+                    <span className="text-sm text-gray-600">Joined events</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                    <span className="text-sm text-gray-600">Pending approval</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gray-400 rounded"></div>
+                    <span className="text-sm text-gray-600">Available events</span>
+                  </div>
+                </div>
+              </>
+            )}
+            
+            <div className="space-y-3">
+              <h4 className="font-medium text-gray-700 mb-2">General</h4>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
+                <span className="text-sm text-gray-600">Past events</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span className="text-sm text-gray-600">Full capacity</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-purple-500 rounded"></div>
+                <span className="text-sm text-gray-600">Special events</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-xs text-blue-700">
+              <strong>Tip:</strong> Click on any event to view details. Past events are faded and cannot be interacted with.
+            </p>
+          </div>
+        </div>
       </div>
     </Tooltip.Provider>
   );
