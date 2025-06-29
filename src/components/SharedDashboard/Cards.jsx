@@ -25,7 +25,7 @@ const categoryImages = {
   socialevent: SocialEventImg,
 };
 
-const Cards = ({ userRole = 'retiree' }) => {
+const Cards = ({ userRole = 'retiree', setSelected }) => {
   const { language, t } = useLanguage();
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -147,6 +147,13 @@ const Cards = ({ userRole = 'retiree' }) => {
                 </option>
               ))}
             </select>
+            <button
+              title="Go to Calendar"
+              onClick={() => setSelected && setSelected('calendar')}
+              className="ml-2 p-2 rounded-full hover:bg-gray-100"
+            >
+              <FaCalendarAlt className="text-xl text-blue-600" />
+            </button>
           </div>
           {loading && <p>Loading...</p>}
 

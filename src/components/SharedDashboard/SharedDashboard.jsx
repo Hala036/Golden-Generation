@@ -10,6 +10,7 @@ import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Notifications from './Notifications';
 import DefaultProfilePic from '../DefaultProfilePic'; // Import DefaultProfilePic
+import CreateEventForm from '../Calendar/CreateEventForm';
 
 const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selected, setSelected }) => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
   const [userRole, setUserRole] = useState(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Define colors for different user types
   const defaultColors = {
@@ -156,8 +158,9 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
           <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center gap-2 md:gap-3">
               <FaPlusCircle
+                title="Create Event"
                 className="text-gray-600 text-lg md:text-[1.4rem] cursor-pointer hover:text-gray-800"
-                onClick={() => setSelected("add")}
+                onClick={() => setShowCreateModal(true)}
               />
               <FaBell
                 className="text-gray-600 text-lg md:text-[1.4rem] cursor-pointer hover:text-gray-800"
@@ -205,6 +208,16 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
             <div className="max-h-64 md:max-h-96 overflow-y-auto">
               <Notifications setSelectedTab={setSelected} setShowNotificationsPopup={setShowNotificationsPopup} />
             </div>
+          </div>
+        )}
+
+        {/* Create Event Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <CreateEventForm
+              onClose={() => setShowCreateModal(false)}
+              userRole={userRole}
+            />
           </div>
         )}
       </div>
