@@ -13,27 +13,29 @@ import {
   FaBell,
   FaComments,
 } from "react-icons/fa";
-
-const navItems = [
-  { section: null, items: [
-    { icon: <FaHome />, text: "Home Page", key: "home" },
-    { icon: <FaCalendarAlt />, text: "Upcoming Events", key: "events" },
-    { icon: <FaUserFriends />, text: "Retirees", key: "retirees" },
-    { icon: <FaHandsHelping />, text: "Volunteer Requests", key: "volunteers" },
-    { icon: <FaClipboardList />, text: "Service Requests", key: "services" },
-  ]},
-  { section: "Management", items: [
-    { icon: <FaChartBar />, text: "Analytics", key: "analytics" },
-    { icon: <FaPlusSquare />, text: "Add Settlements", key: "addSettlements" },
-  ]},
-  { section: "Settings", items: [
-    { icon: <FaCog />, text: "Settings", key: "settings" },
-    { icon: <FaSignOutAlt />, text: "Logout", key: "logout" },
-  ]},
-];
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = ({ activeKey = "home", onNavigate }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
+
+  const navItems = [
+    { section: null, items: [
+      { icon: <FaHome />, text: t('sidebar.home'), key: "home" },
+      { icon: <FaCalendarAlt />, text: t('sidebar.upcomingEvents'), key: "events" },
+      { icon: <FaUserFriends />, text: t('sidebar.retirees'), key: "retirees" },
+      { icon: <FaHandsHelping />, text: t('sidebar.volunteerRequests'), key: "volunteers" },
+      { icon: <FaClipboardList />, text: t('sidebar.serviceRequests'), key: "services" },
+    ]},
+    { section: t('sidebar.management'), items: [
+      { icon: <FaChartBar />, text: t('sidebar.analytics'), key: "analytics" },
+      { icon: <FaPlusSquare />, text: t('sidebar.addSettlements'), key: "addSettlements" },
+    ]},
+    { section: t('sidebar.settingsSection'), items: [
+      { icon: <FaCog />, text: t('sidebar.settings'), key: "settings" },
+      { icon: <FaSignOutAlt />, text: t('sidebar.logout'), key: "logout" },
+    ]},
+  ];
 
   return (
     <div className={`fixed top-16 left-0 h-full bg-white shadow-lg p-4 transition-all duration-300 z-40 ${isOpen ? "w-56" : "w-16"}`}>
@@ -41,7 +43,7 @@ const Sidebar = ({ activeKey = "home", onNavigate }) => {
       <button
         className="absolute top-4 right-[-12px] bg-gray-800 text-white rounded-full p-1 focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+        aria-label={isOpen ? t('sidebar.collapse') : t('sidebar.expand')}
       >
         ☰
       </button>

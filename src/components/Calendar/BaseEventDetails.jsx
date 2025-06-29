@@ -221,7 +221,7 @@ const BaseEventDetails = ({
                           p.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                           'bg-gray-200 text-gray-700'
                         }`}>
-                          {p.status}
+                          {t(`calendar.eventDetails.status.${p.status}`)}
                         </span>
                       </li>
                     )) : (

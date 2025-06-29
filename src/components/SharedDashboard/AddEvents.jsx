@@ -64,7 +64,7 @@ const AddEvents = () => {
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
-        toast.error("Failed to fetch categories.");
+        toast.error(t("admin.createEvent.fetchCategoriesError"));
       }
     };
 
@@ -85,7 +85,7 @@ const AddEvents = () => {
     try {
       const user = auth.currentUser;
       if (!user) {
-        toast.error("You must be logged in to create events");
+        toast.error(t("admin.createEvent.mustBeLoggedIn"));
         return;
       }
 
@@ -134,7 +134,7 @@ const AddEvents = () => {
       };
 
       await addDoc(collection(db, "events"), newEvent);
-      toast.success("Event created successfully!");
+      toast.success(t("admin.createEvent.eventCreatedSuccess"));
 
       // Reset form
       setEventData({
@@ -151,7 +151,7 @@ const AddEvents = () => {
       });
     } catch (error) {
       console.error("Error creating event:", error);
-      toast.error("Failed to create event. Please try again.");
+      toast.error(t("admin.createEvent.createEventError"));
     }
   };
 
@@ -337,7 +337,7 @@ const AddEvents = () => {
 
           <div className="flex items-center space-x-4">
             <label className="cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-md">
-              {imageFile ? "Change Image" : "Upload Image"}
+              {imageFile ? t("admin.createEvent.changeImage") : t("admin.createEvent.uploadImage")}
               <input
                 type="file"
                 accept="image/*"
@@ -359,7 +359,7 @@ const AddEvents = () => {
           <div className="mt-4">
             <img
               src={URL.createObjectURL(imageFile)}
-              alt="Event Preview"
+              alt={t("admin.createEvent.eventPreview")}
               className="w-full h-48 object-cover rounded-md border border-gray-300"
             />
           </div>

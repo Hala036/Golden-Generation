@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import { db } from '../../firebase';
 import { leaveEvent } from '../../utils/participants';
-import { doc, deleteDoc, writeBatch, collection, getDocs } from 'firebase/firestore';
+import { doc, deleteDoc, writeBatch, collection, getDocs, updateDoc } from 'firebase/firestore';
 import { FaCheck, FaTimes, FaUser, FaTrash, FaEdit } from 'react-icons/fa';
 import BaseEventDetails from '../Calendar/BaseEventDetails';
 import CreateEventForm from '../Calendar/CreateEventForm';
+import { useLanguage } from '../../context/LanguageContext';
 
 const AdminEventDetails = ({ event, onClose }) => {
+  const { t } = useLanguage();
   const [showEditModal, setShowEditModal] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
@@ -40,7 +42,7 @@ const AdminEventDetails = ({ event, onClose }) => {
       onClose();
     } catch (error) {
       console.error('Error deleting event:', error);
-      alert('Failed to delete event.');
+      alert(t("calendar.adminEventDetails.failedToDeleteEvent"));
     }
   };
 
@@ -65,7 +67,42 @@ const AdminEventDetails = ({ event, onClose }) => {
           await updateDoc(participantRef, { status: 'confirmed' });
         }}
         onRejectParticipant={leaveEvent}
-      />
+      >
+        {/* Admin Controls */}
+        <div className="flex w-full gap-3">
+          {isConfirmingDelete ? (
+            <>
+              <button
+                onClick={handleDeleteEvent}
+                className="flex-grow bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
+              >
+                {t("calendar.adminEventDetails.confirmDelete")}
+              </button>
+              <button
+                onClick={handleCancelDelete}
+                className="flex-grow bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out"
+              >
+                {t("common.cancel")}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleEdit}
+                className="flex-grow bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out flex items-center justify-center gap-2"
+              >
+                <FaEdit /> {t("calendar.adminEventDetails.editEvent")}
+              </button>
+              <button
+                onClick={handleInitialDeleteClick}
+                className="flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ease-in-out flex items-center justify-center gap-2"
+              >
+                <FaTrash /> {t("calendar.adminEventDetails.deleteEvent")}
+              </button>
+            </>
+          )}
+        </div>
+      </BaseEventDetails>
 
       {/* Edit Modal */}
       {showEditModal && (
