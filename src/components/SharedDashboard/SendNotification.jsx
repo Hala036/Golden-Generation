@@ -4,6 +4,7 @@ import { db } from "../../firebase";
 import useAuth from "../../hooks/useAuth"; // if you track current user
 import { toast, Toaster } from "react-hot-toast";
 import { FaPaperPlane, FaUsers, FaBell, FaTimes } from 'react-icons/fa';
+
 import { useLanguage } from "../../context/LanguageContext";
 
 const SendNotification = ({ onClose }) => {
@@ -12,9 +13,18 @@ const SendNotification = ({ onClose }) => {
   const [recipients, setRecipients] = useState([]);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [message, setMessage] = useState("");
+  const [targetType, setTargetType] = useState("everyone"); // "everyone", "retirees", "admins", "custom"
+  const [customUsername, setCustomUsername] = useState(""); // Current username being typed
+  const [selectedUsernames, setSelectedUsernames] = useState([]); // Array of selected usernames
+  const [uids, setUids] = useState([]); // Array of UIDs corresponding to selected usernames
+  const [allUsernames, setAllUsernames] = useState([]); // Store all usernames for autofill
+  const { currentUser } = useAuth(); // optional
+  const { t } = useLanguage();
+
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const [recipientsLoading, setRecipientsLoading] = useState(true);
+
 
   // Fetch recipients based on user role
   useEffect(() => {
@@ -65,6 +75,7 @@ const SendNotification = ({ onClose }) => {
     }
   }, [user]);
 
+
   const handleSendNotification = async (e) => {
     e.preventDefault();
     
@@ -75,6 +86,7 @@ const SendNotification = ({ onClose }) => {
 
     setLoading(true);
     try {
+
       // Create notifications directly in Firestore
       const notificationPromises = selectedRecipients.map(recipient => {
         const notification = {
@@ -119,6 +131,7 @@ const SendNotification = ({ onClose }) => {
 
   const removeRecipient = (recipientId) => {
     setSelectedRecipients(selectedRecipients.filter(r => r.id !== recipientId));
+
   };
 
   if (recipientsLoading) {
@@ -136,6 +149,7 @@ const SendNotification = ({ onClose }) => {
   return (
     <div className="p-6 max-w-md mx-auto">
       <Toaster position="top-right" />
+
       
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold flex items-center">
@@ -155,6 +169,7 @@ const SendNotification = ({ onClose }) => {
           <label className="block text-sm font-medium mb-2">Title</label>
           <input
             type="text"
+
             className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -186,6 +201,7 @@ const SendNotification = ({ onClose }) => {
                 }`}
                 onClick={() => handleRecipientSelect(recipient)}
               >
+
                 <input
                   type="checkbox"
                   checked={selectedRecipients.find(r => r.id === recipient.id) ? true : false}
@@ -197,6 +213,7 @@ const SendNotification = ({ onClose }) => {
             ))}
           </div>
         </div>
+
 
         {selectedRecipients.length > 0 && (
           <div>

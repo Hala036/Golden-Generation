@@ -33,12 +33,13 @@ const RetireeDashboard = () => {
     { id: "categoryManagement", label: "Category Management", icon: <FaTags /> },
     { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
     { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
-      { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
-      { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
-      { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
-      { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
-      { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
-    ];
+    { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
+    { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
+    { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
+    { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
+    { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
+  ];
+
 
   const customButtons = [];
 

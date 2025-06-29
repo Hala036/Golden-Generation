@@ -36,18 +36,18 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
       try {
         const user = auth.currentUser;
         if (!user) {
-          toast.error("No user is logged in.");
+          toast.error(t('dashboard.sidebar.noUserLoggedIn'));
           return;
         }
         const data = await getUserData(user.uid);
         if (!data) {
-          toast.error("Failed to load user data.");
+          toast.error(t('dashboard.sidebar.failedToLoadUser'));
           return;
         }
         setUserData(data.credentials);
         setUserRole(data.role); // Set the user role
       } catch (error) {
-        toast.error("Failed to load user data.");
+        toast.error(t('dashboard.sidebar.failedToLoadUser'));
       }
     };
     fetchUserData();
@@ -56,10 +56,10 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      toast.success('Logged out successfully!');
+      toast.success(t('dashboard.sidebar.loggedOut'));
       navigate('/login');
     } catch (error) {
-      toast.error('Failed to logout. Please try again.');
+      toast.error(t('dashboard.sidebar.failedToLogout'));
     }
   };
 
@@ -81,6 +81,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
 
         {/* Profile Section */}
         {isSidebarExpanded && (
+
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
               <DefaultProfilePic 
@@ -188,20 +189,21 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
         </div>
 
         {/* Scrollable Content */}
-        <div className="bg-white rounded-lg shadow-sm p-1 md:p-2 overflow-y-auto flex-1 mt-10 md:mt-13">
-          {componentsById[selected] || <div>No Component Found</div>}
+        <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
+          {componentsById[selected] || <div>{t('dashboard.main.noComponent')}</div>}
+
         </div>
 
         {/* Notifications Popup */}
         {showNotificationsPopup && (
-          <div className="absolute top-16 md:top-20 right-2 md:right-10 bg-white rounded-lg shadow-lg p-3 md:p-6 w-72 md:w-96 z-50">
-            <div className="flex justify-between items-center mb-2 md:mb-4">
-              <h3 className="text-lg md:text-xl font-bold">Notifications</h3>
+          <div className="absolute top-20 right-10 bg-white rounded-lg shadow-lg p-6 w-96 z-50">
+            <div className="flex justify-between items-center mb-4">
+
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowNotificationsPopup(false)} // Close the popup
               >
-                &times;
+                {t('dashboard.actions.close')}
               </button>
             </div>
             {/* Scrollable Notifications List */}
