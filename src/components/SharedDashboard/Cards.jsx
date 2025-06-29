@@ -25,6 +25,44 @@ const categoryImages = {
   socialevent: SocialEventImg,
 };
 
+// Feedback Modal Component (simple scaffold)
+const FeedbackModal = ({ eventId, onClose, onSubmit }) => {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md relative">
+        <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-700" onClick={onClose}>&times;</button>
+        <h2 className="text-lg font-bold mb-4">Rate this event</h2>
+        <div className="flex gap-1 mb-4">
+          {[1,2,3,4,5].map(star => (
+            <button
+              key={star}
+              className={`text-2xl ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+              onClick={() => setRating(star)}
+              aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+            >★</button>
+          ))}
+        </div>
+        <textarea
+          className="w-full border rounded p-2 mb-4"
+          rows={3}
+          placeholder="Leave a comment (optional)"
+          value={comment}
+          onChange={e => setComment(e.target.value)}
+        />
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded font-bold w-full"
+          onClick={() => onSubmit(eventId, rating, comment)}
+          disabled={rating === 0}
+        >
+          Submit Feedback
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const Cards = ({ userRole = 'retiree', setSelected }) => {
   const { language, t } = useLanguage();
   const [events, setEvents] = useState([]);
@@ -37,6 +75,9 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
   const [expandedImage, setExpandedImage] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [showMyEventsOnly, setShowMyEventsOnly] = useState(false);
+  const [showPast, setShowPast] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(null); // eventId or null
+  const [eventToRepeat, setEventToRepeat] = useState(null); // event object or null
 
   // Get current user
   useEffect(() => {
@@ -123,6 +164,27 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
   // Helper function to check if event was created by current user
   const isEventCreatedByMe = (event) => {
     return currentUser && event.createdBy === currentUser.uid;
+  };
+
+  // Helper to determine if event is past
+  const isPastEvent = (event) => {
+    const now = new Date();
+    let eventDate;
+    if (event.endDate && event.endDate.includes('-')) {
+      const parts = event.endDate.split('-');
+      if (parts.length === 3) {
+        if (parts[0].length === 2) {
+          // DD-MM-YYYY
+          const [day, month, year] = parts;
+          eventDate = new Date(year, month - 1, day);
+        } else {
+          // YYYY-MM-DD
+          const [year, month, day] = parts;
+          eventDate = new Date(year, month - 1, day);
+        }
+      }
+    }
+    return eventDate && eventDate < now;
   };
 
   // Fetch categories and events from Firestore in real-time
@@ -230,6 +292,10 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
     setShowMyEventsOnly(!showMyEventsOnly);
   };
 
+  const displayedEvents = showPast
+    ? filteredEvents.filter(isPastEvent)
+    : filteredEvents.filter(event => !isPastEvent(event));
+
   // Conditionally render the correct modal based on the user's role
   const renderEventDetailsModal = () => {
     if (!selectedEvent) return null;
@@ -243,6 +309,18 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
       return <AdminEventDetails {...modalProps} />;
       }
     return <RetireeEventDetails {...modalProps} />;
+  };
+
+  const handleFeedbackSubmit = (eventId, rating, comment) => {
+    // TODO: Save feedback to your database and mark event as feedbackGiven for this user
+    alert(`Feedback submitted! Rating: ${rating}, Comment: ${comment}`);
+    setShowFeedbackModal(null);
+  };
+
+  const handleRepeatEvent = (event) => {
+    setEventToRepeat(event);
+    // TODO: Open your event creation form/modal pre-filled with event's data
+    alert('Repeat event: open event creation form pre-filled with this event\'s data.');
   };
 
   return (
@@ -314,6 +392,22 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
             {/* Add other badges here as needed */}
           </div>
 
+          {/* Tabs for Upcoming/Past Events */}
+          <div className="flex gap-2 mb-4">
+            <button
+              className={`px-4 py-2 rounded ${!showPast ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setShowPast(false)}
+            >
+              Upcoming Events
+            </button>
+            <button
+              className={`px-4 py-2 rounded ${showPast ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setShowPast(true)}
+            >
+              Past Events
+            </button>
+          </div>
+
           {loading && (
             <div className="flex items-center justify-center p-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
@@ -324,33 +418,36 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
           {/* Events Grid */}
           {!loading && (
             <>
-              {filteredEvents.length === 0 ? (
+              {displayedEvents.length === 0 ? (
                 <EmptyState
                   icon={<FaCalendarCheck className="text-6xl text-gray-300" />}
-                  title={searchQuery || selectedCategory !== "all" 
+                  title={showPast ? t("dashboard.events.noPastEvents") || "No past events" : (searchQuery || selectedCategory !== "all" 
                     ? t("dashboard.events.noUpcomingEventsFilter") || "No upcoming events found"
                     : t("dashboard.events.noUpcomingEvents") || "No upcoming events"
-                  }
-                  message={searchQuery || selectedCategory !== "all" 
+                  )}
+                  message={showPast ? t('emptyStates.noPastEventsMessage') || "No events have ended yet." : (searchQuery || selectedCategory !== "all" 
                     ? t('emptyStates.noUpcomingEventsFilterMessage') || "Try adjusting your search or filter criteria"
                     : t('emptyStates.noUpcomingEventsMessage') || "Check back later for new events or browse past events in the calendar"
-                  }
+                  )}
                   className="p-8"
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
-                  {filteredEvents.map((event) => {
+                  {displayedEvents.map((event) => {
                     const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
                     const isMyEvent = currentUser && event.createdBy === currentUser.uid;
                     const isJoined = currentUser && Array.isArray(event.participants) && event.participants.includes(currentUser.uid);
                     const categoryName = categories.find(cat => cat.id === event.categoryId)?.translations?.[language] || event.categoryId;
                     const statusColor = event.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : event.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700';
+                    const past = isPastEvent(event);
                     return (
                       <div
                         key={event.id}
-                        className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[320px] max-h-[400px] hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 group"
+                        className={`bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[320px] max-h-[400px] hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 group ${past ? 'opacity-60 grayscale relative' : ''}`}
                         aria-label={`Event card: ${event.title}`}
                       >
+                        {/* Past badge */}
+                        {past && <span className="absolute top-2 left-2 bg-gray-700 text-white px-2 py-1 rounded-full text-xs shadow z-20">Past</span>}
                         {/* Image with overlay and badges */}
                         <div className="mb-2 md:mb-2 relative cursor-pointer" onClick={() => setExpandedImage(backgroundImage)}>
                           <img
@@ -400,6 +497,25 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
                             <p className="text-gray-500 text-xs mt-2 line-clamp-2" title={event.description}>
                               {event.description}
                             </p>
+                            {/* Repeat and Feedback for past events */}
+                            {past && (
+                              <div className="flex gap-2 mt-2">
+                                <button
+                                  className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded text-xs font-bold"
+                                  onClick={() => handleRepeatEvent(event)}
+                                >
+                                  Repeat Event
+                                </button>
+                                {isJoined && !event.feedbackGiven && (
+                                  <button
+                                    className="text-blue-600 underline text-xs font-bold"
+                                    onClick={() => setShowFeedbackModal(event.id)}
+                                  >
+                                    Rate this event
+                                  </button>
+                                )}
+                              </div>
+                            )}
                           </div>
                           {/* Footer */}
                           <div className="mt-4 flex justify-end border-t pt-2">
@@ -444,6 +560,14 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
             />
           </div>
         </div>
+      )}
+
+      {showFeedbackModal && (
+        <FeedbackModal
+          eventId={showFeedbackModal}
+          onClose={() => setShowFeedbackModal(null)}
+          onSubmit={handleFeedbackSubmit}
+        />
       )}
     </div>
   );

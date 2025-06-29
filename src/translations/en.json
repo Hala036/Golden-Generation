@@ -577,7 +577,8 @@
         "moreDetails": "More Info",
         "participants": "Participants",
         "noParticipants": "No participants yet",
-        "joined": "Joined"
+        "joined": "Joined",
+        "noPastEvents": "No past events"
       },
       "expiryDate": {
         "label": "ID Expiry Date"
@@ -763,7 +764,8 @@
       "moreDetails": "More Info",
       "participants": "Participants",
       "noParticipants": "No participants yet",
-      "joined": "Joined"
+      "joined": "Joined",
+      "noPastEvents": "No past events"
     },
     "filter": {
       "allCategories": "All Categories",
@@ -943,7 +945,8 @@
     "noCandidatesMessage": "No candidates have been registered yet.",
     "addCandidate": "Add Candidate",
     "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
-    "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria"
+    "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria",
+    "noPastEventsMessage": "No events have ended yet."
   },
   "loading": {
     "messages": "Loading messages...",
