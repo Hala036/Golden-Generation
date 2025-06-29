@@ -1105,7 +1105,7 @@
     "notifications": "Notifications",
     "calendar": "Calendar",
     "main": {
-      "welcome": "Welcome, {{userName}} 👋",
+      "welcome": "Welcome, ",
       "communityToday": "Here's what's happening in your community today",
       "currentTime": "Current Time",
       "quickActions": {
@@ -1127,17 +1127,17 @@
       "noRecentActivity": "No recent activity to show.",
       "alertsAndNotifications": "Alerts & Notifications",
       "activity": {
-        "joinedCommunity": "{{username}} joined the community",
+        "joinedCommunity": "joined the community",
         "createdEvent": "Event '{{title}}' created",
-        "completedVolunteerService": "{{username}} completed volunteer service",
-        "newServiceRequest": "New service request: {{title}}",
-        "eventFullyBooked": "Event '{{title}}' fully booked",
-        "volunteerMatchCreated": "Volunteer match created for '{{title}}'"
+        "completedVolunteerService": " completed volunteer service",
+        "newServiceRequest": "New service request: ",
+        "eventFullyBooked": "Event fully booked",
+        "volunteerMatchCreated": "Volunteer match created for"
       },
       "time": {
-        "minutesAgo": "{{count}} minutes ago",
-        "hoursAgo": "{{count}} hours ago",
-        "daysAgo": "{{count}} days ago",
+        "minutesAgo": "minutes ago",
+        "hoursAgo": "hours ago",
+        "daysAgo": " days ago",
         "invalidDate": "Invalid date"
       }
     }

@@ -24,10 +24,16 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   // Memoize user data calculations to prevent unnecessary re-renders
   const userInfo = useMemo(() => {
     const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
-    const userName = userData?.credentials?.username || "Admin";
+    const userName =
+      userData?.credentials?.username ||
+      userData?.username ||
+      user?.displayName ||
+      user?.email ||
+      "Admin";
     const userRole = userData?.role || "";
+    console.log("username: ", userName)
     return { userSettlement, userName, userRole };
-  }, [userData]);
+  }, [userData, user]);
 
   const { userSettlement, userName, userRole } = userInfo;
 
@@ -567,7 +573,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       <div className="mb-4 md:mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('dashboard.main.welcome', { userName })}</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('dashboard.main.welcome', { userName }, '👋')}</h1>
             <p className="text-gray-600">{t('dashboard.main.communityToday')}</p>
 
           </div>
