@@ -99,6 +99,8 @@ export const useCalendarEvents = (userRole) => {
 
     // Date-specific filtering
     if (date) {
+      // Always convert incoming date to DD-MM-YYYY for comparison
+      const filterDateStr = formatDateToDDMMYYYY(date);
       if (filter === 'upcoming') {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -124,15 +126,14 @@ export const useCalendarEvents = (userRole) => {
           return parsedDate >= today;
         });
       } else {
-        // Specific date filtering
-        const dateStr = formatDateToDDMMYYYY(date);
+        // Specific date filtering (fix: compare using DD-MM-YYYY)
         filteredEvents = filteredEvents.filter(event => {
-          if (!event.startDate && !event.date) return false;
-          const eventStart = event.startDate ? parseDDMMYYYY(event.startDate) : null;
-          const eventEnd = event.endDate ? parseDDMMYYYY(event.endDate) : eventStart;
-          const current = parseDDMMYYYY(dateStr);
-          if (!eventStart || !current) return false;
-          return current >= eventStart && current <= eventEnd;
+          // Use event.date, event.startDate, event.endDate all in DD-MM-YYYY
+          const eventStartStr = event.startDate ? formatDateToDDMMYYYY(event.startDate) : (event.date ? formatDateToDDMMYYYY(event.date) : null);
+          const eventEndStr = event.endDate ? formatDateToDDMMYYYY(event.endDate) : eventStartStr;
+          if (!eventStartStr || !filterDateStr) return false;
+          // Compare as strings
+          return filterDateStr >= eventStartStr && filterDateStr <= eventEndStr;
         });
       }
     }

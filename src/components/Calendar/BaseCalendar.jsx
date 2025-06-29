@@ -208,10 +208,11 @@ const BaseCalendar = ({
 
   // Get collision-aware events for day view
   const dayViewEventsWithCollisions = useMemo(() => {
-    const filtered = getFilteredEvents(currentDate, filter, searchTerm, additionalFiltersObj);
+    const filtered = getFilteredEvents(currentDate, filter, searchTerm, additionalFiltersObj)
+      .filter(event => showPastEvents || !isPastEvent(event));
     const processed = processEventsWithCollisions(filtered);
     return processEventsForDayView(processed);
-  }, [currentDate, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj]);
+  }, [currentDate, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj, showPastEvents]);
 
   const dayEvents = useMemo(() => {
     return days.map((day) =>
@@ -220,9 +221,9 @@ const BaseCalendar = ({
         filter,
         searchTerm,
         additionalFiltersObj
-      )
+      ).filter(event => showPastEvents || !isPastEvent(event))
     );
-  }, [days, events, filter, searchTerm, getFilteredEvents, currentDate, additionalFiltersObj]);
+  }, [days, events, filter, searchTerm, getFilteredEvents, currentDate, additionalFiltersObj, showPastEvents]);
 
   // For week view
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -233,8 +234,9 @@ const BaseCalendar = ({
   const weekEvents = useMemo(() => {
     return weekDays.map((date) =>
       getFilteredEvents(date, filter, searchTerm, additionalFiltersObj)
+        .filter(event => showPastEvents || !isPastEvent(event))
     );
-  }, [weekDays, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj]);
+  }, [weekDays, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj, showPastEvents]);
 
   // Events for day view
   const dayViewEvents = useMemo(() => {
@@ -732,7 +734,37 @@ const BaseCalendar = ({
                   <div key={index} className="h-[60px] border-t border-gray-200" />
                 ))}
 
-                {/* Events */}
+                {/* Timeline indicators for each hour */}
+                {dayHours.map((hour, index) => (
+                  <div key={index} className="absolute left-0 w-full h-[60px] pointer-events-none">
+                    <div className="absolute left-0 w-2 h-full border-l-2 border-gray-300 opacity-30"></div>
+                    <div className="absolute left-4 w-1 h-full border-l border-gray-200 opacity-20"></div>
+                  </div>
+                ))}
+
+                {/* Current time indicator */}
+                {(() => {
+                  const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinute = now.getMinutes();
+                  const currentTimeTop = (currentHour * 60 + currentMinute) * (60 / 60); // 60px per hour
+                  
+                  if (now.toDateString() === currentDate.toDateString()) {
+                    return (
+                      <div 
+                        className="absolute left-0 w-full pointer-events-none z-20"
+                        style={{ top: `${currentTimeTop}px` }}
+                      >
+                        <div className="absolute left-0 w-2 h-0.5 bg-red-500 rounded-full"></div>
+                        <div className="absolute left-2 w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="absolute left-4 right-0 h-0.5 bg-red-500 opacity-50"></div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
+                {/* Events with timeline lines */}
                 <div className="absolute top-0 left-0 w-full h-full">
                   {dayViewEventsWithCollisions.map(event => {
                     const { top, height } = getEventPositionAndDimensions(event);
@@ -745,25 +777,71 @@ const BaseCalendar = ({
                     return (
                       <Tooltip.Root key={event.id}>
                         <Tooltip.Trigger asChild>
-                          <button
-                            onClick={() => handleEventClick(event)}
-                            className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''} ${event.hasCollision ? 'border-2 border-white shadow-lg' : ''}`}
-                            style={{
-                              position: 'absolute',
-                              top: `${top}px`,
-                              left: left,
-                              width: width,
-                              height: `${height}px`,
-                              zIndex: event.hasCollision ? 10 : 1
-                            }}
-                          >
-                            <p className="font-bold text-sm leading-tight">{event.title}</p>
-                            <p className="text-xs opacity-90">{event.timeFrom} - {event.timeTo}</p>
-                            {event.hasCollision && (
-                              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
-                            )}
-                            {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
-                          </button>
+                          <div className="relative">
+                            {/* Timeline line connecting start to end */}
+                            <div 
+                              className="absolute left-0 w-1 bg-gray-400 opacity-30 rounded-full"
+                              style={{
+                                top: `${top}px`,
+                                height: `${height}px`,
+                                left: '8px'
+                              }}
+                            />
+                            
+                            {/* Event block */}
+                            <button
+                              onClick={() => handleEventClick(event)}
+                              className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-all duration-200 ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''} ${event.hasCollision ? 'border-2 border-white shadow-lg' : ''} hover:scale-105 hover:shadow-md`}
+                              style={{
+                                position: 'absolute',
+                                top: `${top}px`,
+                                left: left,
+                                width: width,
+                                height: `${height}px`,
+                                zIndex: event.hasCollision ? 10 : 1,
+                                marginLeft: '16px' // Space for timeline line
+                              }}
+                            >
+                              {/* Event content */}
+                              <div className="h-full flex flex-col justify-between">
+                                <div>
+                                  <p className="font-bold text-sm leading-tight">{event.title}</p>
+                                  <p className="text-xs opacity-90">{event.timeFrom} - {event.timeTo}</p>
+                                </div>
+                                
+                                {/* Event duration indicator */}
+                                <div className="flex items-center justify-between mt-1">
+                                  <div className="flex items-center gap-1">
+                                    <Clock size={10} className="opacity-70" />
+                                    <span className="text-xs opacity-70">
+                                      {(() => {
+                                        const start = event.timeFrom ? event.timeFrom : '00:00';
+                                        const end = event.timeTo ? event.timeTo : '01:00';
+                                        const startMinutes = parseInt(start.split(':')[0]) * 60 + parseInt(start.split(':')[1]);
+                                        const endMinutes = parseInt(end.split(':')[0]) * 60 + parseInt(end.split(':')[1]);
+                                        const duration = endMinutes - startMinutes;
+                                        if (duration <= 0) return '1h';
+                                        const hours = Math.floor(duration / 60);
+                                        const minutes = duration % 60;
+                                        if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
+                                        if (hours > 0) return `${hours}h`;
+                                        return `${minutes}m`;
+                                      })()}
+                                    </span>
+                                  </div>
+                                  
+                                  {/* Collision indicator */}
+                                  {event.hasCollision && (
+                                    <div className="w-2 h-2 bg-red-500 rounded-full border border-white"></div>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {isPastEvent(event) && (
+                                <span className="absolute top-1 right-1 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>
+                              )}
+                            </button>
+                          </div>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
                           <Tooltip.Content side="right" sideOffset={5} className="radix-side-right:animate-slide-left-fade radix-side-bottom:animate-slide-up-fade">
@@ -774,6 +852,17 @@ const BaseCalendar = ({
                     );
                   })}
                 </div>
+
+                {/* Empty state */}
+                {dayViewEventsWithCollisions.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-gray-500">
+                      <Calendar size={48} className="mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No events scheduled for this day</p>
+                      <p className="text-xs opacity-70">Click "Create Event" to add an activity</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -861,6 +950,14 @@ const BaseCalendar = ({
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
                 </div>
                 <span className="text-sm text-gray-600">Overlapping events</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-1 bg-gray-400 rounded-full opacity-30"></div>
+                <span className="text-sm text-gray-600">Timeline line</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-0.5 bg-red-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">Current time</span>
               </div>
             </div>
           </div>
