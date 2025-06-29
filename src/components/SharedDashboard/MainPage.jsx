@@ -7,10 +7,10 @@ import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
 import { useLanguage } from "../../context/LanguageContext";
 
-  const { t } = useLanguage();
 import DefaultProfilePic from "../DefaultProfilePic"; // Import DefaultProfilePic component
 const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) => {
   const mountedRef = useRef(false);
+  const { t } = useLanguage();
   
   if (!mountedRef.current) {
     console.log("MainPage mounted");
@@ -552,6 +552,8 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     if (minutes < 60) return t('dashboard.main.time.minutesAgo', { count: minutes });
     if (hours < 24) return t('dashboard.main.time.hoursAgo', { count: hours });
     return t('dashboard.main.time.daysAgo', { count: days });
+  };
+
   // Function to extract name from activity action
   const extractNameFromAction = (action) => {
     // Match pattern: starts with any word characters up to a space or 'joined'
