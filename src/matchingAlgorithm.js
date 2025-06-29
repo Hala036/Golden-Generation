@@ -110,6 +110,7 @@ export const calculateMatchScore = (jobRequest, senior) => {
 
   // Location match (40%)
   const seniorLocation = senior.personalDetails?.settlement || "";
+  console.log("Comparing location:", { seniorLocation, jobLocation: jobRequest.location });
   if (seniorLocation && seniorLocation === jobRequest.location) {
     scoreDetails.locationScore = 40;
   }
@@ -117,7 +118,7 @@ export const calculateMatchScore = (jobRequest, senior) => {
   // Interests match (25%)
   const seniorInterests = senior.lifestyle?.interests || [];
   const jobRequestInterests = Array.isArray(jobRequest.volunteerField) ? jobRequest.volunteerField : [jobRequest.volunteerField];
-
+  console.log("Comparing interests:", { seniorInterests, jobRequestInterests });
   if (seniorInterests.length > 0 && jobRequestInterests.length > 0) {
     const overlap = seniorInterests.filter(interest => jobRequestInterests.includes(interest));
     if (overlap.length > 0) {
@@ -128,7 +129,7 @@ export const calculateMatchScore = (jobRequest, senior) => {
   // Professional background match (25%)
   const seniorBackground = senior.workBackground?.selectedJob || senior.workBackground?.category || "";
   const jobBackground = jobRequest.professionalBackground || "";
-
+  console.log("Comparing background:", { seniorBackground, jobBackground });
   if (seniorBackground && jobBackground) {
     if (seniorBackground === jobBackground) {
       scoreDetails.backgroundScore = 25;
@@ -147,6 +148,7 @@ export const calculateMatchScore = (jobRequest, senior) => {
   const seniorDays = Array.isArray(senior.volunteerDays) && senior.volunteerDays.length > 0
     ? senior.volunteerDays
     : (Array.isArray(senior.additionalVolunteerDays) ? senior.additionalVolunteerDays : []);
+  console.log("Comparing days:", { seniorDays, jobDays });
   if (jobDays.length && seniorDays.length) {
     const overlap = jobDays.filter(day => seniorDays.includes(day));
     if (overlap.length === jobDays.length) {
@@ -159,6 +161,7 @@ export const calculateMatchScore = (jobRequest, senior) => {
   // Frequency match (10%)
   const seniorFrequency = senior.volunteerFrequency || senior.additionalVolunteerFrequency || "";
   const jobFrequency = jobRequest.frequency || "";
+  console.log("Comparing frequency:", { seniorFrequency, jobFrequency });
   if (seniorFrequency && jobFrequency && seniorFrequency === jobFrequency) {
     scoreDetails.frequencyScore = 10;
   } else if (
@@ -174,6 +177,7 @@ export const calculateMatchScore = (jobRequest, senior) => {
   // Timing match (10%)
   const seniorTiming = senior.volunteerHours || senior.additionalVolunteerHours || "";
   const jobTiming = jobRequest.timing || "";
+  console.log("Comparing timing:", { seniorTiming, jobTiming });
   if (seniorTiming && jobTiming && seniorTiming === jobTiming) {
     scoreDetails.timingScore = 10;
   } else if (
