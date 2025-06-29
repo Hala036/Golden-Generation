@@ -338,170 +338,80 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
                   className="p-8"
                 />
               ) : (
-                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 gap-1 md:gap-6 h-full overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
                   {filteredEvents.map((event) => {
                     const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
-                    
-                    // Debug: log participants and current user
-                    console.log('Event:', event.title, 'Participants:', event.participants, 'CurrentUser:', currentUser?.uid);
-                    
-                    // Parse event date for comparison
-                    let eventDate;
-                    if (event.startDate && event.startDate.includes('-')) {
-                      const parts = event.startDate.split('-');
-                      if (parts.length === 3) {
-                        if (parts[0].length === 2) {
-                          // DD-MM-YYYY format
-                          const [day, month, year] = parts;
-                          eventDate = new Date(year, month - 1, day);
-                        } else {
-                          // YYYY-MM-DD format
-                          const [year, month, day] = parts;
-                          eventDate = new Date(year, month - 1, day);
-                        }
-                      }
-                    }
-                    
-                    const now = new Date();
-                    const isToday = eventDate && eventDate.toDateString() === now.toDateString();
-                    const isTomorrow = eventDate && new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString() === eventDate.toDateString();
-                    const isMyEvent = isEventCreatedByMe(event);
+                    const isMyEvent = currentUser && event.createdBy === currentUser.uid;
                     const isJoined = currentUser && Array.isArray(event.participants) && event.participants.includes(currentUser.uid);
-                    
+                    const categoryName = categories.find(cat => cat.id === event.categoryId)?.translations?.[language] || event.categoryId;
+                    const statusColor = event.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : event.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700';
                     return (
-                      <div 
-                        key={event.id} 
-                        className={`relative overflow-hidden flex-shrink-0 p-2 md:p-4 min-h-[270px] md:min-h-[280px] flex flex-col justify-between transition-all duration-200 
-                          bg-white shadow-md rounded-lg hover:shadow-lg
-                        `}
-                        style={{}}
+                      <div
+                        key={event.id}
+                        className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[320px] max-h-[400px] hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 group"
+                        aria-label={`Event card: ${event.title}`}
                       >
-                        {/* Event Image (with floating badge if my event or joined) */}
+                        {/* Image with overlay and badges */}
                         <div className="mb-2 md:mb-2 relative cursor-pointer" onClick={() => setExpandedImage(backgroundImage)}>
                           <img
                             src={backgroundImage}
                             alt={event.title}
                             className="w-full h-26 md:h-28 object-cover rounded-md transition-transform duration-200 hover:scale-105"
                           />
-                          {(isMyEvent || isJoined) && (
-                            <div className="absolute top-2 left-2 z-20 flex items-center gap-2">
-                              {isMyEvent && (
-                                <span className="flex items-center px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg border-2 border-white">
-                                  <FaUser className="mr-1 text-white text-xs" />
-                                  {t("dashboard.events.createdByMe") || "Created by me"}
-                                </span>
-                              )}
-                              {isJoined && !isMyEvent && (
-                                <span className="flex items-center px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg border-2 border-white">
-                                  <svg className="w-3 h-3 mr-1 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                  {t("dashboard.events.joined") || "Joined"}
-                                </span>
-                              )}
-                              {isJoined && isMyEvent && (
-                                <span className="flex items-center px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg border-2 border-white">
-                                  <svg className="w-3 h-3 mr-1 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                  {t("dashboard.events.joined") || "Joined"}
-                                </span>
-                              )}
-                            </div>
-                          )}
+                          {/* Badges */}
+                          <div className="absolute top-2 left-2 flex gap-2 z-10">
+                            {isMyEvent && <span className="bg-blue-700 text-white px-2 py-1 rounded-full text-xs shadow">{t("dashboard.events.createdByMe") || "Created by me"}</span>}
+                            {isJoined && <span className="bg-green-600 text-white px-2 py-1 rounded-full text-xs shadow flex items-center"><svg className="w-3 h-3 mr-1 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{t("dashboard.events.joined") || "Joined"}</span>}
+                          </div>
+                          {/* Category chip */}
+                          <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs shadow">{categoryName}</span>
+                          {/* Status indicator */}
+                          <span className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold shadow ${statusColor}`}>{event.status}</span>
+                          {/* Gradient overlay */}
+                          <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
                         </div>
-                        {/* Event Title with Star Icon and Date Badge */}
-                        <div className="flex justify-between items-start mb-1 md:mb-2">
-                          <h3 className="text-sm md:text-base font-bold flex-1 flex items-center gap-1">
-                            {isMyEvent && (
-                              <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>
+                        {/* Content */}
+                        <div className="flex-1 flex flex-col justify-between p-4">
+                          <div>
+                            {/* Organizer info (avatar/initials) */}
+                            {event.organizerName && (
+                              <div className="flex items-center mb-1">
+                                <div className="w-7 h-7 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-700 text-xs mr-2">
+                                  {event.organizerInitials || event.organizerName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                </div>
+                                <span className="text-xs text-gray-500">{event.organizerName}</span>
+                              </div>
                             )}
-                            {event.title}
-                          </h3>
-                          <div className="flex flex-col items-end gap-1">
-                            {(isToday || isTomorrow) && (
-                              <span className={`px-2 py-1 text-xs font-bold rounded-full ${
-                                isToday 
-                                  ? 'bg-red-100 text-red-800' 
-                                  : 'bg-orange-100 text-orange-800'
-                              }`}>
-                                {isToday ? 'TODAY' : 'TOMORROW'}
-                              </span>
-                            )}
+                            <h3 className="text-lg font-bold mb-1 line-clamp-1" title={event.title}>{event.title}</h3>
+                            <div className="flex items-center text-sm text-gray-500 mb-1">
+                              <FaCalendarAlt className="mr-1 text-yellow-400" /> {event.startDate}{event.endDate ? ` - ${event.endDate}` : ''}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500 mb-1">
+                              <FaClock className="mr-1 text-yellow-400" /> {event.timeFrom} - {event.timeTo}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500 mb-1">
+                              <FaMapMarkerAlt className="mr-1 text-yellow-400" /> {event.location}
+                            </div>
+                            {/* Participants */}
+                            <div className="flex items-center text-xs text-gray-400 mt-1">
+                              <FaUser className="mr-1" /> {event.participants?.length || 0} {t("dashboard.events.participants") || "joined"}
+                            </div>
+                            {/* Description */}
+                            <p className="text-gray-500 text-xs mt-2 line-clamp-2" title={event.description}>
+                              {event.description}
+                            </p>
+                          </div>
+                          {/* Footer */}
+                          <div className="mt-4 flex justify-end border-t pt-2">
+                            <button
+                              className="bg-[#FFD966] hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-yellow-400 group-hover:scale-105"
+                              onClick={() => setSelectedEvent(event)}
+                              aria-label={t("dashboard.events.moreDetails")}
+                            >
+                              {t("dashboard.events.moreDetails")}
+                            </button>
                           </div>
                         </div>
-                        {/* Expanded Image Modal */}
-                        {expandedImage && (
-                          <div
-                            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
-                            onClick={() => setExpandedImage(null)}
-                          >
-                            <div className="relative max-w-full max-h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                              <button
-                                className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
-                                onClick={() => setExpandedImage(null)}
-                                aria-label="Close"
-                              >
-                                <span className="text-xl font-bold">&times;</span>
-                              </button>
-                              <img
-                                src={expandedImage}
-                                alt="Expanded Event"
-                                className="rounded-lg max-h-[80vh] max-w-[90vw] shadow-2xl border-4 border-white"
-                              />
-                            </div>
-                          </div>
-                        )}
-                        {/* Date, Time, Location Grouped */}
-                        <div className="flex flex-col gap-y-1">
-                          {/* Date with Calendar Icon */}
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center">
-                              <FaCalendarAlt className="text-[#FFD966] mr-2 text-xs md:text-base" />
-                              <p className="text-gray-800 font-medium text-xs md:text-base">
-                                {event.endDate ? `${event.startDate} - ${event.endDate}` : event.startDate}
-                              </p>
-                            </div>
-                            <div className="flex justify-center mt-2 md:mt-4">
-                              <button
-                                className={`font-bold px-4 md:px-6 py-1.5 md:py-2 rounded-md transition-colors duration-200 text-xs md:text-base ${
-                                  isMyEvent
-                                    ? 'bg-[#FFD966] hover:bg-yellow-500 text-black'
-                                    : 'bg-[#FFD966] hover:bg-yellow-500 text-black'
-                                }`}
-                                onClick={() => setSelectedEvent(event)}
-                              >
-                                {t("dashboard.events.moreDetails")}
-                              </button>
-                            </div>
-                          </div>
-                          {/* Time with Clock Icon */}
-                          <div className="flex mb-1 items-center">
-                            <FaClock className="text-[#FFD966] mr-2 text-xs md:text-base" />
-                            <p className="text-gray-800 font-medium text-xs md:text-base">{event.timeFrom} - {event.timeTo}</p>
-                          </div>
-                          {/* Location with Pin Icon */}
-                          <div className="flex items-center">
-                            <FaMapMarkerAlt className="text-[#FFD966] mr-2 text-xs md:text-base" />
-                            <p className="text-gray-800 font-medium text-xs md:text-base">{event.location}</p>
-                          </div>
-                        </div>
-
-                        {/* Description (truncated to 100 chars with ellipsis and read more) */}
-                        <p className="text-gray-500 text-xs md:text-sm flex-1 mt-2">
-                          {event.description && event.description.length > 100 ? (
-                            <>
-                              {event.description.slice(0, 100)}
-                              ...
-                              <button
-                                className="ml-1 text-yellow-600 hover:underline text-xs font-medium focus:outline-none"
-                                onClick={() => setSelectedEvent(event)}
-                                tabIndex={0}
-                              >
-                                {'Read more'}
-                              </button>
-                            </>
-                          ) : (
-                            event.description
-                          )}
-                        </p>
-                        
                       </div>
                     );
                   })}
@@ -512,6 +422,29 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
 
       {/* Centralized Event Details Modal */}
       {renderEventDetailsModal()}
+
+      {/* Expanded Image Modal */}
+      {expandedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+          onClick={() => setExpandedImage(null)}
+        >
+          <div className="relative max-w-full max-h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+            <button
+              className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
+              onClick={() => setExpandedImage(null)}
+              aria-label="Close"
+            >
+              <span className="text-xl font-bold">&times;</span>
+            </button>
+            <img
+              src={expandedImage}
+              alt="Expanded Event"
+              className="rounded-lg max-h-[60vh] max-w-[70vw] shadow-2xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
