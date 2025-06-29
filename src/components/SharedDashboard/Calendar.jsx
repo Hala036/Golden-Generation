@@ -6,6 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 // Firestore imports
 import { db } from '../../firebase';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { getCategoryAppearance } from '../../utils/categoryColors';
 
 const RetireeCalendar = () => {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ const RetireeCalendar = () => {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   // Sample events data
   const [events, setEvents] = useState([
@@ -124,6 +126,29 @@ const RetireeCalendar = () => {
     return days;
   };
 
+  // Helper to determine if event is past
+  const isPastEvent = (event) => {
+    // Support both date and endDate
+    const now = new Date();
+    let eventDate;
+    const dateStr = event.endDate || event.date;
+    if (dateStr && dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        if (parts[0].length === 2) {
+          // DD-MM-YYYY
+          const [day, month, year] = parts;
+          eventDate = new Date(year, month - 1, day);
+        } else {
+          // YYYY-MM-DD
+          const [year, month, day] = parts;
+          eventDate = new Date(year, month - 1, day);
+        }
+      }
+    }
+    return eventDate && eventDate < now;
+  };
+
   // Get events for a specific date
   const getEventsForDate = (day) => {
     if (!day) return [];
@@ -146,20 +171,10 @@ const RetireeCalendar = () => {
     }).filter(event => 
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
-
-  // Event color mapping
-  const getEventColor = (event) => {
-    if (currentUser.role === 'admin') {
-      if (event.createdBy === currentUser.id) return 'bg-blue-500';
-      if (event.createdBy.startsWith('admin')) return 'bg-green-500';
-      return 'bg-yellow-500'; // Retiree submitted
-    } else {
-      if (event.participants.includes(currentUser.id)) return 'bg-green-500';
-      if (event.status === 'pending') return 'bg-orange-500';
-      return 'bg-gray-400';
-    }
+    ).filter(event => {
+      if (!showPastEvents && isPastEvent(event)) return false;
+      return true;
+    });
   };
 
   const handleEventClick = (event) => {
@@ -402,6 +417,18 @@ const RetireeCalendar = () => {
         </div>
       </div>
 
+      {/* Toggle to show/hide past events */}
+      <div className="flex items-center gap-2 mb-4">
+        <input
+          type="checkbox"
+          id="showPastEvents"
+          checked={showPastEvents}
+          onChange={() => setShowPastEvents(v => !v)}
+          className="form-checkbox h-4 w-4 text-blue-600"
+        />
+        <label htmlFor="showPastEvents" className="text-sm text-gray-700">Show Past Events</label>
+      </div>
+
       {/* Calendar Grid */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Day Headers */}
@@ -429,21 +456,27 @@ const RetireeCalendar = () => {
                       {day}
                     </div>
                     <div className="space-y-1">
-                      {dayEvents.slice(0, 3).map(event => (
-                        <div
-                          key={event.id}
-                          onClick={() => handleEventClick(event)}
-                          className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity`}
-                        >
-                          <div className="flex items-center gap-1">
-                            <Clock size={10} />
-                            {event.time}
+                      {dayEvents.slice(0, 3).map(event => {
+                        const appearance = getCategoryAppearance(event.category);
+                        const isPending = event.status === 'pending';
+                        return (
+                          <div
+                            key={event.id}
+                            onClick={() => handleEventClick(event)}
+                            className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                            style={appearance.style}
+                          >
+                            <div className="flex items-center gap-1">
+                              <Clock size={10} />
+                              {event.time}
+                              {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
+                            </div>
+                            <div className="truncate font-medium">
+                              {event.title}
+                            </div>
                           </div>
-                          <div className="truncate font-medium">
-                            {event.title}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {dayEvents.length > 3 && (
                         <div className="text-xs text-gray-500 text-center">
                           +{dayEvents.length - 3} {t('calendar.more')}
@@ -460,39 +493,57 @@ const RetireeCalendar = () => {
 
       {/* Legend */}
       <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
-        <h3 className="font-semibold mb-3">{t('calendar.legend.title')}</h3>
-        <div className="flex flex-wrap gap-4">
-          {isAdmin ? (
-            <>
+        <h3 className="font-semibold mb-3">Event Color Guide</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">Event Categories</h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span className="text-sm">Social Events</span>
+              </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                <span className="text-sm">{t('calendar.legend.createdByMe')}</span>
+                <span className="text-sm">Fitness Activities</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">{t('calendar.legend.createdByOtherAdmins')}</span>
+                <span className="text-sm">Hobbies</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span className="text-sm">{t('calendar.legend.retireeSubmissions')}</span>
+                <div className="w-4 h-4 bg-purple-500 rounded"></div>
+                <span className="text-sm">Educational</span>
               </div>
-            </>
-          ) : (
-            <>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">Event Status</h4>
+            <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
+<<<<<<< HEAD
+                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
+                <span className="text-sm">Past events</span>
+=======
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.joinedEvents')}</span>
+>>>>>>> 54cbbcaa9fb4e34f3a2950e273c2a3e20a91d133
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-orange-500 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.pendingApproval')}</span>
               </div>
+<<<<<<< HEAD
+            </div>
+          </div>
+=======
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-gray-400 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.pastEvents')}</span>
               </div>
             </>
           )}
+>>>>>>> 54cbbcaa9fb4e34f3a2950e273c2a3e20a91d133
         </div>
       </div>
 
@@ -524,11 +575,14 @@ const RetireeCalendar = () => {
                 {selectedEvent.participants.length}/{selectedEvent.maxParticipants} {t('calendar.participants')}
               </div>
               <p className="text-gray-700">{selectedEvent.description}</p>
+              {isPastEvent(selectedEvent) && (
+                <div className="text-xs text-gray-500 font-bold">This event has ended.</div>
+              )}
             </div>
 
             <div className="flex gap-2">
               {isAdmin ? (
-                <>
+                !isPastEvent(selectedEvent) && <>
                   {selectedEvent.status === 'pending' && (
                     <button
                       onClick={() => {
@@ -551,7 +605,7 @@ const RetireeCalendar = () => {
                   </button>
                 </>
               ) : (
-                <>
+                !isPastEvent(selectedEvent) && <>
                   {selectedEvent.participants.includes(currentUser.id) ? (
                     <button
                       onClick={() => {

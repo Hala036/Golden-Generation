@@ -665,6 +665,10 @@
       "arrowOpen": "→",
       "events":{
         "upcomingEvents": "Upcoming Events",
+        "upcomingEventsDescription": "Discover and join exciting events happening soon",
+        "noUpcomingEvents": "No upcoming events",
+        "noUpcomingEventsFilter": "No upcoming events found",
+        "createdByMe": "Created by me",
         "addEvent": "Add Event",
         "addEvents": "Add Events",
         "events": "Events",
@@ -685,7 +689,9 @@
         "leave": "Leave Event",
         "moreDetails": "More Info",
         "participants": "Participants",
-        "noParticipants": "No participants yet"
+        "noParticipants": "No participants yet",
+        "joined": "Joined",
+        "noPastEvents": "No past events"
       },
       "expiryDate": {
         "label": "ID Expiry Date"
@@ -1011,6 +1017,10 @@
     "arrowOpen": "→",
     "events": {
       "upcomingEvents": "Upcoming Events",
+      "upcomingEventsDescription": "Discover and join exciting events happening soon",
+      "noUpcomingEvents": "No upcoming events",
+      "noUpcomingEventsFilter": "No upcoming events found",
+      "createdByMe": "Created by me",
       "addEvent": "Add Event",
       "addEvents": "Add Events",
       "events": "Events",
@@ -1031,10 +1041,14 @@
       "leave": "Leave Event",
       "moreDetails": "More Info",
       "participants": "Participants",
-      "noParticipants": "No participants yet"
+      "noParticipants": "No participants yet",
+      "joined": "Joined",
+      "noPastEvents": "No past events"
     },
     "filter": {
       "allCategories": "All Categories",
+      "myEvents": "My Events",
+      "myEventsOnly": "My Events Only",
       "trip": "Trip",
       "vacation": "Vacation",
       "workshop": "Workshop",
@@ -1564,7 +1578,10 @@
     "addCategory": "Add Category",
     "noCandidates": "No Candidates",
     "noCandidatesMessage": "No candidates have been registered yet.",
-    "addCandidate": "Add Candidate"
+    "addCandidate": "Add Candidate",
+    "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
+    "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria",
+    "noPastEventsMessage": "No events have ended yet."
   },
   "loading": {
     "messages": "Loading messages...",
