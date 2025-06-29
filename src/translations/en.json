@@ -553,6 +553,10 @@
       "arrowOpen": "→",
       "events":{
         "upcomingEvents": "Upcoming Events",
+        "upcomingEventsDescription": "Discover and join exciting events happening soon",
+        "noUpcomingEvents": "No upcoming events",
+        "noUpcomingEventsFilter": "No upcoming events found",
+        "createdByMe": "Created by me",
         "addEvent": "Add Event",
         "events": "Events",
         "noEvents": "No events found",
@@ -572,7 +576,8 @@
         "leave": "Leave Event",
         "moreDetails": "More Info",
         "participants": "Participants",
-        "noParticipants": "No participants yet"
+        "noParticipants": "No participants yet",
+        "joined": "Joined"
       },
       "expiryDate": {
         "label": "ID Expiry Date"
@@ -734,7 +739,12 @@
     "arrowOpen": "→",
     "events": {
       "upcomingEvents": "Upcoming Events",
+      "upcomingEventsDescription": "Discover and join exciting events happening soon",
+      "noUpcomingEvents": "No upcoming events",
+      "noUpcomingEventsFilter": "No upcoming events found",
+      "createdByMe": "Created by me",
       "addEvent": "Add Event",
+      "events": "Events",
       "noEvents": "No events found",
       "createEvent": "Create Event",
       "editEvent": "Edit Event",
@@ -752,10 +762,13 @@
       "leave": "Leave Event",
       "moreDetails": "More Info",
       "participants": "Participants",
-      "noParticipants": "No participants yet"
+      "noParticipants": "No participants yet",
+      "joined": "Joined"
     },
     "filter": {
       "allCategories": "All Categories",
+      "myEvents": "My Events",
+      "myEventsOnly": "My Events Only",
       "trip": "Trip",
       "vacation": "Vacation",
       "workshop": "Workshop",
@@ -928,7 +941,9 @@
     "addCategory": "Add Category",
     "noCandidates": "No Candidates",
     "noCandidatesMessage": "No candidates have been registered yet.",
-    "addCandidate": "Add Candidate"
+    "addCandidate": "Add Candidate",
+    "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
+    "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria"
   },
   "loading": {
     "messages": "Loading messages...",
