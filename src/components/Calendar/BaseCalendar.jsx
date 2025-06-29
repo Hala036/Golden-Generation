@@ -85,19 +85,6 @@ const BaseCalendar = ({
     return eventDate && eventDate < now;
   };
 
-  // Event color mapping based on user role and event properties
-  const getEventColor = (event) => {
-    if (userRole === 'admin') {
-      if (event.createdBy === 'admin') return 'bg-blue-500';
-      if (event.createdBy && event.createdBy.startsWith('admin')) return 'bg-green-500';
-      return 'bg-yellow-500'; // Retiree submitted
-    } else {
-      if (event.participants && event.participants.includes('retiree')) return 'bg-green-500';
-      if (event.status === 'pending') return 'bg-orange-500';
-      return 'bg-gray-400';
-    }
-  };
-
   // Analytics functions
   const getAnalyticsData = () => {
     const allEvents = getFilteredEvents(null, filter, searchTerm, additionalFiltersObj);
@@ -636,7 +623,8 @@ const BaseCalendar = ({
                                   <Tooltip.Trigger asChild>
                                     <div
                                       onClick={() => handleEventClick(event)}
-                                      className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                                      className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                                      style={appearance.style}
                                     >
                                       <span className="font-semibold">{event.timeFrom}</span> {event.title}
                                       {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
@@ -695,7 +683,8 @@ const BaseCalendar = ({
                               <Tooltip.Trigger asChild>
                                 <div
                                   onClick={() => handleEventClick(event)}
-                                  className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                                  className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                                  style={appearance.style}
                                 >
                                   <span className="font-semibold">{event.timeFrom}</span> {event.title}
                                   {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
@@ -791,16 +780,17 @@ const BaseCalendar = ({
                             {/* Event block */}
                             <button
                               onClick={() => handleEventClick(event)}
-                              className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-all duration-200 ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''} ${event.hasCollision ? 'border-2 border-white shadow-lg' : ''} hover:scale-105 hover:shadow-md`}
+                              className={`absolute p-2 rounded-lg text-white shadow-md cursor-pointer transition-all duration-200 ease-in-out ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''} ${event.hasCollision ? 'border-2 border-white shadow-lg' : ''} hover:scale-105 hover:shadow-md`}
                               style={{
-                                position: 'absolute',
                                 top: `${top}px`,
+                                height: `${height}px`,
                                 left: left,
                                 width: width,
-                                height: `${height}px`,
                                 zIndex: event.hasCollision ? 10 : 1,
-                                marginLeft: '16px' // Space for timeline line
+                                marginLeft: '16px', // Space for timeline line
+                                ...appearance.style
                               }}
+                              type="button"
                             >
                               {/* Event content */}
                               <div className="h-full flex flex-col justify-between">

@@ -5,6 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 // Firestore imports
 import { db } from '../../firebase';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { getCategoryAppearance } from '../../utils/categoryColors';
 
 const RetireeCalendar = () => {
   const [currentUser] = useState({
@@ -122,19 +123,6 @@ const RetireeCalendar = () => {
       if (!showPastEvents && isPastEvent(event)) return false;
       return true;
     });
-  };
-
-  // Event color mapping
-  const getEventColor = (event) => {
-    if (currentUser.role === 'admin') {
-      if (event.createdBy === currentUser.id) return 'bg-blue-500';
-      if (event.createdBy.startsWith('admin')) return 'bg-green-500';
-      return 'bg-yellow-500'; // Retiree submitted
-    } else {
-      if (event.participants.includes(currentUser.id)) return 'bg-green-500';
-      if (event.status === 'pending') return 'bg-orange-500';
-      return 'bg-gray-400';
-    }
   };
 
   const handleEventClick = (event) => {
@@ -396,22 +384,27 @@ const RetireeCalendar = () => {
                       {day}
                     </div>
                     <div className="space-y-1">
-                      {dayEvents.slice(0, 3).map(event => (
-                        <div
-                          key={event.id}
-                          onClick={() => handleEventClick(event)}
-                          className={`${getEventColor(event)} text-white text-xs p-1 rounded cursor-pointer hover:opacity-80 transition-opacity ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
-                        >
-                          <div className="flex items-center gap-1">
-                            <Clock size={10} />
-                            {event.time}
-                            {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
+                      {dayEvents.slice(0, 3).map(event => {
+                        const appearance = getCategoryAppearance(event.category);
+                        const isPending = event.status === 'pending';
+                        return (
+                          <div
+                            key={event.id}
+                            onClick={() => handleEventClick(event)}
+                            className={`p-1 rounded-md text-white text-left text-xs cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                            style={appearance.style}
+                          >
+                            <div className="flex items-center gap-1">
+                              <Clock size={10} />
+                              {event.time}
+                              {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
+                            </div>
+                            <div className="truncate font-medium">
+                              {event.title}
+                            </div>
                           </div>
-                          <div className="truncate font-medium">
-                            {event.title}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {dayEvents.length > 3 && (
                         <div className="text-xs text-gray-500 text-center">
                           +{dayEvents.length - 3} more
@@ -428,39 +421,43 @@ const RetireeCalendar = () => {
 
       {/* Legend */}
       <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
-        <h3 className="font-semibold mb-3">Legend</h3>
-        <div className="flex flex-wrap gap-4">
-          {isAdmin ? (
-            <>
+        <h3 className="font-semibold mb-3">Event Color Guide</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">Event Categories</h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span className="text-sm">Social Events</span>
+              </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                <span className="text-sm">Created by me</span>
+                <span className="text-sm">Fitness Activities</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Created by other admins</span>
+                <span className="text-sm">Hobbies</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span className="text-sm">Retiree submissions</span>
+                <div className="w-4 h-4 bg-purple-500 rounded"></div>
+                <span className="text-sm">Educational</span>
               </div>
-            </>
-          ) : (
-            <>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">Event Status</h4>
+            <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Joined events</span>
+                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
+                <span className="text-sm">Past events</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-orange-500 rounded"></div>
                 <span className="text-sm">Pending approval</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
-                <span className="text-sm">Past events</span>
-              </div>
-            </>
-          )}
+            </div>
+          </div>
         </div>
       </div>
 
