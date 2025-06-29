@@ -1,11 +1,11 @@
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  updateDoc, 
-  query, 
-  where, 
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  query,
+  where,
   serverTimestamp,
   Timestamp
 } from "firebase/firestore";
@@ -60,7 +60,7 @@ export const performSeniorMatching = async (jobRequestId) => {
           seniorId: seniorId,
           seniorName: senior.credentials?.username || "Unknown",
           seniorLocation: senior.personalDetails?.settlement || "Unknown",
-          seniorBackground: senior.workBackground?.category || "",
+          seniorBackground: senior.workBackground?.selectedJob || senior.workBackground?.category || "",
           seniorInterests: senior.lifestyle?.interests || [],
           seniorDays: senior.volunteerDays && senior.volunteerDays.length > 0
             ? senior.volunteerDays
@@ -116,40 +116,30 @@ export const calculateMatchScore = (jobRequest, senior) => {
 
   // Interests match (25%)
   const seniorInterests = senior.lifestyle?.interests || [];
-  if (Array.isArray(seniorInterests)) {
-    if (seniorInterests.includes(jobRequest.volunteerField)) {
-      scoreDetails.interestsScore = 25;
-    } else {
-      const interestKeywords = (jobRequest.volunteerField || "").toLowerCase().split(/\s+/);
-      let partialMatches = 0;
-      seniorInterests.forEach(interest => {
-        const interestLower = interest.toLowerCase();
-        interestKeywords.forEach(keyword => {
-          if (interestLower.includes(keyword) && keyword.length > 3) {
-            partialMatches++;
-          }
-        });
-      });
-      if (partialMatches > 0) {
-        scoreDetails.interestsScore = Math.min(15, partialMatches * 5);
-      }
+  const jobRequestInterests = Array.isArray(jobRequest.volunteerField) ? jobRequest.volunteerField : [jobRequest.volunteerField];
+
+  if (seniorInterests.length > 0 && jobRequestInterests.length > 0) {
+    const overlap = seniorInterests.filter(interest => jobRequestInterests.includes(interest));
+    if (overlap.length > 0) {
+      scoreDetails.interestsScore = Math.min(25, overlap.length * 10); // Max 25, 10 points per overlapping interest
     }
   }
 
   // Professional background match (25%)
-  const seniorBackground = senior.workBackground?.category ?? "";
-  const jobBackground = jobRequest.professionalBackground ?? "";
-  if (seniorBackground && jobBackground && seniorBackground === jobBackground) {
-    scoreDetails.backgroundScore = 25;
-  } else if (
-    seniorBackground &&
-    jobBackground &&
-    typeof seniorBackground === "string" &&
-    typeof jobBackground === "string" &&
-    (seniorBackground.toLowerCase().includes(jobBackground.toLowerCase()) ||
-      jobBackground.toLowerCase().includes(seniorBackground.toLowerCase()))
-  ) {
-    scoreDetails.backgroundScore = 15;
+  const seniorBackground = senior.workBackground?.selectedJob || senior.workBackground?.category || "";
+  const jobBackground = jobRequest.professionalBackground || "";
+
+  if (seniorBackground && jobBackground) {
+    if (seniorBackground === jobBackground) {
+      scoreDetails.backgroundScore = 25;
+    } else if (
+      typeof seniorBackground === "string" &&
+      typeof jobBackground === "string" &&
+      (seniorBackground.toLowerCase().includes(jobBackground.toLowerCase()) ||
+        jobBackground.toLowerCase().includes(seniorBackground.toLowerCase()))
+    ) {
+      scoreDetails.backgroundScore = 15;
+    }
   }
 
   // Availability match (days) (10%)
