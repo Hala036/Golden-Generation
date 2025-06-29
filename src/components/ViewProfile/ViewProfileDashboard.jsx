@@ -8,10 +8,9 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import ProfileDetails from "./ProfileDetails";
 import Messages from "./SendMessage";
-import { useTranslation } from 'react-i18next';
 
 const ViewProfileDashboard = () => {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [selected, setSelected] = useState("profile");
@@ -25,14 +24,14 @@ const ViewProfileDashboard = () => {
   // Redirect to a fallback page if retireeIdNumber is not available
   useEffect(() => {
     if (!retireeIdNumber) {
-      toast.error("No retiree ID number available.");
+      toast.error(t('viewProfile.errors.noRetireeId'));
       navigate("/dashboard");
     }
-  }, [retireeIdNumber, navigate]);
+  }, [retireeIdNumber, navigate, t]);
 
   const icons = [
-    { id: "profile", label: "Profile", icon: <FaUser /> },
-    { id: "messages", label: "Send Messages", icon: <FaComments /> }
+    { id: "profile", label: t('viewProfile.navigation.profile'), icon: <FaUser /> },
+    { id: "messages", label: t('viewProfile.navigation.sendMessages'), icon: <FaComments /> }
   ];
 
   const handleBackToProfile = () => {
@@ -40,7 +39,7 @@ const ViewProfileDashboard = () => {
   };
 
   if (!retireeData) {
-    return <div>{t("common.loading")}</div>;
+    return <div>{t("viewProfile.common.loading")}</div>;
   }
 
   return (
@@ -83,7 +82,7 @@ const ViewProfileDashboard = () => {
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
           >
             <FaArrowLeft className="text-xl" />
-            <span className="text-sm">Back To Profile</span>
+            <span className="text-sm">{t('viewProfile.navigation.backToProfile')}</span>
           </button>
         </div> 
       </div>
@@ -92,7 +91,7 @@ const ViewProfileDashboard = () => {
       <div className="flex-1 flex flex-col h-screen box-border p-4">
         {/* Top Bar */}
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-6 py-4 z-10 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1>
+          <h1 className="text-xl font-bold text-yellow-500">{t('viewProfile.header.title')}</h1>
           <div className="flex items-center gap-4">
             {/* Language Selector */}
             <div className="flex items-center gap-1 text-sm ml-5">
@@ -103,9 +102,9 @@ const ViewProfileDashboard = () => {
                 className="w-24 text-sm"
                 variant={false}
               >
-                <Select.Option value="en">English</Select.Option>
-                <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ar">العربية</Select.Option>
+                <Select.Option value="en">{t('viewProfile.languageSelector.english')}</Select.Option>
+                <Select.Option value="he">{t('viewProfile.languageSelector.hebrew')}</Select.Option>
+                <Select.Option value="ar">{t('viewProfile.languageSelector.arabic')}</Select.Option>
               </Select>
             </div>
           </div>

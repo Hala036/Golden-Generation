@@ -94,7 +94,7 @@ const ComprehensiveAnalytics = () => {
           {trend && (
             <div className={`flex items-center mt-2 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
               <span className="mr-1">{trend === 'up' ? '↗' : '↘'}</span>
-              {trendValue}% from last period
+              {trendValue}% {t('analytics.comprehensive.trends.fromLastPeriod')}
             </div>
           )}
         </div>
@@ -105,29 +105,29 @@ const ComprehensiveAnalytics = () => {
   const SystemHealthCard = ({ health, responseTime, cpuUsage, memoryUsage }) => (
     <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">System Health</h3>
+        <h3 className="text-lg font-semibold text-gray-800">{t('analytics.comprehensive.systemHealth.title')}</h3>
         <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
           health === 'healthy' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
         }`}>
           <span className="mr-1">{health === 'healthy' ? '✓' : '⚠'}</span>
-          {health === 'healthy' ? 'Healthy' : 'Warning'}
+          {health === 'healthy' ? t('analytics.comprehensive.systemHealth.healthy') : t('analytics.comprehensive.systemHealth.warning')}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-sm text-gray-600">Response Time</p>
+          <p className="text-sm text-gray-600">{t('analytics.comprehensive.systemHealth.responseTime')}</p>
           <p className="text-2xl font-bold text-gray-900">{responseTime}ms</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">CPU Usage</p>
+          <p className="text-sm text-gray-600">{t('analytics.comprehensive.systemHealth.cpuUsage')}</p>
           <p className="text-2xl font-bold text-gray-900">{cpuUsage}%</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Memory Usage</p>
+          <p className="text-sm text-gray-600">{t('analytics.comprehensive.systemHealth.memoryUsage')}</p>
           <p className="text-2xl font-bold text-gray-900">{memoryUsage}%</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Uptime</p>
+          <p className="text-sm text-gray-600">{t('analytics.comprehensive.systemHealth.uptime')}</p>
           <p className="text-2xl font-bold text-gray-900">99.9%</p>
         </div>
       </div>
@@ -139,7 +139,7 @@ const ComprehensiveAnalytics = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span className="ml-4 text-lg text-gray-700">Loading comprehensive analytics...</span>
+          <span className="ml-4 text-lg text-gray-700">{t('analytics.comprehensive.loading')}</span>
         </div>
       </div>
     );
@@ -150,13 +150,13 @@ const ComprehensiveAnalytics = () => {
       <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 p-6">
         <div className="flex items-center justify-center h-64">
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="text-red-500 text-xl mb-4">⚠️ Error Loading Data</div>
+            <div className="text-red-500 text-xl mb-4">⚠️ {t('analytics.comprehensive.error.title')}</div>
             <div className="text-gray-700">{error}</div>
             <button 
               onClick={fetchAnalyticsData}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Retry
+              {t('analytics.comprehensive.error.retry')}
             </button>
           </div>
         </div>
@@ -165,11 +165,11 @@ const ComprehensiveAnalytics = () => {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'users', label: 'User Analytics', icon: '👥' },
-    { id: 'jobs', label: 'Job Analytics', icon: '📋' },
-    { id: 'predictions', label: 'Predictions', icon: '🔮' },
-    { id: 'performance', label: 'Performance', icon: '⚡' }
+    { id: 'overview', label: t('analytics.comprehensive.tabs.overview'), icon: '📊' },
+    { id: 'users', label: t('analytics.comprehensive.tabs.users'), icon: '👥' },
+    { id: 'jobs', label: t('analytics.comprehensive.tabs.jobs'), icon: '📋' },
+    { id: 'predictions', label: t('analytics.comprehensive.tabs.predictions'), icon: '🔮' },
+    { id: 'performance', label: t('analytics.comprehensive.tabs.performance'), icon: '⚡' }
   ];
 
   return (
@@ -179,8 +179,8 @@ const ComprehensiveAnalytics = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">Comprehensive System Analytics</h1>
-              <p className="text-gray-600">Advanced insights with real-time monitoring, predictive analytics, and detailed reporting</p>
+              <h1 className="text-4xl font-bold text-gray-800 mb-2">{t('analytics.comprehensive.title')}</h1>
+              <p className="text-gray-600">{t('analytics.comprehensive.subtitle')}</p>
             </div>
             <div className="flex gap-2">
               <button
@@ -188,14 +188,14 @@ const ComprehensiveAnalytics = () => {
                 disabled={exporting}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
               >
-                {exporting ? 'Exporting...' : 'Export JSON'}
+                {exporting ? t('analytics.comprehensive.export.exporting') : t('analytics.comprehensive.export.json')}
               </button>
               <button
                 onClick={() => handleExport('csv')}
                 disabled={exporting}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                {exporting ? 'Exporting...' : 'Export CSV'}
+                {exporting ? t('analytics.comprehensive.export.exporting') : t('analytics.comprehensive.export.csv')}
               </button>
             </div>
           </div>
@@ -205,27 +205,27 @@ const ComprehensiveAnalytics = () => {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex flex-wrap items-center gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time Range</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('analytics.comprehensive.filters.timeRange')}</label>
               <select 
                 value={selectedTimeRange} 
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="7d">Last 7 Days</option>
-                <option value="30d">Last 30 Days</option>
-                <option value="90d">Last 90 Days</option>
-                <option value="1y">Last Year</option>
-                <option value="all">All Time</option>
+                <option value="7d">{t('analytics.comprehensive.timeRanges.7d')}</option>
+                <option value="30d">{t('analytics.comprehensive.timeRanges.30d')}</option>
+                <option value="90d">{t('analytics.comprehensive.timeRanges.90d')}</option>
+                <option value="1y">{t('analytics.comprehensive.timeRanges.1y')}</option>
+                <option value="all">{t('analytics.comprehensive.timeRanges.all')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Settlement</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('analytics.comprehensive.filters.settlement')}</label>
               <select 
                 value={selectedSettlement} 
                 onChange={(e) => setSelectedSettlement(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">All Settlements</option>
+                <option value="all">{t('analytics.comprehensive.filters.allSettlements')}</option>
                 {analyticsData?.settlements?.map(settlement => (
                   <option key={settlement.id} value={settlement.id}>{settlement.name}</option>
                 ))}
@@ -262,36 +262,36 @@ const ComprehensiveAnalytics = () => {
             {/* Real-time Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
-                title="Active Users"
+                title={t('analytics.comprehensive.metrics.activeUsers')}
                 value={realTimeData?.activeUsers || 0}
-                subtitle="Currently online"
+                subtitle={t('analytics.comprehensive.subtitles.currentlyOnline')}
                 icon="👥"
                 color="border-blue-500"
                 trend="up"
                 trendValue="12"
               />
               <MetricCard
-                title="Pending Jobs"
+                title={t('analytics.comprehensive.metrics.pendingJobs')}
                 value={realTimeData?.pendingJobs || 0}
-                subtitle="Awaiting assignment"
+                subtitle={t('analytics.comprehensive.subtitles.awaitingAssignment')}
                 icon="⏰"
                 color="border-orange-500"
                 trend="down"
                 trendValue="8"
               />
               <MetricCard
-                title="Total Users"
+                title={t('analytics.comprehensive.metrics.totalUsers')}
                 value={analyticsData?.totalUsers?.toLocaleString() || 0}
-                subtitle="All registered users"
+                subtitle={t('analytics.comprehensive.subtitles.allRegisteredUsers')}
                 icon="👤"
                 color="border-green-500"
                 trend="up"
                 trendValue="15"
               />
               <MetricCard
-                title="Completion Rate"
+                title={t('analytics.comprehensive.metrics.completionRate')}
                 value={`${analyticsData?.jobCompletionRate || 0}%`}
-                subtitle="Jobs completed"
+                subtitle={t('analytics.comprehensive.subtitles.jobsCompleted')}
                 icon="✅"
                 color="border-purple-500"
                 trend="up"
@@ -313,7 +313,7 @@ const ComprehensiveAnalytics = () => {
                 <div className="bg-white rounded-xl shadow-lg p-6">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                     <span className="mr-2">📈</span>
-                    Performance Trends
+                    {t('analytics.comprehensive.charts.performanceTrends')}
                   </h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <AreaChart data={analyticsData?.jobsByMonth || []}>
@@ -337,7 +337,7 @@ const ComprehensiveAnalytics = () => {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">User Distribution</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.userDistribution')}</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -360,7 +360,7 @@ const ComprehensiveAnalytics = () => {
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Job Status Distribution</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.jobStatusDistribution')}</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={Object.entries(analyticsData?.jobsByStatus || {}).map(([name, value]) => ({ name, value }))}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -379,30 +379,30 @@ const ComprehensiveAnalytics = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <MetricCard
-                title="New Users"
+                title={t('analytics.comprehensive.metrics.newUsers')}
                 value={analyticsData?.newUsers || 0}
-                subtitle="This period"
+                subtitle={t('analytics.comprehensive.subtitles.thisPeriod')}
                 icon="🆕"
                 color="border-green-500"
               />
               <MetricCard
-                title="Active Users"
+                title={t('analytics.comprehensive.metrics.activeUsers')}
                 value={analyticsData?.activeUsers || 0}
-                subtitle="Last 7 days"
+                subtitle={t('analytics.comprehensive.subtitles.last7Days')}
                 icon="🟢"
                 color="border-blue-500"
               />
               <MetricCard
-                title="User Growth"
+                title={t('analytics.comprehensive.metrics.userGrowth')}
                 value={`${((analyticsData?.newUsers / analyticsData?.totalUsers) * 100).toFixed(1)}%`}
-                subtitle="Growth rate"
+                subtitle={t('analytics.comprehensive.subtitles.growthRate')}
                 icon="📈"
                 color="border-purple-500"
               />
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Users by Settlement</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.usersBySettlement')}</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart 
                   data={Object.entries(analyticsData?.usersBySettlement || {}).map(([name, value]) => ({ name, value }))}
@@ -423,23 +423,23 @@ const ComprehensiveAnalytics = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <MetricCard
-                title="Total Jobs"
+                title={t('analytics.comprehensive.metrics.totalJobs')}
                 value={analyticsData?.totalJobs || 0}
-                subtitle="All time"
+                subtitle={t('analytics.comprehensive.subtitles.allTime')}
                 icon="📋"
                 color="border-blue-500"
               />
               <MetricCard
-                title="Completed Jobs"
+                title={t('analytics.comprehensive.metrics.completedJobs')}
                 value={analyticsData?.completedJobs || 0}
-                subtitle="Successfully completed"
+                subtitle={t('analytics.comprehensive.subtitles.successfullyCompleted')}
                 icon="✅"
                 color="border-green-500"
               />
               <MetricCard
-                title="Avg. Response Time"
+                title={t('analytics.comprehensive.metrics.avgResponseTime')}
                 value={`${analyticsData?.averageResponseTime || 0}h`}
-                subtitle="Time to assign"
+                subtitle={t('analytics.comprehensive.subtitles.timeToAssign')}
                 icon="⏱️"
                 color="border-orange-500"
               />
@@ -447,7 +447,7 @@ const ComprehensiveAnalytics = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Job Trends Over Time</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.jobTrendsOverTime')}</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={Object.entries(analyticsData?.jobsByMonth || {}).map(([month, count]) => ({ month, count }))}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -460,7 +460,7 @@ const ComprehensiveAnalytics = () => {
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Job Status Breakdown</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.jobStatusBreakdown')}</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
@@ -489,37 +489,37 @@ const ComprehensiveAnalytics = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
-                title="Predicted Growth"
+                title={t('analytics.comprehensive.metrics.predictedGrowth')}
                 value={`${predictiveData.userGrowth?.nextMonth || 0}`}
-                subtitle="Users next month"
+                subtitle={t('analytics.comprehensive.subtitles.usersNextMonth')}
                 icon="🔮"
                 color="border-purple-500"
               />
               <MetricCard
-                title="Job Demand"
+                title={t('analytics.comprehensive.metrics.jobDemand')}
                 value={`${predictiveData.jobDemand?.nextMonth || 0}`}
-                subtitle="Jobs next month"
+                subtitle={t('analytics.comprehensive.subtitles.jobsNextMonth')}
                 icon="📈"
                 color="border-blue-500"
               />
               <MetricCard
-                title="Completion Rate"
+                title={t('analytics.comprehensive.metrics.completionRate')}
                 value={`${predictiveData.completionRate?.predicted || 0}%`}
-                subtitle="Predicted success"
+                subtitle={t('analytics.comprehensive.subtitles.predictedSuccess')}
                 icon="✅"
                 color="border-green-500"
               />
               <MetricCard
-                title="Churn Risk"
+                title={t('analytics.comprehensive.metrics.churnRisk')}
                 value={`${predictiveData.churnPrediction?.churnRate || 0}%`}
-                subtitle="At-risk users"
+                subtitle={t('analytics.comprehensive.subtitles.atRiskUsers')}
                 icon="⚠️"
                 color="border-red-500"
               />
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Growth Predictions</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.growthPredictions')}</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <ComposedChart data={[
                   { period: 'Current', users: analyticsData?.totalUsers || 0, jobs: analyticsData?.totalJobs || 0 },
@@ -542,23 +542,23 @@ const ComprehensiveAnalytics = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <MetricCard
-                title="System Uptime"
+                title={t('analytics.comprehensive.metrics.systemUptime')}
                 value="99.9%"
-                subtitle="Reliability"
+                subtitle={t('analytics.comprehensive.subtitles.reliability')}
                 icon="🟢"
                 color="border-green-500"
               />
               <MetricCard
-                title="Avg. Response Time"
+                title={t('analytics.comprehensive.metrics.avgResponseTime')}
                 value={`${realTimeData?.responseTime || 0}ms`}
-                subtitle="API performance"
+                subtitle={t('analytics.comprehensive.subtitles.apiPerformance')}
                 icon="⚡"
                 color="border-blue-500"
               />
               <MetricCard
-                title="Error Rate"
+                title={t('analytics.comprehensive.metrics.errorRate')}
                 value="0.1%"
-                subtitle="System errors"
+                subtitle={t('analytics.comprehensive.subtitles.systemErrors')}
                 icon="🔧"
                 color="border-orange-500"
               />
@@ -566,29 +566,29 @@ const ComprehensiveAnalytics = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">System Performance Metrics</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.systemPerformanceMetrics')}</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <RadarChart data={[
-                    { metric: 'Uptime', value: 99.9, fullMark: 100 },
-                    { metric: 'Response Time', value: 85, fullMark: 100 },
-                    { metric: 'Error Rate', value: 95, fullMark: 100 },
-                    { metric: 'User Satisfaction', value: 88, fullMark: 100 },
-                    { metric: 'Job Completion', value: 92, fullMark: 100 }
+                    { metric: t('analytics.comprehensive.performanceMetrics.uptime'), value: 99.9, fullMark: 100 },
+                    { metric: t('analytics.comprehensive.performanceMetrics.responseTime'), value: 85, fullMark: 100 },
+                    { metric: t('analytics.comprehensive.performanceMetrics.errorRate'), value: 95, fullMark: 100 },
+                    { metric: t('analytics.comprehensive.performanceMetrics.userSatisfaction'), value: 88, fullMark: 100 },
+                    { metric: t('analytics.comprehensive.performanceMetrics.jobCompletion'), value: 92, fullMark: 100 }
                   ]}>
                     <PolarGrid />
                     <PolarAngleAxis dataKey="metric" />
                     <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                    <Radar name="Performance" dataKey="value" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+                    <Radar name={t('analytics.comprehensive.performanceMetrics.performance')} dataKey="value" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Resource Utilization</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.comprehensive.charts.resourceUtilization')}</h3>
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>CPU Usage</span>
+                      <span>{t('analytics.comprehensive.systemHealth.cpuUsage')}</span>
                       <span>{realTimeData?.cpuUsage || 0}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -600,7 +600,7 @@ const ComprehensiveAnalytics = () => {
                   </div>
                   <div>
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Memory Usage</span>
+                      <span>{t('analytics.comprehensive.systemHealth.memoryUsage')}</span>
                       <span>{realTimeData?.memoryUsage || 0}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -618,7 +618,7 @@ const ComprehensiveAnalytics = () => {
 
         {/* Footer */}
         <div className="text-center text-gray-500 text-sm mt-8">
-          <p>Comprehensive Analytics Dashboard • Last updated: {new Date().toLocaleString()}</p>
+          <p>{t('analytics.comprehensive.footer')} {new Date().toLocaleString()}</p>
         </div>
       </div>
     </div>

@@ -21,8 +21,10 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import EmptyState from '../../EmptyState';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const Analysis = () => {
+  const { t } = useLanguage();
   const { users, jobs, events } = useFetchAnalysisData();
   // Real-time retiree counts for available settlements
   const [retireeCounts, setRetireeCounts] = useState({});
@@ -154,39 +156,39 @@ const Analysis = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">System Analysis Dashboard</h1>
-          <p className="text-gray-600">Comprehensive insights into your platform's performance and user engagement</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">{t('analytics.analysis.title')}</h1>
+          <p className="text-gray-600">{t('analytics.analysis.subtitle')}</p>
         </div>
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            title="Total Users"
+            title={t('analytics.analysis.metrics.totalUsers')}
             value={totalUsers.toLocaleString()}
             icon="👥"
             color="from-blue-500 to-blue-600"
-            subtitle="All registered users"
+            subtitle={t('analytics.analysis.subtitles.allRegisteredUsers')}
           />
           <StatCard
-            title="Volunteers"
+            title={t('analytics.analysis.metrics.volunteers')}
             value={totalVolunteers.toLocaleString()}
             icon="🤝"
             color="from-green-500 to-green-600"
-            subtitle="Active volunteers"
+            subtitle={t('analytics.analysis.subtitles.activeVolunteers')}
           />
           <StatCard
-            title="Retirees"
+            title={t('analytics.analysis.metrics.retirees')}
             value={users.filter(u => u.role === "retiree").length.toLocaleString()}
             icon="👴"
             color="from-purple-500 to-purple-600"
-            subtitle="Senior members"
+            subtitle={t('analytics.analysis.subtitles.seniorMembers')}
           />
           <StatCard
-            title="Avg. Completion"
+            title={t('analytics.analysis.metrics.avgCompletion')}
             value={averageJobCompletionTime > 0 ? `${averageJobCompletionTime} days` : "N/A"}
             icon="⏱️"
             color="from-orange-500 to-orange-600"
-            subtitle="Job completion time"
+            subtitle={t('analytics.analysis.subtitles.jobCompletionTime')}
           />
         </div>
 
@@ -196,13 +198,13 @@ const Analysis = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <span className="mr-2">🏘️</span>
-              Retirees by Town
+              {t('analytics.analysis.charts.retireesByTown')}
             </h3>
             {townChartData.length === 0 ? (
               <EmptyState
                 icon={<span role="img" aria-label="chart">📊</span>}
-                title="No town data available"
-                message="Try selecting a different time range or settlement."
+                title={t('analytics.analysis.emptyStates.noTownData')}
+                message={t('analytics.analysis.emptyStates.noTownDataMessage')}
               />
             ) : (
               <ResponsiveContainer width="100%" height={300}>
@@ -231,7 +233,7 @@ const Analysis = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <span className="mr-2">📈</span>
-              Job Requests Over Time
+              {t('analytics.analysis.charts.jobRequestsOverTime')}
             </h3>
             {jobByMonthData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -254,7 +256,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">📈</div>
-                  <p>No time series data available</p>
+                  <p>{t('analytics.analysis.emptyStates.noTimeSeriesData')}</p>
                 </div>
               </div>
             )}
@@ -264,7 +266,7 @@ const Analysis = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <span className="mr-2">📋</span>
-              Job Requests by Status
+              {t('analytics.analysis.charts.jobRequestsByStatus')}
             </h3>
             {jobRequestsByStatus.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -290,7 +292,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">📋</div>
-                  <p>No status data available</p>
+                  <p>{t('analytics.analysis.emptyStates.noStatusData')}</p>
                 </div>
               </div>
             )}
@@ -300,7 +302,7 @@ const Analysis = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <span className="mr-2">👥</span>
-              Users by Role
+              {t('analytics.analysis.charts.usersByRole')}
             </h3>
             {usersByRoleDistribution.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -326,7 +328,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">👥</div>
-                  <p>No role data available</p>
+                  <p>{t('analytics.analysis.emptyStates.noRoleData')}</p>
                 </div>
               </div>
             )}
@@ -338,7 +340,7 @@ const Analysis = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <span className="mr-2">🎉</span>
-              Events by Category
+              {t('analytics.analysis.charts.eventsByCategory')}
             </h3>
             {eventsByCategoryData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -364,7 +366,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">🎉</div>
-                  <p>No event category data available</p>
+                  <p>{t('analytics.analysis.emptyStates.noEventCategoryData')}</p>
                 </div>
               </div>
             )}
@@ -374,7 +376,7 @@ const Analysis = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <span className="mr-2">🗓️</span>
-              Events Over Time
+              {t('analytics.analysis.charts.eventsOverTime')}
             </h3>
             {eventsByMonthData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -397,7 +399,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">🗓️</div>
-                  <p>No event time series data available</p>
+                  <p>{t('analytics.analysis.emptyStates.noEventTimeSeriesData')}</p>
                 </div>
               </div>
             )}
@@ -406,7 +408,7 @@ const Analysis = () => {
 
         {/* Footer */}
         <div className="text-center text-gray-500 text-sm">
-          <p>Dashboard last updated: {new Date().toLocaleString()}</p>
+          <p>{t('analytics.analysis.footer')} {new Date().toLocaleString()}</p>
         </div>
       </div>
     </div>

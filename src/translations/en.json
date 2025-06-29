@@ -16,7 +16,8 @@
       "step": "Step",
       "of": "of",
       "select": "Select",
-      "change":"change"
+      "change":"change",
+      "notAvailable": "N/A"
     },
     "auth": {
       "errors": {
@@ -842,7 +843,8 @@
         "add": "Add",
         "loadError": "Failed to load settlements.",
         "updateError": "Failed to update settlement.",
-        "addError": "Failed to add settlement."
+        "addError": "Failed to add settlement.",
+        "loading":"Loading..."
       },
       "categoryManagement": {
         "title": "Category Management",
@@ -1140,6 +1142,51 @@
       "language": "Language"
     },
     "admin": {
+      "management": {
+        "title": "Admin Management",
+        "loadingAdmins": "Loading admins...",
+        "addAdmin": "Add Admin",
+        "editAdmin": "Edit Admin",
+        "viewAdmin": "View Admin",
+        "adminDetails": "Admin Details",
+        "updateAdmin": "Update Admin",
+        "deleteAdmin": "Delete Admin",
+        "table": {
+          "adminName": "Admin Name",
+          "settlement": "Settlement",
+          "email": "Email",
+          "phone": "Phone",
+          "registeredRetirees": "Registered Retirees",
+          "actions": "Actions",
+          "retirees": "retirees"
+        },
+        "form": {
+          "adminName": "Admin Name",
+          "adminNamePlaceholder": "Enter admin name",
+          "email": "Email",
+          "emailPlaceholder": "Enter email address",
+          "settlement": "Settlement",
+          "settlementPlaceholder": "Enter settlement name",
+          "phone": "Phone",
+          "phonePlaceholder": "Enter phone number"
+        },
+        "modal": {
+          "viewTitle": "Admin Details",
+          "editTitle": "Edit Admin",
+          "createdAt": "Created At"
+        },
+        "messages": {
+          "fillRequiredFields": "Please fill in all required fields",
+          "adminAddedSuccess": "Admin added successfully!",
+          "adminUpdatedSuccess": "Admin updated successfully!",
+          "adminDeletedSuccess": "Admin deleted successfully!",
+          "failedToAddAdmin": "Failed to add admin",
+          "failedToUpdateAdmin": "Failed to update admin",
+          "failedToDeleteAdmin": "Failed to delete admin",
+          "failedToFetchAdmins": "Failed to fetch admins",
+          "confirmDelete": "Are you sure you want to delete admin \"{{adminName}}\"?\n\nThis will also remove the settlement from available settlements."
+        }
+      },
       "retirees": {
         "title": "Retirees Management",
         "addRetiree": "Add Retiree",
@@ -1236,23 +1283,37 @@
     },
     "calendar": {
       "title": "Retiree Activity Calendar",
-      "welcomeBack": "Welcome back, {{name}} ({{role}})",
-      "adminName": "Admin Sarah",
-      "searchEvents": "Search events...",
-      "filter": {
+      "welcome": "Welcome back, {name} ({role})",
+      "header": {
+        "dashboard": "Dashboard",
+        "createEvent": "Create Event"
+      },
+      "search": {
+        "placeholder": "Search events..."
+      },
+      "filters": {
         "allEvents": "All Events",
         "createdByMe": "Created by Me",
         "pendingApproval": "Pending Approval",
-        "myEvents": "My Events"
-      },
-      "categories": {
+        "myEvents": "My Events",
         "fitness": "Fitness",
         "social": "Social",
         "hobby": "Hobbies",
         "educational": "Educational"
       },
-      "month": "Month",
-      "week": "Week",
+      "viewModes": {
+        "month": "Month",
+        "week": "Week"
+      },
+      "weekDays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
       "months": {
         "january": "January",
         "february": "February",
@@ -1267,88 +1328,60 @@
         "november": "November",
         "december": "December"
       },
-      "days": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+      "calendar": {
+        "moreEvents": "+{count} more"
       },
-      "more": "more",
       "legend": {
         "title": "Legend",
-        "createdByMe": "Created by me",
-        "createdByOtherAdmins": "Created by other admins",
-        "retireeSubmissions": "Retiree submissions",
-        "joinedEvents": "Joined events",
-        "pendingApproval": "Pending approval",
-        "pastEvents": "Past events"
-      },
-      "at": "at",
-      "min": "min",
-      "participants": "participants",
-      "approve": "Approve",
-      "leaveEvent": "Leave Event",
-      "full": "Full",
-      "joinEvent": "Join Event",
-      "createEvent": "Create Event",
-      "createNewEvent": "Create New Event",
-      "eventTitle": "Event title",
-      "location": "Location",
-      "description": "Description",
-      "maxParticipants": "Max participants",
-      "oneTimeEvent": "One-time event",
-      "weekly": "Weekly",
-      "monthly": "Monthly",
-      "sampleEvents": {
-        "yoga": {
-          "title": "Morning Yoga Class",
-          "location": "Community Center - Room A",
-          "description": "Gentle yoga session for all fitness levels"
+        "admin": {
+          "createdByMe": "Created by me",
+          "createdByOtherAdmins": "Created by other admins",
+          "retireeSubmissions": "Retiree submissions"
         },
-        "bookClub": {
-          "title": "Book Club Discussion",
-          "location": "Library Meeting Room",
-          "description": "Discussing \"The Thursday Murder Club\""
-        },
-        "gardenClub": {
-          "title": "Garden Club Meet",
-          "location": "Community Garden",
-          "description": "Spring planting and maintenance"
+        "retiree": {
+          "joinedEvents": "Joined events",
+          "pendingApproval": "Pending approval",
+          "pastEvents": "Past events"
         }
       },
-      "eventDetails": {
-        "close": "Close",
-        "date": "Date",
-        "time": "Time",
-        "from": "From",
-        "to": "to",
-        "notSpecified": "Not specified",
-        "location": "Location",
-        "notAvailable": "N/A",
-        "description": "Description",
-        "noDescription": "No description provided.",
-        "participants": "Participants",
-        "status": {
-          "pending": "Pending",
-          "confirmed": "Confirmed",
-          "other": "Other"
+      "eventModal": {
+        "duration": "{duration} min",
+        "participants": "{current}/{max} participants",
+        "actions": {
+          "approve": "Approve",
+          "edit": "Edit",
+          "delete": "Delete",
+          "leaveEvent": "Leave Event",
+          "joinEvent": "Join Event",
+          "full": "Full"
+        }
+      },
+      "createEvent": {
+        "title": "Create New Event",
+        "form": {
+          "title": "Event title",
+          "location": "Location",
+          "description": "Description",
+          "maxParticipants": "Max participants",
+          "categories": {
+            "social": "Social",
+            "fitness": "Fitness",
+            "hobby": "Hobby",
+            "educational": "Educational"
+          },
+          "recurring": {
+            "none": "One-time event",
+            "weekly": "Weekly",
+            "monthly": "Monthly"
+          }
         },
-        "approve": "Approve",
-        "reject": "Reject",
-        "noParticipants": "No participants yet",
-        "joinedCount": "{{count}} participant{{count, plural, one {} other {s}}} have joined."
+        "actions": {
+          "create": "Create Event",
+          "cancel": "Cancel"
+        }
       },
-      "adminEventDetails": {
-        "confirmDelete": "Confirm Delete",
-        "failedToDeleteEvent": "Failed to delete event.",
-        "editEvent": "Edit Event",
-        "deleteEvent": "Delete Event"
-      },
-      "toast": {
-        "failedToLoadEvents": "Failed to load events"
+      "errors": {
+        "createEvent": "Error creating event: {error}"
       }
     },
     "service": {
@@ -1522,5 +1555,425 @@
         "noRequests": "No volunteering requests available.",
         "noUser": "No user is logged in."
       }
+    },
+    "emptyStates": {
+      "noAdmins": "No admins found",
+      "noAdminsMessage": "No admins are registered in the system yet.",
+      "addAdmin": "Add first admin",
+      "noTowns": "No towns found",
+      "noTownsMessage": "No towns are registered in the system yet.",
+      "addTown": "Add first town",
+      "noPendingRequests": "No pending requests",
+      "noPendingRequestsMessage": "There are no pending service requests to review.",
+      "noViewedRequests": "No viewed requests",
+      "noViewedRequestsMessage": "There are no viewed service requests."
+    },
+    "candidates": {
+      "title": "Candidates Section",
+      "comingSoon": "Coming Soon"
+    },
+    "settlements": {
+      "title": "Settlements",
+      "table": {
+        "settlement": "Settlement",
+        "municipality": "Municipality"
+      },
+      "actions": {
+        "edit": "Edit"
+      }
+    },
+    "settlementsManager": {
+      "title": "Settlements Manager",
+      "uploadCsv": "Upload CSV",
+      "searchPlaceholder": "Search settlements...",
+      "assignAdmin": {
+        "title": "Assign Admin",
+        "selectExistingUser": "Select Existing User",
+        "createNewAdmin": "Create New Admin",
+        "selectSettlement": "Select Settlement",
+        "selectUser": "Select User",
+        "emailPlaceholder": "Email",
+        "usernamePlaceholder": "Username",
+        "phonePlaceholder": "Phone",
+        "createAndAssign": "Create & Assign",
+        "assignAdmin": "Assign Admin",
+        "adminAssigned": " (Admin Assigned)",
+        "alreadyHasAdmin": "Already has admin"
+      },
+      "settlementsList": {
+        "title": "Settlements List",
+        "available": "Available",
+        "disabled": "Disabled",
+        "retirees": "retirees",
+        "addAdmin": "Add Admin",
+        "noSettlementsFound": "No settlements found",
+        "noSettlementsMessage": "Upload a CSV file to add settlements to the system."
+      },
+      "adminDetails": {
+        "title": "Admin Details",
+        "username": "Username",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "settlement": "Settlement",
+        "registeredRetirees": "Registered Retirees"
+      },
+      "actions": {
+        "toggle": "Toggle",
+        "edit": "Edit",
+        "remove": "Remove"
+      },
+      "messages": {
+        "errorParsingCsv": "Error parsing CSV: ",
+        "failedToLoadSettlements": "Failed to load settlements",
+        "settlementToggled": " settlement toggled successfully",
+        "failedToToggleSettlement": "Failed to toggle settlement",
+        "confirmDeleteSettlement": "Are you sure you want to delete {settlement}?",
+        "settlementRemoved": "Settlement removed: ",
+        "failedToRemoveSettlement": "Failed to remove settlement",
+        "settlementsUploaded": "Settlements uploaded successfully",
+        "csvUploadFailed": "CSV upload failed",
+        "selectBothSettlementAndUser": "Please select both settlement and user",
+        "adminAssignedSuccess": "Admin assigned successfully",
+        "failedToAssignAdmin": "Failed to assign admin",
+        "fillAllFields": "Please fill all fields",
+        "newAdminCreatedSuccess": "New admin created and assigned successfully",
+        "failedToCreateAdmin": "Failed to create admin: "
+      }
+    },
+    "superAdminDashboard": {
+      "categoryManagement": "Category Management",
+      "addSettlements": "Add Settlements",
+      "adminManagement": "Admin Management"
+    },
+    "towns": {
+      "title": "Towns",
+      "addTown": "Add Town",
+      "cancel": "Cancel",
+      "addNewTown": "Add New Town",
+      "form": {
+        "townName": "Town Name",
+        "townNamePlaceholder": "Enter town name",
+        "municipality": "Municipality",
+        "municipalityPlaceholder": "Enter municipality"
+      },
+      "table": {
+        "town": "Town",
+        "municipality": "Municipality",
+        "actions": "Actions"
+      },
+      "actions": {
+        "deleteTown": "Delete town"
+      }
+    },
+    "volunteers": {
+      "title": "Volunteers Section",
+      "comingSoon": "Coming Soon"
+    },
+    "analytics": {
+      "comprehensive": {
+        "title": "Comprehensive System Analytics",
+        "subtitle": "Advanced insights with real-time monitoring, predictive analytics, and detailed reporting",
+        "loading": "Loading comprehensive analytics...",
+        "error": {
+          "title": "Error Loading Data",
+          "retry": "Retry"
+        },
+        "export": {
+          "json": "Export JSON",
+          "csv": "Export CSV",
+          "exporting": "Exporting..."
+        },
+        "filters": {
+          "timeRange": "Time Range",
+          "settlement": "Settlement",
+          "allSettlements": "All Settlements"
+        },
+        "timeRanges": {
+          "7d": "Last 7 Days",
+          "30d": "Last 30 Days",
+          "90d": "Last 90 Days",
+          "1y": "Last Year",
+          "all": "All Time"
+        },
+        "tabs": {
+          "overview": "Overview",
+          "users": "User Analytics",
+          "jobs": "Job Analytics",
+          "predictions": "Predictions",
+          "performance": "Performance"
+        },
+        "metrics": {
+          "activeUsers": "Active Users",
+          "pendingJobs": "Pending Jobs",
+          "totalUsers": "Total Users",
+          "completionRate": "Completion Rate",
+          "newUsers": "New Users",
+          "userGrowth": "User Growth",
+          "totalJobs": "Total Jobs",
+          "completedJobs": "Completed Jobs",
+          "avgResponseTime": "Avg. Response Time",
+          "predictedGrowth": "Predicted Growth",
+          "jobDemand": "Job Demand",
+          "churnRisk": "Churn Risk",
+          "systemUptime": "System Uptime",
+          "errorRate": "Error Rate"
+        },
+        "subtitles": {
+          "currentlyOnline": "Currently online",
+          "awaitingAssignment": "Awaiting assignment",
+          "allRegisteredUsers": "All registered users",
+          "jobsCompleted": "Jobs completed",
+          "thisPeriod": "This period",
+          "last7Days": "Last 7 days",
+          "growthRate": "Growth rate",
+          "allTime": "All time",
+          "successfullyCompleted": "Successfully completed",
+          "timeToAssign": "Time to assign",
+          "usersNextMonth": "Users next month",
+          "jobsNextMonth": "Jobs next month",
+          "predictedSuccess": "Predicted success",
+          "atRiskUsers": "At-risk users",
+          "reliability": "Reliability",
+          "apiPerformance": "API performance",
+          "systemErrors": "System errors"
+        },
+        "trends": {
+          "fromLastPeriod": "from last period"
+        },
+        "systemHealth": {
+          "title": "System Health",
+          "healthy": "Healthy",
+          "warning": "Warning",
+          "responseTime": "Response Time",
+          "cpuUsage": "CPU Usage",
+          "memoryUsage": "Memory Usage",
+          "uptime": "Uptime"
+        },
+        "charts": {
+          "performanceTrends": "Performance Trends",
+          "userDistribution": "User Distribution",
+          "jobStatusDistribution": "Job Status Distribution",
+          "usersBySettlement": "Users by Settlement",
+          "jobTrendsOverTime": "Job Trends Over Time",
+          "jobStatusBreakdown": "Job Status Breakdown",
+          "growthPredictions": "Growth Predictions",
+          "systemPerformanceMetrics": "System Performance Metrics",
+          "resourceUtilization": "Resource Utilization",
+          "userEngagement": "User Engagement"
+        },
+        "performanceMetrics": {
+          "uptime": "Uptime",
+          "responseTime": "Response Time",
+          "errorRate": "Error Rate",
+          "userSatisfaction": "User Satisfaction",
+          "jobCompletion": "Job Completion",
+          "performance": "Performance"
+        },
+        "footer": "Comprehensive Analytics Dashboard • Last updated:"
+      },
+      "analysis": {
+        "title": "System Analysis Dashboard",
+        "subtitle": "Comprehensive insights into your platform's performance and user engagement",
+        "metrics": {
+          "totalUsers": "Total Users",
+          "volunteers": "Volunteers",
+          "retirees": "Retirees",
+          "avgCompletion": "Avg. Completion"
+        },
+        "subtitles": {
+          "allRegisteredUsers": "All registered users",
+          "activeVolunteers": "Active volunteers",
+          "seniorMembers": "Senior members",
+          "jobCompletionTime": "Job completion time"
+        },
+        "charts": {
+          "retireesByTown": "Retirees by Town",
+          "jobRequestsOverTime": "Job Requests Over Time",
+          "jobRequestsByStatus": "Job Requests by Status",
+          "usersByRole": "Users by Role",
+          "eventsByCategory": "Events by Category",
+          "eventsOverTime": "Events Over Time"
+        },
+        "emptyStates": {
+          "noTownData": "No town data available",
+          "noTownDataMessage": "Try selecting a different time range or settlement.",
+          "noTimeSeriesData": "No time series data available",
+          "noStatusData": "No status data available",
+          "noRoleData": "No role data available",
+          "noEventCategoryData": "No event category data available",
+          "noEventTimeSeriesData": "No event time series data available"
+        },
+        "footer": "Dashboard last updated:"
+      },
+      "advanced": {
+        "title": "Advanced System Analysis",
+        "subtitle": "Comprehensive insights with real-time monitoring and predictive analytics",
+        "loading": "Loading advanced analysis...",
+        "error": {
+          "title": "Error Loading Data"
+        },
+        "filters": {
+          "timeRange": "Time Range",
+          "settlement": "Settlement",
+          "allSettlements": "All Settlements"
+        },
+        "timeRanges": {
+          "7d": "Last 7 Days",
+          "30d": "Last 30 Days",
+          "90d": "Last 90 Days",
+          "1y": "Last Year",
+          "all": "All Time"
+        },
+        "metrics": {
+          "activeUsers": "Active Users",
+          "pendingJobs": "Pending Jobs",
+          "userGrowth": "User Growth",
+          "completionRate": "Completion Rate"
+        },
+        "subtitles": {
+          "currentlyOnline": "Currently online",
+          "awaitingAssignment": "Awaiting assignment",
+          "last30Days": "Last 30 days",
+          "jobsCompleted": "Jobs completed"
+        },
+        "trends": {
+          "fromLastPeriod": "from last period"
+        },
+        "systemHealth": {
+          "title": "System Health",
+          "healthy": "Healthy",
+          "warning": "Warning",
+          "responseTime": "Response Time",
+          "uptime": "Uptime"
+        },
+        "charts": {
+          "performanceTrends": "Performance Trends",
+          "userEngagement": "User Engagement",
+          "jobStatusDistribution": "Job Status Distribution"
+        },
+        "additionalAnalytics": {
+          "responseTimeAnalysis": "Response Time Analysis",
+          "userRetention": "User Retention",
+          "settlementCoverage": "Settlement Coverage"
+        },
+        "subtitles": {
+          "averageResponseTime": "Average response time",
+          "7DayRetentionRate": "7-day retention rate",
+          "activeSettlements": "Active settlements"
+        },
+        "footer": "Advanced Analytics Dashboard • Last updated:"
+      }
+    },
+    "pendingEvents": {
+      "title": "Pending Events",
+      "noEvents": "No pending events to review.",
+      "location": "Location",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "actions": {
+        "accept": "Accept",
+        "reject": "Reject"
+      },
+      "notifications": {
+        "approved": "Your event \"{title}\" has been approved.",
+        "rejected": "Your event \"{title}\" has been rejected."
+      },
+      "toasts": {
+        "fetchError": "Failed to fetch pending events.",
+        "approveSuccess": "Event approved successfully!",
+        "approveError": "Failed to approve event.",
+        "rejectSuccess": "Event rejected successfully!",
+        "rejectError": "Failed to reject event."
+      },
+      "errors": {
+        "noUserLoggedIn": "No user logged in",
+        "userDocumentNotFound": "User document not found",
+        "errorFetchingAdminSettlement": "Error fetching admin settlement",
+        "errorFetchingPendingEvents": "Error fetching pending events",
+        "errorApprovingEvent": "Error approving event",
+        "errorRejectingEvent": "Error rejecting event"
+      },
+      "logs": {
+        "adminData": "PendingEvents - Admin data:",
+        "foundAdminSettlement": "PendingEvents - Found admin settlement:"
+      }
+    },
+    "serviceRequests": {
+      "title": "Service Requests",
+      "loading": "Loading service requests...",
+      "sections": {
+        "pendingRequests": "Pending Requests",
+        "viewedRequests": "Viewed Requests"
+      },
+      "labels": {
+        "description": "Description",
+        "location": "Location",
+        "volunteerField": "Volunteer Field",
+        "professionalBackground": "Professional Background",
+        "timing": "Timing",
+        "frequency": "Frequency",
+        "days": "Days",
+        "notSpecified": "Not specified"
+      },
+      "actions": {
+        "findMatch": "Find Match"
+      },
+      "toasts": {
+        "mustBeLoggedIn": "You must be logged in.",
+        "userDocumentNotFound": "User document not found.",
+        "noSettlementFound": "No settlement found for admin user.",
+        "failedToFetchAdminSettlement": "Failed to fetch admin settlement.",
+        "failedToFetchServiceRequests": "Failed to fetch service requests.",
+        "voluntaryRequestCreated": "Voluntary request created successfully!",
+        "failedToCreateVoluntaryRequest": "Failed to create voluntary request."
+      },
+      "errors": {
+        "errorFetchingAdminSettlement": "Error fetching admin settlement",
+        "errorFetchingServiceRequests": "Error fetching service requests",
+        "errorCreatingVoluntaryRequest": "Error creating voluntary request"
+      },
+      "logs": {
+        "adminData": "ServiceRequests - Admin data:",
+        "foundAdminSettlement": "ServiceRequests - Found admin settlement:"
+      }
+    },
+    "viewProfile": {
+      "errors": {
+        "noRetireeId": "No retiree ID number available."
+      },
+      "navigation": {
+        "profile": "Profile",
+        "sendMessages": "Send Messages",
+        "backToProfile": "Back To Profile"
+      },
+      "header": {
+        "title": "Golden Generation"
+      },
+      "languageSelector": {
+        "english": "English",
+        "hebrew": "עברית",
+        "arabic": "العربية"
+      },
+      "profileDetails": {
+        "title": "Profile Details",
+        "name": "Name",
+        "age": "Age",
+        "gender": "Gender"
+      },
+      "sendMessage": {
+        "title": "Send Message",
+        "placeholder": "Write a message to {name}",
+        "send": "Send"
+      },
+      "common": {
+        "loading": "Loading..."
+      }
     }
   }
+
+
+
+
+
+

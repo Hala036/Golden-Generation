@@ -98,38 +98,38 @@ const Towns = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Towns</h1>
+        <h1 className="text-3xl font-bold">{t('towns.title')}</h1>
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded"
           onClick={() => setShowForm(!showForm)} // Toggle form visibility
         >
-          {showForm ? "Cancel" : "Add Town"}
+          {showForm ? t('towns.cancel') : t('towns.addTown')}
         </button>
       </div>
 
       {/* Add Town Form */}
       {showForm && (
         <div className="bg-white p-4 rounded shadow mb-6">
-          <h3 className="text-xl font-bold mb-4">Add New Town</h3>
+          <h3 className="text-xl font-bold mb-4">{t('towns.addNewTown')}</h3>
           <form onSubmit={handleAddTown}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Town Name</label>
+                <label className="block text-sm font-medium text-gray-700">{t('towns.form.townName')}</label>
                 <input
                   type="text"
                   className="mt-1 block w-full p-2 border rounded"
-                  placeholder="Enter town name"
+                  placeholder={t('towns.form.townNamePlaceholder')}
                   value={newTown.name}
                   onChange={(e) => setNewTown({ ...newTown, name: e.target.value })}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Municipality</label>
+                <label className="block text-sm font-medium text-gray-700">{t('towns.form.municipality')}</label>
                 <input
                   type="text"
                   className="mt-1 block w-full p-2 border rounded"
-                  placeholder="Enter municipality"
+                  placeholder={t('towns.form.municipalityPlaceholder')}
                   value={newTown.municipality}
                   onChange={(e) => setNewTown({ ...newTown, municipality: e.target.value })}
                   required
@@ -140,7 +140,7 @@ const Towns = () => {
               type="submit"
               className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded"
             >
-              Add Town
+              {t('towns.addTown')}
             </button>
           </form>
         </div>
@@ -165,13 +165,13 @@ const Towns = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Town
+                    {t('towns.table.town')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Municipality
+                    {t('towns.table.municipality')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('towns.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -184,7 +184,7 @@ const Towns = () => {
                       <button
                         className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                         onClick={() => handleDeleteTown(town.id)}
-                        title="Delete town"
+                        title={t('towns.actions.deleteTown')}
                       >
                         <FaTrash />
                       </button>

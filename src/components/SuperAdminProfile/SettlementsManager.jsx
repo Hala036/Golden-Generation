@@ -15,8 +15,10 @@ import Modal from '../Modal';
 import { FaEdit, FaTrash, FaEye, FaUserPlus, FaUsers } from 'react-icons/fa';
 import EmptyState from '../EmptyState';
 import { FaSearch } from 'react-icons/fa';
+import { useLanguage } from '../../context/LanguageContext';
 
 const SettlementsManager = () => {
+  const { t } = useLanguage();
   const [allSettlements, setAllSettlements] = useState([]);
   const [availableSettlements, setAvailableSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,12 +53,12 @@ const SettlementsManager = () => {
           setAdminDetails({});
         },
         error: function (error) {
-          toast.error('Error parsing settlements CSV: ' + error.message);
+          toast.error(t('settlementsManager.messages.errorParsingCsv') + error.message);
         }
       });
     } catch (error) {
       console.error('Failed to fetch settlements:', error);
-      toast.error('Failed to load settlements');
+      toast.error(t('settlementsManager.messages.failedToLoadSettlements'));
     } finally {
       setLoading(false);
     }
@@ -100,22 +102,22 @@ const SettlementsManager = () => {
   const handleToggle = async (settlement) => {
     try {
       await toggleSettlementAvailability(settlement);
-      toast.success(`${settlement} availability toggled`);
+      toast.success(settlement + t('settlementsManager.messages.settlementToggled'));
       fetchSettlements();
     } catch (err) {
-      toast.error('Failed to toggle settlement');
+      toast.error(t('settlementsManager.messages.failedToToggleSettlement'));
     }
   };
 
   // ✅ Delete permanently
   const handleDelete = async (settlement) => {
-    if (!window.confirm(`Are you sure you want to permanently delete "${settlement}"?`)) return;
+    if (!window.confirm(t('settlementsManager.messages.confirmDeleteSettlement', { settlement }))) return;
     try {
       await removeSettlement(settlement);
-      toast.success(`Removed: ${settlement}`);
+      toast.success(t('settlementsManager.messages.settlementRemoved') + settlement);
       fetchSettlements();
     } catch (err) {
-      toast.error('Failed to remove settlement');
+      toast.error(t('settlementsManager.messages.failedToRemoveSettlement'));
     }
   };
 
@@ -123,36 +125,36 @@ const SettlementsManager = () => {
   const handleCSVUpload = async () => {
     try {
       await uploadSettlementsFromCSV();
-      toast.success('Settlements uploaded from CSV');
+      toast.success(t('settlementsManager.messages.settlementsUploaded'));
       fetchSettlements();
     } catch (err) {
       console.error(err);
-      toast.error('CSV upload failed');
+      toast.error(t('settlementsManager.messages.csvUploadFailed'));
     }
   };
 
   // Assign admin to settlement
   const handleAssignAdmin = async () => {
     if (!selectedSettlement || !selectedUser) {
-      toast.error('Please select both a settlement and a user.');
+      toast.error(t('settlementsManager.messages.selectBothSettlementAndUser'));
       return;
     }
     try {
       await assignAdminToSettlement(selectedSettlement, selectedUser);
-      toast.success('Admin assigned successfully!');
+      toast.success(t('settlementsManager.messages.adminAssignedSuccess'));
       setSelectedSettlement('');
       setSelectedUser('');
       fetchSettlements();
       fetchNonAdminUsers();
     } catch (err) {
-      toast.error('Failed to assign admin.');
+      toast.error(t('settlementsManager.messages.failedToAssignAdmin'));
     }
   };
 
   // Create and assign a new admin
   const handleCreateAndAssignAdmin = async () => {
     if (!selectedSettlement || !newAdmin.email || !newAdmin.username || !newAdmin.phone) {
-      toast.error('Please fill all fields.');
+      toast.error(t('settlementsManager.messages.fillAllFields'));
       return;
     }
     let newUserId = null;
@@ -181,7 +183,7 @@ const SettlementsManager = () => {
       });
       // 4. Assign as admin to settlement
       await assignAdminToSettlement(selectedSettlement, newUserId);
-      toast.success('New admin created, assigned, and password reset email sent!');
+      toast.success(t('settlementsManager.messages.newAdminCreatedSuccess'));
       setNewAdmin({ email: '', username: '', phone: '' });
       setSelectedSettlement('');
       fetchSettlements();
@@ -191,7 +193,7 @@ const SettlementsManager = () => {
       if (userCredential && newUserId) {
         try { await deleteAuthUser(userCredential.user); } catch (e) { /* ignore */ }
       }
-      toast.error('Failed to create and assign admin: ' + (err.message || 'Unknown error'));
+      toast.error(t('settlementsManager.messages.failedToCreateAdmin') + (err.message || 'Unknown error'));
     }
   };
 
@@ -201,14 +203,14 @@ const SettlementsManager = () => {
 
   // Replace AdminDetailsModal with shared Modal
   const AdminDetailsModal = ({ admin, onClose }) => (
-    <Modal onClose={onClose} title="Admin Details">
+    <Modal onClose={onClose} title={t('settlementsManager.adminDetails.title')}>
       <div className="space-y-2">
-        <div><b>Username:</b> {admin.credentials?.username || '-'}</div>
-        <div><b>Email:</b> {admin.credentials?.email || '-'}</div>
-        <div><b>Phone:</b> {admin.credentials?.phone || '-'}</div>
-        <div><b>Role:</b> {admin.role || '-'}</div>
-        <div><b>Settlement:</b> {admin.settlement || '-'}</div>
-        <div><b>Registered Retirees:</b> {retireeCounts[admin.settlement] || 0}</div>
+        <div><b>{t('settlementsManager.adminDetails.username')}:</b> {admin.credentials?.username || '-'}</div>
+        <div><b>{t('settlementsManager.adminDetails.email')}:</b> {admin.credentials?.email || '-'}</div>
+        <div><b>{t('settlementsManager.adminDetails.phone')}:</b> {admin.credentials?.phone || '-'}</div>
+        <div><b>{t('settlementsManager.adminDetails.role')}:</b> {admin.role || '-'}</div>
+        <div><b>{t('settlementsManager.adminDetails.settlement')}:</b> {admin.settlement || '-'}</div>
+        <div><b>{t('settlementsManager.adminDetails.registeredRetirees')}:</b> {retireeCounts[admin.settlement] || 0}</div>
       </div>
     </Modal>
   );
@@ -216,20 +218,20 @@ const SettlementsManager = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Settlement Manager</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t('settlementsManager.title')}</h1>
         <button
           onClick={handleCSVUpload}
           className="flex items-center gap-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
         >
           <Upload size={18} />
-          Upload CSV
+          {t('settlementsManager.uploadCsv')}
         </button>
       </div>
 
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search settlements..."
+          placeholder={t('settlementsManager.searchPlaceholder')}
           className="w-full px-3 py-2 border rounded"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -238,10 +240,10 @@ const SettlementsManager = () => {
 
       {/* Admin Assignment UI */}
       <div className="mb-8 p-4 bg-white rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-3">Assign Admin to Settlement</h2>
+        <h2 className="text-lg font-semibold mb-3">{t('settlementsManager.assignAdmin.title')}</h2>
         <div className="flex gap-2 mb-2">
-          <button onClick={() => setCreateNew(false)} className={`px-3 py-1 rounded ${!createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>Select Existing User</button>
-          <button onClick={() => setCreateNew(true)} className={`px-3 py-1 rounded ${createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>Create New Admin</button>
+          <button onClick={() => setCreateNew(false)} className={`px-3 py-1 rounded ${!createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>{t('settlementsManager.assignAdmin.selectExistingUser')}</button>
+          <button onClick={() => setCreateNew(true)} className={`px-3 py-1 rounded ${createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>{t('settlementsManager.assignAdmin.createNewAdmin')}</button>
         </div>
         {createNew ? (
           <div className="flex gap-2 mb-2">
@@ -250,30 +252,30 @@ const SettlementsManager = () => {
               onChange={e => setSelectedSettlement(e.target.value)}
               className="px-3 py-2 border rounded"
             >
-              <option value="">Select Settlement</option>
+              <option value="">{t('settlementsManager.assignAdmin.selectSettlement')}</option>
               {settlementDetails.map(s => (
                 <option key={s.semel_yeshuv || s.name} value={s.name} disabled={!!s.adminId}>
-                  {s.name}{s.adminId ? ' (Admin assigned)' : ''}
+                  {s.name}{s.adminId ? t('settlementsManager.assignAdmin.adminAssigned') : ''}
                 </option>
               ))}
             </select>
             <input
               type="text"
-              placeholder="Email"
+              placeholder={t('settlementsManager.assignAdmin.emailPlaceholder')}
               value={newAdmin.email}
               onChange={e => setNewAdmin({ ...newAdmin, email: e.target.value })}
               className="px-3 py-2 border rounded"
             />
             <input
               type="text"
-              placeholder="Username"
+              placeholder={t('settlementsManager.assignAdmin.usernamePlaceholder')}
               value={newAdmin.username}
               onChange={e => setNewAdmin({ ...newAdmin, username: e.target.value })}
               className="px-3 py-2 border rounded"
             />
             <input
               type="text"
-              placeholder="Phone"
+              placeholder={t('settlementsManager.assignAdmin.phonePlaceholder')}
               value={newAdmin.phone}
               onChange={e => setNewAdmin({ ...newAdmin, phone: e.target.value })}
               className="px-3 py-2 border rounded"
@@ -283,10 +285,10 @@ const SettlementsManager = () => {
               className="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
               disabled={selectedSettlement && settlementDetails.find(s => s.name === selectedSettlement && s.adminId)}
             >
-              Create & Assign
+              {t('settlementsManager.assignAdmin.createAndAssign')}
             </button>
             {selectedSettlement && settlementDetails.find(s => s.name === selectedSettlement && s.adminId) && (
-              <span className="text-red-500 text-xs ml-2">This settlement already has an admin.</span>
+              <span className="text-red-500 text-xs ml-2">{t('settlementsManager.assignAdmin.alreadyHasAdmin')}</span>
             )}
           </div>
         ) : (
@@ -296,10 +298,10 @@ const SettlementsManager = () => {
               onChange={e => setSelectedSettlement(e.target.value)}
               className="px-3 py-2 border rounded"
             >
-              <option value="">Select Settlement</option>
+              <option value="">{t('settlementsManager.assignAdmin.selectSettlement')}</option>
               {settlementDetails.map(s => (
                 <option key={s.semel_yeshuv || s.name} value={s.name} disabled={!!s.adminId}>
-                  {s.name}{s.adminId ? ' (Admin assigned)' : ''}
+                  {s.name}{s.adminId ? t('settlementsManager.assignAdmin.adminAssigned') : ''}
                 </option>
               ))}
             </select>
@@ -308,7 +310,7 @@ const SettlementsManager = () => {
               onChange={e => setSelectedUser(e.target.value)}
               className="px-3 py-2 border rounded"
             >
-              <option value="">Select User</option>
+              <option value="">{t('settlementsManager.assignAdmin.selectUser')}</option>
               {users.map(u => (
                 <option key={u.id} value={u.id}>{u.credentials?.username || u.credentials?.email || u.id}</option>
               ))}
@@ -318,10 +320,10 @@ const SettlementsManager = () => {
               className="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
               disabled={selectedSettlement && settlementDetails.find(s => s.name === selectedSettlement && s.adminId)}
             >
-              Assign Admin
+              {t('settlementsManager.assignAdmin.assignAdmin')}
             </button>
             {selectedSettlement && settlementDetails.find(s => s.name === selectedSettlement && s.adminId) && (
-              <span className="text-red-500 text-xs ml-2">This settlement already has an admin.</span>
+              <span className="text-red-500 text-xs ml-2">{t('settlementsManager.assignAdmin.alreadyHasAdmin')}</span>
             )}
           </div>
         )}
@@ -329,7 +331,7 @@ const SettlementsManager = () => {
 
       {/* Settlements List with assigned admins */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-2">Settlements & Assigned Admins</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('settlementsManager.settlementsList.title')}</h3>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {settlementDetails.map((settlement, index) => (
             <li
@@ -347,12 +349,12 @@ const SettlementsManager = () => {
                     ? 'bg-green-200 text-green-800'
                     : 'bg-gray-200 text-gray-600'
                 }`}>
-                  {availableSettlements.includes(settlement.name) ? 'Available' : 'Disabled'}
+                  {availableSettlements.includes(settlement.name) ? t('settlementsManager.settlementsList.available') : t('settlementsManager.settlementsList.disabled')}
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-1">
                 <FaUsers className="text-blue-500" />
-                <span className="text-sm">{retireeCounts[settlement.name] || 0} retirees</span>
+                <span className="text-sm">{retireeCounts[settlement.name] || 0} {t('settlementsManager.settlementsList.retirees')}</span>
               </div>
               {settlement.adminId ? (
                 <div className="flex flex-col gap-1 mt-2">
@@ -362,13 +364,13 @@ const SettlementsManager = () => {
                   <span className="text-xs text-gray-500">{adminDetails[settlement.adminId]?.credentials?.email}</span>
                   <span className="text-xs text-gray-500">{adminDetails[settlement.adminId]?.credentials?.phone}</span>
                   <div className="flex gap-2 mt-2">
-                    <button onClick={() => {/* open edit modal logic */}} className="text-yellow-600 hover:text-yellow-900" title="Edit"><FaEdit /></button>
-                    <button onClick={() => {/* remove/disable logic */}} className="text-red-600 hover:text-red-900" title="Remove"><FaTrash /></button>
+                    <button onClick={() => {/* open edit modal logic */}} className="text-yellow-600 hover:text-yellow-900" title={t('settlementsManager.actions.edit')}><FaEdit /></button>
+                    <button onClick={() => {/* remove/disable logic */}} className="text-red-600 hover:text-red-900" title={t('settlementsManager.actions.remove')}><FaTrash /></button>
                   </div>
                 </div>
               ) : (
-                <button onClick={() => {/* open add admin modal logic */}} className="flex items-center gap-1 text-green-700 hover:text-green-900 mt-2" title="Add Admin">
-                  <FaUserPlus /> Add Admin
+                <button onClick={() => {/* open add admin modal logic */}} className="flex items-center gap-1 text-green-700 hover:text-green-900 mt-2" title={t('settlementsManager.settlementsList.addAdmin')}>
+                  <FaUserPlus /> {t('settlementsManager.settlementsList.addAdmin')}
                 </button>
               )}
             </li>
@@ -382,9 +384,9 @@ const SettlementsManager = () => {
       {settlementDetails.length === 0 && !loading ? (
         <EmptyState
           icon={<FaSearch />}
-          title="No settlements found"
-          message="Try uploading a CSV or check your filters."
-          actionLabel="Upload CSV"
+          title={t('settlementsManager.settlementsList.noSettlementsFound')}
+          message={t('settlementsManager.settlementsList.noSettlementsMessage')}
+          actionLabel={t('settlementsManager.uploadCsv')}
           onAction={handleCSVUpload}
         />
       ) : (
@@ -404,7 +406,7 @@ const SettlementsManager = () => {
                   onClick={() => handleToggle(settlement)}
                   className="text-sm text-blue-700 underline"
                 >
-                  Toggle
+                  {t('settlementsManager.actions.toggle')}
                 </button>
                 <button
                   onClick={() => handleDelete(settlement)}

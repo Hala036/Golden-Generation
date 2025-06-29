@@ -5,8 +5,10 @@ import 'react-loading-skeleton/dist/skeleton.css';
 // Firestore imports
 import { db } from '../../firebase';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { useLanguage } from '../../context/LanguageContext';
 
 const RetireeCalendar = () => {
+  const { t } = useLanguage();
   const [currentUser] = useState({
     id: 'admin1',
     role: 'admin', // Switch to 'retiree' to see retiree view
@@ -162,7 +164,7 @@ const RetireeCalendar = () => {
       });
       setShowCreateModal(false);
     } catch (error) {
-      alert('Error creating event: ' + error.message);
+      alert(t('calendar.errors.createEvent', { error: error.message }));
     }
   };
 
@@ -175,8 +177,14 @@ const RetireeCalendar = () => {
   };
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    t('calendar.months.january'), t('calendar.months.february'), t('calendar.months.march'), t('calendar.months.april'),
+    t('calendar.months.may'), t('calendar.months.june'), t('calendar.months.july'), t('calendar.months.august'),
+    t('calendar.months.september'), t('calendar.months.october'), t('calendar.months.november'), t('calendar.months.december')
+  ];
+
+  const weekDays = [
+    t('calendar.weekDays.sun'), t('calendar.weekDays.mon'), t('calendar.weekDays.tue'), t('calendar.weekDays.wed'),
+    t('calendar.weekDays.thu'), t('calendar.weekDays.fri'), t('calendar.weekDays.sat')
   ];
 
   const isAdmin = currentUser.role === 'admin';
@@ -232,10 +240,10 @@ const RetireeCalendar = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
               <Calendar className="text-blue-600" />
-              Retiree Activity Calendar
+              {t('calendar.title')}
             </h1>
             <p className="text-gray-600 mt-1">
-              Welcome back, {currentUser.name} ({currentUser.role})
+              {t('calendar.welcome', { name: currentUser.name, role: currentUser.role })}
             </p>
           </div>
           
@@ -243,14 +251,14 @@ const RetireeCalendar = () => {
             <div className="flex gap-2">
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors">
                 <BarChart3 size={20} />
-                Dashboard
+                {t('calendar.header.dashboard')}
               </button>
               <button 
                 onClick={() => setShowCreateModal(true)}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition-colors"
               >
                 <Plus size={20} />
-                Create Event
+                {t('calendar.header.createEvent')}
               </button>
             </div>
           )}
@@ -262,7 +270,7 @@ const RetireeCalendar = () => {
             <Search size={20} className="text-gray-400" />
             <input
               type="text"
-              placeholder="Search events..."
+              placeholder={t('calendar.search.placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="border rounded-lg px-3 py-2 w-64"
@@ -274,22 +282,22 @@ const RetireeCalendar = () => {
             onChange={(e) => setFilter(e.target.value)}
             className="border rounded-lg px-3 py-2"
           >
-            <option value="all">All Events</option>
+            <option value="all">{t('calendar.filters.allEvents')}</option>
             {isAdmin ? (
               <>
-                <option value="created">Created by Me</option>
-                <option value="pending">Pending Approval</option>
+                <option value="created">{t('calendar.filters.createdByMe')}</option>
+                <option value="pending">{t('calendar.filters.pendingApproval')}</option>
               </>
             ) : (
               <>
-                <option value="joined">My Events</option>
-                <option value="created">Created by Me</option>
+                <option value="joined">{t('calendar.filters.myEvents')}</option>
+                <option value="created">{t('calendar.filters.createdByMe')}</option>
               </>
             )}
-            <option value="fitness">Fitness</option>
-            <option value="social">Social</option>
-            <option value="hobby">Hobbies</option>
-            <option value="educational">Educational</option>
+            <option value="fitness">{t('calendar.filters.fitness')}</option>
+            <option value="social">{t('calendar.filters.social')}</option>
+            <option value="hobby">{t('calendar.filters.hobby')}</option>
+            <option value="educational">{t('calendar.filters.educational')}</option>
           </select>
 
           <div className="flex items-center gap-2 ml-auto">
@@ -297,13 +305,13 @@ const RetireeCalendar = () => {
               onClick={() => setViewMode('month')}
               className={`px-3 py-1 rounded ${viewMode === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
             >
-              Month
+              {t('calendar.viewModes.month')}
             </button>
             <button
               onClick={() => setViewMode('week')}
               className={`px-3 py-1 rounded ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
             >
-              Week
+              {t('calendar.viewModes.week')}
             </button>
           </div>
         </div>
@@ -334,7 +342,7 @@ const RetireeCalendar = () => {
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Day Headers */}
         <div className="grid grid-cols-7 bg-gray-100">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          {weekDays.map(day => (
             <div key={day} className="p-4 text-center font-semibold text-gray-700">
               {day}
             </div>
@@ -374,7 +382,7 @@ const RetireeCalendar = () => {
                       ))}
                       {dayEvents.length > 3 && (
                         <div className="text-xs text-gray-500 text-center">
-                          +{dayEvents.length - 3} more
+                          {t('calendar.calendar.moreEvents', { count: dayEvents.length - 3 })}
                         </div>
                       )}
                     </div>
@@ -388,36 +396,36 @@ const RetireeCalendar = () => {
 
       {/* Legend */}
       <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
-        <h3 className="font-semibold mb-3">Legend</h3>
+        <h3 className="font-semibold mb-3">{t('calendar.legend.title')}</h3>
         <div className="flex flex-wrap gap-4">
           {isAdmin ? (
             <>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                <span className="text-sm">Created by me</span>
+                <span className="text-sm">{t('calendar.legend.admin.createdByMe')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Created by other admins</span>
+                <span className="text-sm">{t('calendar.legend.admin.createdByOtherAdmins')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span className="text-sm">Retiree submissions</span>
+                <span className="text-sm">{t('calendar.legend.admin.retireeSubmissions')}</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm">Joined events</span>
+                <span className="text-sm">{t('calendar.legend.retiree.joinedEvents')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                <span className="text-sm">Pending approval</span>
+                <span className="text-sm">{t('calendar.legend.retiree.pendingApproval')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-gray-400 rounded"></div>
-                <span className="text-sm">Past events</span>
+                <span className="text-sm">{t('calendar.legend.retiree.pastEvents')}</span>
               </div>
             </>
           )}
@@ -441,7 +449,7 @@ const RetireeCalendar = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-2 text-gray-600">
                 <Clock size={16} />
-                {selectedEvent.date} at {selectedEvent.time} ({selectedEvent.duration} min)
+                {selectedEvent.date} at {selectedEvent.time} ({t('calendar.eventModal.duration', { duration: selectedEvent.duration })})
               </div>
               <div className="flex items-center gap-2 text-gray-600">
                 <MapPin size={16} />
@@ -449,7 +457,7 @@ const RetireeCalendar = () => {
               </div>
               <div className="flex items-center gap-2 text-gray-600">
                 <Users size={16} />
-                {selectedEvent.participants.length}/{selectedEvent.maxParticipants} participants
+                {t('calendar.eventModal.participants', { current: selectedEvent.participants.length, max: selectedEvent.maxParticipants })}
               </div>
               <p className="text-gray-700">{selectedEvent.description}</p>
             </div>
@@ -466,16 +474,16 @@ const RetireeCalendar = () => {
                       className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
                     >
                       <Check size={16} />
-                      Approve
+                      {t('calendar.eventModal.actions.approve')}
                     </button>
                   )}
                   <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                     <Edit size={16} />
-                    Edit
+                    {t('calendar.eventModal.actions.edit')}
                   </button>
                   <button className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                     <Trash2 size={16} />
-                    Delete
+                    {t('calendar.eventModal.actions.delete')}
                   </button>
                 </>
               ) : (
@@ -488,7 +496,7 @@ const RetireeCalendar = () => {
                       }}
                       className="bg-red-600 text-white px-4 py-2 rounded-lg"
                     >
-                      Leave Event
+                      {t('calendar.eventModal.actions.leaveEvent')}
                     </button>
                   ) : (
                     <button
@@ -499,7 +507,7 @@ const RetireeCalendar = () => {
                       className="bg-green-600 text-white px-4 py-2 rounded-lg"
                       disabled={selectedEvent.participants.length >= selectedEvent.maxParticipants}
                     >
-                      {selectedEvent.participants.length >= selectedEvent.maxParticipants ? 'Full' : 'Join Event'}
+                      {selectedEvent.participants.length >= selectedEvent.maxParticipants ? t('calendar.eventModal.actions.full') : t('calendar.eventModal.actions.joinEvent')}
                     </button>
                   )}
                 </>
@@ -514,7 +522,7 @@ const RetireeCalendar = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Create New Event</h3>
+              <h3 className="text-xl font-bold">{t('calendar.createEvent.title')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -526,7 +534,7 @@ const RetireeCalendar = () => {
             <div className="space-y-4">
               <input
                 type="text"
-                placeholder="Event title"
+                placeholder={t('calendar.createEvent.form.title')}
                 value={newEvent.title}
                 onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
                 className="w-full border rounded-lg px-3 py-2"
@@ -549,14 +557,14 @@ const RetireeCalendar = () => {
 
               <input
                 type="text"
-                placeholder="Location"
+                placeholder={t('calendar.createEvent.form.location')}
                 value={newEvent.location}
                 onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
                 className="w-full border rounded-lg px-3 py-2"
               />
 
               <textarea
-                placeholder="Description"
+                placeholder={t('calendar.createEvent.form.description')}
                 value={newEvent.description}
                 onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
                 className="w-full border rounded-lg px-3 py-2 h-20"
@@ -568,15 +576,15 @@ const RetireeCalendar = () => {
                   onChange={(e) => setNewEvent({...newEvent, category: e.target.value})}
                   className="border rounded-lg px-3 py-2"
                 >
-                  <option value="social">Social</option>
-                  <option value="fitness">Fitness</option>
-                  <option value="hobby">Hobby</option>
-                  <option value="educational">Educational</option>
+                  <option value="social">{t('calendar.createEvent.form.categories.social')}</option>
+                  <option value="fitness">{t('calendar.createEvent.form.categories.fitness')}</option>
+                  <option value="hobby">{t('calendar.createEvent.form.categories.hobby')}</option>
+                  <option value="educational">{t('calendar.createEvent.form.categories.educational')}</option>
                 </select>
                 
                 <input
                   type="number"
-                  placeholder="Max participants"
+                  placeholder={t('calendar.createEvent.form.maxParticipants')}
                   value={newEvent.maxParticipants}
                   onChange={(e) => setNewEvent({...newEvent, maxParticipants: parseInt(e.target.value)})}
                   className="border rounded-lg px-3 py-2"
@@ -588,9 +596,9 @@ const RetireeCalendar = () => {
                 onChange={(e) => setNewEvent({...newEvent, recurring: e.target.value})}
                 className="w-full border rounded-lg px-3 py-2"
               >
-                <option value="none">One-time event</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
+                <option value="none">{t('calendar.createEvent.form.recurring.none')}</option>
+                <option value="weekly">{t('calendar.createEvent.form.recurring.weekly')}</option>
+                <option value="monthly">{t('calendar.createEvent.form.recurring.monthly')}</option>
               </select>
 
               <div className="flex gap-2 pt-4">
@@ -599,13 +607,13 @@ const RetireeCalendar = () => {
                   className="bg-green-600 text-white px-4 py-2 rounded-lg flex-1"
                   disabled={!newEvent.title || !newEvent.date || !newEvent.time}
                 >
-                  Create Event
+                  {t('calendar.createEvent.actions.create')}
                 </button>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="bg-gray-500 text-white px-4 py-2 rounded-lg"
                 >
-                  Cancel
+                  {t('calendar.createEvent.actions.cancel')}
                 </button>
               </div>
             </div>

@@ -21,41 +21,41 @@ const ServiceRequests = () => {
       try {
         const user = auth.currentUser;
         if (!user) {
-          toast.error("You must be logged in.");
+          toast.error(t('serviceRequests.toasts.mustBeLoggedIn'));
           return;
         }
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
         
         if (!userDoc.exists()) {
-          toast.error("User document not found.");
+          toast.error(t('serviceRequests.toasts.userDocumentNotFound'));
           return;
         }
 
         const userData = userDoc.data();
-        console.log("ServiceRequests - Admin data:", userData);
+        console.log(t('serviceRequests.logs.adminData'), userData);
         
         // Try different possible locations for settlement
         const settlement = userData.idVerification?.settlement || 
                          userData.settlement || 
                          userData.credentials?.settlement;
         
-        console.log("ServiceRequests - Found admin settlement:", settlement);
+        console.log(t('serviceRequests.logs.foundAdminSettlement'), settlement);
 
         if (!settlement) {
-          toast.error("No settlement found for admin user.");
+          toast.error(t('serviceRequests.toasts.noSettlementFound'));
           return;
         }
 
         setAdminSettlement(settlement);
       } catch (error) {
-        console.error("Error fetching admin settlement:", error);
-        toast.error("Failed to fetch admin settlement.");
+        console.error(t('serviceRequests.errors.errorFetchingAdminSettlement'), error);
+        toast.error(t('serviceRequests.toasts.failedToFetchAdminSettlement'));
       }
     };
 
     fetchAdminSettlement();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const fetchServiceRequests = async () => {
@@ -67,8 +67,8 @@ const ServiceRequests = () => {
         );
         setRequests(filteredRequests);
       } catch (error) {
-        console.error("Error fetching service requests:", error);
-        toast.error("Failed to fetch service requests.");
+        console.error(t('serviceRequests.errors.errorFetchingServiceRequests'), error);
+        toast.error(t('serviceRequests.toasts.failedToFetchServiceRequests'));
       } finally {
         setLoading(false);
       }
@@ -77,7 +77,7 @@ const ServiceRequests = () => {
     if (adminSettlement) {
       fetchServiceRequests();
     }
-  }, [adminSettlement]);
+  }, [adminSettlement, t]);
 
   const handleFindMatch = async (serviceRequest) => {
     try {
@@ -111,15 +111,15 @@ const ServiceRequests = () => {
       // Update the service request status to "viewed"
       await updateServiceRequest(serviceRequest.id, { status: "viewed" });
 
-      toast.success("Voluntary request created successfully!");
+      toast.success(t('serviceRequests.toasts.voluntaryRequestCreated'));
       setRequests((prevRequests) =>
         prevRequests.map((req) =>
           req.id === serviceRequest.id ? { ...req, status: "viewed" } : req
         )
       );
     } catch (error) {
-      console.error("Error creating voluntary request:", error);
-      toast.error("Failed to create voluntary request.");
+      console.error(t('serviceRequests.errors.errorCreatingVoluntaryRequest'), error);
+      toast.error(t('serviceRequests.toasts.failedToCreateVoluntaryRequest'));
     }
   };
 
@@ -186,7 +186,7 @@ const ServiceRequests = () => {
     return (
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Service Requests</h1>
+          <h1 className="text-3xl font-bold">{t('serviceRequests.title')}</h1>
           <div className="flex space-x-4">
             <div className="h-10 bg-gray-200 rounded w-40"></div>
           </div>
@@ -198,13 +198,13 @@ const ServiceRequests = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Service Requests</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('serviceRequests.title')}</h1>
       {loading ? (
-        <p>Loading service requests...</p>
+        <p>{t('serviceRequests.loading')}</p>
       ) : (
         <>
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-yellow-500 mb-4">Pending Requests</h2>
+            <h2 className="text-2xl font-semibold text-yellow-500 mb-4">{t('serviceRequests.sections.pendingRequests')}</h2>
             {pendingRequests.length === 0 ? (
               <EmptyState
                 icon={<FaHandsHelping className="text-6xl text-gray-300" />}
@@ -217,18 +217,18 @@ const ServiceRequests = () => {
                 {pendingRequests.map((request) => (
                   <li key={request.id} className="p-4 border rounded shadow">
                     <h2 className="text-lg font-bold">{request.title}</h2>
-                    <p><strong>Description:</strong> {request.description}</p>
-                    <p><strong>Location:</strong> {request.location}</p>
-                    <p><strong>Volunteer Field:</strong> {request.volunteerField}</p>
-                    <p><strong>Professional Background:</strong> {request.professionalBackground || "Not specified"}</p>
-                    <p><strong>Timing:</strong> {request.timing}</p>
-                    <p><strong>Frequency:</strong> {request.frequency}</p>
-                    <p><strong>Days:</strong> {request.days.join(", ")}</p>
+                    <p><strong>{t('serviceRequests.labels.description')}:</strong> {request.description}</p>
+                    <p><strong>{t('serviceRequests.labels.location')}:</strong> {request.location}</p>
+                    <p><strong>{t('serviceRequests.labels.volunteerField')}:</strong> {request.volunteerField}</p>
+                    <p><strong>{t('serviceRequests.labels.professionalBackground')}:</strong> {request.professionalBackground || t('serviceRequests.labels.notSpecified')}</p>
+                    <p><strong>{t('serviceRequests.labels.timing')}:</strong> {request.timing}</p>
+                    <p><strong>{t('serviceRequests.labels.frequency')}:</strong> {request.frequency}</p>
+                    <p><strong>{t('serviceRequests.labels.days')}:</strong> {request.days.join(", ")}</p>
                     <button
                       onClick={() => handleFindMatch(request)}
                       className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium py-2 px-4 rounded"
                     >
-                      Find Match
+                      {t('serviceRequests.actions.findMatch')}
                     </button>
                   </li>
                 ))}
@@ -239,7 +239,7 @@ const ServiceRequests = () => {
           <hr className="border-t border-gray-300 my-8" />
 
           <div>
-            <h2 className="text-2xl font-semibold text-yellow-600 mb-4">Viewed Requests</h2>
+            <h2 className="text-2xl font-semibold text-yellow-600 mb-4">{t('serviceRequests.sections.viewedRequests')}</h2>
             {viewedRequests.length === 0 ? (
               <EmptyState
                 icon={<FaEye className="text-6xl text-gray-300" />}
@@ -252,13 +252,13 @@ const ServiceRequests = () => {
                 {viewedRequests.map((request) => (
                   <li key={request.id} className="p-4 border rounded shadow">
                     <h2 className="text-lg font-bold">{request.title}</h2>
-                    <p><strong>Description:</strong> {request.description}</p>
-                    <p><strong>Location:</strong> {request.location}</p>
-                    <p><strong>Volunteer Field:</strong> {request.volunteerField}</p>
-                    <p><strong>Professional Background:</strong> {request.professionalBackground || "Not specified"}</p>
-                    <p><strong>Timing:</strong> {request.timing}</p>
-                    <p><strong>Frequency:</strong> {request.frequency}</p>
-                    <p><strong>Days:</strong> {request.days.join(", ")}</p>
+                    <p><strong>{t('serviceRequests.labels.description')}:</strong> {request.description}</p>
+                    <p><strong>{t('serviceRequests.labels.location')}:</strong> {request.location}</p>
+                    <p><strong>{t('serviceRequests.labels.volunteerField')}:</strong> {request.volunteerField}</p>
+                    <p><strong>{t('serviceRequests.labels.professionalBackground')}:</strong> {request.professionalBackground || t('serviceRequests.labels.notSpecified')}</p>
+                    <p><strong>{t('serviceRequests.labels.timing')}:</strong> {request.timing}</p>
+                    <p><strong>{t('serviceRequests.labels.frequency')}:</strong> {request.frequency}</p>
+                    <p><strong>{t('serviceRequests.labels.days')}:</strong> {request.days.join(", ")}</p>
                   </li>
                 ))}
               </ul>

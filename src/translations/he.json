@@ -16,7 +16,8 @@
     "step": "שלב",
     "of": "מתוך",
     "select": "בחר",
-    "change": "שנה"
+    "change": "שנה",
+    "notAvailable": "לא זמין"
   },
   "auth": {
     "errors": {
@@ -855,7 +856,9 @@
           "add": "הוסף",
           "loadError": "נכשל בטעינת היישובים.",
           "updateError": "נכשל בעדכון היישוב.",
-          "addError": "נכשל בהוספת היישוב."
+          "addError": "נכשל בהוספת היישוב.",
+          "loading": "טוען..."
+
     },
     "categoryManagement": {
       "title": "ניהול קטגוריות",
@@ -932,6 +935,22 @@
       "fetchEventsError": "נכשל בטעינת האירועים הממתינים.",
       "eventApprovedSuccess": "האירוע אושר בהצלחה!",
       "failedToApproveEvent": "נכשל באישור האירוע."
+    },
+    "emptyStates": {
+      "noAdmins": "לא נמצאו מנהלים",
+      "noAdminsMessage": "אין מנהלים רשומים במערכת עדיין.",
+      "addAdmin": "הוסף מנהל ראשון",
+      "noTowns": "לא נמצאו ערים",
+      "noTownsMessage": "אין ערים רשומות במערכת עדיין.",
+      "addTown": "הוסף עיר ראשונה",
+      "noPendingRequests": "אין בקשות ממתינות",
+      "noPendingRequestsMessage": "אין בקשות שירות ממתינות לבדיקה.",
+      "noViewedRequests": "אין בקשות שנצפו",
+      "noViewedRequestsMessage": "אין בקשות שירות שנצפו."
+    },
+    "candidates": {
+      "title": "סקציית מועמדים",
+      "comingSoon": "בקרוב"
     }
   },
   "dashboard": {
@@ -1206,6 +1225,51 @@
       "eventCreatedSuccess": "האירוע נוצר בהצלחה!",
       "createEventError": "נכשל ביצירת האירוע. אנא נסה שוב.",
       "submit": "שלח"
+    },
+    "management": {
+      "title": "ניהול מנהלים",
+      "loadingAdmins": "טוען מנהלים...",
+      "addAdmin": "הוסף מנהל",
+      "editAdmin": "ערוך מנהל",
+      "viewAdmin": "צפה במנהל",
+      "adminDetails": "פרטי מנהל",
+      "updateAdmin": "עדכן מנהל",
+      "deleteAdmin": "מחק מנהל",
+      "table": {
+        "adminName": "שם מנהל",
+        "settlement": "יישוב",
+        "email": "אימייל",
+        "phone": "טלפון",
+        "registeredRetirees": "גמלאים רשומים",
+        "actions": "פעולות",
+        "retirees": "גמלאים"
+      },
+      "form": {
+        "adminName": "שם מנהל",
+        "adminNamePlaceholder": "הזן שם מנהל",
+        "email": "אימייל",
+        "emailPlaceholder": "הזן כתובת אימייל",
+        "settlement": "יישוב",
+        "settlementPlaceholder": "הזן שם יישוב",
+        "phone": "טלפון",
+        "phonePlaceholder": "הזן מספר טלפון"
+      },
+      "modal": {
+        "viewTitle": "פרטי מנהל",
+        "editTitle": "ערוך מנהל",
+        "createdAt": "נוצר ב-"
+      },
+      "messages": {
+        "fillRequiredFields": "אנא מלא את כל השדות הנדרשים",
+        "adminAddedSuccess": "המנהל נוסף בהצלחה!",
+        "adminUpdatedSuccess": "המנהל עודכן בהצלחה!",
+        "adminDeletedSuccess": "המנהל נמחק בהצלחה!",
+        "failedToAddAdmin": "נכשל בהוספת מנהל",
+        "failedToUpdateAdmin": "נכשל בעדכון מנהל",
+        "failedToDeleteAdmin": "נכשל במחיקת מנהל",
+        "failedToFetchAdmins": "נכשל בטעינת מנהלים",
+        "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנהל \"{{adminName}}\"?\n\nזה גם יסיר את היישוב מהיישובים הזמינים."
+      }
     }
   },
   "retiree": {
@@ -1247,120 +1311,106 @@
     }
   },
   "calendar": {
-          "title": "לוח שנה לפעילות גמלאים",
-          "welcomeBack": "ברוך שובך, {{name}} ({{role}})",
-          "adminName": "המנהל שרה",
-          "searchEvents": "חפש אירועים...",
-    "filter": {
-            "allEvents": "כל האירועים",
-            "createdByMe": "נוצרו על ידי",
-            "pendingApproval": "ממתינים לאישור",
-            "myEvents": "האירועים שלי"
+    "title": "לוח פעילויות גמלאים",
+    "welcome": "ברוך שובך, {name} ({role})",
+    "header": {
+      "dashboard": "לוח בקרה",
+      "createEvent": "צור אירוע"
     },
-    "categories": {
-            "fitness": "כושר",
-            "social": "חברתי",
-            "hobby": "תחביבים",
-            "educational": "חינוכי"
-          },
-          "month": "חודש",
-          "week": "שבוע",
+    "search": {
+      "placeholder": "חפש אירועים..."
+    },
+    "filters": {
+      "allEvents": "כל האירועים",
+      "createdByMe": "נוצרו על ידי",
+      "pendingApproval": "ממתינים לאישור",
+      "myEvents": "האירועים שלי",
+      "fitness": "כושר",
+      "social": "חברתי",
+      "hobby": "תחביבים",
+      "educational": "חינוכי"
+    },
+    "viewModes": {
+      "month": "חודש",
+      "week": "שבוע"
+    },
+    "weekDays": {
+      "sun": "א'",
+      "mon": "ב'",
+      "tue": "ג'",
+      "wed": "ד'",
+      "thu": "ה'",
+      "fri": "ו'",
+      "sat": "ש'"
+    },
     "months": {
-            "january": "ינואר",
-            "february": "פברואר",
-            "march": "מרץ",
-            "april": "אפריל",
-            "may": "מאי",
-            "june": "יוני",
-            "july": "יולי",
-            "august": "אוגוסט",
-            "september": "ספטמבר",
-            "october": "אוקטובר",
-            "november": "נובמבר",
-            "december": "דצמבר"
+      "january": "ינואר",
+      "february": "פברואר",
+      "march": "מרץ",
+      "april": "אפריל",
+      "may": "מאי",
+      "june": "יוני",
+      "july": "יולי",
+      "august": "אוגוסט",
+      "september": "ספטמבר",
+      "october": "אוקטובר",
+      "november": "נובמבר",
+      "december": "דצמבר"
     },
-    "days": {
-            "sun": "א'",
-            "mon": "ב'",
-            "tue": "ג'",
-            "wed": "ד'",
-            "thu": "ה'",
-            "fri": "ו'",
-            "sat": "ש'"
-          },
-          "more": "עוד",
+    "calendar": {
+      "moreEvents": "+{count} נוספים"
+    },
     "legend": {
-            "title": "מקרא",
-            "createdByMe": "נוצרו על ידי",
-            "createdByOtherAdmins": "נוצרו על ידי מנהלים אחרים",
-            "retireeSubmissions": "הגשות גמלאים",
-            "joinedEvents": "אירועים שהצטרפתי",
-            "pendingApproval": "ממתינים לאישור",
-            "pastEvents": "אירועים מהעבר"
-          },
-          "at": "ב-",
-          "min": "דקות",
-          "participants": "משתתפים",
-          "approve": "אשר",
-          "leaveEvent": "עזוב אירוע",
-          "full": "מלא",
-          "joinEvent": "הצטרף לאירוע",
-          "createEvent": "צור אירוע",
-          "createNewEvent": "צור אירוע חדש",
-          "eventTitle": "כותרת האירוע",
-          "location": "מיקום",
-          "description": "תיאור",
-          "maxParticipants": "מקסימום משתתפים",
-          "oneTimeEvent": "אירוע חד פעמי",
-          "weekly": "שבועי",
-          "monthly": "חודשי",
-    "sampleEvents": {
-      "yoga": {
-              "title": "שיעור יוגה בוקר",
-              "location": "מרכז הקהילה - חדר א'",
-              "description": "שיעור יוגה עדין לכל הרמות"
+      "title": "מקרא",
+      "admin": {
+        "createdByMe": "נוצרו על ידי",
+        "createdByOtherAdmins": "נוצרו על ידי מנהלים אחרים",
+        "retireeSubmissions": "הגשות גמלאים"
       },
-      "bookClub": {
-              "title": "דיון מועדון קריאה",
-              "location": "חדר ישיבות הספרייה",
-              "description": "דיון על הספר \"מועדון הרצח של יום חמישי\""
-      },
-      "gardenClub": {
-              "title": "מפגש מועדון הגינה",
-              "location": "גינת הקהילה",
-              "description": "נטיעות אביב ותחזוקה"
+      "retiree": {
+        "joinedEvents": "אירועים שהצטרפתי אליהם",
+        "pendingApproval": "ממתינים לאישור",
+        "pastEvents": "אירועים עברו"
       }
     },
-    "eventDetails": {
-            "close": "סגור",
-            "date": "תאריך",
-            "time": "שעה",
-            "from": "מ-",
-            "to": "עד",
-            "notSpecified": "לא צוין",
-            "location": "מיקום",
-            "notAvailable": "לא זמין",
-            "description": "תיאור",
-            "noDescription": "לא סופק תיאור.",
-            "participants": "משתתפים",
-      "status": {
-              "pending": "ממתין",
-              "confirmed": "מאושר",
-              "other": "אחר"
-            },
-            "approve": "אשר",
-            "reject": "דחה",
-            "noParticipants": "עדיין אין משתתפים",
-            "joinedCount": "{{count}} משתתפ{{count, plural, one {} other {ים}} הצטרפו."
+    "eventModal": {
+      "duration": "{duration} דקות",
+      "participants": "{current}/{max} משתתפים",
+      "actions": {
+        "approve": "אשר",
+        "edit": "ערוך",
+        "delete": "מחק",
+        "leaveEvent": "עזוב אירוע",
+        "joinEvent": "הצטרף לאירוע",
+        "full": "מלא"
+      }
     },
-    "toast": {
-      "failedToLoadEvents": "נכשל בטעינת האירועים"
+    "createEvent": {
+      "title": "צור אירוע חדש",
+      "form": {
+        "title": "כותרת האירוע",
+        "location": "מיקום",
+        "description": "תיאור",
+        "maxParticipants": "מספר מקסימלי של משתתפים",
+        "categories": {
+          "social": "חברתי",
+          "fitness": "כושר",
+          "hobby": "תחביבים",
+          "educational": "חינוכי"
+        },
+        "recurring": {
+          "none": "אירוע חד פעמי",
+          "weekly": "שבועי",
+          "monthly": "חודשי"
+        }
+      },
+      "actions": {
+        "create": "צור אירוע",
+        "cancel": "ביטול"
+      }
     },
-    "adminEventDetails": {
-      "confirmDelete": "אשר מחיקה",
-      "editEvent": "ערוך אירוע",
-      "deleteEvent": "מחק אירוע",
-      "failedToDeleteEvent": "נכשל במחיקת האירוע"
+    "errors": {
+      "createEvent": "שגיאה ביצירת אירוע: {error}"
     }
   },
   "service": {
@@ -1533,6 +1583,420 @@
             "loading": "טוען מידע התנדבות...",
             "noRequests": "אין בקשות התנדבות זמינות.",
             "noUser": "אף משתמש לא מחובר."
+    }
+  },
+  "settlements": {
+    "title": "יישובים",
+    "table": {
+      "settlement": "יישוב",
+      "municipality": "רשות מקומית"
+    },
+    "actions": {
+      "edit": "ערוך"
+    }
+  },
+  "settlementsManager": {
+    "title": "ניהול יישובים",
+    "uploadCsv": "העלה קובץ CSV",
+    "searchPlaceholder": "חפש יישובים...",
+    "assignAdmin": {
+      "title": "שייך מנהל",
+      "selectExistingUser": "בחר משתמש קיים",
+      "createNewAdmin": "צור מנהל חדש",
+      "selectSettlement": "בחר יישוב",
+      "selectUser": "בחר משתמש",
+      "emailPlaceholder": "אימייל",
+      "usernamePlaceholder": "שם משתמש",
+      "phonePlaceholder": "טלפון",
+      "createAndAssign": "צור ושייך",
+      "assignAdmin": "שייך מנהל",
+      "adminAssigned": " (מנהל משויך)",
+      "alreadyHasAdmin": "כבר יש מנהל"
+    },
+    "settlementsList": {
+      "title": "רשימת יישובים",
+      "available": "זמין",
+      "disabled": "לא זמין",
+      "retirees": "גמלאים",
+      "addAdmin": "הוסף מנהל",
+      "noSettlementsFound": "לא נמצאו יישובים",
+      "noSettlementsMessage": "העלה קובץ CSV כדי להוסיף יישובים למערכת."
+    },
+    "adminDetails": {
+      "title": "פרטי מנהל",
+      "username": "שם משתמש",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "role": "תפקיד",
+      "settlement": "יישוב",
+      "registeredRetirees": "גמלאים רשומים"
+    },
+    "actions": {
+      "toggle": "החלף מצב",
+      "edit": "ערוך",
+      "remove": "הסר"
+    },
+    "messages": {
+      "errorParsingCsv": "שגיאה בניתוח קובץ CSV: ",
+      "failedToLoadSettlements": "טעינת היישובים נכשלה",
+      "settlementToggled": " היישוב הוחלף בהצלחה",
+      "failedToToggleSettlement": "נכשל בהחלפת מצב היישוב",
+      "confirmDeleteSettlement": "האם אתה בטוח שברצונך למחוק את {settlement}?",
+      "settlementRemoved": "היישוב הוסר: ",
+      "failedToRemoveSettlement": "נכשל בהסרת היישוב",
+      "settlementsUploaded": "היישובים הועלו בהצלחה",
+      "csvUploadFailed": "העלאת קובץ CSV נכשלה",
+      "selectBothSettlementAndUser": "אנא בחר גם יישוב וגם משתמש",
+      "adminAssignedSuccess": "המנהל שויך בהצלחה",
+      "failedToAssignAdmin": "נכשל בשיוך המנהל",
+      "fillAllFields": "אנא מלא את כל השדות",
+      "newAdminCreatedSuccess": "מנהל חדש נוצר ושויך בהצלחה",
+      "failedToCreateAdmin": "נכשל ביצירת מנהל: "
+    }
+  },
+  "superAdminDashboard": {
+    "categoryManagement": "ניהול קטגוריות",
+    "addSettlements": "הוסף יישובים",
+    "adminManagement": "ניהול מנהלים"
+  },
+  "towns": {
+    "title": "ערים",
+    "addTown": "הוסף עיר",
+    "cancel": "בטל",
+    "addNewTown": "הוסף עיר חדשה",
+    "form": {
+      "townName": "שם העיר",
+      "townNamePlaceholder": "הזן שם עיר",
+      "municipality": "רשות מקומית",
+      "municipalityPlaceholder": "הזן רשות מקומית"
+    },
+    "table": {
+      "town": "עיר",
+      "municipality": "רשות מקומית",
+      "actions": "פעולות"
+    },
+    "actions": {
+      "deleteTown": "מחק עיר"
+    }
+  },
+  "volunteers": {
+    "title": "סקציית מתנדבים",
+    "comingSoon": "בקרוב"
+  },
+  "analytics": {
+    "comprehensive": {
+      "title": "ניתוח מערכת מקיף",
+      "subtitle": "תובנות מתקדמות עם ניטור בזמן אמת, ניתוח חיזוי ודיווח מפורט",
+      "loading": "טוען ניתוח מקיף...",
+      "error": {
+        "title": "שגיאה בטעינת נתונים",
+        "retry": "נסה שוב"
+      },
+      "export": {
+        "json": "ייצא JSON",
+        "csv": "ייצא CSV",
+        "exporting": "מייצא..."
+      },
+      "filters": {
+        "timeRange": "טווח זמן",
+        "settlement": "יישוב",
+        "allSettlements": "כל היישובים"
+      },
+      "timeRanges": {
+        "7d": "7 ימים אחרונים",
+        "30d": "30 ימים אחרונים",
+        "90d": "90 ימים אחרונים",
+        "1y": "שנה אחרונה",
+        "all": "כל הזמן"
+      },
+      "tabs": {
+        "overview": "סקירה כללית",
+        "users": "ניתוח משתמשים",
+        "jobs": "ניתוח עבודות",
+        "predictions": "חיזויים",
+        "performance": "ביצועים"
+      },
+      "metrics": {
+        "activeUsers": "משתמשים פעילים",
+        "pendingJobs": "עבודות ממתינות",
+        "totalUsers": "סך המשתמשים",
+        "completionRate": "אחוז השלמה",
+        "newUsers": "משתמשים חדשים",
+        "userGrowth": "צמיחת משתמשים",
+        "totalJobs": "סך העבודות",
+        "completedJobs": "עבודות שהושלמו",
+        "avgResponseTime": "זמן תגובה ממוצע",
+        "predictedGrowth": "צמיחה צפויה",
+        "jobDemand": "ביקוש לעבודות",
+        "churnRisk": "סיכון נטישה",
+        "systemUptime": "זמן פעילות מערכת",
+        "errorRate": "אחוז שגיאות"
+      },
+      "subtitles": {
+        "currentlyOnline": "מחוברים כעת",
+        "awaitingAssignment": "ממתינים להקצאה",
+        "allRegisteredUsers": "כל המשתמשים הרשומים",
+        "jobsCompleted": "עבודות שהושלמו",
+        "thisPeriod": "תקופה זו",
+        "last7Days": "7 ימים אחרונים",
+        "growthRate": "קצב צמיחה",
+        "allTime": "כל הזמן",
+        "successfullyCompleted": "הושלמו בהצלחה",
+        "timeToAssign": "זמן להקצאה",
+        "usersNextMonth": "משתמשים בחודש הבא",
+        "jobsNextMonth": "עבודות בחודש הבא",
+        "predictedSuccess": "הצלחה צפויה",
+        "atRiskUsers": "משתמשים בסיכון",
+        "reliability": "אמינות",
+        "apiPerformance": "ביצועי API",
+        "systemErrors": "שגיאות מערכת"
+      },
+      "trends": {
+        "fromLastPeriod": "מהתקופה הקודמת"
+      },
+      "systemHealth": {
+        "title": "בריאות המערכת",
+        "healthy": "בריא",
+        "warning": "אזהרה",
+        "responseTime": "זמן תגובה",
+        "cpuUsage": "שימוש במעבד",
+        "memoryUsage": "שימוש בזיכרון",
+        "uptime": "זמן פעילות"
+      },
+      "charts": {
+        "performanceTrends": "מגמות ביצועים",
+        "userDistribution": "התפלגות משתמשים",
+        "jobStatusDistribution": "התפלגות סטטוס עבודות",
+        "usersBySettlement": "משתמשים לפי יישוב",
+        "jobTrendsOverTime": "מגמות עבודות לאורך זמן",
+        "jobStatusBreakdown": "פירוט סטטוס עבודות",
+        "growthPredictions": "חיזוי צמיחה",
+        "systemPerformanceMetrics": "מדדי ביצוע מערכת",
+        "resourceUtilization": "ניצול משאבים",
+        "userEngagement": "מעורבות משתמשים"
+      },
+      "performanceMetrics": {
+        "uptime": "זמן פעילות",
+        "responseTime": "זמן תגובה",
+        "errorRate": "אחוז שגיאות",
+        "userSatisfaction": "שביעות רצון משתמשים",
+        "jobCompletion": "השלמת עבודות",
+        "performance": "ביצועים"
+      },
+      "footer": "לוח בקרה לניתוח מקיף • עודכן לאחרונה:"
+    },
+    "analysis": {
+      "title": "לוח בקרה לניתוח מערכת",
+      "subtitle": "תובנות מקיפות על ביצועי הפלטפורמה ומעורבות המשתמשים",
+      "metrics": {
+        "totalUsers": "סך המשתמשים",
+        "volunteers": "מתנדבים",
+        "retirees": "גמלאים",
+        "avgCompletion": "השלמה ממוצעת"
+      },
+      "subtitles": {
+        "allRegisteredUsers": "כל המשתמשים הרשומים",
+        "activeVolunteers": "מתנדבים פעילים",
+        "seniorMembers": "חברים מבוגרים",
+        "jobCompletionTime": "זמן השלמת עבודה"
+      },
+      "charts": {
+        "retireesByTown": "גמלאים לפי עיר",
+        "jobRequestsOverTime": "בקשות עבודה לאורך זמן",
+        "jobRequestsByStatus": "בקשות עבודה לפי סטטוס",
+        "usersByRole": "משתמשים לפי תפקיד",
+        "eventsByCategory": "אירועים לפי קטגוריה",
+        "eventsOverTime": "אירועים לאורך זמן"
+      },
+      "emptyStates": {
+        "noTownData": "אין נתוני עיר זמינים",
+        "noTownDataMessage": "נסה לבחור טווח זמן או יישוב אחר.",
+        "noTimeSeriesData": "אין נתוני סדרת זמן זמינים",
+        "noStatusData": "אין נתוני סטטוס זמינים",
+        "noRoleData": "אין נתוני תפקיד זמינים",
+        "noEventCategoryData": "אין נתוני קטגוריית אירועים זמינים",
+        "noEventTimeSeriesData": "אין נתוני סדרת זמן לאירועים זמינים"
+      },
+      "footer": "לוח הבקרה עודכן לאחרונה:"
+    },
+    "advanced": {
+      "title": "ניתוח מערכת מתקדם",
+      "subtitle": "תובנות מקיפות עם ניטור בזמן אמת וניתוח חיזוי",
+      "loading": "טוען ניתוח מתקדם...",
+      "error": {
+        "title": "שגיאה בטעינת נתונים"
+      },
+      "filters": {
+        "timeRange": "טווח זמן",
+        "settlement": "יישוב",
+        "allSettlements": "כל היישובים"
+      },
+      "timeRanges": {
+        "7d": "7 ימים אחרונים",
+        "30d": "30 ימים אחרונים",
+        "90d": "90 ימים אחרונים",
+        "1y": "שנה אחרונה",
+        "all": "כל הזמן"
+      },
+      "metrics": {
+        "activeUsers": "משתמשים פעילים",
+        "pendingJobs": "עבודות ממתינות",
+        "userGrowth": "צמיחת משתמשים",
+        "completionRate": "אחוז השלמה"
+      },
+      "subtitles": {
+        "currentlyOnline": "מחוברים כעת",
+        "awaitingAssignment": "ממתינים להקצאה",
+        "last30Days": "30 ימים אחרונים",
+        "jobsCompleted": "עבודות שהושלמו"
+      },
+      "trends": {
+        "fromLastPeriod": "מהתקופה הקודמת"
+      },
+      "systemHealth": {
+        "title": "בריאות המערכת",
+        "healthy": "בריא",
+        "warning": "אזהרה",
+        "responseTime": "זמן תגובה",
+        "uptime": "זמן פעילות"
+      },
+      "charts": {
+        "performanceTrends": "מגמות ביצועים",
+        "userEngagement": "מעורבות משתמשים",
+        "jobStatusDistribution": "התפלגות סטטוס עבודות"
+      },
+      "additionalAnalytics": {
+        "responseTimeAnalysis": "ניתוח זמן תגובה",
+        "userRetention": "שמירת משתמשים",
+        "settlementCoverage": "כיסוי יישובים"
+      },
+      "subtitles": {
+        "averageResponseTime": "זמן תגובה ממוצע",
+        "7DayRetentionRate": "אחוז שמירה ל-7 ימים",
+        "activeSettlements": "יישובים פעילים"
+      },
+      "footer": "לוח בקרה לניתוח מתקדם • עודכן לאחרונה:"
+    }
+  },
+  "emptyStates": {
+    "noAdmins": "לא נמצאו מנהלים",
+    "noAdminsMessage": "אין מנהלים רשומים במערכת עדיין.",
+    "addAdmin": "הוסף מנהל ראשון",
+    "noTowns": "לא נמצאו ערים",
+    "noTownsMessage": "אין ערים רשומות במערכת עדיין.",
+    "addTown": "הוסף עיר ראשונה",
+    "noPendingRequests": "אין בקשות ממתינות",
+    "noPendingRequestsMessage": "אין בקשות שירות ממתינות לבדיקה.",
+    "noViewedRequests": "אין בקשות שנצפו",
+    "noViewedRequestsMessage": "אין בקשות שירות שנצפו."
+  },
+  "candidates": {
+    "title": "סקציית מועמדים",
+    "comingSoon": "בקרוב"
+  },
+  "pendingEvents": {
+    "title": "אירועים ממתינים",
+    "noEvents": "אין אירועים ממתינים לבדיקה.",
+    "location": "מיקום",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "actions": {
+      "accept": "אשר",
+      "reject": "דחה"
+    },
+    "notifications": {
+      "approved": "האירוע שלך \"{title}\" אושר.",
+      "rejected": "האירוע שלך \"{title}\" נדחה."
+    },
+    "toasts": {
+      "fetchError": "שגיאה בטעינת אירועים ממתינים.",
+      "approveSuccess": "האירוע אושר בהצלחה!",
+      "approveError": "שגיאה באישור האירוע.",
+      "rejectSuccess": "האירוע נדחה בהצלחה!",
+      "rejectError": "שגיאה בדחיית האירוע."
+    },
+    "errors": {
+      "noUserLoggedIn": "אין משתמש מחובר",
+      "userDocumentNotFound": "מסמך משתמש לא נמצא",
+      "errorFetchingAdminSettlement": "שגיאה בטעינת יישוב מנהל",
+      "errorFetchingPendingEvents": "שגיאה בטעינת אירועים ממתינים",
+      "errorApprovingEvent": "שגיאה באישור האירוע",
+      "errorRejectingEvent": "שגיאה בדחיית האירוע"
+    },
+    "logs": {
+      "adminData": "PendingEvents - נתוני מנהל:",
+      "foundAdminSettlement": "PendingEvents - נמצא יישוב מנהל:"
+    }
+  },
+  "serviceRequests": {
+    "title": "בקשות שירות",
+    "loading": "טוען בקשות שירות...",
+    "sections": {
+      "pendingRequests": "בקשות ממתינות",
+      "viewedRequests": "בקשות שנצפו"
+    },
+    "labels": {
+      "description": "תיאור",
+      "location": "מיקום",
+      "volunteerField": "תחום התנדבות",
+      "professionalBackground": "רקע מקצועי",
+      "timing": "זמן",
+      "frequency": "תדירות",
+      "days": "ימים",
+      "notSpecified": "לא צוין"
+    },
+    "actions": {
+      "findMatch": "מצא התאמה"
+    },
+    "toasts": {
+      "mustBeLoggedIn": "עליך להיות מחובר.",
+      "userDocumentNotFound": "מסמך משתמש לא נמצא.",
+      "noSettlementFound": "לא נמצא יישוב למנהל.",
+      "failedToFetchAdminSettlement": "שגיאה בטעינת יישוב מנהל.",
+      "failedToFetchServiceRequests": "שגיאה בטעינת בקשות שירות.",
+      "voluntaryRequestCreated": "בקשת התנדבות נוצרה בהצלחה!",
+      "failedToCreateVoluntaryRequest": "שגיאה ביצירת בקשת התנדבות."
+    },
+    "errors": {
+      "errorFetchingAdminSettlement": "שגיאה בטעינת יישוב מנהל",
+      "errorFetchingServiceRequests": "שגיאה בטעינת בקשות שירות",
+      "errorCreatingVoluntaryRequest": "שגיאה ביצירת בקשת התנדבות"
+    },
+    "logs": {
+      "adminData": "ServiceRequests - נתוני מנהל:",
+      "foundAdminSettlement": "ServiceRequests - נמצא יישוב מנהל:"
+    }
+  },
+  "viewProfile": {
+    "errors": {
+      "noRetireeId": "לא זמין מספר תעודת זהות של גמלאי."
+    },
+    "navigation": {
+      "profile": "פרופיל",
+      "sendMessages": "שלח הודעות",
+      "backToProfile": "חזור לפרופיל"
+    },
+    "header": {
+      "title": "דור הזהב"
+    },
+    "languageSelector": {
+      "english": "English",
+      "hebrew": "עברית",
+      "arabic": "العربية"
+    },
+    "profileDetails": {
+      "title": "פרטי פרופיל",
+      "name": "שם",
+      "age": "גיל",
+      "gender": "מגדר"
+    },
+    "sendMessage": {
+      "title": "שלח הודעה",
+      "placeholder": "כתוב הודעה ל{name}",
+      "send": "שלח"
+    },
+    "common": {
+      "loading": "טוען..."
     }
   }
 } 

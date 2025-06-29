@@ -16,8 +16,10 @@ import {
 } from '@heroicons/react/24/outline';
 import useFetchAnalysisData from "../../../hooks/useFetchAnalysisData";
 import { useChartData } from "../../../hooks/useChartData";
+import { useLanguage } from '../../../context/LanguageContext';
 
 const AdvancedAnalysis = () => {
+  const { t } = useLanguage();
   const { users, jobs, availableSettlements, loading, error } = useFetchAnalysisData();
   const [selectedTimeRange, setSelectedTimeRange] = useState('30d');
   const [selectedSettlement, setSelectedSettlement] = useState('all');
@@ -79,11 +81,11 @@ const AdvancedAnalysis = () => {
   };
 
   const timeRangeOptions = [
-    { value: '7d', label: 'Last 7 Days' },
-    { value: '30d', label: 'Last 30 Days' },
-    { value: '90d', label: 'Last 90 Days' },
-    { value: '1y', label: 'Last Year' },
-    { value: 'all', label: 'All Time' }
+    { value: '7d', label: t('analytics.advanced.timeRanges.7d') },
+    { value: '30d', label: t('analytics.advanced.timeRanges.30d') },
+    { value: '90d', label: t('analytics.advanced.timeRanges.90d') },
+    { value: '1y', label: t('analytics.advanced.timeRanges.1y') },
+    { value: 'all', label: t('analytics.advanced.timeRanges.all') }
   ];
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -115,7 +117,7 @@ const AdvancedAnalysis = () => {
           {trend && (
             <div className={`flex items-center mt-2 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
               {trend === 'up' ? <TrendingUpIcon className="w-4 h-4 mr-1" /> : <TrendingUpIcon className="w-4 h-4 mr-1 transform rotate-180" />}
-              {trendValue}% from last period
+              {trendValue}% {t('analytics.advanced.trends.fromLastPeriod')}
             </div>
           )}
         </div>
@@ -126,21 +128,21 @@ const AdvancedAnalysis = () => {
   const SystemHealthCard = ({ health, responseTime }) => (
     <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">System Health</h3>
+        <h3 className="text-lg font-semibold text-gray-800">{t('analytics.advanced.systemHealth.title')}</h3>
         <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
           health === 'healthy' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
         }`}>
           {health === 'healthy' ? <CheckCircleIcon className="w-4 h-4 mr-1" /> : <ExclamationTriangleIcon className="w-4 h-4 mr-1" />}
-          {health === 'healthy' ? 'Healthy' : 'Warning'}
+          {health === 'healthy' ? t('analytics.advanced.systemHealth.healthy') : t('analytics.advanced.systemHealth.warning')}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-sm text-gray-600">Response Time</p>
+          <p className="text-sm text-gray-600">{t('analytics.advanced.systemHealth.responseTime')}</p>
           <p className="text-2xl font-bold text-gray-900">{responseTime}ms</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Uptime</p>
+          <p className="text-sm text-gray-600">{t('analytics.advanced.systemHealth.uptime')}</p>
           <p className="text-2xl font-bold text-gray-900">99.9%</p>
         </div>
       </div>
@@ -152,7 +154,7 @@ const AdvancedAnalysis = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span className="ml-4 text-lg text-gray-700">Loading advanced analysis...</span>
+          <span className="ml-4 text-lg text-gray-700">{t('analytics.advanced.loading')}</span>
         </div>
       </div>
     );
@@ -164,7 +166,7 @@ const AdvancedAnalysis = () => {
         <div className="flex items-center justify-center h-64">
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
             <XCircleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <div className="text-red-500 text-xl mb-4">Error Loading Data</div>
+            <div className="text-red-500 text-xl mb-4">{t('analytics.advanced.error.title')}</div>
             <div className="text-gray-700">{error}</div>
           </div>
         </div>
@@ -177,15 +179,15 @@ const AdvancedAnalysis = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Advanced System Analysis</h1>
-          <p className="text-gray-600">Comprehensive insights with real-time monitoring and predictive analytics</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">{t('analytics.advanced.title')}</h1>
+          <p className="text-gray-600">{t('analytics.advanced.subtitle')}</p>
         </div>
 
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex flex-wrap items-center gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time Range</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('analytics.advanced.filters.timeRange')}</label>
               <select 
                 value={selectedTimeRange} 
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
@@ -197,13 +199,13 @@ const AdvancedAnalysis = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Settlement</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('analytics.advanced.filters.settlement')}</label>
               <select 
                 value={selectedSettlement} 
                 onChange={(e) => setSelectedSettlement(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">All Settlements</option>
+                <option value="all">{t('analytics.advanced.filters.allSettlements')}</option>
                 {availableSettlements.map(settlement => (
                   <option key={settlement} value={settlement}>{settlement}</option>
                 ))}
@@ -215,36 +217,36 @@ const AdvancedAnalysis = () => {
         {/* Real-time Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <MetricCard
-            title="Active Users"
+            title={t('analytics.advanced.metrics.activeUsers')}
             value={realTimeMetrics.activeUsers}
-            subtitle="Currently online"
+            subtitle={t('analytics.advanced.subtitles.currentlyOnline')}
             icon={<UserGroupIcon className="w-6 h-6 text-blue-600" />}
             color="border-blue-500"
             trend="up"
             trendValue="12"
           />
           <MetricCard
-            title="Pending Jobs"
+            title={t('analytics.advanced.metrics.pendingJobs')}
             value={realTimeMetrics.pendingJobs}
-            subtitle="Awaiting assignment"
+            subtitle={t('analytics.advanced.subtitles.awaitingAssignment')}
             icon={<ClockIcon className="w-6 h-6 text-orange-600" />}
             color="border-orange-500"
             trend="down"
             trendValue="8"
           />
           <MetricCard
-            title="User Growth"
+            title={t('analytics.advanced.metrics.userGrowth')}
             value={`${enhancedMetrics.userGrowthRate}%`}
-            subtitle="Last 30 days"
+            subtitle={t('analytics.advanced.subtitles.last30Days')}
             icon={<TrendingUpIcon className="w-6 h-6 text-green-600" />}
             color="border-green-500"
             trend="up"
             trendValue="15"
           />
           <MetricCard
-            title="Completion Rate"
+            title={t('analytics.advanced.metrics.completionRate')}
             value={`${enhancedMetrics.jobCompletionRate}%`}
-            subtitle="Jobs completed"
+            subtitle={t('analytics.advanced.subtitles.jobsCompleted')}
             icon={<CheckCircleIcon className="w-6 h-6 text-purple-600" />}
             color="border-purple-500"
             trend="up"
@@ -261,7 +263,7 @@ const AdvancedAnalysis = () => {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                 <ChartBarIcon className="w-6 h-6 mr-2 text-blue-600" />
-                Performance Trends
+                {t('analytics.advanced.charts.performanceTrends')}
               </h3>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={jobByMonthData.slice(-6)}>
@@ -286,7 +288,7 @@ const AdvancedAnalysis = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* User Engagement Analysis */}
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">User Engagement</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.advanced.charts.userEngagement')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <ComposedChart data={usersByRoleDistribution}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -301,7 +303,7 @@ const AdvancedAnalysis = () => {
 
           {/* Job Status Distribution */}
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Job Status Distribution</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.advanced.charts.jobStatusDistribution')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -327,31 +329,31 @@ const AdvancedAnalysis = () => {
         {/* Additional Analytics */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Response Time Analysis</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.advanced.additionalAnalytics.responseTimeAnalysis')}</h3>
             <div className="text-center">
               <p className="text-3xl font-bold text-blue-600 mb-2">{enhancedMetrics.averageResponseTime}h</p>
-              <p className="text-sm text-gray-600">Average response time</p>
+              <p className="text-sm text-gray-600">{t('analytics.advanced.subtitles.averageResponseTime')}</p>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">User Retention</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.advanced.additionalAnalytics.userRetention')}</h3>
             <div className="text-center">
               <p className="text-3xl font-bold text-green-600 mb-2">{enhancedMetrics.userRetentionRate}%</p>
-              <p className="text-sm text-gray-600">7-day retention rate</p>
+              <p className="text-sm text-gray-600">{t('analytics.advanced.subtitles.7DayRetentionRate')}</p>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Settlement Coverage</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">{t('analytics.advanced.additionalAnalytics.settlementCoverage')}</h3>
             <div className="text-center">
               <p className="text-3xl font-bold text-purple-600 mb-2">{availableSettlements.length}</p>
-              <p className="text-sm text-gray-600">Active settlements</p>
+              <p className="text-sm text-gray-600">{t('analytics.advanced.subtitles.activeSettlements')}</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="text-center text-gray-500 text-sm">
-          <p>Advanced Analytics Dashboard • Last updated: {new Date().toLocaleString()}</p>
+          <p>{t('analytics.advanced.footer')} {new Date().toLocaleString()}</p>
         </div>
       </div>
     </div>

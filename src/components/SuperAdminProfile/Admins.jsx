@@ -37,11 +37,11 @@ const AdminManagement = () => {
       setAdmins(adminsData);
       setLoading(false);
     }, (error) => {
-      toast.error('Failed to fetch admins');
+      toast.error(t('admin.management.messages.failedToFetchAdmins'));
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [t]);
 
   // Real-time retiree counts for each admin's settlement
   useEffect(() => {
@@ -68,7 +68,7 @@ const AdminManagement = () => {
 
   const handleAddAdmin = async () => {
     if (!formData.name || !formData.email || !formData.settlement) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('admin.management.messages.fillRequiredFields'));
       return;
     }
 
@@ -98,18 +98,18 @@ const AdminManagement = () => {
         adminId: adminRef.id
       }, { merge: true });
 
-      toast.success('Admin added successfully!');
+      toast.success(t('admin.management.messages.adminAddedSuccess'));
       setShowAddModal(false);
       resetForm();
     } catch (error) {
       console.error('Error adding admin:', error);
-      toast.error('Failed to add admin');
+      toast.error(t('admin.management.messages.failedToAddAdmin'));
     }
   };
 
   const handleEditAdmin = async () => {
     if (!selectedAdmin || !formData.name || !formData.email || !formData.settlement) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('admin.management.messages.fillRequiredFields'));
       return;
     }
 
@@ -123,18 +123,19 @@ const AdminManagement = () => {
         'idVerification.phone': formData.phone
       });
 
-      toast.success('Admin updated successfully!');
+      toast.success(t('admin.management.messages.adminUpdatedSuccess'));
       setShowEditModal(false);
       resetForm();
     } catch (error) {
       console.error('Error updating admin:', error);
-      toast.error('Failed to update admin');
+      toast.error(t('admin.management.messages.failedToUpdateAdmin'));
     }
   };
 
   const handleDeleteAdmin = async (admin) => {
+    const adminName = admin.credentials?.username || admin.idVerification?.firstName;
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete admin "${admin.credentials?.username || admin.idVerification?.firstName}"?\n\nThis will also remove the settlement from available settlements.`
+      t('admin.management.messages.confirmDelete', { adminName })
     );
 
     if (!confirmDelete) return;
@@ -149,10 +150,10 @@ const AdminManagement = () => {
         await deleteDoc(doc(db, 'availableSettlements', settlement));
       }
 
-      toast.success('Admin deleted successfully!');
+      toast.success(t('admin.management.messages.adminDeletedSuccess'));
     } catch (error) {
       console.error('Error deleting admin:', error);
-      toast.error('Failed to delete admin');
+      toast.error(t('admin.management.messages.failedToDeleteAdmin'));
     }
   };
 
@@ -201,7 +202,7 @@ const AdminManagement = () => {
               onClick={onClose}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             {onSubmit && (
               <button
@@ -287,7 +288,7 @@ const AdminManagement = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading admins...</div>
+        <div className="text-lg">{t('admin.management.loadingAdmins')}</div>
       </div>
     );
   }
@@ -296,7 +297,7 @@ const AdminManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Admin Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t('admin.management.title')}</h1>
       </div>
 
       {/* Admins Table */}
@@ -316,22 +317,22 @@ const AdminManagement = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Admin Name
+                    {t('admin.management.table.adminName')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Settlement
+                    {t('admin.management.table.settlement')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
+                    {t('admin.management.table.email')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone
+                    {t('admin.management.table.phone')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Registered Retirees
+                    {t('admin.management.table.registeredRetirees')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('admin.management.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -340,24 +341,24 @@ const AdminManagement = () => {
                   <tr key={admin.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {admin.credentials?.username || admin.idVerification?.firstName || 'N/A'}
+                        {admin.credentials?.username || admin.idVerification?.firstName || t('common.notAvailable')}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {admin.idVerification?.settlement || admin.settlement || 'N/A'}
+                        {admin.idVerification?.settlement || admin.settlement || t('common.notAvailable')}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {admin.credentials?.email || 'N/A'}
+                      {admin.credentials?.email || t('common.notAvailable')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {admin.credentials?.phone || admin.idVerification?.phone || 'N/A'}
+                      {admin.credentials?.phone || admin.idVerification?.phone || t('common.notAvailable')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <FaUsers className="mr-1" />
-                        {retireeCounts[admin.idVerification?.settlement] || 0} retirees
+                        {retireeCounts[admin.idVerification?.settlement] || 0} {t('admin.management.table.retirees')}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -365,21 +366,21 @@ const AdminManagement = () => {
                         <button
                           onClick={() => openViewModal(admin)}
                           className="text-blue-600 hover:text-blue-900"
-                          title="View"
+                          title={t('admin.management.viewAdmin')}
                         >
                           <FaEye />
                         </button>
                         <button
                           onClick={() => openEditModal(admin)}
                           className="text-yellow-600 hover:text-yellow-900"
-                          title="Edit"
+                          title={t('admin.management.editAdmin')}
                         >
                           <FaEdit />
                         </button>
                         <button
                           onClick={() => handleDeleteAdmin(admin)}
                           className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                          title="Delete admin"
+                          title={t('admin.management.deleteAdmin')}
                         >
                           <FaTrash />
                         </button>
@@ -397,57 +398,57 @@ const AdminManagement = () => {
       <Modal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        title="Edit Admin"
+        title={t('admin.management.modal.editTitle')}
         onSubmit={handleEditAdmin}
-        submitText="Update Admin"
+        submitText={t('admin.management.updateAdmin')}
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Admin Name *
+              {t('admin.management.form.adminName')} *
             </label>
             <input
               type="text"
               className="border px-3 py-2 rounded-md w-full"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Enter admin name"
+              placeholder={t('admin.management.form.adminNamePlaceholder')}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
+              {t('admin.management.form.email')} *
             </label>
             <input
               type="email"
               className="border px-3 py-2 rounded-md w-full"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="Enter email address"
+              placeholder={t('admin.management.form.emailPlaceholder')}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Settlement *
+              {t('admin.management.form.settlement')} *
             </label>
             <input
               type="text"
               className="border px-3 py-2 rounded-md w-full"
               value={formData.settlement}
               onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
-              placeholder="Enter settlement name"
+              placeholder={t('admin.management.form.settlementPlaceholder')}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone
+              {t('admin.management.form.phone')}
             </label>
             <input
               type="tel"
               className="border px-3 py-2 rounded-md w-full"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="Enter phone number"
+              placeholder={t('admin.management.form.phonePlaceholder')}
             />
           </div>
         </div>
@@ -457,56 +458,56 @@ const AdminManagement = () => {
       <Modal
         isOpen={showViewModal}
         onClose={() => setShowViewModal(false)}
-        title="Admin Details"
+        title={t('admin.management.modal.viewTitle')}
       >
         {selectedAdmin && (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Admin Name
+                {t('admin.management.table.adminName')}
               </label>
               <p className="text-sm text-gray-900">
-                {selectedAdmin.credentials?.username || selectedAdmin.idVerification?.firstName || 'N/A'}
+                {selectedAdmin.credentials?.username || selectedAdmin.idVerification?.firstName || t('common.notAvailable')}
               </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                {t('admin.management.table.email')}
               </label>
               <p className="text-sm text-gray-900">
-                {selectedAdmin.credentials?.email || 'N/A'}
+                {selectedAdmin.credentials?.email || t('common.notAvailable')}
               </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Settlement
+                {t('admin.management.table.settlement')}
               </label>
               <p className="text-sm text-gray-900">
-                {selectedAdmin.idVerification?.settlement || 'N/A'}
+                {selectedAdmin.idVerification?.settlement || t('common.notAvailable')}
               </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
+                {t('admin.management.table.phone')}
               </label>
               <p className="text-sm text-gray-900">
-                {selectedAdmin.idVerification?.phone || 'N/A'}
+                {selectedAdmin.idVerification?.phone || t('common.notAvailable')}
               </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Registered Retirees
+                {t('admin.management.table.registeredRetirees')}
               </label>
               <p className="text-sm text-gray-900">
-                {retireeCounts[selectedAdmin.idVerification?.settlement] || 0} retirees
+                {retireeCounts[selectedAdmin.idVerification?.settlement] || 0} {t('admin.management.table.retirees')}
               </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Created At
+                {t('admin.management.modal.createdAt')}
               </label>
               <p className="text-sm text-gray-900">
-                {selectedAdmin.createdAt ? new Date(selectedAdmin.createdAt).toLocaleDateString() : 'N/A'}
+                {selectedAdmin.createdAt ? new Date(selectedAdmin.createdAt).toLocaleDateString() : t('common.notAvailable')}
               </p>
             </div>
           </div>
