@@ -259,7 +259,7 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
           </div>
 
           {/* Search Bar and Filter */}
-          <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-1 shadow-sm w-full">
+          <div className="sticky top-0 bg-white z-50 flex items-center justify-between p-1 shadow-sm w-full">
             <div className="flex items-center max-w-md border px-3 py-2 rounded-md bg-white shadow-sm w-full">
               <FaSearch className="text-gray-500" />
               <input
@@ -305,6 +305,15 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
               <FaCalendarAlt className="text-xl text-blue-600" />
             </button>
           </div>
+
+          {/* Badges Row */}
+          <div className="w-full flex flex-wrap gap-2 items-center mb-4 relative z-0">
+            {showMyEventsOnly && (
+              <span className="bg-blue-700 text-white px-3 py-1 rounded-full font-bold text-xs">Created by me</span>
+            )}
+            {/* Add other badges here as needed */}
+          </div>
+
           {loading && (
             <div className="flex items-center justify-center p-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
@@ -453,7 +462,7 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
                               <button
                                 className={`font-bold px-4 md:px-6 py-1.5 md:py-2 rounded-md transition-colors duration-200 text-xs md:text-base ${
                                   isMyEvent
-                                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                                    ? 'bg-[#FFD966] hover:bg-yellow-500 text-black'
                                     : 'bg-[#FFD966] hover:bg-yellow-500 text-black'
                                 }`}
                                 onClick={() => setSelectedEvent(event)}
