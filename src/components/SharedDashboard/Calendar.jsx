@@ -521,29 +521,19 @@ const RetireeCalendar = () => {
             <h4 className="font-medium text-gray-700 mb-2">Event Status</h4>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-<<<<<<< HEAD
-                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
-                <span className="text-sm">Past events</span>
-=======
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.joinedEvents')}</span>
->>>>>>> 54cbbcaa9fb4e34f3a2950e273c2a3e20a91d133
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-orange-500 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.pendingApproval')}</span>
               </div>
-<<<<<<< HEAD
-            </div>
-          </div>
-=======
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-gray-400 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.pastEvents')}</span>
               </div>
-            </>
-          )}
->>>>>>> 54cbbcaa9fb4e34f3a2950e273c2a3e20a91d133
+            </div>
+          </div>
         </div>
       </div>
 
