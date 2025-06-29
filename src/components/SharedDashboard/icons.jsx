@@ -7,7 +7,7 @@ const useCommonIcons = () => {
   return [
     { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
     { id: "add", label: t("dashboard.events.addEvents"), icon: <FaPlusCircle /> },
-    { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
+    { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
     { id: "notifications", label: t("dashboard.notifications"), icon: <FaBell /> },
     { id: "calendar", label: t("dashboard.calendar"), icon: <FaCalendarAlt /> },
     { id: "messages", label: t("dashboard.messages.title"), icon: <FaComments /> },

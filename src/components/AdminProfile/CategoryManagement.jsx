@@ -39,7 +39,7 @@ const CategoryManagement = () => {
       setCategories(categoriesData);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      toast.error("Failed to fetch categories");
+      toast.error(t("auth.categoryManagement.fetchCategoriesError"));
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ const CategoryManagement = () => {
 
   const handleAddCategory = async () => {
     if (!formData.translations.en || !formData.translations.he) {
-      toast.error("Please provide English and Hebrew translations");
+      toast.error(t("auth.categoryManagement.provideTranslations"));
       return;
     }
 
@@ -113,19 +113,19 @@ const CategoryManagement = () => {
         translations: updatedTranslations,
         color: formData.color
       });
-      toast.success("Category added successfully!");
+      toast.success(t("auth.categoryManagement.categoryAddedSuccess"));
       setShowAddModal(false);
       resetForm();
       fetchCategories();
     } catch (error) {
       console.error("Error adding category:", error);
-      toast.error("Failed to add category");
+      toast.error(t("auth.categoryManagement.failedToAddCategory"));
     }
   };
 
   const handleEditCategory = async () => {
     if (!selectedCategory || !formData.translations.en || !formData.translations.he) {
-      toast.error("Please provide English and Hebrew translations");
+      toast.error(t("auth.categoryManagement.provideTranslations"));
       return;
     }
 
@@ -140,13 +140,13 @@ const CategoryManagement = () => {
         translations: updatedTranslations,
         color: formData.color
       });
-      toast.success("Category updated successfully!");
+      toast.success(t("auth.categoryManagement.categoryUpdatedSuccess"));
       setShowEditModal(false);
       resetForm();
       fetchCategories();
     } catch (error) {
       console.error("Error updating category:", error);
-      toast.error("Failed to update category");
+      toast.error(t("auth.categoryManagement.failedToUpdateCategory"));
     }
   };
 
@@ -176,10 +176,11 @@ const CategoryManagement = () => {
         ).join('\n');
         
         const forceDelete = window.confirm(
-          `Category "${category.translations[language] || category.translations.en}" is used by ${eventCount} event(s).\n\n` +
-          `This will also delete ALL events in this category:\n\n` +
-          `${eventList}\n\n` +
-          `Click OK to delete category and all its events, or Cancel to abort.`
+          t("auth.categoryManagement.deleteConfirmation.withEvents", {
+            categoryName: category.translations[language] || category.translations.en,
+            eventCount: eventCount,
+            eventList: eventList
+          })
         );
         
         if (!forceDelete) {
@@ -188,9 +189,10 @@ const CategoryManagement = () => {
       } catch (error) {
         console.error('Error fetching event details:', error);
         const forceDelete = window.confirm(
-          `Category "${category.translations[language] || category.translations.en}" is used by ${eventCount} event(s).\n\n` +
-          `This will also delete ALL events in this category.\n\n` +
-          `Click OK to delete category and all its events, or Cancel to abort.`
+          t("auth.categoryManagement.deleteConfirmation.withEventsSimple", {
+            categoryName: category.translations[language] || category.translations.en,
+            eventCount: eventCount
+          })
         );
         
         if (!forceDelete) {
@@ -199,7 +201,9 @@ const CategoryManagement = () => {
       }
     }
 
-    const confirmMessage = `Are you sure you want to delete "${category.translations[language] || category.translations.en}"? This action cannot be undone.`;
+    const confirmMessage = t("auth.categoryManagement.deleteConfirmation.message", {
+      categoryName: category.translations[language] || category.translations.en
+    });
     console.log('Confirmation message:', confirmMessage);
     
     if (window.confirm(confirmMessage)) {
@@ -222,7 +226,7 @@ const CategoryManagement = () => {
             batch.delete(eventDoc.ref);
           });
           
-          toast.success(`Deleting ${eventCount} events...`);
+          toast.success(t("auth.categoryManagement.deletingEvents", { count: eventCount }));
         }
         
         // Delete the category
@@ -234,7 +238,7 @@ const CategoryManagement = () => {
         await batch.commit();
         
         console.log('Batch delete completed successfully');
-        toast.success(`Category and ${eventCount} events deleted successfully!`);
+        toast.success(t("auth.categoryManagement.categoryAndEventsDeleted", { count: eventCount }));
         
         // Refresh data
         fetchCategories();
@@ -242,7 +246,7 @@ const CategoryManagement = () => {
         
       } catch (error) {
         console.error("Error deleting category and events:", error);
-        toast.error("Failed to delete category and events");
+        toast.error(t("auth.categoryManagement.failedToDeleteCategory"));
       }
     } else {
       console.log('Delete operation cancelled by user');
@@ -251,15 +255,15 @@ const CategoryManagement = () => {
 
   const handleCleanupOrphanedEvents = async () => {
     if (orphanedEvents.length === 0) {
-      toast.success("No orphaned events found!");
+      toast.success(t("auth.categoryManagement.noOrphanedEvents"));
       return;
     }
 
     const confirmCleanup = window.confirm(
-      `Found ${orphanedEvents.length} orphaned events (events with non-existent categories).\n\n` +
-      `These events will be deleted:\n\n` +
-      `${orphanedEvents.map(event => `• ${event.title} (${event.date})`).join('\n')}\n\n` +
-      `Click OK to delete all orphaned events, or Cancel to abort.`
+      t("auth.categoryManagement.cleanupConfirmation.message", {
+        count: orphanedEvents.length,
+        eventList: orphanedEvents.map(event => `• ${event.title} (${event.date})`).join('\n')
+      })
     );
 
     if (!confirmCleanup) return;
@@ -274,12 +278,12 @@ const CategoryManagement = () => {
       
       await batch.commit();
       
-      toast.success(`${orphanedEvents.length} orphaned events deleted successfully!`);
+      toast.success(t("auth.categoryManagement.orphanedEventsDeleted", { count: orphanedEvents.length }));
       fetchOrphanedEvents();
       fetchCategoryUsage();
     } catch (error) {
       console.error("Error cleaning up orphaned events:", error);
-      toast.error("Failed to clean up orphaned events");
+      toast.error(t("auth.categoryManagement.failedToCleanupEvents"));
     }
   };
 
@@ -323,7 +327,7 @@ const CategoryManagement = () => {
               onClick={onClose}
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 py-2 rounded-md"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             {onSubmit && (
               <button
@@ -342,7 +346,7 @@ const CategoryManagement = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading categories...</div>
+        <div className="text-lg">{t("auth.categoryManagement.loadingCategories")}</div>
       </div>
     );
   }
@@ -351,22 +355,22 @@ const CategoryManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Category Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t("auth.categoryManagement.title")}</h1>
         <div className="flex gap-2">
           {orphanedEvents.length > 0 && (
             <button
               onClick={handleCleanupOrphanedEvents}
               className="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-md flex items-center gap-2"
-              title={`Clean up ${orphanedEvents.length} orphaned events`}
+              title={t("auth.categoryManagement.cleanupOrphanedEventsTitle", { count: orphanedEvents.length })}
             >
-              <FaTrash /> Cleanup ({orphanedEvents.length})
+              <FaTrash /> {t("auth.categoryManagement.cleanupOrphanedEvents", { count: orphanedEvents.length })}
             </button>
           )}
           <button
             onClick={openAddModal}
             className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md flex items-center gap-2"
           >
-            <FaPlus /> Add Category
+            <FaPlus /> {t("auth.categoryManagement.addCategory")}
           </button>
         </div>
       </div>
@@ -377,19 +381,19 @@ const CategoryManagement = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
+                {t("auth.categoryManagement.tableHeaders.category")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Color
+                {t("auth.categoryManagement.tableHeaders.color")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Translations
+                {t("auth.categoryManagement.tableHeaders.translations")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Events Using
+                {t("auth.categoryManagement.tableHeaders.eventsUsing")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+                {t("auth.categoryManagement.tableHeaders.actions")}
               </th>
             </tr>
           </thead>
@@ -423,7 +427,7 @@ const CategoryManagement = () => {
                       ? 'bg-yellow-100 text-yellow-800' 
                       : 'bg-green-100 text-green-800'
                   }`}>
-                    {categoryUsage[category.id] || 0} events
+                    {t("auth.categoryManagement.eventsCount", { count: categoryUsage[category.id] || 0 })}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -431,21 +435,21 @@ const CategoryManagement = () => {
                     <button
                       onClick={() => openViewModal(category)}
                       className="text-blue-600 hover:text-blue-900"
-                      title="View"
+                      title={t("auth.categoryManagement.actions.view")}
                     >
                       <FaEye />
                     </button>
                     <button
                       onClick={() => openEditModal(category)}
                       className="text-yellow-600 hover:text-yellow-900"
-                      title="Edit"
+                      title={t("auth.categoryManagement.actions.edit")}
                     >
                       <FaEdit />
                     </button>
                     <button
                       onClick={() => handleDeleteCategory(category)}
                       className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                      title="Delete category"
+                      title={t("auth.categoryManagement.actions.delete")}
                     >
                       <FaTrash />
                     </button>
@@ -461,14 +465,14 @@ const CategoryManagement = () => {
       <Modal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Add New Category"
+        title={t("auth.categoryManagement.modals.addTitle")}
         onSubmit={handleAddCategory}
-        submitText="Add Category"
+        submitText={t("auth.categoryManagement.addCategory")}
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              English Translation (Key)
+              {t("auth.categoryManagement.form.englishTranslation")}
             </label>
             <input
               type="text"
@@ -480,12 +484,12 @@ const CategoryManagement = () => {
                   translations: { ...formData.translations, en: e.target.value }
                 })
               }
-              placeholder="e.g., Trip"
+              placeholder={t("auth.categoryManagement.form.englishPlaceholder")}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Hebrew Translation
+              {t("auth.categoryManagement.form.hebrewTranslation")}
             </label>
             <input
               type="text"
@@ -497,12 +501,12 @@ const CategoryManagement = () => {
                   translations: { ...formData.translations, he: e.target.value }
                 })
               }
-              placeholder="e.g., טיול"
+              placeholder={t("auth.categoryManagement.form.hebrewPlaceholder")}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Arabic Translation (Optional)
+              {t("auth.categoryManagement.form.arabicTranslation")}
             </label>
             <input
               type="text"
@@ -514,12 +518,12 @@ const CategoryManagement = () => {
                   translations: { ...formData.translations, ar: e.target.value }
                 })
               }
-              placeholder="e.g., رحلة"
+              placeholder={t("auth.categoryManagement.form.arabicPlaceholder")}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category Color
+              {t("auth.categoryManagement.form.categoryColor")}
             </label>
             <input
               type="color"
@@ -535,14 +539,14 @@ const CategoryManagement = () => {
       <Modal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        title="Edit Category"
+        title={t("auth.categoryManagement.modals.editTitle")}
         onSubmit={handleEditCategory}
-        submitText="Update Category"
+        submitText={t("auth.categoryManagement.modals.updateCategory")}
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              English Translation (Key)
+              {t("auth.categoryManagement.form.englishTranslation")}
             </label>
             <input
               type="text"
@@ -554,12 +558,12 @@ const CategoryManagement = () => {
                   translations: { ...formData.translations, en: e.target.value }
                 })
               }
-              placeholder="e.g., Trip"
+              placeholder={t("auth.categoryManagement.form.englishPlaceholder")}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Hebrew Translation
+              {t("auth.categoryManagement.form.hebrewTranslation")}
             </label>
             <input
               type="text"
@@ -571,12 +575,12 @@ const CategoryManagement = () => {
                   translations: { ...formData.translations, he: e.target.value }
                 })
               }
-              placeholder="e.g., טיול"
+              placeholder={t("auth.categoryManagement.form.hebrewPlaceholder")}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Arabic Translation (Optional)
+              {t("auth.categoryManagement.form.arabicTranslation")}
             </label>
             <input
               type="text"
@@ -588,12 +592,12 @@ const CategoryManagement = () => {
                   translations: { ...formData.translations, ar: e.target.value }
                 })
               }
-              placeholder="e.g., رحلة"
+              placeholder={t("auth.categoryManagement.form.arabicPlaceholder")}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category Color
+              {t("auth.categoryManagement.form.categoryColor")}
             </label>
             <input
               type="color"
@@ -609,13 +613,13 @@ const CategoryManagement = () => {
       <Modal
         isOpen={showViewModal}
         onClose={() => setShowViewModal(false)}
-        title="Category Details"
+        title={t("auth.categoryManagement.modals.viewTitle")}
       >
         {selectedCategory && (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category ID
+                {t("auth.categoryManagement.details.categoryId")}
               </label>
               <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                 {selectedCategory.id}
@@ -623,7 +627,7 @@ const CategoryManagement = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                English Translation
+                {t("auth.categoryManagement.details.englishTranslation")}
               </label>
               <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                 {selectedCategory.translations?.en || "N/A"}
@@ -631,7 +635,7 @@ const CategoryManagement = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hebrew Translation
+                {t("auth.categoryManagement.details.hebrewTranslation")}
               </label>
               <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                 {selectedCategory.translations?.he || "N/A"}
@@ -639,7 +643,7 @@ const CategoryManagement = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Arabic Translation
+                {t("auth.categoryManagement.details.arabicTranslation")}
               </label>
               <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                 {selectedCategory.translations?.ar || "N/A"}
@@ -647,7 +651,7 @@ const CategoryManagement = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Color
+                {t("auth.categoryManagement.details.color")}
               </label>
               <div className="flex items-center">
                 <div

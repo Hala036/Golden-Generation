@@ -1,5 +1,5 @@
 {
-  "common": {
+"common": {
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
@@ -15,9 +15,13 @@
     "switchLanguage": "Switch Language",
     "step": "Step",
     "of": "of",
-    "select": "Select"
+    "select": "Select",
+    "change":"change"
   },
   "auth": {
+    "errors": {
+      "notLoggedIn": "You are not logged in"
+    },
     "login": {
       "title": "Login as",
       "email": "Email address",
@@ -186,7 +190,6 @@
   "vocationalTraining": "Vocational Training",
   "noFormalEducation": "No Formal Education",
   "other": "Other"          
-
         },
         "continue": "Continue",
         "jobCategories": "Job Categories",
@@ -554,6 +557,44 @@
           "editUserInfo": "Edit User Information",
           "editUserInfoDesc": "Edit all information entered during sign-up"
         },
+        "profilePicture":{
+          "currentProfile":"Current Profile",
+          "clickToUpload":"Click to upload",
+          "orDragAndDrop":"or drag and drop",
+          "fileTypes":"PNG, JPG, JPEG or GIF (MAX. 5MB)",
+          "preview":"Preview",
+          "newProfilePicturePreview":"New Profile Picture Preview",
+          "uploading":"Uploading...",
+          "uploadFailed":"Upload failed"
+        },
+        "fontSize": {
+          "livePreview": "Live preview",
+          "sampleText": "The quick brown fox jumps over the lazy dog."
+        },
+        "theme": {
+          "light": "Light",
+          "dark": "Dark"
+        },
+        "notifications": {
+          "emailNotifications": "Email Notifications",
+          "pushNotifications": "Push Notifications"
+        },
+        "announcements": {
+          "welcome": {
+            "title": "Welcome to Golden Generation!",
+            "content": "We are excited to have you on board."
+          },
+          "darkMode": {
+            "title": "New Feature: Dark Mode",
+            "content": "You can now switch between light and dark themes in your settings."
+          }
+        },
+        "errors": {
+          "fetchingProfilePicture": "Error fetching profile picture:",
+          "uploadingToCloudinary": "Error uploading to Cloudinary:",
+          "updatingProfilePicture": "Error updating profile picture:",
+          "deletingAccount": "Error deleting account:"
+        },
         "modals": {
           "editProfile": "Edit Profile",
           "changePassword": "Change Password",
@@ -579,6 +620,32 @@
           "reauthPassword": "Re-authenticate with current password",
           "deleteConfirm": "Type DELETE to confirm",
           "enterPassword": "Enter your password"
+        },
+        "deleteAccountWarning": "This action is irreversible. Type <b>DELETE</b> to confirm.",
+        "toast": {
+          "failedToLoadProfile": "Failed to load profile",
+          "notLoggedIn": "You are not logged in",
+          "profileUpdated": "Profile updated successfully",
+          "failedToUpdateProfile": "Failed to update profile",
+          "passwordsDoNotMatch": "Passwords do not match",
+          "passwordUpdated": "Password updated successfully",
+          "failedToUpdatePassword": "Failed to update password",
+          "invalidImageFile": "Please upload a valid image file (JPG, JPEG, or PNG)",
+          "fileSizeLimit": "File size must be less than 5MB",
+          "pleaseSelectPicture": "Please select a picture",
+          "profilePictureUpdated": "Profile picture updated successfully",
+          "failedToUpdateProfilePicture": "Failed to update profile picture",
+          "fontSizeUpdated": "Font size updated successfully",
+          "themeSetTo": "Theme set to {{mode}}",
+          "notificationPreferenceUpdated": "Notification preference updated",
+          "typeDeleteToConfirm": "Please type DELETE to confirm",
+          "enterYourPassword": "Please enter your password",
+          "accountDeleted": "Account deleted successfully",
+          "requiresRecentLogin": "This operation requires recent authentication",
+          "failedToDeleteAccount": "Failed to delete account",
+          "profileAndEmailUpdated": "Profile and email updated successfully",
+          "reauthenticationFailed": "Re-authentication failed",
+          "failedToSavePreference": "Failed to save preference"
         }
       },
       "logout": "Logout",
@@ -588,6 +655,7 @@
       "serviceRequests": "Service Requests",
       "service": "Request Services",
       "analytics": "Analytics",
+      "advancedAnalytics": "Advanced Analytics",
       "contactUs": "Customer Support",
       "pendingEvents": "Pending Events",
       "categoryManagement": "Category Management",
@@ -775,6 +843,77 @@
       "loadError": "Failed to load settlements.",
       "updateError": "Failed to update settlement.",
       "addError": "Failed to add settlement."
+    },
+    "categoryManagement": {
+      "title": "Category Management",
+      "loadingCategories": "Loading categories...",
+      "fetchCategoriesError": "Failed to fetch categories",
+      "provideTranslations": "Please provide English and Hebrew translations",
+      "categoryAddedSuccess": "Category added successfully!",
+      "failedToAddCategory": "Failed to add category",
+      "categoryUpdatedSuccess": "Category updated successfully!",
+      "failedToUpdateCategory": "Failed to update category",
+      "deletingEvents": "Deleting {{count}} events...",
+      "categoryAndEventsDeleted": "Category and {{count}} events deleted successfully!",
+      "failedToDeleteCategory": "Failed to delete category and events",
+      "noOrphanedEvents": "No orphaned events found!",
+      "orphanedEventsDeleted": "{{count}} orphaned events deleted successfully!",
+      "failedToCleanupEvents": "Failed to clean up orphaned events",
+      "addCategory": "Add Category",
+      "cleanup": "Cleanup",
+      "cleanupOrphanedEvents": "Cleanup ({{count}})",
+      "cleanupOrphanedEventsTitle": "Clean up {{count}} orphaned events",
+      "tableHeaders": {
+        "category": "Category",
+        "color": "Color",
+        "translations": "Translations",
+        "eventsUsing": "Events Using",
+        "actions": "Actions"
+      },
+      "eventsCount": "{{count}} events",
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete category"
+      },
+      "modals": {
+        "addTitle": "Add New Category",
+        "editTitle": "Edit Category",
+        "viewTitle": "Category Details",
+        "updateCategory": "Update Category"
+      },
+      "form": {
+        "englishTranslation": "English Translation (Key)",
+        "englishPlaceholder": "e.g., Trip",
+        "hebrewTranslation": "Hebrew Translation",
+        "hebrewPlaceholder": "e.g., טיול",
+        "arabicTranslation": "Arabic Translation (Optional)",
+        "arabicPlaceholder": "e.g., رحلة",
+        "categoryColor": "Category Color"
+      },
+      "details": {
+        "categoryId": "Category ID",
+        "englishTranslation": "English Translation",
+        "hebrewTranslation": "Hebrew Translation",
+        "arabicTranslation": "Arabic Translation",
+        "color": "Color"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Category",
+        "message": "Are you sure you want to delete \"{{categoryName}}\"? This action cannot be undone.",
+        "withEvents": "Category \"{{categoryName}}\" is used by {{eventCount}} event(s).\n\nThis will also delete ALL events in this category:\n\n{{eventList}}\n\nClick OK to delete category and all its events, or Cancel to abort.",
+        "withEventsSimple": "Category \"{{categoryName}}\" is used by {{eventCount}} event(s).\n\nThis will also delete ALL events in this category.\n\nClick OK to delete category and all its events, or Cancel to abort."
+      },
+      "cleanupConfirmation": {
+        "title": "Cleanup Orphaned Events",
+        "message": "Found {{count}} orphaned events (events with non-existent categories).\n\nThese events will be deleted:\n\n{{eventList}}\n\nClick OK to delete all orphaned events, or Cancel to abort."
+      },
+      "addCategoryModal": {
+        "title": "Add New Category",
+        "adding": "Adding...",
+        "addCategory": "Add Category",
+        "failedToAddCategory": "Failed to add category. Please try again."
+      }
     }
   },
   "dashboard": {
@@ -826,6 +965,32 @@
         "reauthPassword": "Re-authenticate with current password",
         "deleteConfirm": "Type DELETE to confirm",
         "enterPassword": "Enter your password"
+      },
+      "deleteAccountWarning": "This action is irreversible. Type <b>DELETE</b> to confirm.",
+      "toast": {
+        "failedToLoadProfile": "Failed to load profile",
+        "notLoggedIn": "You are not logged in",
+        "profileUpdated": "Profile updated successfully",
+        "failedToUpdateProfile": "Failed to update profile",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "passwordUpdated": "Password updated successfully",
+        "failedToUpdatePassword": "Failed to update password",
+        "invalidImageFile": "Please upload a valid image file (JPG, JPEG, or PNG)",
+        "fileSizeLimit": "File size must be less than 5MB",
+        "pleaseSelectPicture": "Please select a picture",
+        "profilePictureUpdated": "Profile picture updated successfully",
+        "failedToUpdateProfilePicture": "Failed to update profile picture",
+        "fontSizeUpdated": "Font size updated successfully",
+        "themeSetTo": "Theme set to {{mode}}",
+        "notificationPreferenceUpdated": "Notification preference updated",
+        "typeDeleteToConfirm": "Please type DELETE to confirm",
+        "enterYourPassword": "Please enter your password",
+        "accountDeleted": "Account deleted successfully",
+        "requiresRecentLogin": "This operation requires recent authentication",
+        "failedToDeleteAccount": "Failed to delete account",
+        "profileAndEmailUpdated": "Profile and email updated successfully",
+        "reauthenticationFailed": "Re-authentication failed",
+        "failedToSavePreference": "Failed to save preference"
       }
     },
     "logout": "Logout",
@@ -835,6 +1000,7 @@
     "serviceRequests": "Service Requests",
     "service": "Request Services",
     "analytics": "Analytics",
+    "advancedAnalytics": "Advanced Analytics",
     "contactUs": "Customer Support",
     "pendingEvents": "Pending Events",
     "categoryManagement": "Category Management",
@@ -1023,6 +1189,11 @@
       "eventCreatedSuccess": "Event created successfully!",
       "createEventError": "Failed to create event. Please try again.",
       "submit": "Submit"
+    },
+    "pendingEvents": {
+      "fetchEventsError": "Failed to fetch pending events.",
+      "eventApprovedSuccess": "Event approved successfully!",
+      "failedToApproveEvent": "Failed to approve event."
     }
   },
   "retiree": {
@@ -1057,6 +1228,10 @@
     },
     "success": {
       "messageSent": "Your message has been sent successfully!"
+    },
+    "toast": {
+      "missingInfo": "Unable to send message. Admin or user information is missing.",
+      "sendFailed": "Failed to send the message."
     }
   },
   "calendar": {
@@ -1165,6 +1340,15 @@
       "reject": "Reject",
       "noParticipants": "No participants yet",
       "joinedCount": "{{count}} participant{{count, plural, one {} other {s}}} have joined."
+    },
+    "adminEventDetails": {
+      "confirmDelete": "Confirm Delete",
+      "failedToDeleteEvent": "Failed to delete event.",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event"
+    },
+    "toast": {
+      "failedToLoadEvents": "Failed to load events"
     }
   },
   "service": {
@@ -1339,4 +1523,4 @@
       "noUser": "No user is logged in."
     }
   }
-} 
+}

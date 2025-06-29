@@ -25,11 +25,6 @@ import Modal from '../Modal';
 import PasswordInput from '../PasswordInput';
 import { useLanguage } from '../../context/LanguageContext';
 
-const mockAnnouncements = [
-  { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
-  { id: 2, title: "New Feature: Dark Mode", date: "2024-06-10", content: "You can now switch between light and dark themes in your settings." },
-];
-
 const SettingsCards = () => {
   // Modal states
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -63,6 +58,12 @@ const SettingsCards = () => {
 
   const { theme, setTheme } = useTheme();
   const { t } = useLanguage();
+
+  // Mock announcements - moved inside component to access t function
+  const mockAnnouncements = [
+    { id: 1, title: t('dashboard.settings.announcements.welcome.title'), date: "2024-06-01", content: t('dashboard.settings.announcements.welcome.content') },
+    { id: 2, title: t('dashboard.settings.announcements.darkMode.title'), date: "2024-06-10", content: t('dashboard.settings.announcements.darkMode.content') },
+  ];
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -110,7 +111,7 @@ const SettingsCards = () => {
           setCurrentProfilePic(userDoc.personalDetails.photoURL);
         }
       } catch (err) {
-        console.error("Error fetching profile picture:", err);
+        console.error(t('dashboard.settings.errors.fetchingProfilePicture'), err);
       }
     };
     fetchCurrentProfilePic();
@@ -121,7 +122,7 @@ const SettingsCards = () => {
     setLoadingProfile(true);
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error("Not logged in");
+      if (!user) throw new Error(t('auth.errors.notLoggedIn'));
       const userDoc = await getUserData(user.uid);
       setProfileData({
         name: userDoc?.personalDetails?.name || "",
@@ -131,7 +132,7 @@ const SettingsCards = () => {
       });
       setShowEditProfile(true);
     } catch (err) {
-      toast.error("Failed to load profile");
+      toast.error(t('auth.dashboard.toast.failedToLoadProfile'));
     } finally {
       setLoadingProfile(false);
     }
@@ -140,7 +141,7 @@ const SettingsCards = () => {
   const handleProfileSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
+    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
     try {
       // If email changed, require re-auth
       if (profileData.email !== user.email) {
@@ -149,19 +150,19 @@ const SettingsCards = () => {
         return;
       }
       await updateFirestoreProfile(user.uid, profileData);
-      toast.success("Profile updated");
+      toast.success(t('auth.dashboard.toast.profileUpdated'));
       setShowEditProfile(false);
     } catch (err) {
-      toast.error(err.message || "Failed to update profile");
+      toast.error(err.message || t('auth.dashboard.toast.failedToUpdateProfile'));
     }
   };
 
   const handlePasswordSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
+    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t('auth.dashboard.toast.passwordsDoNotMatch'));
       return;
     }
     try {
@@ -169,11 +170,11 @@ const SettingsCards = () => {
       const cred = EmailAuthProvider.credential(user.email, passwordData.currentPassword);
       await reauthenticateWithCredential(user, cred);
       await updatePassword(user, passwordData.newPassword);
-      toast.success("Password updated successfully");
+      toast.success(t('auth.dashboard.toast.passwordUpdated'));
       setShowChangePassword(false);
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      toast.error(err.message || "Failed to update password");
+      toast.error(err.message || t('auth.dashboard.toast.failedToUpdatePassword'));
     }
   };
   const handleProfilePicChange = (e) => {
@@ -183,14 +184,14 @@ const SettingsCards = () => {
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPG, JPEG, PNG, or GIF)');
+      toast.error(t('auth.dashboard.toast.invalidImageFile'));
       return;
     }
 
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
+      toast.error(t('auth.dashboard.toast.fileSizeLimit'));
       return;
     }
 
@@ -214,13 +215,13 @@ const SettingsCards = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error(t('auth.dashboard.settings.profilePicture.uploadFailed'));
       }
 
       const data = await response.json();
       return data.secure_url;
     } catch (error) {
-      console.error('Error uploading to Cloudinary:', error);
+      console.error(t('dashboard.settings.errors.uploadingToCloudinary'), error);
       throw error;
     }
   };
@@ -228,8 +229,8 @@ const SettingsCards = () => {
   const handleProfilePicSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
-    if (!profilePic) return toast.error("Please select a picture");
+    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
+    if (!profilePic) return toast.error(t('auth.dashboard.toast.pleaseSelectPicture'));
 
     setUploadingProfilePic(true);
     setUploadProgress(0);
@@ -250,13 +251,13 @@ const SettingsCards = () => {
 
       // Update local state
       setCurrentProfilePic(imageUrl);
-      toast.success("Profile picture updated successfully");
+      toast.success(t('auth.dashboard.toast.profilePictureUpdated'));
       setShowProfilePicture(false);
       setProfilePic(null);
       setProfilePicPreview(null);
     } catch (err) {
-      console.error("Error updating profile picture:", err);
-      toast.error(err.message || "Failed to update profile picture");
+      console.error(t('dashboard.settings.errors.updatingProfilePicture'), err);
+      toast.error(err.message || t('auth.dashboard.toast.failedToUpdateProfilePicture'));
     } finally {
       setUploadingProfilePic(false);
       setUploadProgress(0);
@@ -267,26 +268,26 @@ const SettingsCards = () => {
     if (size > 40) size = 40;
     setFontSize(size);
     updatePreference("fontSize", size);
-    toast.success("Font size updated");
+    toast.success(t('auth.dashboard.toast.fontSizeUpdated'));
   };
   const handleThemeChange = (mode) => {
     setTheme(mode);
     updatePreference("theme", mode);
-    toast.success(`Theme set to ${mode}`);
+    toast.success(t('auth.dashboard.toast.themeSetTo', { mode }));
     setShowTheme(false);
   };
   const handleNotificationsChange = (field) => {
     const newNotifications = { ...notifications, [field]: !notifications[field] };
     setNotifications(newNotifications);
     updatePreference("notifications", newNotifications);
-    toast.success("Notification preference updated");
+    toast.success(t('auth.dashboard.toast.notificationPreferenceUpdated'));
   };
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
-    if (deleteConfirm !== "DELETE") return toast.error("Type DELETE to confirm");
-    if (!deletePassword) return toast.error("Enter your password");
+    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
+    if (deleteConfirm !== "DELETE") return toast.error(t('auth.dashboard.toast.typeDeleteToConfirm'));
+    if (!deletePassword) return toast.error(t('auth.dashboard.toast.enterYourPassword'));
     try {
       // Re-authenticate
       const cred = EmailAuthProvider.credential(user.email, deletePassword);
@@ -298,17 +299,17 @@ const SettingsCards = () => {
       // Delete Auth user
       await deleteUser(user);
       
-      toast.success("Account deleted successfully");
+      toast.success(t('auth.dashboard.toast.accountDeleted'));
       setShowDeleteAccount(false);
       setDeleteConfirm("");
       setDeletePassword("");
       navigate("/login");
     } catch (err) {
-      console.error("Error deleting account:", err);
+      console.error(t('dashboard.settings.errors.deletingAccount'), err);
       if (err.code === 'auth/requires-recent-login') {
-        toast.error("Please log out and log in again before deleting your account");
+        toast.error(t('auth.dashboard.toast.requiresRecentLogin'));
       } else {
-        toast.error(err.message || "Failed to delete account");
+        toast.error(err.message || t('auth.dashboard.toast.failedToDeleteAccount'));
       }
     }
   };
@@ -334,25 +335,25 @@ const SettingsCards = () => {
       await reauthenticateWithCredential(user, cred);
       await updateEmail(user, pendingProfileData.email);
       await updateFirestoreProfile(user.uid, pendingProfileData);
-      toast.success("Profile and email updated");
+      toast.success(t('auth.dashboard.toast.profileAndEmailUpdated'));
       setShowReauth(false);
       setShowEditProfile(false);
       setPendingProfileData(null);
       setReauthPassword("");
     } catch (err) {
-      toast.error(err.message || "Re-authentication failed");
+      toast.error(err.message || t('auth.dashboard.toast.reauthenticationFailed'));
     }
   };
 
   // Helper to update preferences in Firestore
   const updatePreference = async (field, value) => {
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
+    if (!user) return toast.error(t('auth.dashboard.toast.notLoggedIn'));
     try {
       const userRef = doc(db, "users", user.uid);
       await updateDoc(userRef, { [`preferences.${field}`]: value });
     } catch (err) {
-      toast.error("Failed to save preference");
+      toast.error(t('auth.dashboard.toast.failedToSavePreference'));
     }
   };
 
@@ -495,7 +496,7 @@ const SettingsCards = () => {
                       : 'bg-gray-200 hover:bg-gray-300'
                   }`}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   type="submit" 
@@ -565,7 +566,7 @@ const SettingsCards = () => {
                       : 'bg-gray-200 hover:bg-gray-300'
                   }`}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   type="submit" 
@@ -629,7 +630,7 @@ const SettingsCards = () => {
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 
@@ -650,12 +651,12 @@ const SettingsCards = () => {
               <div className="relative w-32 h-32 mb-4">
                 <img 
                   src={currentProfilePic || profile} 
-                  alt="Current Profile" 
+                  alt={t('auth.dashboard.settings.profilePicture.currentProfile')} 
                   className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
                 />
               </div>
               <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                Current Profile Picture
+                {t('auth.dashboard.settings.profilePicture.currentProfile')}
               </p>
             </div>
 
@@ -670,10 +671,10 @@ const SettingsCards = () => {
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <FiImage className={`w-8 h-8 mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
                     <p className={`mb-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      <span className="font-semibold">Click to upload</span> or drag and drop
+                      <span className="font-semibold">{t('auth.dashboard.settings.profilePicture.clickToUpload')}</span> {t('auth.dashboard.settings.profilePicture.orDragAndDrop')}
                     </p>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      PNG, JPG, JPEG or GIF (MAX. 5MB)
+                      {t('auth.dashboard.settings.profilePicture.fileTypes')}
                     </p>
                   </div>
                   <input 
@@ -703,12 +704,12 @@ const SettingsCards = () => {
                   <div className="relative w-32 h-32">
                     <img 
                       src={profilePicPreview} 
-                      alt="Preview" 
+                      alt={t('auth.dashboard.settings.profilePicture.preview')} 
                       className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
                     />
                   </div>
                   <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    New Profile Picture Preview
+                    {t('auth.dashboard.settings.profilePicture.newProfilePicturePreview')}
                   </p>
                 </div>
               )}
@@ -726,7 +727,7 @@ const SettingsCards = () => {
                 }`}
                 disabled={uploadingProfilePic}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 
@@ -736,7 +737,7 @@ const SettingsCards = () => {
                 {uploadingProfilePic ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Uploading...
+                    {t('auth.dashboard.settings.profilePicture.uploading')}
                   </>
                 ) : (
                   t('dashboard.settings.buttons.saveChanges')
@@ -804,7 +805,7 @@ const SettingsCards = () => {
               ))}
             </div>
             <div className={`mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`} style={{ fontSize: fontSize }}>
-              Live preview: The quick brown fox jumps over the lazy dog.
+              {t('auth.dashboard.settings.fontSize.livePreview')}: {t('auth.dashboard.settings.fontSize.sampleText')}
             </div>
           </div>
         </Modal>
@@ -846,7 +847,7 @@ const SettingsCards = () => {
                 onChange={() => handleNotificationsChange("email")} 
                 className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
               />
-              Email Notifications
+              {t('auth.dashboard.settings.notifications.emailNotifications')}
             </label>
             <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
               <input 
@@ -855,7 +856,7 @@ const SettingsCards = () => {
                 onChange={() => handleNotificationsChange("push")} 
                 className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
               />
-              Push Notifications
+              {t('auth.dashboard.settings.notifications.pushNotifications')}
             </label>
           </div>
         </Modal>
@@ -874,7 +875,7 @@ const SettingsCards = () => {
                     : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              Light
+              {t('auth.dashboard.settings.theme.light')}
             </button>
             <button 
               onClick={() => handleThemeChange("dark")} 
@@ -886,7 +887,7 @@ const SettingsCards = () => {
                     : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              Dark
+              {t('auth.dashboard.settings.theme.dark')}
             </button>
           </div>
         </Modal>
@@ -896,7 +897,7 @@ const SettingsCards = () => {
         <Modal onClose={() => setShowDeleteAccount(false)} title={t('dashboard.settings.modals.deleteAccount')}>
           <form onSubmit={handleDeleteAccount} className="space-y-4">
             <div className={`text-red-600 font-semibold ${theme === 'dark' ? 'text-red-400' : ''}`}>
-              This action is irreversible. Type <b>DELETE</b> to confirm.
+              {t('auth.dashboard.settings.deleteAccountWarning')}
             </div>
             <input 
               type="text"
@@ -923,7 +924,7 @@ const SettingsCards = () => {
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 

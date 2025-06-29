@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { db } from "../../firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
-import { toast } from "react-hot-toast"; // Import react-hot-toast
+import { toast } from "react-hot-toast";
+import { useLanguage } from "../../context/LanguageContext";
 
 const AddCategoryModal = ({ onClose }) => {
+  const { t } = useLanguage();
   const [translations, setTranslations] = useState({
     en: "",
     he: "",
@@ -14,7 +16,7 @@ const AddCategoryModal = ({ onClose }) => {
 
   const handleAddCategory = async () => {
     if (!translations.en || !translations.he) {
-      toast.error("Please provide English and Hebrew translations."); // Show error toast
+      toast.error(t("auth.categoryManagement.provideTranslations"));
       return;
     }
 
@@ -36,11 +38,11 @@ const AddCategoryModal = ({ onClose }) => {
         translations: updatedTranslations,
         color: color // Save the selected color
       });
-      toast.success("Category added successfully!"); // Show success toast
+      toast.success(t("auth.categoryManagement.categoryAddedSuccess"));
       onClose(); // Close the modal
     } catch (error) {
       console.error("Error adding category:", error);
-      toast.error("Failed to add category. Please try again."); // Show error toast
+      toast.error(t("auth.categoryManagement.addCategoryModal.failedToAddCategory"));
     } finally {
       setLoading(false);
     }
@@ -49,10 +51,10 @@ const AddCategoryModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-xl font-bold mb-4">Add New Category</h2>
+        <h2 className="text-xl font-bold mb-4">{t("auth.categoryManagement.addCategoryModal.title")}</h2>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            English Translation (Key)
+            {t("auth.categoryManagement.form.englishTranslation")}
           </label>
           <input
             type="text"
@@ -61,12 +63,12 @@ const AddCategoryModal = ({ onClose }) => {
             onChange={(e) =>
               setTranslations({ ...translations, en: e.target.value })
             }
-            placeholder="e.g., Trip"
+            placeholder={t("auth.categoryManagement.form.englishPlaceholder")}
           />
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Hebrew Translation
+            {t("auth.categoryManagement.form.hebrewTranslation")}
           </label>
           <input
             type="text"
@@ -75,12 +77,12 @@ const AddCategoryModal = ({ onClose }) => {
             onChange={(e) =>
               setTranslations({ ...translations, he: e.target.value })
             }
-            placeholder="e.g., טיול"
+            placeholder={t("auth.categoryManagement.form.hebrewPlaceholder")}
           />
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Arabic Translation (Optional)
+            {t("auth.categoryManagement.form.arabicTranslation")}
           </label>
           <input
             type="text"
@@ -89,12 +91,12 @@ const AddCategoryModal = ({ onClose }) => {
             onChange={(e) =>
               setTranslations({ ...translations, ar: e.target.value })
             }
-            placeholder="e.g., رحلة"
+            placeholder={t("auth.categoryManagement.form.arabicPlaceholder")}
           />
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category Color
+            {t("auth.categoryManagement.form.categoryColor")}
           </label>
           <input
             type="color"
@@ -108,14 +110,14 @@ const AddCategoryModal = ({ onClose }) => {
             onClick={onClose}
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 py-2 rounded-md"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             onClick={handleAddCategory}
             className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md"
             disabled={loading}
           >
-            {loading ? "Adding..." : "Add Category"}
+            {loading ? t("auth.categoryManagement.addCategoryModal.adding") : t("auth.categoryManagement.addCategoryModal.addCategory")}
           </button>
         </div>
       </div>
