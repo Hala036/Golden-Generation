@@ -9,7 +9,6 @@ import { useLanguage } from "../../context/LanguageContext";
 
 const SendNotification = ({ onClose }) => {
   const { user } = useAuth(); // optional
-  const { t } = useLanguage();
   const [recipients, setRecipients] = useState([]);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [message, setMessage] = useState("");
