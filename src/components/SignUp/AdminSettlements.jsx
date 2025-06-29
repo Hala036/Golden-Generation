@@ -528,49 +528,45 @@ const AdminSettlements = () => {
   console.debug('[AdminSettlements] rendering');
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Manage Available Settlements</h1>
-        <div className="flex gap-2">
-          <div className="flex gap-4 mb-4 items-center">
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2 text-sm font-medium" title="Replace all settlements with this file">
-                <input
-                  type="checkbox"
-                  checked={replaceAll}
-                  onChange={e => setReplaceAll(e.target.checked)}
-                  className="accent-yellow-500 w-4 h-4"
-                />
-                <span>Replace all settlements with this file</span>
-              </label>
-              {replaceAll && (
-                <span className="text-xs text-red-600 ml-2 flex items-center gap-1">
-                  <FaExclamationTriangle className="inline mr-1" />
-                  This will delete all current settlements!
-                </span>
-              )}
-            </div>
-            <label htmlFor="firestore-upload" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer flex items-center gap-2" title="Upload a JSON or CSV file to add settlements">
-              <FaUpload />
-              {uploading ? (
-                <span className="flex items-center gap-2"><FaSpinner className="animate-spin" /> Uploading...</span>
-              ) : (
-                'Upload JSON/CSV'
-              )}
-              <input id="firestore-upload" name="firestore-upload" type="file" accept=".json,.csv,application/json,text/csv" onChange={handleUploadFile} style={{ display: 'none' }} disabled={uploading} />
-            </label>
-            <button
-              onClick={() => setShowSettlementModal(true)}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
-            >
-              <FaPlus /> Add/Edit Settlement
-            </button>
-        <button
-          onClick={() => navigate('/superadmin/admins')}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-4 py-2 rounded flex items-center gap-2 shadow"
-        >
-          <FaUserShield /> Admin Management
-        </button>
-          </div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4">
+        <h1 className="text-2xl font-bold mb-2 sm:mb-0">Manage Available Settlements</h1>
+        <div className="flex flex-wrap gap-2 items-center">
+          <label className="flex items-center gap-1 text-xs font-medium" title="Replace all settlements with this file">
+            <input
+              type="checkbox"
+              checked={replaceAll}
+              onChange={e => setReplaceAll(e.target.checked)}
+              className="accent-yellow-500 w-4 h-4"
+            />
+            <span>Replace all</span>
+          </label>
+          {replaceAll && (
+            <span className="text-xs text-red-600 flex items-center gap-1">
+              <FaExclamationTriangle className="inline mr-1" />
+              This will delete all!
+            </span>
+          )}
+          <label htmlFor="firestore-upload" className="bg-blue-500 hover:bg-blue-600 text-white px-2.5 py-1.5 rounded cursor-pointer flex items-center gap-1 text-xs" title="Upload a JSON or CSV file to add settlements">
+            <FaUpload />
+            {uploading ? (
+              <span className="flex items-center gap-1"><FaSpinner className="animate-spin" /> Uploading...</span>
+            ) : (
+              'Upload'
+            )}
+            <input id="firestore-upload" name="firestore-upload" type="file" accept=".json,.csv,application/json,text/csv" onChange={handleUploadFile} style={{ display: 'none' }} disabled={uploading} />
+          </label>
+          <button
+            onClick={() => setShowSettlementModal(true)}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold px-2.5 py-1.5 rounded flex items-center gap-1 text-xs shadow"
+          >
+            <FaPlus /> Add/Edit
+          </button>
+          <button
+            onClick={() => navigate('/superadmin/admins')}
+            className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-2.5 py-1.5 rounded flex items-center gap-1 text-xs shadow"
+          >
+            <FaUserShield /> Admins
+          </button>
         </div>
       </div>
       {/* Availability Filter Buttons */}
@@ -652,29 +648,130 @@ const AdminSettlements = () => {
         />
       ) : (
         <>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${isRTL ? 'rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
-          {paginatedSettlements.map(settlement => {
-            const enabled = availableSettlements.includes(settlement.name);
-            // Robust adminInfo lookup
-            const adminInfo = Object.entries(settlementAdmins).find(
-              ([key]) => key.trim() === settlement.name.trim()
-            )?.[1] || {};
-            return (
-              <SettlementCard
-                key={settlement.name}
-                settlement={settlement.name}
-                isAvailable={enabled}
-                adminInfo={adminInfo}
-                onDisable={enabled ? () => {
-                  console.log('Disable button clicked for settlement:', settlement.name);
-                  setSettlementToDisable(settlement.name);
-                  setShowConfirmModal(true);
-                } : undefined}
-                onEnable={!enabled ? () => handleEnableSettlement(settlement) : undefined}
-                isRTL={isRTL}
-              />
-            );
-          })}
+        {/* Responsive settlements list: mobile = cards, md+ = grid */}
+        <div>
+          {/* Mobile: single column, compact cards */}
+          <div className="block md:hidden w-full min-w-0 flex flex-col gap-3 items-center">
+            {paginatedSettlements.map(settlement => {
+              const enabled = availableSettlements.includes(settlement.name);
+              const adminInfo = Object.entries(settlementAdmins).find(
+                ([key]) => key.trim() === settlement.name.trim()
+              )?.[1] || {};
+              return (
+                <div
+                  key={settlement.name}
+                  className="rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm min-w-[220px]"
+                  style={{ minWidth: '220px', backgroundColor: enabled ? '#f6fffa' : '#f9fafb' }}
+                >
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className={`w-6 h-6 rounded-full border ${enabled ? 'border-green-400' : 'border-gray-300'}`} style={{ backgroundColor: enabled ? '#bbf7d0' : '#f3f4f6' }}></div>
+                    <div className="font-medium text-gray-900 text-sm flex-1 truncate">
+                      {settlement.name}
+                    </div>
+                  </div>
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="text-xs text-gray-500">
+                      {adminInfo && adminInfo.username && (
+                        <div>Admin: {adminInfo.username}</div>
+                      )}
+                      {adminInfo && adminInfo.email && (
+                        <div>Email: {adminInfo.email}</div>
+                      )}
+                      {adminInfo && adminInfo.phone && (
+                        <div>Phone: {adminInfo.phone}</div>
+                      )}
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium mt-1 ml-2 ${enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{enabled ? 'Available' : 'Disabled'}</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-1 justify-end">
+                    <div className="flex space-x-2">
+                      {enabled ? (
+                        <button
+                          onClick={() => {
+                            setSettlementToDisable(settlement.name);
+                            setShowConfirmModal(true);
+                          }}
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                          title="Disable settlement"
+                        >
+                          <FaTrash />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEnableSettlement(settlement)}
+                          className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+                          title="Enable settlement"
+                        >
+                          <FaPlus />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Desktop: grid layout, keep old style */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
+            {paginatedSettlements.map(settlement => {
+              const enabled = availableSettlements.includes(settlement.name);
+              const adminInfo = Object.entries(settlementAdmins).find(
+                ([key]) => key.trim() === settlement.name.trim()
+              )?.[1] || {};
+              return (
+                <div
+                  key={settlement.name}
+                  className={`rounded-xl shadow flex flex-col justify-between w-full min-w-0 ${enabled ? 'bg-green-50' : 'bg-gray-50'}`}
+                  style={{ minHeight: '160px' }}
+                >
+                  <div className="flex items-center gap-3 p-3 pb-0">
+                    <div className={`w-6 h-6 rounded-full border ${enabled ? 'border-green-400' : 'border-gray-300'}`} style={{ backgroundColor: enabled ? '#bbf7d0' : '#f3f4f6' }}></div>
+                    <div className="font-medium text-gray-900 text-base flex-1 truncate">
+                      {settlement.name}
+                    </div>
+                  </div>
+                  <div className="flex items-start justify-between px-3 pt-1">
+                    <div className="text-xs text-gray-500">
+                      {adminInfo && adminInfo.username && (
+                        <div>Admin: {adminInfo.username}</div>
+                      )}
+                      {adminInfo && adminInfo.email && (
+                        <div>Email: {adminInfo.email}</div>
+                      )}
+                      {adminInfo && adminInfo.phone && (
+                        <div>Phone: {adminInfo.phone}</div>
+                      )}
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium mt-1 ml-2 ${enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{enabled ? 'Available' : 'Disabled'}</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-1 justify-end px-3 pb-3">
+                    <div className="flex space-x-2">
+                      {enabled ? (
+                        <button
+                          onClick={() => {
+                            setSettlementToDisable(settlement.name);
+                            setShowConfirmModal(true);
+                          }}
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                          title="Disable settlement"
+                        >
+                          <FaTrash />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEnableSettlement(settlement)}
+                          className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+                          title="Enable settlement"
+                        >
+                          <FaPlus />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
         {/* Pagination Controls */}
         {totalPages > 1 && (
