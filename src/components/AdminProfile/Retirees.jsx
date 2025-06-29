@@ -889,7 +889,7 @@ const Retirees = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white p-6 rounded shadow mb-6">
+      <div className="bg-white p-3 md:p-6 rounded shadow mb-6 max-w-xl mx-auto">        {/* ...existing code for search and filters... */}
         {/* Global Search */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1010,49 +1010,81 @@ const Retirees = () => {
         </div>
       </div>
 
-      {/* Retirees Table */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.name")}
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.age")}
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.gender")}
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Settlement
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.work")}
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredRetirees.map((retiree) => (
-              <tr key={retiree.id}
-                className="cursor-pointer hover:bg-gray-100"
+      {/* Retirees List: Cards on mobile, table on desktop */}
+      <div>
+        {/* Mobile: cards */}
+        <div className="block sm:hidden space-y-3">
+          {filteredRetirees.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">No retirees found.</div>
+          ) : (
+            filteredRetirees.map((retiree) => (
+              <div
+                key={retiree.id}
+                className="bg-white rounded-lg shadow p-3 flex flex-col gap-2 cursor-pointer hover:bg-gray-50"
                 onClick={() => handleViewProfile(retiree)}
               >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.settlement || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                <div className="flex items-center gap-3 mb-1">
+                  <FaUsers className="text-xl text-gray-400" />
+                  <div className="font-medium text-gray-900 text-base flex-1 truncate">
+                    {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <div><span className="font-semibold text-gray-700">Age:</span> {retiree.idVerification?.age || "N/A"}</div>
+                  <div><span className="font-semibold text-gray-700">Gender:</span> {retiree.idVerification?.gender || "N/A"}</div>
+                  <div><span className="font-semibold text-gray-700">Settlement:</span> {retiree.idVerification?.settlement || "N/A"}</div>
+                  <div><span className="font-semibold text-gray-700">Job:</span> {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Desktop: table */}
+        <div className="hidden sm:block">
+          <div className="bg-white rounded shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.name")}
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.age")}
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.gender")}
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Settlement
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.work")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredRetirees.map((retiree) => (
+                  <tr key={retiree.id}
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleViewProfile(retiree)}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.settlement || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      
+
       {retirees.length === 0 && !loading ? (
         <EmptyState
           icon={<FaUsers />}
