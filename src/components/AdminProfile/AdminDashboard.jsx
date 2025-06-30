@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   const customButtons = [];
 
   const componentsById = {
-    upcoming: <Cards />,
+    upcoming: <Cards setSelected={setSelected} />,
     main: <AdminHomepage setSelected={setSelected} />, // Pass setSelected to AdminHomepage
     settings: <Settings />,
     calendar: <AdminCalendar />,
