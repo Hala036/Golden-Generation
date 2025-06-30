@@ -151,11 +151,7 @@ const CategoryManagement = () => {
     }
   };
 
-  const handleDeleteCategory = async (category) => {
-    console.log('Attempting to delete category:', category);
-    console.log('Category usage:', categoryUsage);
-    console.log('Events using this category:', categoryUsage[category.id] || 0);
-    
+  const handleDeleteCategory = async (category) => {    
     const eventCount = categoryUsage[category.id] || 0;
     
     if (eventCount > 0) {
@@ -205,25 +201,21 @@ const CategoryManagement = () => {
     const confirmMessage = i18n.t("auth.categoryManagement.deleteConfirmation.message", {
       categoryName: category.translations[language] || category.translations.en
     });
-    console.log('Confirmation message:', confirmMessage);
     
     if (window.confirm(confirmMessage)) {
       try {
-        console.log('Starting batch delete operation...');
         
         // Use a batch write to ensure atomicity
         const batch = writeBatch(db);
         
         // Delete all events that use this category
         if (eventCount > 0) {
-          console.log(`Deleting ${eventCount} events for category: ${category.id}`);
           
           const eventsRef = collection(db, "events");
           const eventsQuery = query(eventsRef, where("categoryId", "==", category.id));
           const eventsSnapshot = await getDocs(eventsQuery);
           
           eventsSnapshot.docs.forEach((eventDoc) => {
-            console.log(`Deleting event: ${eventDoc.id}`);
             batch.delete(eventDoc.ref);
           });
           
@@ -231,14 +223,12 @@ const CategoryManagement = () => {
         }
         
         // Delete the category
-        console.log('Deleting category with ID:', category.id);
         const categoryRef = doc(db, "categories", category.id);
         batch.delete(categoryRef);
         
         // Commit all deletions in a single atomic operation
         await batch.commit();
         
-        console.log('Batch delete completed successfully');
         toast.success(i18n.t("auth.categoryManagement.categoryAndEventsDeleted", { count: eventCount }));
         
         // Refresh data

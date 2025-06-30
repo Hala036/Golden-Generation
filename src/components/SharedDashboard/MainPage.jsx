@@ -14,7 +14,6 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   const { t } = useLanguage();
   
   if (!mountedRef.current) {
-    console.log("MainPage mounted");
     mountedRef.current = true;
   }
   
@@ -39,18 +38,6 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     default: '#6B7280', // Gray
   };
 
-  // Debug logging for user data - only log when data changes
-  useEffect(() => {
-    console.log("MainPage userData:", {
-      userData,
-      userSettlement,
-      userName,
-      userRole,
-      idVerificationSettlement: userData?.idVerification?.settlement,
-      directSettlement: userData?.settlement
-    });
-  }, [userData, userSettlement, userName, userRole]);
-  
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -79,9 +66,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   }, []);
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
-  useEffect(() => {
-    console.log("MainPage useEffect running, userSettlement:", userSettlement);
-    
+  useEffect(() => {    
     // Don't run if still loading or if userData is null
     if (loading || !userData) return;
     
