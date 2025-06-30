@@ -285,14 +285,12 @@ const Retirees = () => {
 
         if (adminDoc.exists()) {
           const adminData = adminDoc.data();
-          console.log("Admin data:", adminData);
           
           // Try different possible locations for settlement
           const settlement = adminData.idVerification?.settlement || 
                            adminData.settlement || 
                            adminData.credentials?.settlement;
           
-          console.log("Found admin settlement:", settlement);
           setAdminSettlement(settlement || null);
           setUserRole(adminData.role);
         } else {
@@ -346,7 +344,6 @@ const Retirees = () => {
             return;
           }
           
-          console.log("Admin settlement:", adminSettlement);
           q = query(
             collection(db, "users"),
             where("role", "==", "retiree"),
@@ -364,12 +361,8 @@ const Retirees = () => {
           ...doc.data(),
         }));
         
-        console.log("Fetched retirees:", fetchedRetirees.length);
-        console.log("Admin settlement being searched:", adminSettlement);
-        
         // If no retirees found and admin has a settlement, try alternative queries
         if (fetchedRetirees.length === 0 && userRole === "admin" && adminSettlement) {
-          console.log("No retirees found with exact settlement match, trying alternative queries...");
           
           // Try case-insensitive search by getting all retirees and filtering
           const allRetireesQuery = query(collection(db, "users"), where("role", "==", "retiree"));
@@ -378,10 +371,7 @@ const Retirees = () => {
             id: doc.id,
             ...doc.data(),
           }));
-          
-          console.log("All retirees found:", allRetirees.length);
-          console.log("All retiree settlements:", allRetirees.map(r => r.idVerification?.settlement).filter(Boolean));
-          
+                    
           // Filter retirees by settlement (case-insensitive)
           const matchingRetirees = allRetirees.filter(retiree => {
             // Try different possible locations for settlement in retiree data
@@ -390,7 +380,6 @@ const Retirees = () => {
                                     retiree.credentials?.settlement;
             
             if (!retireeSettlement) {
-              console.log("Retiree has no settlement:", retiree.idVerification?.firstName);
               return false;
             }
             
@@ -399,15 +388,9 @@ const Retirees = () => {
             const normalizedAdminSettlement = adminSettlement.toString().toLowerCase().trim();
             
             const match = normalizedRetireeSettlement === normalizedAdminSettlement;
-            if (match) {
-              console.log("Found matching retiree:", retiree.idVerification?.firstName, "with settlement:", retireeSettlement);
-            } else {
-              console.log("Settlement mismatch - Retiree:", normalizedRetireeSettlement, "Admin:", normalizedAdminSettlement);
-            }
             return match;
           });
           
-          console.log("Matching retirees after case-insensitive search:", matchingRetirees.length);
           setRetirees(matchingRetirees);
         } else {
           setRetirees(fetchedRetirees);

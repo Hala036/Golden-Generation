@@ -7,6 +7,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { db } from '../../firebase';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
 import { getCategoryAppearance } from '../../utils/categoryColors';
+import i18n from 'i18next';
 
 const RetireeCalendar = () => {
   const { t } = useTranslation();
@@ -322,7 +323,7 @@ const RetireeCalendar = () => {
               {t('calendar.title')}
             </h1>
             <p className="text-gray-600 mt-1">
-              {t('calendar.welcomeBack', {name: currentUser.name, role: t(`common.${currentUser.role}`)})}
+              {i18n.t('calendar.welcomeBack', {name: currentUser.name, role: t(`common.${currentUser.role}`)})}
             </p>
           </div>
           
@@ -521,29 +522,19 @@ const RetireeCalendar = () => {
             <h4 className="font-medium text-gray-700 mb-2">Event Status</h4>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-<<<<<<< HEAD
-                <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
-                <span className="text-sm">Past events</span>
-=======
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.joinedEvents')}</span>
->>>>>>> 54cbbcaa9fb4e34f3a2950e273c2a3e20a91d133
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-orange-500 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.pendingApproval')}</span>
               </div>
-<<<<<<< HEAD
-            </div>
-          </div>
-=======
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-gray-400 rounded"></div>
                 <span className="text-sm">{t('calendar.legend.pastEvents')}</span>
               </div>
-            </>
-          )}
->>>>>>> 54cbbcaa9fb4e34f3a2950e273c2a3e20a91d133
+            </div>
+          </div>
         </div>
       </div>
 

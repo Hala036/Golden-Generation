@@ -34,7 +34,7 @@ const RetireeDashboard = () => {
   ];
 
   const componentsById = {
-    upcoming: <Cards />,
+    upcoming: <Cards setSelected={setSelected} />,
     settings: <Settings />,
     calendar: <RetireeCalendar />,
     messages: <Messages />,

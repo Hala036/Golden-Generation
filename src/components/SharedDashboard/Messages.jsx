@@ -10,6 +10,7 @@ import { triggerNotification } from './TriggerNotifications'; // Import the trig
 import EmptyState from '../EmptyState'; // Import EmptyState component
 import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
+import i18n from 'i18next';
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -475,7 +476,7 @@ const Messages = () => {
         </div>
         {/* Modal body */}
         <div className="p-6">
-          <p className={`text-center mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{t('dashboard.messages.needToBeFriends', { username: selectedUser?.username })}</p>
+          <p className={`text-center mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{i18n.t('dashboard.messages.needToBeFriends', { username: selectedUser?.username })}</p>
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowRequestModal(false)}
@@ -769,7 +770,7 @@ const Messages = () => {
               )}
               {typing && (
                 <div className={`flex items-center gap-2 text-xs mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
-                  <span className="animate-pulse">{t('dashboard.messages.isTyping', { username: otherUser?.username })}</span>
+                  <span className="animate-pulse">{i18n.t('dashboard.messages.isTyping', { username: otherUser?.username })}</span>
                 </div>
               )}
               <div ref={messagesEndRef} />

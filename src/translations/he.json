@@ -1127,7 +1127,7 @@
             "noRecentActivity": "אין פעילות אחרונה להצגה.",
             "alertsAndNotifications": "התראות והודעות",
       "activity": {
-              "joinedCommunity": "{{username}} הצטרף לקהילה",
+              "joinedCommunity": " הצטרף לקהילה",
               "createdEvent": "האירוע '{{title}}' נוצר",
               "completedVolunteerService": "{{username}} השלים שירות התנדבותי",
               "newServiceRequest": "בקשת שירות חדשה: {{title}}",

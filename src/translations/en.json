@@ -538,6 +538,7 @@
       "welcome": "Welcome",
       "profile": "Profile",
       "settings": {
+        "title": "Settings",
         "options": {
           "editProfile": "Edit Profile",
           "editProfileDesc": "Update your name, username, phone, and email",
@@ -928,6 +929,7 @@
     "welcome": "Welcome",
     "profile": "Profile",
     "settings": {
+      "title": "Settings",
       "options": {
         "editProfile": "Edit Profile",
         "editProfileDesc": "Update your name, username, phone, and email",
