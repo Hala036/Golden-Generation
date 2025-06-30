@@ -7,6 +7,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { db } from '../../firebase';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
 import { getCategoryAppearance } from '../../utils/categoryColors';
+import i18n from 'i18next';
 
 const RetireeCalendar = () => {
   const { t } = useTranslation();
@@ -322,7 +323,7 @@ const RetireeCalendar = () => {
               {t('calendar.title')}
             </h1>
             <p className="text-gray-600 mt-1">
-              {t('calendar.welcomeBack', {name: currentUser.name, role: t(`common.${currentUser.role}`)})}
+              {i18n.t('calendar.welcomeBack', {name: currentUser.name, role: t(`common.${currentUser.role}`)})}
             </p>
           </div>
           

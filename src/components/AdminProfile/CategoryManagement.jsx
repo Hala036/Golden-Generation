@@ -4,6 +4,7 @@ import { collection, doc, getDocs, updateDoc, deleteDoc, setDoc, query, where, w
 import { toast } from "react-hot-toast";
 import { useLanguage } from "../../context/LanguageContext";
 import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
+import i18n from "i18next";
 
 const CategoryManagement = () => {
   const { language, t } = useLanguage();
@@ -176,7 +177,7 @@ const CategoryManagement = () => {
         ).join('\n');
         
         const forceDelete = window.confirm(
-          t("auth.categoryManagement.deleteConfirmation.withEvents", {
+          i18n.t("auth.categoryManagement.deleteConfirmation.withEvents", {
             categoryName: category.translations[language] || category.translations.en,
             eventCount: eventCount,
             eventList: eventList
@@ -189,7 +190,7 @@ const CategoryManagement = () => {
       } catch (error) {
         console.error('Error fetching event details:', error);
         const forceDelete = window.confirm(
-          t("auth.categoryManagement.deleteConfirmation.withEventsSimple", {
+          i18n.t("auth.categoryManagement.deleteConfirmation.withEventsSimple", {
             categoryName: category.translations[language] || category.translations.en,
             eventCount: eventCount
           })
@@ -201,7 +202,7 @@ const CategoryManagement = () => {
       }
     }
 
-    const confirmMessage = t("auth.categoryManagement.deleteConfirmation.message", {
+    const confirmMessage = i18n.t("auth.categoryManagement.deleteConfirmation.message", {
       categoryName: category.translations[language] || category.translations.en
     });
     console.log('Confirmation message:', confirmMessage);
@@ -226,7 +227,7 @@ const CategoryManagement = () => {
             batch.delete(eventDoc.ref);
           });
           
-          toast.success(t("auth.categoryManagement.deletingEvents", { count: eventCount }));
+          toast.success(i18n.t("auth.categoryManagement.deletingEvents", { count: eventCount }));
         }
         
         // Delete the category
@@ -238,7 +239,7 @@ const CategoryManagement = () => {
         await batch.commit();
         
         console.log('Batch delete completed successfully');
-        toast.success(t("auth.categoryManagement.categoryAndEventsDeleted", { count: eventCount }));
+        toast.success(i18n.t("auth.categoryManagement.categoryAndEventsDeleted", { count: eventCount }));
         
         // Refresh data
         fetchCategories();
@@ -260,7 +261,7 @@ const CategoryManagement = () => {
     }
 
     const confirmCleanup = window.confirm(
-      t("auth.categoryManagement.cleanupConfirmation.message", {
+      i18n.t("auth.categoryManagement.cleanupConfirmation.message", {
         count: orphanedEvents.length,
         eventList: orphanedEvents.map(event => `• ${event.title} (${event.date})`).join('\n')
       })
@@ -278,7 +279,7 @@ const CategoryManagement = () => {
       
       await batch.commit();
       
-      toast.success(t("auth.categoryManagement.orphanedEventsDeleted", { count: orphanedEvents.length }));
+      toast.success(i18n.t("auth.categoryManagement.orphanedEventsDeleted", { count: orphanedEvents.length }));
       fetchOrphanedEvents();
       fetchCategoryUsage();
     } catch (error) {
@@ -361,9 +362,9 @@ const CategoryManagement = () => {
             <button
               onClick={handleCleanupOrphanedEvents}
               className="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-md flex items-center gap-2"
-              title={t("auth.categoryManagement.cleanupOrphanedEventsTitle", { count: orphanedEvents.length })}
+              title={i18n.t("auth.categoryManagement.cleanupOrphanedEventsTitle", { count: orphanedEvents.length })}
             >
-              <FaTrash /> {t("auth.categoryManagement.cleanupOrphanedEvents", { count: orphanedEvents.length })}
+              <FaTrash /> {i18n.t("auth.categoryManagement.cleanupOrphanedEvents", { count: orphanedEvents.length })}
             </button>
           )}
           <button
@@ -435,7 +436,7 @@ const CategoryManagement = () => {
                       ? 'bg-yellow-100 text-yellow-800' 
                       : 'bg-green-100 text-green-800'
                   }`}>
-                    {t("auth.categoryManagement.eventsCount", { count: categoryUsage[category.id] || 0 })}
+                    {i18n.t("auth.categoryManagement.eventsCount", { count: categoryUsage[category.id] || 0 })}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap font-medium">
