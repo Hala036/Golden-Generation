@@ -25,11 +25,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   const userInfo = useMemo(() => {
     const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
     const userName =
-      userData?.credentials?.username ||
-      userData?.username ||
-      user?.displayName ||
-      user?.email ||
-      "Admin";
+      userData?.credentials?.username || "Admin";
     const userRole = userData?.role || "";
     console.log("username: ", userName)
     return { userSettlement, userName, userRole };
