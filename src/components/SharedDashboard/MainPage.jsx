@@ -17,17 +17,14 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     mountedRef.current = true;
   }
   
-
   const { userData, loading } = useContext(UserContext);
   const user = auth.currentUser;
 
   // Memoize user data calculations to prevent unnecessary re-renders
   const userInfo = useMemo(() => {
     const userSettlement = userData?.idVerification?.settlement || userData?.settlement || "";
-    const userName =
-      userData?.credentials?.username || "Admin";
+    const userName = userData?.credentials?.username || "Admin";
     const userRole = userData?.role || "";
-    console.log("username: ", userName)
     return { userSettlement, userName, userRole };
   }, [userData, user]);
 
@@ -530,6 +527,13 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     }
   };
 
+  // Function to extract name from activity action
+  const extractNameFromAction = (action) => {
+    // Match pattern: starts with any word characters up to a space or 'joined'
+    const match = action.match(/^([^\s]+)(?=\s|joined)/);
+    return match ? match[1] : '';
+  };
+
   // Dynamic activity string helpers
   const getActivityAction = (activity) => {
     switch (activity.type) {
@@ -556,22 +560,26 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     return t('dashboard.main.time.daysAgo', { count: days });
   };
 
-  // Function to extract name from activity action
-  const extractNameFromAction = (action) => {
-    // Match pattern: starts with any word characters up to a space or 'joined'
-    const match = action.match(/^([^\s]+)(?=\s|joined)/);
-    return match ? match[1] : '';
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6">
       {/* Header */}
       <div className="mb-4 md:mb-8">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('dashboard.main.welcome', { userName }, '👋')}</h1>
-            <p className="text-gray-600">{t('dashboard.main.communityToday')}</p>
-
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* <DefaultProfilePic 
+              name={userName} 
+              size={50} 
+              fontSize="1.8rem"
+              bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
+            /> */}
+            <div>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">
+                {t('dashboard.main.welcome')} { userName } 👋
+              </h1>
+              <p className="text-xs md:text-base text-gray-600">
+                {t('dashboard.main.communityToday')}
+              </p>
+            </div>
           </div>
           {/* Quick Actions */}
           <div className={`grid gap-1 md:gap-2 w-full max-w-s md:mr-3 md:ml-3 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
@@ -586,9 +594,11 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               </button>
             ))}
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">{t('dashboard.main.currentTime')}</div>
-
+          {/* Clock for desktop only */}
+          <div className="text-right hidden md:block">
+            <div className="text-sm text-gray-500">
+              {t('dashboard.main.currentTime')}
+            </div>
             <div className="text-lg font-semibold text-gray-700">
               {currentTime.toLocaleTimeString()}
             </div>
@@ -627,9 +637,8 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
             </h2>
             <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
               {recentActivity.length === 0 && (
-                <div className="text-center text-gray-500 py-4">
+                <div className="text-center text-gray-500 py-2 md:py-4">
                   {t('dashboard.main.noRecentActivity')}
-
                 </div>
               )}
               {recentActivity.map((activity) => (
@@ -648,11 +657,12 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
                       getActivityIcon(activity.type)
                     )}
                   </div>
-                  <div className="flex-grow">
-                    <p className="text-sm text-gray-800">{getActivityAction(activity)}</p>
-                    <p className="text-xs text-gray-500 mt-1">{getTimeAgo(/* pass correct values here based on activity.time */)}</p>
-
-                  </div>
+                  {/* <div className="flex-grow">
+                    <p className="text-xs md:text-sm text-gray-800">{getActivityAction(activity)}</p>
+                    <p className="text-[10px] md:text-xs text-gray-500 mt-1">
+                      {getTimeAgo(/* pass minutes, hours, days, invalid here based on your calculation *
+                    </p>
+                  </div> */}
                 </div>
               ))}
             </div>
