@@ -32,9 +32,6 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     description: "",
     capacity: "",
     requirements: "",
-    isRecurring: false,
-    recurringType: "",
-    recurringEndDate: ""
   });
   const [settlements, setSettlements] = useState([]);
 
@@ -427,8 +424,9 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         return `${day}-${month}-${year}`;
       };
 
+      const { isRecurring, recurringType, recurringEndDate, ...eventDataNoRecurring } = eventData;
       const newEvent = {
-        ...eventData,
+        ...eventDataNoRecurring,
         startDate: formatDate(eventData.startDate),
         endDate: formatDate(eventData.endDate || eventData.startDate),
         date: formatDate(eventData.startDate), // Keep for backward compatibility
@@ -754,59 +752,6 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
               </div>
             )}
           </div>
-        </div>
-        
-        {/* Recurring Options Section */}
-        <div className="border-t border-gray-200 pt-6">
-          <div className="flex items-center">
-        <input
-              type="checkbox"
-              name="isRecurring"
-              id="isRecurring"
-              checked={eventData.isRecurring}
-          onChange={handleChange}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="isRecurring" className="ml-2 block text-sm text-gray-900">
-              Repeat Event
-            </label>
-          </div>
-
-          <AnimatePresence>
-            {eventData.isRecurring && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
-                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Repeats
-                    </label>
-                    <select
-                      name="recurringType"
-                      value={eventData.recurringType}
-          onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Repeat Until <span className="text-red-500">*</span>
-                    </label>
-                    {renderInput("recurringEndDate", "date", "", { required: eventData.isRecurring, min: eventData.startDate })}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
         
         <div className="flex justify-end pt-6 border-t border-gray-200">
