@@ -56,10 +56,13 @@ const AdminManagement = () => {
       const counts = {};
       for (const settlement of settlements) {
         const normSettle = settlement.trim().normalize('NFC');
-        counts[normSettle] = retirees.filter(r =>
-          (r.idVerification?.settlement && r.idVerification.settlement.trim().normalize('NFC') === normSettle) ||
-          (r.settlement && r.settlement.trim().normalize('NFC') === normSettle)
-        ).length;
+        console.log('Admin settlement:', normSettle);
+        counts[normSettle] = retirees.filter(r => {
+          const retireeSettle1 = r.idVerification?.settlement ? r.idVerification.settlement.trim().normalize('NFC') : null;
+          const retireeSettle2 = r.settlement ? r.settlement.trim().normalize('NFC') : null;
+          console.log('Comparing to retiree:', retireeSettle1, retireeSettle2);
+          return (retireeSettle1 === normSettle) || (retireeSettle2 === normSettle);
+        }).length;
       }
       setRetireeCounts(counts);
     });
@@ -357,7 +360,7 @@ const AdminManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <FaUsers className="mr-1" />
-                        {retireeCounts[admin.idVerification?.settlement] || 0} retirees
+                        {retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0} retirees
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
