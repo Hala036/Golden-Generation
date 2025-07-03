@@ -4,8 +4,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, getUserData } from '../../firebase';
 import useAuth from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
-import EmptyState from '../EmptyState';
 import { useLanguage } from '../../context/LanguageContext';
+import EmptyState from '../EmptyState';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
@@ -18,8 +18,10 @@ const iconMap = {
 };
 
 const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => { // Add setShowNotificationsPopup as a prop
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const { t } = useLanguage();
+  const [userRole, setUserRole] = useState(null);
+
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateNotificationModal, setShowCreateNotificationModal] = useState(false); // Modal for creating notifications
@@ -30,14 +32,14 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
   // Fetch notifications based on user role
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (!user?.uid) return;
+      if (!currentUser?.uid) return;
 
       try {
-        const userData = await getUserData(user.uid);
+        const userData = await getUserData(currentUser.uid);
         const userRole = userData?.role;
 
         if (!userRole) {
-          console.error("User role not found for UID:", user.uid);
+          console.error("User role not found for UID:", currentUser.uid);
           return;
         }
 
@@ -46,7 +48,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           // Super admin sees all notifications
           notificationsQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
         } else if (userRole === 'admin') {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
           const userSettlement = userDoc.data()?.idVerification?.settlement;
           if (!userSettlement) {
             setNotifications([]);
@@ -62,7 +64,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           // Regular users see their own notifications
           notificationsQuery = query(
             collection(db, "notifications"),
-            where("recipientId", "==", user.uid),
+            where("recipientId", "==", currentUser.uid),
             orderBy("createdAt", "desc")
           );
         }
@@ -84,21 +86,21 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
     };
 
     fetchNotifications();
-  }, [user]);
+  }, [currentUser]);
 
   // Mark notification as read
   const markAsRead = async (notificationId) => {
-    if (!user) { return; }
+    if (!currentUser) { return; }
 
     try {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       const currentNotifs = userDoc.data()?.notifs || [];
       
       const updatedNotifs = currentNotifs.map(notif => 
         notif.id === notificationId ? { ...notif, read: true } : notif
       );
 
-      await updateDoc(doc(db, "users", user.uid), { notifs: updatedNotifs });
+      await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -106,15 +108,15 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
-    if (!user) { return; }
+    if (!currentUser) { return; }
 
     try {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       const currentNotifs = userDoc.data()?.notifs || [];
       
       const updatedNotifs = currentNotifs.map(notif => ({ ...notif, read: true }));
 
-      await updateDoc(doc(db, "users", user.uid), { notifs: updatedNotifs });
+      await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
@@ -185,20 +187,21 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
             className="text-sm text-blue-500 hover:underline"
             onClick={markAllAsRead}
           >
-            Mark all as read
+            {t('auth.dashboard.notifications.markAllAsRead')}
           </button>
-          {user?.role !== "retiree" && (
+          {currentUser?.role !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
               onClick={() => setShowCreateNotificationModal(true)}
             >
-              Create Notification
+              {t('auth.dashboard.notifications.createNotification')}
             </button>
           )}
         </div>
       </div>
       <div className="bg-white rounded-xl divide-y">
         {loading ? (
+
           <NotificationsSkeleton />
         ) : notifications.length === 0 ? (
           <EmptyState
@@ -233,7 +236,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
                 {iconMap[n.type] || iconMap.info}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-800 truncate">{n.title || "Notification"}</div>
+                <div className="font-semibold text-gray-800 truncate">{n.title || t('auth.dashboard.notifications.notification')}</div>
                 <div className="text-sm text-gray-600 truncate">{n.message}</div>
                 <div className="text-xs text-gray-400 mt-1">
                   {n.createdAt
@@ -256,12 +259,12 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           <div className="absolute inset-0 bg-gray-200 opacity-50"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{selectedNotification.title || "Notification"}</h3>
+              <h3 className="text-xl font-bold">{selectedNotification.title || t('dashboard.notifications.notification')}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowModal(false)}
               >
-                &times;
+                {t('auth.dashboard.notifications.close')}
               </button>
             </div>
             <p className="text-gray-700">{selectedNotification.message}</p>
@@ -275,12 +278,12 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           <div className="absolute inset-0 bg-gray-200"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Create Notification</h3>
+              <h3 className="text-xl font-bold">{t('dashboard.notifications.modalTitle')}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowCreateNotificationModal(false)} // Close the modal
               >
-                &times;
+                {t('dashboard.notifications.close')}
               </button>
             </div>
             <SendNotification onClose={() => setShowCreateNotificationModal(false)} /> {/* Pass onClose callback */}

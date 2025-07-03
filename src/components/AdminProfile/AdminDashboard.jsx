@@ -29,14 +29,14 @@ const AdminDashboard = () => {
     { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
     { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
     { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
-    { id: "settings", label: t("dashboard.settings"), icon: <FaCog /> },
-    //{ id: "comprehensiveAnalytics", label: "Advanced Analytics", icon: <FaChartLine /> },
+    { id: "settings", label: t("dashboard.settings.title"), icon: <FaCog /> },
+    //{ id: "comprehensiveAnalytics", label: t("dashboard.advancedAnalytics"), icon: <FaChartLine /> },
   ];
 
   const customButtons = [];
 
   const componentsById = {
-    upcoming: <Cards />,
+    upcoming: <Cards setSelected={setSelected} />,
     main: <AdminHomepage setSelected={setSelected} />, // Pass setSelected to AdminHomepage
     settings: <Settings />,
     calendar: <AdminCalendar />,

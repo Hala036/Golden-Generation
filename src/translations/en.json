@@ -1,5 +1,5 @@
 {
-  "common": {
+"common": {
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
@@ -16,12 +16,13 @@
     "step": "Step",
     "of": "of",
     "select": "Select",
-    "close": "Close",
-    "undo": "Undo",
-    "retry": "Retry",
-    "processing": "Processing..."
+    "change":"change"
+
   },
   "auth": {
+    "errors": {
+      "notLoggedIn": "You are not logged in"
+    },
     "login": {
       "title": "Login as",
       "email": "Email address",
@@ -190,7 +191,6 @@
   "vocationalTraining": "Vocational Training",
   "noFormalEducation": "No Formal Education",
   "other": "Other"          
-
         },
         "continue": "Continue",
         "jobCategories": "Job Categories",
@@ -537,7 +537,119 @@
     "dashboard": {
       "welcome": "Welcome",
       "profile": "Profile",
-      "settings": "Settings",
+      "settings": {
+        "title": "Settings",
+        "options": {
+          "editProfile": "Edit Profile",
+          "editProfileDesc": "Update your name, username, phone, and email",
+          "changePassword": "Change Password",
+          "changePasswordDesc": "Update your account password",
+          "profilePicture": "Profile Picture",
+          "profilePictureDesc": "Update your profile picture",
+          "fontSize": "Font Size",
+          "fontSizeDesc": "Adjust the text size (Normal / Large / Extra large)",
+          "systemAnnouncements": "System Announcements",
+          "systemAnnouncementsDesc": "View important system updates and announcements",
+          "notifications": "Notifications",
+          "notificationsDesc": "Manage your notification preferences",
+          "theme": "Theme",
+          "themeDesc": "Switch between light and dark mode",
+          "deleteAccount": "Delete Account",
+          "deleteAccountDesc": "Permanently delete your account",
+          "editUserInfo": "Edit User Information",
+          "editUserInfoDesc": "Edit all information entered during sign-up"
+        },
+        "profilePicture":{
+          "currentProfile":"Current Profile",
+          "clickToUpload":"Click to upload",
+          "orDragAndDrop":"or drag and drop",
+          "fileTypes":"PNG, JPG, JPEG or GIF (MAX. 5MB)",
+          "preview":"Preview",
+          "newProfilePicturePreview":"New Profile Picture Preview",
+          "uploading":"Uploading...",
+          "uploadFailed":"Upload failed"
+        },
+        "fontSize": {
+          "livePreview": "Live preview",
+          "sampleText": "The quick brown fox jumps over the lazy dog."
+        },
+        "theme": {
+          "light": "Light",
+          "dark": "Dark"
+        },
+        "notifications": {
+          "emailNotifications": "Email Notifications",
+          "pushNotifications": "Push Notifications"
+        },
+        "announcements": {
+          "welcome": {
+            "title": "Welcome to Golden Generation!",
+            "content": "We are excited to have you on board."
+          },
+          "darkMode": {
+            "title": "New Feature: Dark Mode",
+            "content": "You can now switch between light and dark themes in your settings."
+          }
+        },
+        "errors": {
+          "fetchingProfilePicture": "Error fetching profile picture:",
+          "uploadingToCloudinary": "Error uploading to Cloudinary:",
+          "updatingProfilePicture": "Error updating profile picture:",
+          "deletingAccount": "Error deleting account:"
+        },
+        "modals": {
+          "editProfile": "Edit Profile",
+          "changePassword": "Change Password",
+          "profilePicture": "Update Profile Picture",
+          "fontSize": "Font Size",
+          "announcements": "System Announcements",
+          "notifications": "Notifications",
+          "theme": "Theme",
+          "deleteAccount": "Delete Account"
+        },
+        "buttons": {
+          "reauthenticate": "Re-authenticate",
+          "saveChanges": "Save Changes"
+        },
+        "placeholders": {
+          "name": "Name",
+          "username": "Username",
+          "phone": "Phone",
+          "email": "Email",
+          "currentPassword": "Current Password",
+          "newPassword": "New Password",
+          "confirmNewPassword": "Confirm New Password",
+          "reauthPassword": "Re-authenticate with current password",
+          "deleteConfirm": "Type DELETE to confirm",
+          "enterPassword": "Enter your password"
+        },
+        "deleteAccountWarning": "This action is irreversible. Type <b>DELETE</b> to confirm.",
+        "toast": {
+          "failedToLoadProfile": "Failed to load profile",
+          "notLoggedIn": "You are not logged in",
+          "profileUpdated": "Profile updated successfully",
+          "failedToUpdateProfile": "Failed to update profile",
+          "passwordsDoNotMatch": "Passwords do not match",
+          "passwordUpdated": "Password updated successfully",
+          "failedToUpdatePassword": "Failed to update password",
+          "invalidImageFile": "Please upload a valid image file (JPG, JPEG, or PNG)",
+          "fileSizeLimit": "File size must be less than 5MB",
+          "pleaseSelectPicture": "Please select a picture",
+          "profilePictureUpdated": "Profile picture updated successfully",
+          "failedToUpdateProfilePicture": "Failed to update profile picture",
+          "fontSizeUpdated": "Font size updated successfully",
+          "themeSetTo": "Theme set to {{mode}}",
+          "notificationPreferenceUpdated": "Notification preference updated",
+          "typeDeleteToConfirm": "Please type DELETE to confirm",
+          "enterYourPassword": "Please enter your password",
+          "accountDeleted": "Account deleted successfully",
+          "requiresRecentLogin": "This operation requires recent authentication",
+          "failedToDeleteAccount": "Failed to delete account",
+          "profileAndEmailUpdated": "Profile and email updated successfully",
+          "reauthenticationFailed": "Re-authentication failed",
+          "failedToSavePreference": "Failed to save preference"
+        }
+      },
       "logout": "Logout",
       "homePage": "Home Page",
       "retirees": "Retirees",
@@ -545,6 +657,7 @@
       "serviceRequests": "Service Requests",
       "service": "Request Services",
       "analytics": "Analytics",
+      "advancedAnalytics": "Advanced Analytics",
       "contactUs": "Customer Support",
       "pendingEvents": "Pending Events",
       "categoryManagement": "Category Management",
@@ -553,7 +666,12 @@
       "arrowOpen": "→",
       "events":{
         "upcomingEvents": "Upcoming Events",
+        "upcomingEventsDescription": "Discover and join exciting events happening soon",
+        "noUpcomingEvents": "No upcoming events",
+        "noUpcomingEventsFilter": "No upcoming events found",
+        "createdByMe": "Created by me",
         "addEvent": "Add Event",
+        "addEvents": "Add Events",
         "events": "Events",
         "noEvents": "No events found",
         "createEvent": "Create Event",
@@ -572,7 +690,9 @@
         "leave": "Leave Event",
         "moreDetails": "More Info",
         "participants": "Participants",
-        "noParticipants": "No participants yet"
+        "noParticipants": "No participants yet",
+        "joined": "Joined",
+        "noPastEvents": "No past events"
       },
       "expiryDate": {
         "label": "ID Expiry Date"
@@ -622,7 +742,54 @@
       },
       "uploadInstructions": "Please upload or scan your ID for auto-fill, or fill the form manually.",
       "startScanning": "Start Scanning",
-      "acceptedFormats": "Accepted formats: JPG, JPEG, PNG (max 5MB)"
+      "acceptedFormats": "Accepted formats: JPG, JPEG, PNG (max 5MB)",
+      "notifications": {
+        "markAllAsRead": "Mark all as read",
+        "createNotification": "Create Notification",
+        "loading": "Loading...",
+        "noNotifications": "No notifications",
+        "notification": "Notification",
+        "close": "Close",
+        "modalTitle": "Create Notification",
+        "title": "Notifications",
+        "placeholder": "This is a placeholder for auth dashboard notifications."
+      },
+      "sendNotification": {
+        "messagePlaceholder": "Notification message",
+        "target": {
+          "everyone": "Everyone",
+          "retiree": "Retirees",
+          "admin": "Admins",
+          "custom": "Specific Users (Usernames)"
+        },
+        "customUsernamePlaceholder": "Enter a username",
+        "addUsername": "Add Username",
+        "removeUsername": "×",
+        "send": "Send",
+        "toast": {
+          "usernameAdded": "Username already added!",
+          "usernameNotFound": "Username not found!",
+          "addUsernameFailed": "Failed to add username.",
+          "sent": "Notification sent successfully",
+          "failed": "Failed to send notification"
+        }
+      },
+      "sidebar": {
+        "user": "User",
+        "noUserLoggedIn": "No user is logged in.",
+        "failedToLoadUser": "Failed to load user data.",
+        "failedToLogout": "Failed to logout. Please try again.",
+        "loggedOut": "Logged out successfully!"
+      },
+      "topbar": {
+        "title": "Golden Generation"
+      },
+      "main": {
+        "noComponent": "No Component Found"
+      },
+      "actions": {
+        "close": "Close"
+      }
     },
     "forgotPassword": {
       "title": "Reset Password",
@@ -683,42 +850,159 @@
       "add": "Add",
       "loadError": "Failed to load settlements.",
       "updateError": "Failed to update settlement.",
-      "addError": "Failed to add settlement.",
-      "loading": "Loading settlements...",
-      "modals": {
-        "disable": {
-          "title": "Confirm Disable",
-          "subtitle": "This action cannot be undone",
-          "message": "Are you sure you want to disable and remove",
-          "messageEnd": "?",
-          "warning": "This will remove the settlement from available settlements and delete all associated data.",
-          "confirm": "Yes, Disable"
-        }
+      "addError": "Failed to add settlement."
+    },
+    "categoryManagement": {
+      "title": "Category Management",
+      "loadingCategories": "Loading categories...",
+      "fetchCategoriesError": "Failed to fetch categories",
+      "provideTranslations": "Please provide English and Hebrew translations",
+      "categoryAddedSuccess": "Category added successfully!",
+      "failedToAddCategory": "Failed to add category",
+      "categoryUpdatedSuccess": "Category updated successfully!",
+      "failedToUpdateCategory": "Failed to update category",
+      "deletingEvents": "Deleting {{count}} events...",
+      "categoryAndEventsDeleted": "Category and {{count}} events deleted successfully!",
+      "failedToDeleteCategory": "Failed to delete category and events",
+      "noOrphanedEvents": "No orphaned events found!",
+      "orphanedEventsDeleted": "{{count}} orphaned events deleted successfully!",
+      "failedToCleanupEvents": "Failed to clean up orphaned events",
+      "addCategory": "Add Category",
+      "cleanup": "Cleanup",
+      "cleanupOrphanedEvents": "Cleanup ({{count}})",
+      "cleanupOrphanedEventsTitle": "Clean up {{count}} orphaned events",
+      "tableHeaders": {
+        "category": "Category",
+        "color": "Color",
+        "translations": "Translations",
+        "eventsUsing": "Events Using",
+        "actions": "Actions"
       },
-      "messages": {
-        "disabling": "Disabling settlement...",
-        "processing": "Processing",
-        "disabledSuccess": "Settlement has been disabled successfully. Removed {adminCount} admin(s) and {retireeCount} retiree(s).",
-        "disabledTitle": "Settlement Disabled",
-        "disableError": "Failed to disable settlement. Please try again.",
-        "errorTitle": "Error",
-        "emptyName": "Settlement name cannot be empty",
-        "validationError": "Validation Error",
-        "renamedSuccess": "Settlement renamed from \"{original}\" to \"{name}\"",
-        "renamedTitle": "Settlement Renamed",
-        "originalNotFound": "Original settlement not found",
-        "addedSuccess": "Settlement \"{name}\" added successfully",
-        "addedTitle": "Settlement Added",
-        "alreadyExists": "Settlement \"{name}\" already exists",
-        "warningTitle": "Warning",
-        "saveError": "Failed to save settlement. Please try again."
+      "eventsCount": "{{count}} events",
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete category"
+      },
+      "modals": {
+        "addTitle": "Add New Category",
+        "editTitle": "Edit Category",
+        "viewTitle": "Category Details",
+        "updateCategory": "Update Category"
+      },
+      "form": {
+        "englishTranslation": "English Translation (Key)",
+        "englishPlaceholder": "e.g., Trip",
+        "hebrewTranslation": "Hebrew Translation",
+        "hebrewPlaceholder": "e.g., טיול",
+        "arabicTranslation": "Arabic Translation (Optional)",
+        "arabicPlaceholder": "e.g., رحلة",
+        "categoryColor": "Category Color"
+      },
+      "details": {
+        "categoryId": "Category ID",
+        "englishTranslation": "English Translation",
+        "hebrewTranslation": "Hebrew Translation",
+        "arabicTranslation": "Arabic Translation",
+        "color": "Color"
+      },
+      "deleteConfirmation": {
+        "title": "Delete Category",
+        "message": "Are you sure you want to delete \"{{categoryName}}\"? This action cannot be undone.",
+        "withEvents": "Category \"{{categoryName}}\" is used by {{eventCount}} event(s).\n\nThis will also delete ALL events in this category:\n\n{{eventList}}\n\nClick OK to delete category and all its events, or Cancel to abort.",
+        "withEventsSimple": "Category \"{{categoryName}}\" is used by {{eventCount}} event(s).\n\nThis will also delete ALL events in this category.\n\nClick OK to delete category and all its events, or Cancel to abort."
+      },
+      "cleanupConfirmation": {
+        "title": "Cleanup Orphaned Events",
+        "message": "Found {{count}} orphaned events (events with non-existent categories).\n\nThese events will be deleted:\n\n{{eventList}}\n\nClick OK to delete all orphaned events, or Cancel to abort."
+      },
+      "addCategoryModal": {
+        "title": "Add New Category",
+        "adding": "Adding...",
+        "addCategory": "Add Category",
+        "failedToAddCategory": "Failed to add category. Please try again."
+
       }
     }
   },
   "dashboard": {
     "welcome": "Welcome",
     "profile": "Profile",
-    "settings": "Settings",
+    "settings": {
+      "title": "Settings",
+      "options": {
+        "editProfile": "Edit Profile",
+        "editProfileDesc": "Update your name, username, phone, and email",
+        "changePassword": "Change Password",
+        "changePasswordDesc": "Update your account password",
+        "profilePicture": "Profile Picture",
+        "profilePictureDesc": "Update your profile picture",
+        "fontSize": "Font Size",
+        "fontSizeDesc": "Adjust the text size (Normal / Large / Extra large)",
+        "systemAnnouncements": "System Announcements",
+        "systemAnnouncementsDesc": "View important system updates and announcements",
+        "notifications": "Notifications",
+        "notificationsDesc": "Manage your notification preferences",
+        "theme": "Theme",
+        "themeDesc": "Switch between light and dark mode",
+        "deleteAccount": "Delete Account",
+        "deleteAccountDesc": "Permanently delete your account",
+        "editUserInfo": "Edit User Information",
+        "editUserInfoDesc": "Edit all information entered during sign-up"
+      },
+      "modals": {
+        "editProfile": "Edit Profile",
+        "changePassword": "Change Password",
+        "profilePicture": "Update Profile Picture",
+        "fontSize": "Font Size",
+        "announcements": "System Announcements",
+        "notifications": "Notifications",
+        "theme": "Theme",
+        "deleteAccount": "Delete Account"
+      },
+      "buttons": {
+        "reauthenticate": "Re-authenticate",
+        "saveChanges": "Save Changes"
+      },
+      "placeholders": {
+        "name": "Name",
+        "username": "Username",
+        "phone": "Phone",
+        "email": "Email",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password",
+        "reauthPassword": "Re-authenticate with current password",
+        "deleteConfirm": "Type DELETE to confirm",
+        "enterPassword": "Enter your password"
+      },
+      "deleteAccountWarning": "This action is irreversible. Type <b>DELETE</b> to confirm.",
+      "toast": {
+        "failedToLoadProfile": "Failed to load profile",
+        "notLoggedIn": "You are not logged in",
+        "profileUpdated": "Profile updated successfully",
+        "failedToUpdateProfile": "Failed to update profile",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "passwordUpdated": "Password updated successfully",
+        "failedToUpdatePassword": "Failed to update password",
+        "invalidImageFile": "Please upload a valid image file (JPG, JPEG, or PNG)",
+        "fileSizeLimit": "File size must be less than 5MB",
+        "pleaseSelectPicture": "Please select a picture",
+        "profilePictureUpdated": "Profile picture updated successfully",
+        "failedToUpdateProfilePicture": "Failed to update profile picture",
+        "fontSizeUpdated": "Font size updated successfully",
+        "themeSetTo": "Theme set to {{mode}}",
+        "notificationPreferenceUpdated": "Notification preference updated",
+        "typeDeleteToConfirm": "Please type DELETE to confirm",
+        "enterYourPassword": "Please enter your password",
+        "accountDeleted": "Account deleted successfully",
+        "requiresRecentLogin": "This operation requires recent authentication",
+        "failedToDeleteAccount": "Failed to delete account",
+        "profileAndEmailUpdated": "Profile and email updated successfully",
+        "reauthenticationFailed": "Re-authentication failed",
+        "failedToSavePreference": "Failed to save preference"
+      }
+    },
     "logout": "Logout",
     "homePage": "Home Page",
     "retirees": "Retirees",
@@ -726,6 +1010,7 @@
     "serviceRequests": "Service Requests",
     "service": "Request Services",
     "analytics": "Analytics",
+    "advancedAnalytics": "Advanced Analytics",
     "contactUs": "Customer Support",
     "pendingEvents": "Pending Events",
     "categoryManagement": "Category Management",
@@ -734,7 +1019,13 @@
     "arrowOpen": "→",
     "events": {
       "upcomingEvents": "Upcoming Events",
+      "upcomingEventsDescription": "Discover and join exciting events happening soon",
+      "noUpcomingEvents": "No upcoming events",
+      "noUpcomingEventsFilter": "No upcoming events found",
+      "createdByMe": "Created by me",
       "addEvent": "Add Event",
+      "addEvents": "Add Events",
+      "events": "Events",
       "noEvents": "No events found",
       "createEvent": "Create Event",
       "editEvent": "Edit Event",
@@ -752,10 +1043,14 @@
       "leave": "Leave Event",
       "moreDetails": "More Info",
       "participants": "Participants",
-      "noParticipants": "No participants yet"
+      "noParticipants": "No participants yet",
+      "joined": "Joined",
+      "noPastEvents": "No past events"
     },
     "filter": {
       "allCategories": "All Categories",
+      "myEvents": "My Events",
+      "myEventsOnly": "My Events Only",
       "trip": "Trip",
       "vacation": "Vacation",
       "workshop": "Workshop",
@@ -780,21 +1075,72 @@
     },
     "messages": {
       "title": "Messages",
-      "search": "Search conversations...",
-      "noMessages": "No messages yet",
-      "typeMessage": "Type a message...",
-      "selectChat": "Select a chat to start messaging",
-      "chooseConversation": "Choose a conversation from the list to begin chatting.",
-      "sendMessage": "Send Message",
-      "friendRequest": "Friend Request",
+      "search": "Search for users...",
+      "noMessages": "No messages yet.",
+      "selectChat": "Select a chat to start messaging.",
+      "typeMessage": "Type your message...",
+      "loadingMessages": "Loading messages...",
+      "isTyping": "{{username}} is typing...",
+      "friendRequests": "Friend Requests",
+      "newRequests": "new",
       "accept": "Accept",
       "reject": "Reject",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "rejected": "Rejected"
+      "cancel": "Cancel",
+      "sendRequest": "Send Request",
+      "needToBeFriends": "You need to be friends with {{username}} to start a conversation.",
+      "toast": {
+        "requestExists": "A friend request already exists",
+        "requestSent": "Friend request sent successfully",
+        "requestFailed": "Failed to send friend request",
+        "requestAccepted": "Friend request accepted",
+        "requestAcceptFailed": "Failed to accept friend request",
+        "requestRejected": "Friend request rejected",
+        "requestRejectFailed": "Failed to reject friend request",
+        "sendFailed": "Failed to send message",
+        "startChatFailed": "Failed to start chat",
+        "requestPending": "A friend request is already pending",
+        "initiateCallFailed": "Failed to initiate call"
+      }
     },
     "notifications": "Notifications",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "main": {
+      "welcome": "Welcome, {{userName}} 👋",
+      "communityToday": "Here's what's happening in your community today",
+      "currentTime": "Current Time",
+      "quickActions": {
+        "calendar": "Calendar",
+        "viewAllRequests": "View All Requests",
+        "manageRetirees": "Manage Retirees",
+        "reportsAnalytics": "Reports & Analytics",
+        "adminManagement": "Admin Management",
+        "addSettlements": "Add Settlements"
+      },
+      "cards": {
+        "pendingServiceRequests": "Pending Service Requests",
+        "signupsThisWeek": "Signups This Week",
+        "activeEvents": "Active Events",
+        "volunteerMatchesPending": "Volunteer Matches Pending",
+        "pendingEventRequests": "Pending Event Requests"
+      },
+      "recentActivityFeed": "Recent Activity Feed",
+      "noRecentActivity": "No recent activity to show.",
+      "alertsAndNotifications": "Alerts & Notifications",
+      "activity": {
+        "joinedCommunity": "{{username}} joined the community",
+        "createdEvent": "Event '{{title}}' created",
+        "completedVolunteerService": "{{username}} completed volunteer service",
+        "newServiceRequest": "New service request: {{title}}",
+        "eventFullyBooked": "Event '{{title}}' fully booked",
+        "volunteerMatchCreated": "Volunteer match created for '{{title}}'"
+      },
+      "time": {
+        "minutesAgo": "{{count}} minutes ago",
+        "hoursAgo": "{{count}} hours ago",
+        "daysAgo": "{{count}} days ago",
+        "invalidDate": "Invalid date"
+      }
+    }
   },
   "errors": {
     "required": "This field is required",
@@ -853,7 +1199,19 @@
       "requirements": "Special Requirements",
       "requirementsPlaceholder": "Enter any special requirements for the event",
       "image": "Add Image",
+      "changeImage": "Change Image",
+      "uploadImage": "Upload Image",
+      "eventPreview": "Event Preview",
+      "mustBeLoggedIn": "You must be logged in to create events",
+      "fetchCategoriesError": "Failed to fetch categories.",
+      "eventCreatedSuccess": "Event created successfully!",
+      "createEventError": "Failed to create event. Please try again.",
       "submit": "Submit"
+    },
+    "pendingEvents": {
+      "fetchEventsError": "Failed to fetch pending events.",
+      "eventApprovedSuccess": "Event approved successfully!",
+      "failedToApproveEvent": "Failed to approve event."
     }
   },
   "retiree": {
@@ -874,7 +1232,8 @@
       "title": "Customer Support",
       "description": "If you have any questions or need assistance, feel free to reach out to us by sending a message below.",
       "placeholder": "Type your message here...",
-      "sendButton": "Send Message"
+      "sendButton": "Send Message",
+      "sending": "Sending..."
     },
     "errors": {
       "noUserLoggedIn": "No user is logged in.",
@@ -887,6 +1246,299 @@
     },
     "success": {
       "messageSent": "Your message has been sent successfully!"
+    },
+    "toast": {
+      "missingInfo": "Unable to send message. Admin or user information is missing.",
+      "sendFailed": "Failed to send the message."
+    }
+  },
+  "calendar": {
+    "title": "Retiree Activity Calendar",
+    "welcomeBack": "Welcome back, {{name}} ({{role}})",
+    "adminName": "Admin Sarah",
+    "searchEvents": "Search events...",
+    "filter": {
+      "allEvents": "All Events",
+      "createdByMe": "Created by Me",
+      "pendingApproval": "Pending Approval",
+      "myEvents": "My Events"
+    },
+    "categories": {
+      "fitness": "Fitness",
+      "social": "Social",
+      "hobby": "Hobbies",
+      "educational": "Educational"
+    },
+    "month": "Month",
+    "week": "Week",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "more": "more",
+    "legend": {
+      "title": "Legend",
+      "createdByMe": "Created by me",
+      "createdByOtherAdmins": "Created by other admins",
+      "retireeSubmissions": "Retiree submissions",
+      "joinedEvents": "Joined events",
+      "pendingApproval": "Pending approval",
+      "pastEvents": "Past events"
+    },
+    "at": "at",
+    "min": "min",
+    "participants": "participants",
+    "approve": "Approve",
+    "leaveEvent": "Leave Event",
+    "full": "Full",
+    "joinEvent": "Join Event",
+    "createEvent": "Create Event",
+    "createNewEvent": "Create New Event",
+    "eventTitle": "Event title",
+    "location": "Location",
+    "description": "Description",
+    "maxParticipants": "Max participants",
+    "oneTimeEvent": "One-time event",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "sampleEvents": {
+      "yoga": {
+        "title": "Morning Yoga Class",
+        "location": "Community Center - Room A",
+        "description": "Gentle yoga session for all fitness levels"
+      },
+      "bookClub": {
+        "title": "Book Club Discussion",
+        "location": "Library Meeting Room",
+        "description": "Discussing \"The Thursday Murder Club\""
+      },
+      "gardenClub": {
+        "title": "Garden Club Meet",
+        "location": "Community Garden",
+        "description": "Spring planting and maintenance"
+      }
+    },
+    "eventDetails": {
+      "close": "Close",
+      "date": "Date",
+      "time": "Time",
+      "from": "From",
+      "to": "to",
+      "notSpecified": "Not specified",
+      "location": "Location",
+      "notAvailable": "N/A",
+      "description": "Description",
+      "noDescription": "No description provided.",
+      "participants": "Participants",
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "other": "Other"
+      },
+      "approve": "Approve",
+      "reject": "Reject",
+      "noParticipants": "No participants yet",
+      "joinedCount": "{{count}} participant{{count, plural, one {} other {s}}} have joined."
+    },
+    "adminEventDetails": {
+      "confirmDelete": "Confirm Delete",
+      "failedToDeleteEvent": "Failed to delete event.",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event"
+    },
+    "toast": {
+      "failedToLoadEvents": "Failed to load events"
+    }
+  },
+  "service": {
+    "title": "Create a Service Request",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "e.g., Medical Escort Needed",
+      "location": "Location",
+      "locationPlaceholder": "e.g., Community Center",
+      "volunteerField": "Volunteer Field",
+      "selectField": "Select Field",
+      "professionalBackground": "Professional Background",
+      "professionalBackgroundPlaceholder": "e.g., Healthcare, Education",
+      "frequency": "Frequency",
+      "selectFrequency": "Select Frequency",
+      "timing": "Timing",
+      "selectTiming": "Select Timing",
+      "selectDays": "Select Days",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the request in detail",
+      "submitting": "Submitting...",
+      "createRequest": "Create Request"
+    },
+    "fields": {
+      "healthcare": "Healthcare",
+      "education": "Education",
+      "technology": "Technology",
+      "arts": "Arts",
+      "socialServices": "Social Services",
+      "administration": "Administration",
+      "consulting": "Consulting",
+      "mentoring": "Mentoring",
+      "homeAssistance": "Home Assistance",
+      "transportation": "Transportation",
+      "publicity": "Publicity",
+      "health": "Health",
+      "teaching": "Teaching",
+      "highTech": "High Tech",
+      "tourism": "Tourism",
+      "safety": "Safety",
+      "funds": "Funds",
+      "craftsmanship": "Craftsmanship",
+      "culture": "Culture"
+    },
+    "timing": {
+      "onceMonth": "Once a month",
+      "onceTwoWeeks": "Once every two weeks",
+      "onceWeek": "Once a week",
+      "twiceWeek": "Twice a week",
+      "weekends": "Weekends",
+      "flexible": "Flexible"
+    },
+    "time": {
+      "morning": "Morning hours",
+      "noon": "Noon hours",
+      "evening": "Evening hours"
+    },
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday"
+    },
+    "errors": {
+      "notLoggedIn": "You must be logged in to create service requests.",
+      "noSettlement": "Failed to fetch user settlement.",
+      "failedCreate": "Failed to create service request."
+    },
+    "success": {
+      "created": "Service request created successfully!"
+    }
+  },
+  "sidebar": {
+    "home": "Home Page",
+    "upcomingEvents": "Upcoming Events",
+    "retirees": "Retirees",
+    "volunteerRequests": "Volunteer Requests",
+    "serviceRequests": "Service Requests",
+    "management": "Management",
+    "analytics": "Analytics",
+    "addSettlements": "Add Settlements",
+    "settingsSection": "Settings",
+    "settings": "Settings",
+    "logout": "Logout",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "volunteer": {
+    "tabs": {
+      "requests": "Volunteering Requests",
+      "info": "Volunteering Information"
+    },
+    "section": {
+      "requests": "Volunteering Requests",
+      "info": "Volunteering Information",
+      "current": "Current Volunteering",
+      "areas": "Volunteer Areas",
+      "frequency": "Frequency",
+      "hours": "Preferred Hours",
+      "days": "Available Days"
+    },
+    "label": {
+      "timing": "Timing:",
+      "location": "Location:",
+      "frequency": "Frequency:",
+      "professionalBackground": "Professional Background Requirements:",
+      "notSpecified": "Not specified",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "accept": "Accept",
+      "reject": "Reject",
+      "saveChanges": "Save Changes",
+      "yesCurrentlyVolunteering": "Yes, I'm currently volunteering",
+      "currentlyVolunteering": "Are you currently volunteering?",
+      "managePreferences": "Manage your volunteering preferences and explore opportunities."
+    },
+    "areas": {
+      "publicity": "Publicity",
+      "health": "Health",
+      "catering": "Catering",
+      "teaching": "Teaching",
+      "highTech": "High Tech",
+      "tourism": "Tourism",
+      "safety": "Safety",
+      "fundraising": "Fundraising",
+      "specialEvents": "Special Events",
+      "craftsmanship": "Craftsmanship",
+      "aaliyah": "Aaliyah",
+      "culture": "Culture"
+    },
+    "frequency": {
+      "onceMonth": "Once a month",
+      "onceTwoWeeks": "Once every two weeks",
+      "onceWeek": "Once a week",
+      "twiceWeek": "Twice a week"
+    },
+    "time": {
+      "morning": "Morning hours",
+      "noon": "Noon hours",
+      "evening": "Evening hours"
+    },
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri"
+    },
+    "placeholder": {
+      "selectFrequency": "Select frequency",
+      "selectHours": "Select hours"
+    },
+    "toast": {
+      "accepted": "You have accepted the volunteering request!",
+      "rejected": "You have declined the volunteering request.",
+      "updated": "Volunteering information updated successfully!",
+      "failedUpdate": "Failed to update volunteering information.",
+      "failedAccept": "Failed to accept the volunteering request.",
+      "failedReject": "Failed to decline the volunteering request.",
+      "failedLoad": "Failed to load volunteering information.",
+      "loading": "Loading volunteering information...",
+      "noRequests": "No volunteering requests available.",
+      "noUser": "No user is logged in."
     }
   },
   "emptyStates": {
@@ -928,7 +1580,10 @@
     "addCategory": "Add Category",
     "noCandidates": "No Candidates",
     "noCandidatesMessage": "No candidates have been registered yet.",
-    "addCandidate": "Add Candidate"
+    "addCandidate": "Add Candidate",
+    "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
+    "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria",
+    "noPastEventsMessage": "No events have ended yet."
   },
   "loading": {
     "messages": "Loading messages...",
@@ -993,4 +1648,4 @@
       "retry": "Retry"
     }
   }
-} 
+}

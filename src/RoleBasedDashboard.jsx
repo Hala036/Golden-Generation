@@ -63,7 +63,6 @@ const RoleBasedDashboard = () => {
         if (userDoc.exists()) {
           const firestoreRole = userDoc.data().role;
           setRole(firestoreRole ? firestoreRole.toLowerCase() : undefined);
-          console.log('User role:', firestoreRole ? firestoreRole.toLowerCase() : undefined);
         } else {
           console.debug('User doc not found for UID:', currentUser.uid, '(This is normal during user creation)');
           // Don't navigate to login immediately, give some time for the document to be created
@@ -79,7 +78,6 @@ const RoleBasedDashboard = () => {
             }
             
             retryCount++;
-            console.log(`Retrying user role fetch (attempt ${retryCount}/${maxRetries})...`);
             
             setTimeout(async () => {
               try {
@@ -87,7 +85,6 @@ const RoleBasedDashboard = () => {
                 if (retryDoc.exists()) {
                   const retryRole = retryDoc.data().role;
                   setRole(retryRole ? retryRole.toLowerCase() : undefined);
-                  console.log('User role found on retry:', retryRole ? retryRole.toLowerCase() : undefined);
                 } else {
                   retryFetchUserRole();
                 }

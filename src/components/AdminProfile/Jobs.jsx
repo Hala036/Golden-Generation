@@ -9,7 +9,7 @@ import {
   matchSeniorsToJobRequest,
   inviteSeniorToJobRequest
 } from "../../jobRequestsService";
-import { getAvailableSettlements } from "../../firebase";
+import { getAvailableSettlements, auth } from "../../firebase";
 import MatchDetails from "./MatchDetails";
 import StatusHistory from "./StatusHistory";
 import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification function
@@ -217,7 +217,7 @@ const Jobs = () => {
         target: [seniorId], // Target specific senior
         type: "request", // Notification type
         link: `/jobs/${jobRequestId}`, // Link to job details
-        createdBy: currentUser.uid // Admin who invited
+        createdBy: auth.currentUser.uid // Admin who invited
       });
 
       toast.success("Senior invited successfully");

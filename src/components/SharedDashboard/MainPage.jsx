@@ -5,12 +5,15 @@ import { getServiceRequests } from "../../serviceRequestsService"; // Import ser
 import { query, collection, where, getDocs, getDoc, doc, orderBy, limit, Timestamp } from "firebase/firestore"; // Import Firestore utilities
 import { auth, db } from "../../firebase"; // Import Firestore instance
 import Notifications from "./Notifications"; // Import Notifications component
+import { useLanguage } from "../../context/LanguageContext";
+import i18n from "i18next"; // Import i18next for translations
+
 import DefaultProfilePic from "../DefaultProfilePic"; // Import DefaultProfilePic component
 const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) => {
   const mountedRef = useRef(false);
+  const { t } = useLanguage();
   
   if (!mountedRef.current) {
-    console.log("MainPage mounted");
     mountedRef.current = true;
   }
   
@@ -23,7 +26,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     const userName = userData?.credentials?.username || "Admin";
     const userRole = userData?.role || "";
     return { userSettlement, userName, userRole };
-  }, [userData]);
+  }, [userData, user]);
 
   const { userSettlement, userName, userRole } = userInfo;
 
@@ -35,18 +38,6 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     default: '#6B7280', // Gray
   };
 
-  // Debug logging for user data - only log when data changes
-  useEffect(() => {
-    console.log("MainPage userData:", {
-      userData,
-      userSettlement,
-      userName,
-      userRole,
-      idVerificationSettlement: userData?.idVerification?.settlement,
-      directSettlement: userData?.settlement
-    });
-  }, [userData, userSettlement, userName, userRole]);
-  
   const [currentTime, setCurrentTime] = useState(new Date());
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [retireesRegisteredCount, setRetireesRegisteredCount] = useState(0); // State for retirees registered this week
@@ -75,9 +66,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   }, []);
 
   { /* Fetch information to display on overview cards, alerts and recent activity */ }
-  useEffect(() => {
-    console.log("MainPage useEffect running, userSettlement:", userSettlement);
-    
+  useEffect(() => {    
     // Don't run if still loading or if userData is null
     if (loading || !userData) return;
     
@@ -250,25 +239,15 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         todayRequests.forEach((request) => {
           activity.push({
             id: request.id,
+            title: request.title,
             action: `New service request: ${request.title}`,
             time: (() => {
-            const createdAtDate =
-              request.createdAt instanceof Timestamp
-                ? request.createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
-                : new Date(request.createdAt); // Parse as a regular date string if not a Timestamp
+              const createdAtDate =
+                request.createdAt instanceof Timestamp
+                  ? request.createdAt.toDate() // Convert Firestore Timestamp to JavaScript Date
+                  : new Date(request.createdAt); // Parse as a regular date string if not a Timestamp
 
-            if (isNaN(createdAtDate.getTime())) {
-              return "Invalid date";
-            }    
-              const diffInMs = new Date() - createdAtDate; // Difference in milliseconds
-              const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes
-              const diffInHours = Math.floor(diffInMinutes / 60); // Convert to hours
-
-              if (diffInMinutes < 60) {
-                return `${diffInMinutes} minutes ago`;
-              } else {
-                return `${diffInHours} hours ago`;
-              }
+              return createdAtDate;
             })(),
             type: "request",
           });
@@ -320,6 +299,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         recentRetirees.forEach((retiree) => {
           activity.push({
             id: retiree.id,
+            title: retiree.data().credentials?.username || retiree.data().username || 'Retiree',
             action: `${retiree.data().credentials?.username || retiree.data().username || 'Retiree'} joined the community`,
             time: (() => {
               let createdAtDate = retiree.data().createdAt;
@@ -331,6 +311,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               if (isNaN(createdAtDate?.getTime?.() || createdAtDate?.getTime?.() === undefined)) {
                 return "Invalid date";
               }
+              return createdAtDate;
               const diffInMs = new Date() - createdAtDate;
               const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
               const diffInHours = Math.floor(diffInMinutes / 60);
@@ -365,6 +346,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         recentEvents.forEach((event) => {
           activity.push({
             id: event.id,
+            title: event.data().title || 'Event',
             action: `Event "${event.data().title}" created`,
             time: (() => {
               let createdAtDate = event.data().createdAt;
@@ -376,6 +358,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               if (isNaN(createdAtDate?.getTime?.() || createdAtDate?.getTime?.() === undefined)) {
                 return "Invalid date";
               }
+              return createdAtDate;
               const diffInMs = new Date() - createdAtDate;
               const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
               const diffInHours = Math.floor(diffInMinutes / 60);
@@ -408,6 +391,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         todayMatches.forEach((match) => {
           activity.push({
             id: match.id,
+            title: match.data().title || 'Volunteer Match',
             action: `Volunteer match created for "${match.data().title}"`,
             time: (() => {
               const createdAtDate =
@@ -418,6 +402,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               if (isNaN(createdAtDate.getTime())) {
                 return "Invalid date";
               }
+              return createdAtDate;
 
               const diffInMs = new Date() - createdAtDate; // Difference in milliseconds
               const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes
@@ -454,7 +439,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
 
   const overviewCards = [
     {
-      title: "Pending Service Requests",
+      title: t('dashboard.main.cards.pendingServiceRequests'),
       value: pendingRequestsCount, // Dynamically update the value
       icon: <FaClock className="text-2xl md:text-3xl text-orange-500" />, // Adjust icon size
       color: "bg-orange-50 border-orange-200",
@@ -462,7 +447,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       onClick: () => setSelected("service"), // Set selected to "service"
     },
     {
-      title: "Signups This Week",
+      title: t('dashboard.main.cards.signupsThisWeek'),
       value: retireesRegisteredCount, // Dynamically update the value
       icon: <FaUserPlus className="text-2xl md:text-3xl text-green-500" />, // Adjust icon size
       color: "bg-green-50 border-green-200",
@@ -470,7 +455,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       onClick: () => setSelected("retirees"),
     },
     {
-      title: "Active Events",
+      title: t('dashboard.main.cards.activeEvents'),
       value: activeEventsCount, // Dynamically update the value
       icon: <FaCalendarCheck className="text-2xl md:text-3xl text-blue-500" />, // Adjust icon size
       color: "bg-blue-50 border-blue-200",
@@ -478,7 +463,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       onClick: () => setSelected("upcoming"), // Set selected to "events"
     },
     {
-      title: "Volunteer Matches Pending",
+      title: t('dashboard.main.cards.volunteerMatchesPending'),
       value: volunteerMatchesCount, // Dynamically update the value
       icon: <FaHandsHelping className="text-2xl md:text-3xl text-purple-500" />, // Adjust icon size
       color: "bg-purple-50 border-purple-200",
@@ -486,7 +471,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       onClick: () => setSelected("jobs"), // Set selected to "Jobs"
     },
     {
-      title: "Pending Event Requests",
+      title: t('dashboard.main.cards.pendingEventRequests'),
       value: pendingEventsCount, // Replace with dynamic value if available
       icon: <FaCalendarAlt className="text-2xl md:text-3xl text-red-500" />, // Adjust icon size
       color: "bg-red-50 border-red-200",
@@ -496,16 +481,16 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   ];
 
   const quickActions = [
-    { title: 'Calendar', icon: <FaCalendarAlt />, color: 'bg-green-500 hover:bg-green-600', onClick: () => setSelected("calendar") },
-    { title: 'View All Requests', icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600', onClick: () => setSelected("service") },
-    { title: 'Manage Retirees', icon: <FaUsers />, color: 'bg-purple-500 hover:bg-purple-600', onClick: () => setSelected("retirees") },
-    { title: 'Reports & Analytics', icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
+    { title: t('dashboard.main.quickActions.calendar'), icon: <FaCalendarAlt />, color: 'bg-green-500 hover:bg-green-600', onClick: () => setSelected("calendar") },
+    { title: t('dashboard.main.quickActions.viewAllRequests'), icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600', onClick: () => setSelected("service") },
+    { title: t('dashboard.main.quickActions.manageRetirees'), icon: <FaUsers />, color: 'bg-purple-500 hover:bg-purple-600', onClick: () => setSelected("retirees") },
+    { title: t('dashboard.main.quickActions.reportsAnalytics'), icon: <FaChartBar />, color: 'bg-orange-500 hover:bg-orange-600', onClick: () => setSelected("analysis") },
   ];
 
   // SuperAdmin-only quick actions
   const superAdminQuickActions = [
-    { title: 'Admin Management', icon: <FaUserShield />, color: 'bg-red-500 hover:bg-red-600', onClick: () => setSelected("admins") },
-    { title: 'Add Settlements', icon: <FaMapMarkerAlt />, color: 'bg-indigo-500 hover:bg-indigo-600', onClick: () => setSelected("addSettlements") },
+    { title: t('dashboard.main.quickActions.adminManagement'), icon: <FaUserShield />, color: 'bg-red-500 hover:bg-red-600', onClick: () => setSelected("admins") },
+    { title: t('dashboard.main.quickActions.addSettlements'), icon: <FaMapMarkerAlt />, color: 'bg-indigo-500 hover:bg-indigo-600', onClick: () => setSelected("addSettlements") },
   ];
 
   // Only show for superadmin
@@ -531,6 +516,38 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     return match ? match[1] : '';
   };
 
+  // Dynamic activity string helpers
+  const getActivityAction = (activity) => {
+    switch (activity.type) {
+      case 'join':
+        return i18n.t('dashboard.main.activity.joinedCommunity', { username: activity.title || 'Retiree' });
+      case 'apply':
+        return i18n.t('dashboard.main.activity.volunteerMatchCreated', { title: activity.title });
+      case 'complete':
+        return i18n.t('dashboard.main.activity.completedVolunteerService', { username: activity.title || 'Volunteer' });
+      case 'request':
+        return i18n.t('dashboard.main.activity.newServiceRequest', { title: activity.title });
+      case 'event':
+        return i18n.t('dashboard.main.activity.createdEvent', { title: activity.title || 'Event' });
+      default:
+        return activity.action;
+    }
+  };
+
+  // Dynamic time string helpers
+  const getTimeAgo = (date) => {
+    if (!date || isNaN(date.getTime())) return t('dashboard.main.time.invalidDate');
+    const now = new Date();
+    const diffInMs = now - date;
+    const minutes = Math.floor(diffInMs / (1000 * 60));
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (minutes < 60) return i18n.t('dashboard.main.time.minutesAgo', { count: minutes });
+    if (hours < 24) return i18n.t('dashboard.main.time.hoursAgo', { count: hours });
+    return i18n.t('dashboard.main.time.daysAgo', { count: days });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6 w-full">
       {/* Header */}
@@ -543,9 +560,13 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               fontSize="1.8rem"
               bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
             /> */}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2 truncate">Welcome, {userName} 👋</h1>
-              <p className="text-xs md:text-base text-gray-600 truncate">Here's what's happening in your community today</p>
+            <div>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2 truncate">
+                {i18n.t('dashboard.main.welcome', { userName: userName })}
+              </h1>
+              <p className="text-xs md:text-base text-gray-600 truncate">
+                {t('dashboard.main.communityToday')}
+              </p>
             </div>
           </div>
           {/* Quick Actions */}
@@ -564,7 +585,9 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
           </div>
           {/* Clock for desktop only */}
           <div className="text-right hidden md:block flex-shrink-0">
-            <div className="text-sm text-gray-500">Current Time</div>
+            <div className="text-sm text-gray-500">
+              {t('dashboard.main.currentTime')}
+            </div>
             <div className="text-lg font-semibold text-gray-700">
               {currentTime.toLocaleTimeString()}
             </div>
@@ -600,12 +623,12 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 w-full">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
-              Recent Activity Feed
+              {t('dashboard.main.recentActivityFeed')}
             </h2>
             <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full">
               {recentActivity.length === 0 && (
                 <div className="text-center text-gray-500 py-2 md:py-4">
-                  No recent activity to show.
+                  {t('dashboard.main.noRecentActivity')}
                 </div>
               )}
               {recentActivity.map((activity) => (
@@ -625,8 +648,8 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
                     )}
                   </div>
                   <div className="flex-grow min-w-0">
-                    <p className="text-xs md:text-sm text-gray-800 truncate">{activity.action}</p>
-                    <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">{activity.time}</p>
+                    <p className="text-xs md:text-sm text-gray-800 truncate">{getActivityAction(activity)}</p>
+                    <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">{getTimeAgo(new Date(activity.time))}</p>
                   </div>
                 </div>
               ))}
@@ -639,7 +662,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 flex flex-col w-full min-w-0">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center min-w-0">
               <FaBell className="mr-2 text-red-500 flex-shrink-0" />
-              <span className="truncate">Alerts & Notifications</span>
+              {t('dashboard.main.alertsAndNotifications')}
             </h2>
             <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full min-w-0">
               <Notifications 

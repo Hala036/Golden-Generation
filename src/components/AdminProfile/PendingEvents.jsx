@@ -12,12 +12,25 @@ const PendingEvents = () => {
     const fetchAdminSettlement = async () => {
       try {
         const user = auth.currentUser;
-        if (user) {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            setAdminSettlement(userDoc.data().idVerification.settlement); // Fetch admin's settlement
-          }
+        if (!user) {
+          console.error("No user logged in");
+          return;
         }
+        
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) {
+          console.error("User document not found");
+          return;
+        }
+        
+        const userData = userDoc.data();
+        
+        // Try different possible locations for settlement
+        const settlement = userData.idVerification?.settlement || 
+                         userData.settlement || 
+                         userData.credentials?.settlement;
+        
+        setAdminSettlement(settlement || "");
       } catch (error) {
         console.error("Error fetching admin settlement:", error);
       }

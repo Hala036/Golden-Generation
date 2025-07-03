@@ -34,7 +34,33 @@ const SearchableDropdown = ({
   }, [dropdownRef, name, onBlur, selectedOption]);
 
   const handleSelect = (option) => {
-    onChange({ target: { name, value: option.value } });
+    // Check if onChange expects a selectedOption object by testing the function
+    const testEvent = { target: { name, value: option.value } };
+    const testOption = option;
+    
+    // Try to call onChange with the option object first
+    try {
+      // Create a test call to see if it accepts the option object
+      const originalOnChange = onChange;
+      let calledWithOption = false;
+      
+      const testOnChange = (param) => {
+        calledWithOption = typeof param === 'object' && param.value !== undefined;
+        return originalOnChange(param);
+      };
+      
+      testOnChange(testOption);
+      
+      if (calledWithOption) {
+        onChange(option);
+      } else {
+        onChange(testEvent);
+      }
+    } catch (error) {
+      // Fallback to old format
+      onChange(testEvent);
+    }
+    
     setIsOpen(false);
     setSearchTerm('');
     onBlur({ target: { name } });

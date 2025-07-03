@@ -9,6 +9,7 @@ import useAuth from '../../hooks/useAuth';
 import CustomTimePickerWrapper from './CustomTimePicker';
 import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getCategoryAppearance } from '../../utils/categoryColors';
 
 const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, isEditing = false }) => {
   const [categories, setCategories] = useState([]);
@@ -31,7 +32,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     capacity: "",
     requirements: "",
     isRecurring: false,
-    recurringType: "daily",
+    recurringType: "",
     recurringEndDate: ""
   });
 
@@ -274,6 +275,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     fetchCategories();
   }, [isEditing]);
 
+  // Check for selected date from calendar grid
+  useEffect(() => {
+    if (!isEditing) {
+      const selectedDate = sessionStorage.getItem('selectedEventDate');
+      if (selectedDate) {
+        setEventData(prev => ({ ...prev, startDate: selectedDate }));
+        // Clear the selected date from sessionStorage
+        sessionStorage.removeItem('selectedEventDate');
+      }
+    }
+  }, [isEditing]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEventData(prev => {
@@ -371,16 +384,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
       console.log('Fetching user settlement...');
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.exists() ? userDoc.data().idVerification?.settlement : "";
+      const userSettlement = userDoc.data()?.idVerification?.settlement || "";
       console.log('User settlement:', userSettlement);
       
       let eventStatus = "active";
       let eventColor = "yellow";
       if (actualUserRole === "retiree") {
         eventStatus = "pending";
-        eventColor = "green";
-      } else if (actualUserRole === "admin" || actualUserRole === "superadmin") {
-        eventColor = "blue";
+      }
+      // Always use the picked category's color (hex value from category.color)
+      const selectedCategory = categories.find(cat => cat.id === eventData.categoryId);
+      if (selectedCategory && selectedCategory.color) {
+        eventColor = selectedCategory.color;
       }
 
       // Format date to DD-MM-YYYY for consistency
@@ -399,10 +414,15 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         createdAt: serverTimestamp(),
         participants: [],
         status: eventStatus,
-        color: eventColor,
-        settlement: userSettlement,
+        color: eventColor, // Store the picked hex color
+        settlement: userSettlement || "",
         imageUrl: imageUrl
       };
+
+      // Remove any undefined fields (extra safety)
+      Object.keys(newEvent).forEach(key => {
+        if (newEvent[key] === undefined) delete newEvent[key];
+      });
 
       console.log('Preparing to save event:', newEvent);
 
@@ -514,6 +534,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     label: cat.name,
   }));
 
+  // Handle SearchableDropdown change
+  const handleCategoryChange = (selectedOption) => {
+    setEventData(prev => ({
+      ...prev,
+      categoryId: selectedOption.value
+    }));
+    setTouched(prev => ({
+      ...prev,
+      categoryId: true
+    }));
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
@@ -536,18 +568,18 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Category <span className="text-red-500">*</span>
             </label>
-             <SearchableDropdown
-                name="category"
-                options={categoryOptions}
-                value={eventData.category}
-          onChange={handleChange}
-                onBlur={handleBlur}
-                touched={touched.category}
-                error={validationErrors.category}
-                placeholder="Select a category"
+            <SearchableDropdown
+              name="categoryId"
+              options={categoryOptions}
+              value={eventData.categoryId}
+              onChange={handleCategoryChange}
+              onBlur={handleBlur}
+              touched={touched.categoryId}
+              error={validationErrors.categoryId}
+              placeholder="Select a category"
             />
-            {touched.category && validationErrors.category && (
-              <p className="text-red-500 text-xs mt-1">{validationErrors.category}</p>
+            {touched.categoryId && validationErrors.categoryId && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.categoryId}</p>
             )}
           </div>
           <div className="ml-2">
