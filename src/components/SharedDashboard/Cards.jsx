@@ -7,6 +7,7 @@ import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Adm
 import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
 import EmptyState from "../EmptyState"; // Import EmptyState component
 import BaseEventDetails from "../Calendar/BaseEventDetails"; // Import BaseEventDetails component
+import { getAllSettlements } from '../../utils/getSettlements';
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -80,6 +81,9 @@ const Cards = ({ setSelected }) => {
   const [showPast, setShowPast] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(null); // eventId or null
   const [eventToRepeat, setEventToRepeat] = useState(null); // event object or null
+  const [settlements, setSettlements] = useState([]);
+  const [settlementFilter, setSettlementFilter] = useState('all');
+  const [userSettlement, setUserSettlement] = useState('');
 
   // Get current user and fetch their role
   useEffect(() => {
@@ -95,6 +99,25 @@ const Cards = ({ setSelected }) => {
     };
     fetchUserAndRole();
   }, []);
+
+  // Fetch settlements for superadmin/admin
+  useEffect(() => {
+    if (userRole === 'superadmin') {
+      getAllSettlements().then(setSettlements);
+    } else if (userRole === 'admin') {
+      // Fetch admin's settlement
+      const fetchUserSettlement = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setUserSettlement((data.idVerification && data.idVerification.settlement) || data.settlement || '');
+        }
+      };
+      fetchUserSettlement();
+    }
+  }, [userRole]);
 
   // Helper function to check if event is upcoming
   const isEventUpcoming = (event) => {
@@ -283,7 +306,7 @@ const Cards = ({ setSelected }) => {
     };
   }, [userRole]);
 
-  // Apply filters (category, search, and my events)
+  // Apply filters (category, search, my events, settlement)
   useEffect(() => {
     let filtered = events;
 
@@ -307,9 +330,18 @@ const Cards = ({ setSelected }) => {
       console.log('After Search filter:', filtered);
     }
 
+    // Settlement filter
+    if (settlementFilter !== 'all') {
+      if (userRole === 'admin' && settlementFilter === 'my-settlement') {
+        filtered = filtered.filter(event => event.settlement === userSettlement);
+      } else {
+        filtered = filtered.filter(event => event.settlement === settlementFilter);
+      }
+    }
+
     setFilteredEvents(filtered);
     console.log('After all filters, filteredEvents:', filtered);
-  }, [events, selectedCategory, searchQuery, showMyEventsOnly, currentUser]);
+  }, [events, selectedCategory, searchQuery, showMyEventsOnly, currentUser, settlementFilter, userRole, userSettlement]);
 
   // Handle category filter
   const handleCategoryChange = (category) => {
@@ -410,6 +442,17 @@ const Cards = ({ setSelected }) => {
                 <option key={category.id} value={category.id}>
                   {category.translations[language]} {/* Display translation based on current language */}
                 </option>
+              ))}
+            </select>
+            <select
+              className="ml-4 border px-2 py-1 rounded-md text-sm"
+              value={settlementFilter}
+              onChange={e => setSettlementFilter(e.target.value)}
+            >
+              <option value="all">All Settlements</option>
+              {userRole === 'admin' && <option value="my-settlement">My Settlement</option>}
+              {userRole === 'superadmin' && settlements.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
             {/* My Events Only Filter */}
