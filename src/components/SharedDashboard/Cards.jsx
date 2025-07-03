@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaCalendarCheck, FaClock, FaUser, FaFilter} from "react-icons/fa";
+import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaCalendarCheck, FaClock, FaUser, FaFilter, FaTrash } from "react-icons/fa";
 import { db, auth } from "../../firebase"; // Import Firebase configuration
-import { collection, onSnapshot, query, where, orderBy, doc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy, doc, getDoc, getDocs, writeBatch } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Admin modal
 import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
@@ -407,6 +407,28 @@ const Cards = ({ setSelected }) => {
     alert('Repeat event: open event creation form pre-filled with this event\'s data.');
   };
 
+  // Delete event handler (copied from BaseEventDetails)
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event? This cannot be undone.')) return;
+    try {
+      const eventRef = doc(db, 'events', eventId);
+      // Batch delete participants subcollection and the event itself
+      const participantsSnapshot = await getDocs(collection(db, `events/${eventId}/participants`));
+      const batch = writeBatch(db);
+      participantsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      batch.delete(eventRef);
+      await batch.commit();
+      // Remove from UI
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      setFilteredEvents(prev => prev.filter(e => e.id !== eventId));
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Failed to delete event.');
+    }
+  };
+
   return (
     <div className="bg-white p-3">
           {/* Header showing upcoming events */}
@@ -596,19 +618,25 @@ const Cards = ({ setSelected }) => {
                             </p>
                             {/* Repeat and Feedback for past events */}
                             {past && (
-                              <div className="flex gap-2 mt-2">
-                                <button
-                                  className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded text-xs font-bold"
-                                  onClick={() => handleRepeatEvent(event)}
-                                >
-                                  Repeat Event
-                                </button>
+                              <div className="flex gap-2 mt-2 items-center">
+                                {/* Remove Repeat Event button */}
                                 {isJoined && !event.feedbackGiven && (
                                   <button
                                     className="text-blue-600 underline text-xs font-bold"
                                     onClick={() => setShowFeedbackModal(event.id)}
                                   >
                                     Rate this event
+                                  </button>
+                                )}
+                                {/* Delete button for past events (creator, admin, superadmin) */}
+                                {(isMyEvent || userRole === 'admin' || userRole === 'superadmin') && (
+                                  <button
+                                    style={{ filter: 'none', opacity: 1 }}
+                                    className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold border border-red-700 ml-2 shadow z-10"
+                                    onClick={() => handleDeleteEvent(event.id)}
+                                    title="Delete Event"
+                                  >
+                                    <FaTrash className="text-xs" /> Delete
                                   </button>
                                 )}
                               </div>
