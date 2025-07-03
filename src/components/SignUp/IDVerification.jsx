@@ -236,6 +236,25 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
     const newErrors = {};
     const { firstName, lastName, dateOfBirth, gender, idNumber, settlement } = idVerificationData;
 
+    // Explicit translation-based validation (added)
+    if (!idNumber?.trim()) {
+      newErrors.idNumber = t('auth.idVerification.errors.idRequired');
+    } else if (!/^\d{9}$/.test(idNumber)) {
+      newErrors.idNumber = t('auth.idVerification.errors.idFormat');
+    }
+    if (!firstName?.trim()) {
+      newErrors.firstName = t('auth.idVerification.errors.firstNameRequired');
+    }
+    if (!lastName?.trim()) {
+      newErrors.lastName = t('auth.idVerification.errors.lastNameRequired');
+    }
+    if (!gender) {
+      newErrors.gender = t('auth.idVerification.errors.genderRequired');
+    }
+    if (!settlement) {
+      newErrors.settlement = t('auth.idVerification.form.failedToLoadSettlements');
+    }
+
     // ID Number
     const idError = validateIsraeliID(idNumber);
     if (idError) {
