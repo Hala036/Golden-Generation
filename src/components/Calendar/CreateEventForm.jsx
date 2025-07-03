@@ -10,6 +10,7 @@ import CustomTimePickerWrapper from './CustomTimePicker';
 import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryAppearance } from '../../utils/categoryColors';
+import { getAllSettlements } from '../../utils/getSettlements';
 
 const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, isEditing = false }) => {
   const [categories, setCategories] = useState([]);
@@ -31,10 +32,8 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     description: "",
     capacity: "",
     requirements: "",
-    isRecurring: false,
-    recurringType: "",
-    recurringEndDate: ""
   });
+  const [settlements, setSettlements] = useState([]);
 
   const generateTimeSlots = (interval) => {
     const slots = [];
@@ -275,6 +274,20 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     fetchCategories();
   }, [isEditing]);
 
+  // Fetch settlements for superadmin
+  useEffect(() => {
+    if (actualUserRole === 'superadmin') {
+      (async () => {
+        const allSettlements = await getAllSettlements();
+        setSettlements(allSettlements);
+        // If not editing, set default to first settlement
+        if (!isEditing && allSettlements.length > 0) {
+          setEventData(prev => ({ ...prev, settlement: allSettlements[0].id }));
+        }
+      })();
+    }
+  }, [actualUserRole, isEditing]);
+
   // Check for selected date from calendar grid
   useEffect(() => {
     if (!isEditing) {
@@ -383,9 +396,15 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
       }
 
       console.log('Fetching user settlement...');
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.data()?.idVerification?.settlement || "";
-      console.log('User settlement:', userSettlement);
+      let eventSettlement = "";
+      if (actualUserRole === "superadmin") {
+        eventSettlement = eventData.settlement;
+      } else {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.data() || {};
+        eventSettlement = (userData.idVerification && userData.idVerification.settlement) || userData.settlement || "";
+      }
+      console.log('User settlement:', eventSettlement);
       
       let eventStatus = "active";
       let eventColor = "yellow";
@@ -405,8 +424,9 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         return `${day}-${month}-${year}`;
       };
 
+      const { isRecurring, recurringType, recurringEndDate, ...eventDataNoRecurring } = eventData;
       const newEvent = {
-        ...eventData,
+        ...eventDataNoRecurring,
         startDate: formatDate(eventData.startDate),
         endDate: formatDate(eventData.endDate || eventData.startDate),
         date: formatDate(eventData.startDate), // Keep for backward compatibility
@@ -415,7 +435,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         participants: [],
         status: eventStatus,
         color: eventColor, // Store the picked hex color
-        settlement: userSettlement || "",
+        settlement: eventSettlement,
         imageUrl: imageUrl
       };
 
@@ -686,60 +706,52 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 {renderInput("capacity", "number", "e.g., 10", { min: 1 })}
               </div>
             </div>
-          </div>
-        </div>
-        
-        {/* Recurring Options Section */}
-        <div className="border-t border-gray-200 pt-6">
-          <div className="flex items-center">
-        <input
-              type="checkbox"
-              name="isRecurring"
-              id="isRecurring"
-              checked={eventData.isRecurring}
-          onChange={handleChange}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="isRecurring" className="ml-2 block text-sm text-gray-900">
-              Repeat Event
-            </label>
-          </div>
 
-          <AnimatePresence>
-            {eventData.isRecurring && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }}
-                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Repeats
-                    </label>
-                    <select
-                      name="recurringType"
-                      value={eventData.recurringType}
-          onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Repeat Until <span className="text-red-500">*</span>
-                    </label>
-                    {renderInput("recurringEndDate", "date", "", { required: eventData.isRecurring, min: eventData.startDate })}
-                  </div>
+            {/* Image Upload Section */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Event Image
+                <span className="text-gray-400 text-xs ml-1">(optional, JPG/PNG/GIF/WebP, max 5MB)</span>
+              </label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {imageFile && (
+                <div className="mt-2">
+                  <img
+                    src={URL.createObjectURL(imageFile)}
+                    alt="Preview"
+                    className="h-32 w-auto rounded shadow border border-gray-200 object-contain"
+                  />
                 </div>
-              </motion.div>
+              )}
+              {touched.imageFile && validationErrors.imageFile && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.imageFile}</p>
+              )}
+            </div>
+
+            {actualUserRole === 'superadmin' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Settlement <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="settlement"
+                  value={eventData.settlement || ''}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                  required
+                >
+                  {settlements.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
             )}
-          </AnimatePresence>
+          </div>
         </div>
         
         <div className="flex justify-end pt-6 border-t border-gray-200">
@@ -762,7 +774,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
       {/* Add Category Modal */}
       {showAddCategoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-[60]">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full relative">
             <AddCategoryModal
               onClose={() => setShowAddCategoryModal(false)}
