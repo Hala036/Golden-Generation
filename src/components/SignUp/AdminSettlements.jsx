@@ -285,6 +285,11 @@ const AdminSettlements = () => {
       const retireeSnapshot = await getDocs(retireeQuery);
       let retireeCount = 0;
       for (const retireeDoc of retireeSnapshot.docs) {
+        const retireeData = retireeDoc.data();
+        const retireeUsername = retireeData.credentials?.username;
+        if (retireeUsername) {
+          await deleteDoc(doc(db, 'usernames', retireeUsername.toLowerCase()));
+        }
         await deleteDoc(retireeDoc.ref);
         retireeCount++;
       }
