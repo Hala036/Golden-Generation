@@ -404,7 +404,8 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         eventSettlement = eventData.settlement;
       } else {
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        eventSettlement = userDoc.data()?.idVerification?.settlement || "";
+        const userData = userDoc.data() || {};
+        eventSettlement = (userData.idVerification && userData.idVerification.settlement) || userData.settlement || "";
       }
       console.log('User settlement:', eventSettlement);
       
