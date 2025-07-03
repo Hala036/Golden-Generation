@@ -10,6 +10,7 @@ import CustomTimePickerWrapper from './CustomTimePicker';
 import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryAppearance } from '../../utils/categoryColors';
+import { getAllSettlements } from '../../utils/getSettlements';
 
 const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, isEditing = false }) => {
   const [categories, setCategories] = useState([]);
@@ -35,6 +36,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     recurringType: "",
     recurringEndDate: ""
   });
+  const [settlements, setSettlements] = useState([]);
 
   const generateTimeSlots = (interval) => {
     const slots = [];
@@ -275,6 +277,20 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     fetchCategories();
   }, [isEditing]);
 
+  // Fetch settlements for superadmin
+  useEffect(() => {
+    if (actualUserRole === 'superadmin') {
+      (async () => {
+        const allSettlements = await getAllSettlements();
+        setSettlements(allSettlements);
+        // If not editing, set default to first settlement
+        if (!isEditing && allSettlements.length > 0) {
+          setEventData(prev => ({ ...prev, settlement: allSettlements[0].id }));
+        }
+      })();
+    }
+  }, [actualUserRole, isEditing]);
+
   // Check for selected date from calendar grid
   useEffect(() => {
     if (!isEditing) {
@@ -383,9 +399,14 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
       }
 
       console.log('Fetching user settlement...');
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userSettlement = userDoc.data()?.idVerification?.settlement || "";
-      console.log('User settlement:', userSettlement);
+      let eventSettlement = "";
+      if (actualUserRole === "superadmin") {
+        eventSettlement = eventData.settlement;
+      } else {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        eventSettlement = userDoc.data()?.idVerification?.settlement || "";
+      }
+      console.log('User settlement:', eventSettlement);
       
       let eventStatus = "active";
       let eventColor = "yellow";
@@ -415,7 +436,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         participants: [],
         status: eventStatus,
         color: eventColor, // Store the picked hex color
-        settlement: userSettlement || "",
+        settlement: eventSettlement,
         imageUrl: imageUrl
       };
 
@@ -712,6 +733,25 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 <p className="text-red-500 text-xs mt-1">{validationErrors.imageFile}</p>
               )}
             </div>
+
+            {actualUserRole === 'superadmin' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Settlement <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="settlement"
+                  value={eventData.settlement || ''}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                  required
+                >
+                  {settlements.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
         
