@@ -202,7 +202,17 @@ const Cards = ({ setSelected }) => {
       }
     }
     if (!eventDate || isNaN(eventDate.getTime())) return false;
-    eventDate.setHours(23, 59, 59, 999);
+
+    // Use timeTo (end time) if available, otherwise timeFrom (start time), otherwise end of day
+    if (event.timeTo) {
+      const [hours, minutes] = event.timeTo.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+    } else if (event.timeFrom) {
+      const [hours, minutes] = event.timeFrom.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+    } else {
+      eventDate.setHours(23, 59, 59, 999);
+    }
 
     // Debug log
     console.log('isPastEvent:', {
@@ -286,11 +296,13 @@ const Cards = ({ setSelected }) => {
     // Filter by "My Events Only" if enabled
     if (showMyEventsOnly && currentUser) {
       filtered = filtered.filter(event => isEventCreatedByMe(event));
+      console.log('After My Events Only filter:', filtered);
     }
 
     // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(event => event.categoryId === selectedCategory);
+      console.log('After Category filter:', filtered);
     }
 
     // Filter by search query
@@ -298,9 +310,11 @@ const Cards = ({ setSelected }) => {
       filtered = filtered.filter(event => 
         event.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
+      console.log('After Search filter:', filtered);
     }
 
     setFilteredEvents(filtered);
+    console.log('After all filters, filteredEvents:', filtered);
   }, [events, selectedCategory, searchQuery, showMyEventsOnly, currentUser]);
 
   // Handle category filter
@@ -319,17 +333,21 @@ const Cards = ({ setSelected }) => {
     setShowMyEventsOnly(!showMyEventsOnly);
   };
 
+  // Log filteredEvents before filtering for past events
+  console.log('Filtering for past events:', filteredEvents);
   const displayedEvents = showPast
-    ? filteredEvents.filter(event =>
-        isPastEvent(event) &&
-        (
-          userRole === 'admin' || userRole === 'superadmin' ||
-          (currentUser && (
-            event.createdBy === currentUser.uid ||
-            (Array.isArray(event.participants) && event.participants.includes(currentUser.uid))
-          ))
-        )
-      )
+    ? filteredEvents.filter(event => {
+        const result = isPastEvent(event) &&
+          (
+            userRole === 'admin' || userRole === 'superadmin' ||
+            (currentUser && (
+              event.createdBy === currentUser.uid ||
+              (Array.isArray(event.participants) && event.participants.includes(currentUser.uid))
+            ))
+          );
+        console.log('Past event filter result:', { eventId: event.id, eventTitle: event.title, result });
+        return result;
+      })
     : filteredEvents.filter(event => !isPastEvent(event));
 
   // Conditionally render the correct modal based on the user's role
