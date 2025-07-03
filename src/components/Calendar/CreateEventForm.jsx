@@ -686,6 +686,32 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 {renderInput("capacity", "number", "e.g., 10", { min: 1 })}
               </div>
             </div>
+
+            {/* Image Upload Section */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Event Image
+                <span className="text-gray-400 text-xs ml-1">(optional, JPG/PNG/GIF/WebP, max 5MB)</span>
+              </label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {imageFile && (
+                <div className="mt-2">
+                  <img
+                    src={URL.createObjectURL(imageFile)}
+                    alt="Preview"
+                    className="h-32 w-auto rounded shadow border border-gray-200 object-contain"
+                  />
+                </div>
+              )}
+              {touched.imageFile && validationErrors.imageFile && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.imageFile}</p>
+              )}
+            </div>
           </div>
         </div>
         
