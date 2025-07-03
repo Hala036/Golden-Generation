@@ -252,16 +252,10 @@ const Cards = ({ setSelected }) => {
             
             console.log('All events fetched:', eventsData.length, eventsData);
             
-            // Filter events based on role and ensure they're upcoming
+            // Filter events based on role (do NOT filter by isEventUpcoming here)
             const roleBasedEvents = userRole === 'admin' || userRole === 'superadmin'
-                ? eventsData.filter(event => 
-                    (event.status === 'active' || event.status === 'pending') && 
-                    isEventUpcoming(event)
-                  )
-                : eventsData.filter(event => 
-                    (event.status === 'active' || (event.status === 'pending' && event.createdBy === (currentUser && currentUser.uid))) && 
-                    isEventUpcoming(event)
-                  );
+                ? eventsData.filter(event => (event.status === 'active' || event.status === 'pending'))
+                : eventsData.filter(event => (event.status === 'active' || (event.status === 'pending' && event.createdBy === (currentUser && currentUser.uid))));
             
             console.log('Role-based filtered events:', roleBasedEvents.length, roleBasedEvents);
             
