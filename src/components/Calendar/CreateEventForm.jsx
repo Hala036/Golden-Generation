@@ -9,6 +9,7 @@ import useAuth from '../../hooks/useAuth';
 import CustomTimePickerWrapper from './CustomTimePicker';
 import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getCategoryAppearance } from '../../utils/categoryColors';
 
 const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, isEditing = false }) => {
   const [categories, setCategories] = useState([]);
@@ -31,7 +32,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     capacity: "",
     requirements: "",
     isRecurring: false,
-    recurringType: "daily",
+    recurringType: "",
     recurringEndDate: ""
   });
 
@@ -390,9 +391,11 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
       let eventColor = "yellow";
       if (actualUserRole === "retiree") {
         eventStatus = "pending";
-        eventColor = "green";
-      } else if (actualUserRole === "admin" || actualUserRole === "superadmin") {
-        eventColor = "blue";
+      }
+      // Always use the picked category's color (hex value from category.color)
+      const selectedCategory = categories.find(cat => cat.id === eventData.categoryId);
+      if (selectedCategory && selectedCategory.color) {
+        eventColor = selectedCategory.color;
       }
 
       // Format date to DD-MM-YYYY for consistency
@@ -411,7 +414,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         createdAt: serverTimestamp(),
         participants: [],
         status: eventStatus,
-        color: eventColor,
+        color: eventColor, // Store the picked hex color
         settlement: userSettlement || "",
         imageUrl: imageUrl
       };

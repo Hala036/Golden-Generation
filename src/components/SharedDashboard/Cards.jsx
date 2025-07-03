@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaCalendarCheck, FaClock, FaUser, FaFilter} from "react-icons/fa";
 import { db, auth } from "../../firebase"; // Import Firebase configuration
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy, doc, getDoc } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Admin modal
 import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
 import EmptyState from "../EmptyState"; // Import EmptyState component
+import BaseEventDetails from "../Calendar/BaseEventDetails"; // Import BaseEventDetails component
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -63,7 +64,7 @@ const FeedbackModal = ({ eventId, onClose, onSubmit }) => {
   );
 };
 
-const Cards = ({ userRole = 'retiree', setSelected }) => {
+const Cards = ({ setSelected }) => {
   const { language, t } = useLanguage();
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -74,15 +75,25 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [expandedImage, setExpandedImage] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState('retiree');
   const [showMyEventsOnly, setShowMyEventsOnly] = useState(false);
   const [showPast, setShowPast] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(null); // eventId or null
   const [eventToRepeat, setEventToRepeat] = useState(null); // event object or null
 
-  // Get current user
+  // Get current user and fetch their role
   useEffect(() => {
+    const fetchUserAndRole = async () => {
     const user = auth.currentUser;
     setCurrentUser(user);
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role || 'retiree');
+        }
+      }
+    };
+    fetchUserAndRole();
   }, []);
 
   // Helper function to check if event is upcoming
@@ -300,15 +311,19 @@ const Cards = ({ userRole = 'retiree', setSelected }) => {
   const renderEventDetailsModal = () => {
     if (!selectedEvent) return null;
 
-    const modalProps = {
-      event: selectedEvent,
-      onClose: () => setSelectedEvent(null),
-    };
+    const isCreator = selectedEvent.createdBy === currentUser?.uid;
+    const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+    console.log('userRole:', userRole, 'isAdmin:', isAdmin, 'isCreator:', isCreator, 'currentUser:', currentUser);
 
-    if (userRole === 'admin') {
-      return <AdminEventDetails {...modalProps} />;
-      }
-    return <RetireeEventDetails {...modalProps} />;
+    return (
+      <BaseEventDetails
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        userRole={userRole}
+        showParticipants={isAdmin || isCreator}
+        showJoinLeave={!isAdmin && !isCreator}
+      />
+    );
   };
 
   const handleFeedbackSubmit = (eventId, rating, comment) => {
