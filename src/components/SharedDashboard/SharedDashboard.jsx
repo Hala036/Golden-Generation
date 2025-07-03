@@ -203,7 +203,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowNotificationsPopup(false)} // Close the popup
               >
-                {t('dashboard.actions.close')}
+                &times;
               </button>
             </div>
             {/* Scrollable Notifications List */}
