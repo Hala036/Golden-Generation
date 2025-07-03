@@ -415,12 +415,20 @@ const BaseCalendar = ({
                     <option value="all">All Events</option>
                     <option value="created">Created by Me</option>
                     <option value="joined">My Events</option>
-                    <option value="pending">Pending Approval</option>
-                    <option value="upcoming">Upcoming Events</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="my-pending">My Pending</option>
-                    <option value="my-approved">My Approved</option>
+                    {userRole === 'admin' || userRole === 'superadmin' ? (
+                      <>
+                        <option value="pending-approval">Pending Approval</option>
+                        <option value="upcoming">Upcoming Events</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                      </>
+                    ) : null}
+                    {userRole === 'retiree' ? (
+                      <>
+                        <option value="my-pending">My Pending</option>
+                        <option value="my-approved">My Approved</option>
+                      </>
+                    ) : null}
                   </select>
                 </div>
 
