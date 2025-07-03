@@ -279,10 +279,15 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     if (actualUserRole === 'superadmin') {
       (async () => {
         const allSettlements = await getAllSettlements();
-        setSettlements(allSettlements);
-        // If not editing, set default to first settlement
-        if (!isEditing && allSettlements.length > 0) {
-          setEventData(prev => ({ ...prev, settlement: allSettlements[0].id }));
+        // Add 'All Settlements' option at the top
+        const settlementsWithAll = [
+          { id: 'all', name: 'All Settlements' },
+          ...allSettlements
+        ];
+        setSettlements(settlementsWithAll);
+        // If not editing, set default to 'all'
+        if (!isEditing && settlementsWithAll.length > 0) {
+          setEventData(prev => ({ ...prev, settlement: settlementsWithAll[0].id }));
         }
       })();
     }
