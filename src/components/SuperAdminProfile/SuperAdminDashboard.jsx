@@ -44,15 +44,15 @@ const RetireeDashboard = () => {
   const customButtons = [];
 
   const componentsById = {
-    upcoming: <Cards />,
-    main: <AdminHomepage setSelected={setSelected} />, // Pass setSelected to AdminHomepage
+    upcoming: <Cards setSelected={setSelected} />,
+    main: <AdminHomepage setSelected={setSelected} />,
     settings: <Settings />,
     calendar: <AdminCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
     retirees: <Retirees />,
     jobs: <Jobs />,
-    service: <ServiceRequests />, // Link to ServiceRequests component
+    service: <ServiceRequests />,
     analysis: <Analysis />,
     eventRequests: <EventRequests />,
     addSettlements: <AdminSettlements />,
