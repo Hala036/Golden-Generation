@@ -6,7 +6,7 @@ const Modal = ({ children, onClose, title, show = true }) => {
   const theme = themeContext?.theme || 'light';
   if (!show) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/5">
       <div className={`rounded-xl shadow-2xl p-8 w-full max-w-md relative animate-fadeIn ${
         theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
       }`}>
