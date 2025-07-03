@@ -99,8 +99,6 @@ const Cards = ({ setSelected }) => {
   // Helper function to check if event is upcoming
   const isEventUpcoming = (event) => {
     const now = new Date();
-    
-    // Parse the event date from DD-MM-YYYY format
     let eventDate;
     if (event.startDate && event.startDate.includes('-')) {
       const parts = event.startDate.split('-');
@@ -116,20 +114,28 @@ const Cards = ({ setSelected }) => {
         }
       }
     }
-    
-    if (!eventDate || isNaN(eventDate.getTime())) {
-      return false;
-    }
-    
-    // If event has time, combine date and time
-    if (event.timeFrom) {
+    if (!eventDate || isNaN(eventDate.getTime())) return false;
+
+    // Use timeTo (end time) if available, otherwise timeFrom (start time), otherwise end of day
+    if (event.timeTo) {
+      const [hours, minutes] = event.timeTo.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+    } else if (event.timeFrom) {
       const [hours, minutes] = event.timeFrom.split(':').map(Number);
       eventDate.setHours(hours, minutes, 0, 0);
     } else {
-      // If no time specified, set to end of day
       eventDate.setHours(23, 59, 59, 999);
     }
-    
+
+    // Debug log
+    console.log('isEventUpcoming:', {
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: eventDate,
+      now: now,
+      result: eventDate > now
+    });
+
     return eventDate > now;
   };
 
@@ -195,7 +201,19 @@ const Cards = ({ setSelected }) => {
         }
       }
     }
-    return eventDate && eventDate < now;
+    if (!eventDate || isNaN(eventDate.getTime())) return false;
+    eventDate.setHours(23, 59, 59, 999);
+
+    // Debug log
+    console.log('isPastEvent:', {
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: eventDate,
+      now: now,
+      result: eventDate < now
+    });
+
+    return eventDate < now;
   };
 
   // Fetch categories and events from Firestore in real-time
@@ -222,27 +240,25 @@ const Cards = ({ setSelected }) => {
         const unsubscribe = onSnapshot(eventsQuery, (snapshot) => {
             const eventsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
             
-            console.log('All events fetched:', eventsData.length);
-            console.log('Sample event:', eventsData[0]);
+            console.log('All events fetched:', eventsData.length, eventsData);
             
             // Filter events based on role and ensure they're upcoming
-            const roleBasedEvents = userRole === 'admin'
+            const roleBasedEvents = userRole === 'admin' || userRole === 'superadmin'
                 ? eventsData.filter(event => 
                     (event.status === 'active' || event.status === 'pending') && 
                     isEventUpcoming(event)
                   )
                 : eventsData.filter(event => 
-                    event.status === 'active' && 
+                    (event.status === 'active' || (event.status === 'pending' && event.createdBy === (currentUser && currentUser.uid))) && 
                     isEventUpcoming(event)
                   );
             
-            console.log('Role-based filtered events:', roleBasedEvents.length);
-            console.log('Sample filtered event:', roleBasedEvents[0]);
+            console.log('Role-based filtered events:', roleBasedEvents.length, roleBasedEvents);
             
             // Sort events by date (upcoming first)
             const sortedEvents = sortEventsByDate(roleBasedEvents);
             
-            console.log('Final sorted events:', sortedEvents.length);
+            console.log('Final sorted events:', sortedEvents.length, sortedEvents);
             
             setEvents(sortedEvents);
             setFilteredEvents(sortedEvents);
@@ -449,6 +465,8 @@ const Cards = ({ setSelected }) => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
                   {displayedEvents.map((event) => {
+                    // Debug log for rendering
+                    console.log('Rendering event card:', { eventId: event.id, eventTitle: event.title, event });
                     const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
                     const isMyEvent = currentUser && event.createdBy === currentUser.uid;
                     const isJoined = currentUser && Array.isArray(event.participants) && event.participants.includes(currentUser.uid);
