@@ -320,7 +320,16 @@ const Cards = ({ setSelected }) => {
   };
 
   const displayedEvents = showPast
-    ? filteredEvents.filter(isPastEvent)
+    ? filteredEvents.filter(event =>
+        isPastEvent(event) &&
+        (
+          userRole === 'admin' || userRole === 'superadmin' ||
+          (currentUser && (
+            event.createdBy === currentUser.uid ||
+            (Array.isArray(event.participants) && event.participants.includes(currentUser.uid))
+          ))
+        )
+      )
     : filteredEvents.filter(event => !isPastEvent(event));
 
   // Conditionally render the correct modal based on the user's role
