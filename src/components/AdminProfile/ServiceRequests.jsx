@@ -34,7 +34,12 @@ const ServiceRequests = () => {
 
         const userData = userDoc.data();
         console.log("ServiceRequests - Admin data:", userData);
-        
+
+        // Check for superadmin role
+        if (userData.role === "superadmin") {
+          setAdminSettlement("__ALL__"); // Special value to indicate all settlements
+          return;
+        }
         // Try different possible locations for settlement
         const settlement = userData.idVerification?.settlement || 
                          userData.settlement || 
@@ -62,9 +67,15 @@ const ServiceRequests = () => {
       try {
         setLoading(true);
         const allRequests = await getServiceRequests();
-        const filteredRequests = allRequests.filter(
-          (request) => request.settlement === adminSettlement
-        );
+        let filteredRequests;
+        if (adminSettlement === "__ALL__") {
+          // Superadmin: see all requests
+          filteredRequests = allRequests;
+        } else {
+          filteredRequests = allRequests.filter(
+            (request) => request.settlement === adminSettlement
+          );
+        }
         setRequests(filteredRequests);
       } catch (error) {
         console.error("Error fetching service requests:", error);
