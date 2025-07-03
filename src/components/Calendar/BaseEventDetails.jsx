@@ -5,6 +5,7 @@ import { doc, getDoc, getDocs, collection, writeBatch } from 'firebase/firestore
 import { FaTimes, FaUsers, FaUser, FaCheck, FaCalendarAlt, FaClock, FaMapPin, FaInfoCircle, FaStar, FaTrash, FaEdit } from 'react-icons/fa';
 import { format } from 'date-fns';
 import CreateEventForm from './CreateEventForm';
+import { useTranslation } from 'react-i18next';
 
 const getInitials = (username = '') => {
   if (!username) return '?';
@@ -23,6 +24,7 @@ const BaseEventDetails = ({
   onApproveParticipant = null,
   onRejectParticipant = null
 }) => {
+  const { t } = useTranslation();
   const [participants, setParticipants] = useState([]);
   const [participantUsers, setParticipantUsers] = useState([]); // [{uid, username, ...}]
   const [loadingAction, setLoadingAction] = useState(false);
@@ -282,6 +284,22 @@ const BaseEventDetails = ({
         </div>
         {children}
       </div>
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+            <CreateEventForm
+              onClose={() => setShowEditModal(false)}
+              userRole={userRole}
+              initialData={{
+                ...event,
+                startDate: formatToYyyyMmDd(event.startDate),
+                endDate: formatToYyyyMmDd(event.endDate),
+              }}
+              isEditing={true}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

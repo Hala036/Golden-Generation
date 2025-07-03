@@ -12,6 +12,8 @@ import { useCalendarEvents } from '../../hooks/useCalendarEvents';
 import { getCategoryAppearance } from '../../utils/categoryColors';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import EventPopover from './EventPopover';
+import BaseEventDetails from './BaseEventDetails';
+import { auth } from '../../firebase';
 
 const BaseCalendar = ({
   userRole,
@@ -74,26 +76,33 @@ const BaseCalendar = ({
     settlementFilter
   };
 
-  // Helper to determine if event is past
+  // Assumes event.date or event.endDate is in YYYY-MM-DD format
   const isPastEvent = (event) => {
     const now = new Date();
-    let eventDate;
-    const dateStr = event.endDate || event.date;
-    if (dateStr && dateStr.includes('-')) {
+    // Try all possible date fields
+    const dateStr = event.endDate || event.startDate || event.date;
+    const timeStr = event.timeTo || event.timeFrom || '23:59';
+
+    if (!dateStr) return false;
+
+    // Detect format: if first part is 4 digits, it's YYYY-MM-DD, else DD-MM-YYYY
       const parts = dateStr.split('-');
+    let year, month, day;
       if (parts.length === 3) {
-        if (parts[0].length === 2) {
-          // DD-MM-YYYY
-          const [day, month, year] = parts;
-          eventDate = new Date(year, month - 1, day);
-        } else {
+      if (parts[0].length === 4) {
           // YYYY-MM-DD
-          const [year, month, day] = parts;
-          eventDate = new Date(year, month - 1, day);
-        }
+        [year, month, day] = parts;
+      } else {
+        // DD-MM-YYYY
+        [day, month, year] = parts;
       }
+      // Pad month and day
+      month = month.padStart(2, '0');
+      day = day.padStart(2, '0');
+      const eventDate = new Date(`${year}-${month}-${day}T${timeStr}`);
+      return eventDate < now;
     }
-    return eventDate && eventDate < now;
+    return false;
   };
 
   // Analytics functions
@@ -219,7 +228,13 @@ const BaseCalendar = ({
         filter,
         searchTerm,
         additionalFiltersObj
-      ).filter(event => showPastEvents || !isPastEvent(event))
+      )
+      .filter(event => {
+        const result = showPastEvents || !isPastEvent(event);
+        // Debug log
+        console.log('Event:', event, 'isPastEvent:', isPastEvent(event), 'now:', new Date());
+        return result;
+      })
     );
   }, [days, events, filter, searchTerm, getFilteredEvents, currentDate, additionalFiltersObj, showPastEvents]);
 
@@ -933,10 +948,13 @@ const BaseCalendar = ({
         </div>
 
         {/* Event Details Modal */}
-        {selectedEvent && EventDetailsComponent && (
-          <EventDetailsComponent
+        {selectedEvent && (
+          <BaseEventDetails
             event={selectedEvent}
             onClose={() => setSelectedEvent(null)}
+            userRole={userRole}
+            showParticipants={userRole === 'admin' || userRole === 'superadmin' || selectedEvent.createdBy === (auth.currentUser && auth.currentUser.uid)}
+            showJoinLeave={!(userRole === 'admin' || userRole === 'superadmin' || selectedEvent.createdBy === (auth.currentUser && auth.currentUser.uid))}
           />
         )}
 
