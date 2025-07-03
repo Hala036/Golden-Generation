@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar, Clock, Search, Filter, X, BarChart3, TrendingUp } from 'lucide-react';
 import {
   getDaysInMonth,
@@ -14,6 +14,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import EventPopover from './EventPopover';
 import BaseEventDetails from './BaseEventDetails';
 import { auth } from '../../firebase';
+import { getAllSettlements } from '../../utils/getSettlements';
 
 const BaseCalendar = ({
   userRole,
@@ -39,8 +40,20 @@ const BaseCalendar = ({
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [dateRangeFilter, setDateRangeFilter] = useState('all');
   const [settlementFilter, setSettlementFilter] = useState('all');
+  const [settlements, setSettlements] = useState([]);
 
   const { events, loading, getFilteredEvents, categories } = useCalendarEvents(userRole);
+  console.log('DEBUG BaseCalendar - userRole:', userRole, 'settlements:', settlements);
+
+  // Fetch all settlements for superadmin
+  useEffect(() => {
+    if (userRole === 'superadmin') {
+      (async () => {
+        const allSettlements = await getAllSettlements();
+        setSettlements(allSettlements);
+      })();
+    }
+  }, [userRole]);
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -231,8 +244,6 @@ const BaseCalendar = ({
       )
       .filter(event => {
         const result = showPastEvents || !isPastEvent(event);
-        // Debug log
-        console.log('Event:', event, 'isPastEvent:', isPastEvent(event), 'now:', new Date());
         return result;
       })
     );
@@ -447,8 +458,8 @@ const BaseCalendar = ({
                   </select>
                 </div>
 
-                {/* Settlement Filter (Admin only) */}
-                {userRole === 'admin' && (
+                {/* Settlement Filter */}
+                {(userRole === 'admin' || userRole === 'superadmin') && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Settlement</label>
                     <select
@@ -457,7 +468,10 @@ const BaseCalendar = ({
                       className="w-full border rounded-lg px-3 py-2 text-sm"
                     >
                       <option value="all">All Settlements</option>
-                      <option value="my-settlement">My Settlement</option>
+                      {userRole === 'admin' && <option value="my-settlement">My Settlement</option>}
+                      {userRole === 'superadmin' && settlements.map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
                     </select>
                   </div>
                 )}

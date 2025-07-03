@@ -46,6 +46,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
         }
         setUserData(data.credentials);
         setUserRole(data.role); // Set the user role
+        console.log('DEBUG SharedDashboard - userData:', data.credentials, 'userRole:', data.role);
       } catch (error) {
         toast.error(t('dashboard.sidebar.failedToLoadUser'));
       }
