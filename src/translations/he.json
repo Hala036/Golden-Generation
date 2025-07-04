@@ -936,8 +936,8 @@
     }
   },
   "dashboard": {
-          "welcome": "ברוך הבא",
-          "profile": "פרופיל",
+    "welcome": "ברוך הבא",
+    "profile": "פרופיל",
     "settings": {
       "options": {
               "editProfile": "ערוך פרופיל",
@@ -984,9 +984,9 @@
               "reauthPassword": "אמת מחדש עם הסיסמה הנוכחית",
               "deleteConfirm": "הקלד DELETE לאישור",
               "enterPassword": "הזן את הסיסמה שלך"
-            }
-          },
-          "toast": {
+      }
+    },
+    "toast": {
             "failedToLoadProfile": "נכשל בטעינת הפרופיל",
             "notLoggedIn": "אתה לא מחובר",
             "profileUpdated": "הפרופיל עודכן בהצלחה",
@@ -1010,8 +1010,8 @@
             "profileAndEmailUpdated": "הפרופיל והאימייל עודכנו בהצלחה",
             "reauthenticationFailed": "האימות מחדש נכשל",
             "failedToSavePreference": "נכשל בשמירת ההעדפה"
-          },
-          "logout": "התנתק",
+    },
+    "logout": "התנתק",
           "homePage": "דף הבית",
           "retirees": "ותיקים",
           "volunteerRequests": "בקשות מתנדבים",
@@ -1026,7 +1026,11 @@
     "arrowClose": "←",
     "arrowOpen": "→",
     "events": {
+      "upcomingEventsDescription": "גלו והצטרפו לאירועים מרגשים שיתקיימו בקרוב",
             "upcomingEvents": "אירועים קרובים",
+            "noUpcomingEvents": "אין אירועים קרובים",
+            "noUpcomingEventsFilter": "לא נמצאו אירועים קרובים",
+            "noPastEvents": "אין אירועים קודמים",
             "addEvent": "הוסף אירוע",
             "addEvents": "הוסף אירועים",
             "events": "אירועים",
@@ -1051,13 +1055,14 @@
 
     },
     "filter": {
-            "allCategories": "כל הקטגוריות",
-            "trip": "טיול",
-            "vacation": "חופשה",
-            "workshop": "סדנה",
-            "lecture": "הרצאה",
-            "houseparty": "מסיבה ביתית",
-            "socialevent": "אירוע חברתי"
+      "myEvents": "האירועים שלי",
+      "allCategories": "כל הקטגוריות",
+      "trip": "טיול",
+      "vacation": "חופשה",
+      "workshop": "סדנה",
+      "lecture": "הרצאה",
+      "houseparty": "מסיבה ביתית",
+      "socialevent": "אירוע חברתי"
     },
     "search": {
             "searchCategories": "חפש קטגוריות",
@@ -1454,17 +1459,17 @@
   },
   "volunteer": {
     "tabs": {
-            "requests": "בקשות התנדבות",
-            "info": "מידע התנדבות"
+      "requests": "בקשות התנדבות",
+      "info": "מידע התנדבות"
     },
     "section": {
-            "requests": "בקשות התנדבות",
-            "info": "מידע התנדבות",
-            "current": "התנדבות נוכחית",
-            "areas": "תחומי התנדבות",
-            "frequency": "תדירות",
-            "hours": "שעות מועדפות",
-            "days": "ימים זמינים"
+      "requests": "בקשות התנדבות",
+      "info": "מידע התנדבות",
+      "current": "התנדבות נוכחית",
+      "areas": "תחומי התנדבות",
+      "frequency": "תדירות",
+      "hours": "שעות מועדפות",
+      "days": "ימים זמינים"
     },
     "label": {
             "timing": "שעה:",
@@ -1536,6 +1541,50 @@
             "noRequests": "אין בקשות התנדבות זמינות.",
             "noUser": "אף משתמש לא מחובר."
     }
+  },
+  "emptyStates": {
+    "noMessages": "עדיין אין הודעות",
+    "noMessagesMessage": "התחל שיחה עם משתמשים אחרים כדי לראות הודעות כאן.",
+    "startConversation": "התחל שיחה",
+    "noNotifications": "אין התראות",
+    "noNotificationsMessage": "סיימת הכל! חזור מאוחר יותר לעדכונים חדשים.",
+    "noJobs": "אין בקשות עבודה",
+    "noJobsMessage": "עדיין לא נוצרו בקשות עבודה התנדבותיות.",
+    "createJobRequest": "צור בקשת עבודה",
+    "noServiceRequests": "אין בקשות שירות",
+    "noServiceRequestsMessage": "עדיין לא נשלחו בקשות שירות.",
+    "createServiceRequest": "צור בקשת שירות",
+    "noEvents": "אין אירועים",
+    "noEventsMessage": "עדיין לא נוצרו אירועים. התחל ביצירת האירוע הראשון שלך!",
+    "createEvent": "צור אירוע",
+    "noAdmins": "אין מנהלים",
+    "noAdminsMessage": "עדיין לא נוספו מנהלים למערכת.",
+    "addAdmin": "הוסף מנהל",
+    "noTowns": "אין ערים",
+    "noTownsMessage": "עדיין לא נוספו ערים למערכת.",
+    "addTown": "הוסף עיר",
+    "noSettlements": "אין יישובים",
+    "noSettlementsMessage": "עדיין לא נוספו יישובים למערכת.",
+    "addSettlement": "הוסף יישוב",
+    "noRetirees": "אין ותיקים",
+    "noRetireesMessage": "עדיין לא נרשמו ותיקים.",
+    "addRetiree": "הוסף ותיק",
+    "noVolunteers": "אין מתנדבים",
+    "noVolunteersMessage": "עדיין לא נרשמו מתנדבים.",
+    "addVolunteer": "הוסף מתנדב",
+    "noAnalytics": "אין נתוני אנליטיקה",
+    "noAnalyticsMessage": "עדיין אין נתוני אנליטיקה זמינים. נתונים יופיעו כאן לאחר יצירת אירועים ופעילויות.",
+    "noPendingEvents": "אין אירועים ממתינים",
+    "noPendingEventsMessage": "כל האירועים נבדקו ואושרו.",
+    "noCategories": "אין קטגוריות",
+    "noCategoriesMessage": "עדיין לא נוצרו קטגוריות אירועים.",
+    "addCategory": "הוסף קטגוריה",
+    "noCandidates": "אין מועמדים",
+    "noCandidatesMessage": "עדיין לא נרשמו מועמדים.",
+    "addCandidate": "הוסף מועמד",
+    "noUpcomingEventsMessage": "חזור מאוחר יותר לאירועים חדשים או עיין באירועים מהעבר בלוח השנה",
+    "noUpcomingEventsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noPastEventsMessage": "עדיין לא הסתיימו אירועים."
   }
 } 
 
