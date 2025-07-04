@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaCalendarCheck, FaClock, FaUser, FaFilter} from "react-icons/fa";
+import { FaCalendarAlt, FaMapMarkerAlt, FaSearch, FaCalendarCheck, FaClock, FaUser, FaFilter, FaTrash } from "react-icons/fa";
 import { db, auth } from "../../firebase"; // Import Firebase configuration
-import { collection, onSnapshot, query, where, orderBy, doc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy, doc, getDoc, getDocs, writeBatch } from "firebase/firestore";
 import { useLanguage } from "../../context/LanguageContext"; // Import the LanguageContext hook
 import AdminEventDetails from "../AdminProfile/AdminEventDetails"; // Import Admin modal
 import RetireeEventDetails from "../Calendar/RetireeEventDetails"; // Import Retiree modal
 import EmptyState from "../EmptyState"; // Import EmptyState component
 import BaseEventDetails from "../Calendar/BaseEventDetails"; // Import BaseEventDetails component
+import { getAllSettlements } from '../../utils/getSettlements';
 
 // Import local images for fallback
 import TripImg from "../../assets/Trip.png";
@@ -80,6 +81,9 @@ const Cards = ({ setSelected }) => {
   const [showPast, setShowPast] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(null); // eventId or null
   const [eventToRepeat, setEventToRepeat] = useState(null); // event object or null
+  const [settlements, setSettlements] = useState([]);
+  const [settlementFilter, setSettlementFilter] = useState('all');
+  const [userSettlement, setUserSettlement] = useState('');
 
   // Get current user and fetch their role
   useEffect(() => {
@@ -96,11 +100,28 @@ const Cards = ({ setSelected }) => {
     fetchUserAndRole();
   }, []);
 
+  // Fetch settlements for superadmin/admin
+  useEffect(() => {
+    if (userRole === 'superadmin') {
+      getAllSettlements().then(setSettlements);
+    } else if (userRole === 'admin') {
+      // Fetch admin's settlement
+      const fetchUserSettlement = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setUserSettlement((data.idVerification && data.idVerification.settlement) || data.settlement || '');
+        }
+      };
+      fetchUserSettlement();
+    }
+  }, [userRole]);
+
   // Helper function to check if event is upcoming
   const isEventUpcoming = (event) => {
     const now = new Date();
-    
-    // Parse the event date from DD-MM-YYYY format
     let eventDate;
     if (event.startDate && event.startDate.includes('-')) {
       const parts = event.startDate.split('-');
@@ -116,20 +137,28 @@ const Cards = ({ setSelected }) => {
         }
       }
     }
-    
-    if (!eventDate || isNaN(eventDate.getTime())) {
-      return false;
-    }
-    
-    // If event has time, combine date and time
-    if (event.timeFrom) {
+    if (!eventDate || isNaN(eventDate.getTime())) return false;
+
+    // Use timeTo (end time) if available, otherwise timeFrom (start time), otherwise end of day
+    if (event.timeTo) {
+      const [hours, minutes] = event.timeTo.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+    } else if (event.timeFrom) {
       const [hours, minutes] = event.timeFrom.split(':').map(Number);
       eventDate.setHours(hours, minutes, 0, 0);
     } else {
-      // If no time specified, set to end of day
       eventDate.setHours(23, 59, 59, 999);
     }
-    
+
+    // Debug log
+    console.log('isEventUpcoming:', {
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: eventDate,
+      now: now,
+      result: eventDate > now
+    });
+
     return eventDate > now;
   };
 
@@ -195,7 +224,29 @@ const Cards = ({ setSelected }) => {
         }
       }
     }
-    return eventDate && eventDate < now;
+    if (!eventDate || isNaN(eventDate.getTime())) return false;
+
+    // Use timeTo (end time) if available, otherwise timeFrom (start time), otherwise end of day
+    if (event.timeTo) {
+      const [hours, minutes] = event.timeTo.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+    } else if (event.timeFrom) {
+      const [hours, minutes] = event.timeFrom.split(':').map(Number);
+      eventDate.setHours(hours, minutes, 0, 0);
+    } else {
+      eventDate.setHours(23, 59, 59, 999);
+    }
+
+    // Debug log
+    console.log('isPastEvent:', {
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: eventDate,
+      now: now,
+      result: eventDate < now
+    });
+
+    return eventDate < now;
   };
 
   // Fetch categories and events from Firestore in real-time
@@ -222,27 +273,19 @@ const Cards = ({ setSelected }) => {
         const unsubscribe = onSnapshot(eventsQuery, (snapshot) => {
             const eventsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
             
-            console.log('All events fetched:', eventsData.length);
-            console.log('Sample event:', eventsData[0]);
+            console.log('All events fetched:', eventsData.length, eventsData);
             
-            // Filter events based on role and ensure they're upcoming
-            const roleBasedEvents = userRole === 'admin'
-                ? eventsData.filter(event => 
-                    (event.status === 'active' || event.status === 'pending') && 
-                    isEventUpcoming(event)
-                  )
-                : eventsData.filter(event => 
-                    event.status === 'active' && 
-                    isEventUpcoming(event)
-                  );
+            // Filter events based on role (do NOT filter by isEventUpcoming here)
+            const roleBasedEvents = userRole === 'admin' || userRole === 'superadmin'
+                ? eventsData.filter(event => (event.status === 'active' || event.status === 'pending'))
+                : eventsData.filter(event => (event.status === 'active' || (event.status === 'pending' && event.createdBy === (currentUser && currentUser.uid))));
             
-            console.log('Role-based filtered events:', roleBasedEvents.length);
-            console.log('Sample filtered event:', roleBasedEvents[0]);
+            console.log('Role-based filtered events:', roleBasedEvents.length, roleBasedEvents);
             
             // Sort events by date (upcoming first)
             const sortedEvents = sortEventsByDate(roleBasedEvents);
             
-            console.log('Final sorted events:', sortedEvents.length);
+            console.log('Final sorted events:', sortedEvents.length, sortedEvents);
             
             setEvents(sortedEvents);
             setFilteredEvents(sortedEvents);
@@ -263,18 +306,20 @@ const Cards = ({ setSelected }) => {
     };
   }, [userRole]);
 
-  // Apply filters (category, search, and my events)
+  // Apply filters (category, search, my events, settlement)
   useEffect(() => {
     let filtered = events;
 
     // Filter by "My Events Only" if enabled
     if (showMyEventsOnly && currentUser) {
       filtered = filtered.filter(event => isEventCreatedByMe(event));
+      console.log('After My Events Only filter:', filtered);
     }
 
     // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(event => event.categoryId === selectedCategory);
+      console.log('After Category filter:', filtered);
     }
 
     // Filter by search query
@@ -282,10 +327,21 @@ const Cards = ({ setSelected }) => {
       filtered = filtered.filter(event => 
         event.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
+      console.log('After Search filter:', filtered);
+    }
+
+    // Settlement filter
+    if (settlementFilter !== 'all') {
+      if (userRole === 'admin' && settlementFilter === 'my-settlement') {
+        filtered = filtered.filter(event => event.settlement === userSettlement);
+      } else {
+        filtered = filtered.filter(event => event.settlement === settlementFilter);
+      }
     }
 
     setFilteredEvents(filtered);
-  }, [events, selectedCategory, searchQuery, showMyEventsOnly, currentUser]);
+    console.log('After all filters, filteredEvents:', filtered);
+  }, [events, selectedCategory, searchQuery, showMyEventsOnly, currentUser, settlementFilter, userRole, userSettlement]);
 
   // Handle category filter
   const handleCategoryChange = (category) => {
@@ -303,8 +359,21 @@ const Cards = ({ setSelected }) => {
     setShowMyEventsOnly(!showMyEventsOnly);
   };
 
+  // Log filteredEvents before filtering for past events
+  console.log('Filtering for past events:', filteredEvents);
   const displayedEvents = showPast
-    ? filteredEvents.filter(isPastEvent)
+    ? filteredEvents.filter(event => {
+        const result = isPastEvent(event) &&
+          (
+            userRole === 'admin' || userRole === 'superadmin' ||
+            (currentUser && (
+              event.createdBy === currentUser.uid ||
+              (Array.isArray(event.participants) && event.participants.includes(currentUser.uid))
+            ))
+          );
+        console.log('Past event filter result:', { eventId: event.id, eventTitle: event.title, result });
+        return result;
+      })
     : filteredEvents.filter(event => !isPastEvent(event));
 
   // Conditionally render the correct modal based on the user's role
@@ -336,6 +405,28 @@ const Cards = ({ setSelected }) => {
     setEventToRepeat(event);
     // TODO: Open your event creation form/modal pre-filled with event's data
     alert('Repeat event: open event creation form pre-filled with this event\'s data.');
+  };
+
+  // Delete event handler (copied from BaseEventDetails)
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event? This cannot be undone.')) return;
+    try {
+      const eventRef = doc(db, 'events', eventId);
+      // Batch delete participants subcollection and the event itself
+      const participantsSnapshot = await getDocs(collection(db, `events/${eventId}/participants`));
+      const batch = writeBatch(db);
+      participantsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      batch.delete(eventRef);
+      await batch.commit();
+      // Remove from UI
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      setFilteredEvents(prev => prev.filter(e => e.id !== eventId));
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Failed to delete event.');
+    }
   };
 
   return (
@@ -373,6 +464,17 @@ const Cards = ({ setSelected }) => {
                 <option key={category.id} value={category.id}>
                   {category.translations[language]} {/* Display translation based on current language */}
                 </option>
+              ))}
+            </select>
+            <select
+              className="ml-4 border px-2 py-1 rounded-md text-sm"
+              value={settlementFilter}
+              onChange={e => setSettlementFilter(e.target.value)}
+            >
+              <option value="all">All Settlements</option>
+              {userRole === 'admin' && <option value="my-settlement">My Settlement</option>}
+              {userRole === 'superadmin' && settlements.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
             {/* My Events Only Filter */}
@@ -449,6 +551,8 @@ const Cards = ({ setSelected }) => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
                   {displayedEvents.map((event) => {
+                    // Debug log for rendering
+                    console.log('Rendering event card:', { eventId: event.id, eventTitle: event.title, event });
                     const backgroundImage = event.imageUrl || categoryImages[event.categoryId] || SocialEventImg;
                     const isMyEvent = currentUser && event.createdBy === currentUser.uid;
                     const isJoined = currentUser && Array.isArray(event.participants) && event.participants.includes(currentUser.uid);
@@ -514,19 +618,25 @@ const Cards = ({ setSelected }) => {
                             </p>
                             {/* Repeat and Feedback for past events */}
                             {past && (
-                              <div className="flex gap-2 mt-2">
-                                <button
-                                  className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded text-xs font-bold"
-                                  onClick={() => handleRepeatEvent(event)}
-                                >
-                                  Repeat Event
-                                </button>
+                              <div className="flex gap-2 mt-2 items-center">
+                                {/* Remove Repeat Event button */}
                                 {isJoined && !event.feedbackGiven && (
                                   <button
                                     className="text-blue-600 underline text-xs font-bold"
                                     onClick={() => setShowFeedbackModal(event.id)}
                                   >
                                     Rate this event
+                                  </button>
+                                )}
+                                {/* Delete button for past events (creator, admin, superadmin) */}
+                                {(isMyEvent || userRole === 'admin' || userRole === 'superadmin') && (
+                                  <button
+                                    style={{ filter: 'none', opacity: 1 }}
+                                    className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold border border-red-700 ml-2 shadow z-10"
+                                    onClick={() => handleDeleteEvent(event.id)}
+                                    title="Delete Event"
+                                  >
+                                    <FaTrash className="text-xs" /> Delete
                                   </button>
                                 )}
                               </div>

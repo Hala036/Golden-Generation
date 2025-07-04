@@ -153,6 +153,16 @@ const BaseEventDetails = ({
         <div className="flex flex-col md:flex-row flex-grow overflow-y-auto gap-8">
           {/* Left: Event Details */}
           <div className="flex-1 overflow-y-auto pr-2">
+            {/* Event Image */}
+            {event.imageUrl && (
+              <div className="mb-6 flex justify-center">
+                <img
+                  src={event.imageUrl}
+                  alt="Event"
+                  className="rounded-xl border border-gray-200 shadow max-h-64 object-contain"
+                />
+              </div>
+            )}
             {/* Event Details Grid */}
             <div className="grid grid-cols-1 gap-y-6 mb-6">
               <div className="flex items-start">

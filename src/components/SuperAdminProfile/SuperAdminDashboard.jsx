@@ -13,7 +13,7 @@ import ComprehensiveAnalytics from "../AdminProfile/Analytics/ComprehensiveAnaly
 import Settings from "../SharedDashboard/SettingsCards";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
-import AdminCalendar from "../Calendar/AdminCalendar";
+import SuperAdminCalendar from "../Calendar/SuperAdminCalendar";
 import EventRequests from "../AdminProfile/PendingEvents";
 import SettlementsManager from "./SettlementsManager";
 import AdminSettlements from "../SignUp/AdminSettlements";
@@ -44,15 +44,15 @@ const RetireeDashboard = () => {
   const customButtons = [];
 
   const componentsById = {
-    upcoming: <Cards />,
-    main: <AdminHomepage setSelected={setSelected} />, // Pass setSelected to AdminHomepage
+    upcoming: <Cards setSelected={setSelected} />,
+    main: <AdminHomepage setSelected={setSelected} />,
     settings: <Settings />,
-    calendar: <AdminCalendar />,
+    calendar: <SuperAdminCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
     retirees: <Retirees />,
     jobs: <Jobs />,
-    service: <ServiceRequests />, // Link to ServiceRequests component
+    service: <ServiceRequests />,
     analysis: <Analysis />,
     eventRequests: <EventRequests />,
     addSettlements: <AdminSettlements />,

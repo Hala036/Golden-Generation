@@ -19,7 +19,12 @@ export const useCalendarEvents = (userRole) => {
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
-          setUserSettlement(userDoc.data().idVerification?.settlement);
+          const data = userDoc.data();
+          setUserSettlement(
+            (data.idVerification && data.idVerification.settlement) ||
+            data.settlement ||
+            ""
+          );
         }
       } catch (error) {
         console.error('Error fetching user settlement:', error);
@@ -193,10 +198,10 @@ export const useCalendarEvents = (userRole) => {
       });
     }
 
-    // Settlement filtering (for admins)
-    if (settlementFilter !== 'all' && userRole === 'admin') {
+    // Settlement filtering (for admins and superadmin)
+    if (settlementFilter !== 'all' && (userRole === 'admin' || userRole === 'superadmin')) {
       filteredEvents = filteredEvents.filter(event => {
-        if (settlementFilter === 'my-settlement') {
+        if (userRole === 'admin' && settlementFilter === 'my-settlement') {
           return event.settlement === userSettlement;
         }
         return event.settlement === settlementFilter;

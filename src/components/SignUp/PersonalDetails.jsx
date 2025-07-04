@@ -426,6 +426,14 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
         newErrors[field] = t(fieldKey);
       }
     });
+    // Add format validation for house number
+    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
+      newErrors.houseNumber = t('auth.signup.personalDetails.errors.houseNumberFormat');
+    }
+    // Add format validation for phone number
+    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = t('auth.signup.personalDetails.errors.phoneNumberFormat');
+    }
     // Validate house number
     const houseNumberError = validateHouseNumber(formData.houseNumber);
     if (houseNumberError) newErrors.houseNumber = houseNumberError;
