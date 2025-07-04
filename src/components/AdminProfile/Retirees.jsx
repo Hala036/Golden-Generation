@@ -967,15 +967,15 @@ const Retirees = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white p-3 md:p-6 rounded shadow mb-6 max-w-xl mx-auto">        {/* ...existing code for search and filters... */}
+      <div className="bg-white p-3 md:p-4 rounded shadow mb-6 max-w-xl mx-auto">        {/* ...existing code for search and filters... */}
         {/* Global Search */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Global Search
+            {t("admin.retirees.filters.globalSearch")}
           </label>
           <input
             type="text"
-            placeholder="Search across all fields..."
+            placeholder={t("admin.retirees.filters.search")}
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -983,31 +983,31 @@ const Retirees = () => {
         </div>
 
         {/* Filter Actions */}
-        <div className="flex space-x-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1 space-x-4 mb-6">
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
             onClick={addFilter}
             disabled={availableFields.length === 0}
           >
-            + Add Filter
+            {t("admin.retirees.filters.addFilter")}
           </button>
           <button
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
             onClick={clearAllFilters}
           >
-            Clear All
+            {t("admin.retirees.filters.clearAll")}
           </button>
           <button
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
             onClick={saveFilterSet}
           >
-            Save Filters
+            {t("admin.retirees.filters.saveFilters")}
           </button>
           <button
             className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg"
             onClick={openLoadModal}
           >
-            Load Filters
+            {t("admin.retirees.filters.loadFilters")}
           </button>
         </div>
 
@@ -1029,7 +1029,7 @@ const Retirees = () => {
                         : null
                     }
                     onChange={option => updateFilter(index, "field", option ? option.value : "")}
-                    placeholder="Select Field..."
+                    placeholder={t("admin.retirees.filters.selectField")}
                     isSearchable
                     isClearable
                     menuPlacement="auto"
@@ -1067,7 +1067,7 @@ const Retirees = () => {
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
                   onClick={() => removeFilter(index)}
                 >
-                  Remove
+                  {t("admin.retirees.filters.remove")}
                 </button>
               </div>
               {/* Error message for this filter */}
@@ -1084,7 +1084,7 @@ const Retirees = () => {
 
         {/* Results Count */}
         <div className="mt-4 text-sm text-gray-600">
-          Showing {filteredRetirees.length} of {retirees.length} retirees
+          {t("admin.retirees.showingCount", { filtered: filteredRetirees.length, total: retirees.length })}
         </div>
       </div>
 
@@ -1173,8 +1173,8 @@ const Retirees = () => {
         ) : (
           <EmptyState
             icon={<FaUsers />}
-            title="No retirees found"
-            message="Try adjusting your filters or add a new retiree."
+            title= {t("admin.retirees.noRetireesFound")}
+            message={t("admin.retirees.noRetireesMessage")}
           />
         )
       ) : (
@@ -1190,7 +1190,7 @@ const Retirees = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" role="dialog" aria-modal="true" aria-label="Load Filter Set Modal">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] max-w-[90vw]">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold">Load Filter Set</h2>
+              <h2 className="text-lg font-bold">{t("admin.retirees.filters.loadFilterSet")}</h2>
               <button
                 className="text-gray-500 hover:text-gray-700 text-xl font-bold"
                 onClick={() => setShowLoadModal(false)}
@@ -1200,7 +1200,7 @@ const Retirees = () => {
               </button>
             </div>
             {savedFilterSets.length === 0 ? (
-              <div className="text-gray-500">No saved filter sets found.</div>
+              <div className="text-gray-500">{t("admin.retirees.filters.noFiltersLoad")}</div>
             ) : (
               <ul className="space-y-2 max-h-60 overflow-y-auto" tabIndex={0}>
                 {savedFilterSets.map(([name, filterSet]) => (
