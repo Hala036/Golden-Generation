@@ -553,18 +553,12 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       {/* Header */}
       <div className="mb-4 md:mb-8 w-full">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-2 md:gap-0">
-          <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto">
-            {/* <DefaultProfilePic 
-              name={userName} 
-              size={50} 
-              fontSize="1.8rem"
-              bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
-            /> */}
+          <div className="flex items-center gap-2 md:gap-4 md:w-auto">
             <div>
               <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2 truncate">
                 {i18n.t('dashboard.main.welcome', { userName: userName })}
               </h1>
-              <p className="text-xs md:text-base text-gray-600 truncate">
+              <p className="text-xs md:text-base text-gray-600">
                 {t('dashboard.main.communityToday')}
               </p>
             </div>
