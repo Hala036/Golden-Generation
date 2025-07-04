@@ -92,7 +92,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
                 bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
               />
             </div>
-            <span className="text-sm ml-3 mt-3 md:ml-0 md:mt-0 md:text-lg font-semibold text-center">
+            <span className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center">
               {userData?.username || "User"}
             </span>
           </div>

@@ -324,7 +324,7 @@
           "Homemaker": "עקרת בית",
           "ReligiousWorker": "עובד דתי",
           "Volunteer": "מתנדב",
-          "Retired": "גמלאי",
+          "Retired": "ותיק",
           "Student": "סטודנט"
         }
       },
@@ -651,7 +651,7 @@
       },
       "logout": "התנתק",
       "homePage": "דף הבית",
-      "retirees": "גמלאים",
+      "retirees": "ותיקים",
       "volunteerRequests": "בקשות התנדבות",
       "serviceRequests": "בקשות שירות",
       "service": "בקש שירותים",
@@ -750,7 +750,7 @@
           "messagePlaceholder": "הודעת התראה",
         "target": {
             "everyone": "כולם",
-            "retiree": "גמלאים",
+            "retiree": "ותיקים",
             "admin": "מנהלים",
             "custom": "משתמשים ספציפיים (שמות משתמש)"
           },
@@ -774,7 +774,7 @@
           "loggedOut": "התנתקת בהצלחה!",
           "home": "דף הבית",
           "upcomingEvents": "אירועים קרובים",
-          "retirees": "גמלאים",
+          "retirees": "ותיקים",
           "volunteerRequests": "בקשות התנדבות",
           "serviceRequests": "בקשות שירות",
           "management": "ניהול",
@@ -1012,7 +1012,7 @@
           },
           "logout": "התנתק",
           "homePage": "דף הבית",
-          "retirees": "גמלאים",
+          "retirees": "ותיקים",
           "volunteerRequests": "בקשות מתנדבים",
           "serviceRequests": "בקשות שירות",
           "service": "בקש שירותים",
@@ -1111,7 +1111,7 @@
       "quickActions": {
               "calendar": "לוח שנה",
               "viewAllRequests": "צפה בכל הבקשות",
-              "manageRetirees": "נהל גמלאים",
+              "manageRetirees": "נהל ותיקים",
               "reportsAnalytics": "דוחות וניתוחים",
               "adminManagement": "ניהול מנהלים",
               "addSettlements": "הוסף יישובים"
@@ -1159,12 +1159,12 @@
   },
   "admin": {
     "retirees": {
-            "title": "ניהול גמלאים",
-            "addRetiree": "הוסף גמלאי",
-            "viewRetiree": "צפה בגמלאי",
-            "searchRetirees": "חפש גמלאים",
-            "noRetireesFound": "לא נמצאו גמלאים",
-            "retireeDetails": "פרטי גמלאי",
+            "title": "ניהול ותיקים",
+            "addRetiree": "הוסף ותיק",
+            "viewRetiree": "צפה בותיק",
+            "searchRetirees": "חפש ותיקים",
+            "noRetireesFound": "לא נמצאו ותיקים",
+            "retireeDetails": "פרטי ותיק",
             "retireeName": "שם",
             "retireeEmail": "אימייל",
             "retireePhone": "מספר טלפון",
@@ -1248,7 +1248,7 @@
     }
   },
   "calendar": {
-          "title": "לוח שנה לפעילות גמלאים",
+          "title": "לוח שנה לפעילות ותיקים",
           "welcomeBack": "ברוך שובך, {{name}} ({{role}})",
           "adminName": "המנהל שרה",
           "searchEvents": "חפש אירועים...",
@@ -1294,7 +1294,7 @@
             "title": "מקרא",
             "createdByMe": "נוצרו על ידי",
             "createdByOtherAdmins": "נוצרו על ידי מנהלים אחרים",
-            "retireeSubmissions": "הגשות גמלאים",
+            "retireeSubmissions": "הגשות ותיקים",
             "joinedEvents": "אירועים שהצטרפתי",
             "pendingApproval": "ממתינים לאישור",
             "pastEvents": "אירועים מהעבר"
@@ -1439,7 +1439,7 @@
   "sidebar": {
           "home": "דף הבית",
           "upcomingEvents": "אירועים קרובים",
-          "retirees": "גמלאים",
+          "retirees": "ותיקים",
           "volunteerRequests": "בקשות מתנדבים",
           "serviceRequests": "בקשות שירות",
           "management": "ניהול",
