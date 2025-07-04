@@ -1165,16 +1165,30 @@
       "viewRetiree": "View Retiree",
       "searchRetirees": "Search Retirees",
       "noRetireesFound": "No retirees found",
+      "noRetireesMessage": "Try adjusting your filters or add a new retiree.",
       "retireeDetails": "Retiree Details",
       "retireeName": "Name",
       "retireeEmail": "Email",
       "retireePhone": "Phone Number",
+      "showingCount": "Showing {{filtered}} of {{total}} retirees",
         "filters": {
-          "search": "Search by any feature...",
-          "addFilter": "Add Filter",
+          "selectField": "Select Field...",
+          "globalSearch": "Global Search",
+          "search": "Search across all fields...",
+          "addFilter": "+ Add Filter",
           "remove": "Remove",
           "select": "Select Feature",
-          "enterValue": "Enter Value"
+          "enterValue": "Enter Value",
+          "clearAll": "Clear All",
+          "saveFilters": "Save Filters",
+          "loadFilters": "Load Filters",
+          "loadFilterSet": "Load Filter Set",
+          "noFiltersLoad": "No saved filters to load",
+          "fields": {
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone Number"
+          }
         },
         "table": {
           "name": "Name",
