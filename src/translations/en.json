@@ -844,6 +844,7 @@
       }
     },
     "adminSettlements": {
+      "loading": "Loading settlements...",
       "manageAvailableSettlements": "Manage Available Settlements",
       "addNewSettlement": "Add New Settlement",
       "enterSettlementName": "Enter settlement name",

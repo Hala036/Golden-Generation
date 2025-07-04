@@ -849,13 +849,14 @@
       }
     },
     "adminSettlements": {
-          "manageAvailableSettlements": "נהל יישובים זמינים",
-          "addNewSettlement": "הוסף יישוב חדש",
-          "enterSettlementName": "הזן שם יישוב",
-          "add": "הוסף",
-          "loadError": "נכשל בטעינת היישובים.",
-          "updateError": "נכשל בעדכון היישוב.",
-          "addError": "נכשל בהוספת היישוב."
+      "loading": "טוען יישובים...",
+      "manageAvailableSettlements": "נהל יישובים זמינים",
+      "addNewSettlement": "הוסף יישוב חדש",
+      "enterSettlementName": "הזן שם יישוב",
+      "add": "הוסף",
+      "loadError": "נכשל בטעינת היישובים.",
+      "updateError": "נכשל בעדכון היישוב.",
+      "addError": "נכשל בהוספת היישוב."
     },
     "categoryManagement": {
       "title": "ניהול קטגוריות",
