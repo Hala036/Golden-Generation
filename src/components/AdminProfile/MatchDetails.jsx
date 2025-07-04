@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUser, FaMapMarkerAlt, FaBriefcase, FaHeart, FaClock, FaPercentage } from "react-icons/fa";
+import { FaUser, FaMapMarkerAlt, FaBriefcase, FaHeart, FaClock, FaPercentage, FaCalendarAlt, FaSync } from "react-icons/fa";
 import { getDetailedMatch } from "../../matchingAlgorithm";
 
 const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
@@ -63,6 +63,56 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
   }
 
   const { jobRequest, senior, scoreDetails } = matchDetails;
+  const { weights } = scoreDetails;
+
+  // Helper function to safely get senior data
+  const getSeniorData = (path, fallback = "") => {
+    const keys = path.split('.');
+    let value = senior;
+    for (const key of keys) {
+      if (value && typeof value === 'object' && key in value) {
+        value = value[key];
+      } else {
+        return fallback;
+      }
+    }
+    return value || fallback;
+  };
+
+  // Helper function to format array data
+  const formatArrayData = (data, fallback = "") => {
+    if (Array.isArray(data) && data.length > 0) {
+      return data.join(", ");
+    }
+    return fallback;
+  };
+
+  // Helper function to format availability data
+  const formatAvailability = (senior) => {
+    // Check for volunteer days in different possible locations
+    const volunteerDays = senior.volunteerDays || 
+                         senior.additionalVolunteerDays || 
+                         getSeniorData('lifestyle.volunteerDays') ||
+                         getSeniorData('personalDetails.volunteerDays') ||
+                         [];
+    
+    if (Array.isArray(volunteerDays) && volunteerDays.length > 0) {
+      return volunteerDays.join(", ");
+    }
+    
+    // Check for availability object (if it exists in a different format)
+    const availability = getSeniorData('availability');
+    if (availability && typeof availability === 'object') {
+      const availableDays = Object.entries(availability)
+        .filter(([_, value]) => value)
+        .map(([key, _]) => key.charAt(0).toUpperCase() + key.slice(1));
+      if (availableDays.length > 0) {
+        return availableDays.join(", ");
+      }
+    }
+    
+    return "";
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -108,40 +158,79 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
           <h4 className="text-lg font-semibold mb-3">Senior</h4>
           <div className="space-y-2">
             <p className="text-gray-700">
-              <strong>Name:</strong> {senior.credentials?.username || "Unknown"}
+              <strong>Name:</strong> {getSeniorData('credentials.username') || getSeniorData('personalDetails.name') || getSeniorData('name') || ""}
             </p>
             <p className="text-gray-700">
-              <strong>Location:</strong> {senior.location || "Unknown"}
+              <strong>Location:</strong> {getSeniorData('personalDetails.settlement') || getSeniorData('location') || ""}
             </p>
             <p className="text-gray-700">
               <strong>Interests:</strong>{" "}
-              {senior.interests && senior.interests.length > 0
-                ? senior.interests.join(", ")
-                : "Not specified"}
+              {formatArrayData(getSeniorData('lifestyle.interests')) || formatArrayData(getSeniorData('interests')) || ""}
             </p>
             <p className="text-gray-700">
               <strong>Professional Background:</strong>{" "}
-              {senior.professionalBackground &&
-              (Array.isArray(senior.professionalBackground)
-                ? senior.professionalBackground.length > 0
-                : senior.professionalBackground)
-                ? Array.isArray(senior.professionalBackground)
-                  ? senior.professionalBackground.join(", ")
-                  : senior.professionalBackground
-                : "Not specified"}
+              {getSeniorData('workBackground.selectedJob') || 
+               getSeniorData('workBackground.category') || 
+               getSeniorData('professionalBackground') ||
+               formatArrayData(getSeniorData('workBackground')) ||
+               ""}
             </p>
             <p className="text-gray-700">
               <strong>Availability:</strong>{" "}
-              {senior.availability
-                ? Object.entries(senior.availability)
-                    .filter(([_, value]) => value)
-                    .map(([key, _]) => key.charAt(0).toUpperCase() + key.slice(1))
-                    .join(", ")
-                : "Not specified"}
+              {formatAvailability(senior) || ""}
+            </p>
+            <p className="text-gray-700">
+              <strong>Volunteer Frequency:</strong>{" "}
+              {getSeniorData('volunteerFrequency') || 
+               getSeniorData('additionalVolunteerFrequency') ||
+               getSeniorData('lifestyle.volunteerFrequency') ||
+               ""}
+            </p>
+            <p className="text-gray-700">
+              <strong>Volunteer Hours:</strong>{" "}
+              {getSeniorData('volunteerHours') || 
+               getSeniorData('additionalVolunteerHours') ||
+               getSeniorData('lifestyle.volunteerHours') ||
+               ""}
             </p>
           </div>
         </div>
       </div>
+
+      {/* Dynamic Weights Display */}
+      {weights && (
+        <div className="mb-6">
+          <h4 className="text-lg font-semibold mb-3">Scoring Weights Configuration</h4>
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <div className="flex justify-between">
+                <span>Location:</span>
+                <span className="font-semibold">{weights.location}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Interests:</span>
+                <span className="font-semibold">{weights.interests}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Background:</span>
+                <span className="font-semibold">{weights.background}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Availability:</span>
+                <span className="font-semibold">{weights.availability}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Frequency:</span>
+                <span className="font-semibold">{weights.frequency}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Timing:</span>
+                <span className="font-semibold">{weights.timing}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Match Score Details */}
       <div className="mb-6">
@@ -152,12 +241,12 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
               <div className="flex items-center mb-2">
                 <FaMapMarkerAlt className="text-yellow-500 mr-2" />
                 <span className="font-medium">Location Match:</span>
-                <span className="ml-2">{scoreDetails.locationScore} / 40</span>
+                <span className="ml-2">{Math.round(scoreDetails.locationScore)} / {weights?.location || 40}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div
                   className="bg-yellow-500 h-2.5 rounded-full"
-                  style={{ width: `${(scoreDetails.locationScore / 40) * 100}%` }}
+                  style={{ width: `${(scoreDetails.locationScore / (weights?.location || 40)) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -166,12 +255,12 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
               <div className="flex items-center mb-2">
                 <FaHeart className="text-yellow-500 mr-2" />
                 <span className="font-medium">Interests Match:</span>
-                <span className="ml-2">{scoreDetails.interestsScore} / 25</span>
+                <span className="ml-2">{Math.round(scoreDetails.interestsScore)} / {weights?.interests || 25}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div
                   className="bg-yellow-500 h-2.5 rounded-full"
-                  style={{ width: `${(scoreDetails.interestsScore / 25) * 100}%` }}
+                  style={{ width: `${(scoreDetails.interestsScore / (weights?.interests || 25)) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -180,12 +269,40 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
               <div className="flex items-center mb-2">
                 <FaBriefcase className="text-yellow-500 mr-2" />
                 <span className="font-medium">Background Match:</span>
-                <span className="ml-2">{scoreDetails.backgroundScore} / 25</span>
+                <span className="ml-2">{Math.round(scoreDetails.backgroundScore)} / {weights?.background || 25}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div
                   className="bg-yellow-500 h-2.5 rounded-full"
-                  style={{ width: `${(scoreDetails.backgroundScore / 25) * 100}%` }}
+                  style={{ width: `${(scoreDetails.backgroundScore / (weights?.background || 25)) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center mb-2">
+                <FaCalendarAlt className="text-yellow-500 mr-2" />
+                <span className="font-medium">Availability Match:</span>
+                <span className="ml-2">{Math.round(scoreDetails.availabilityScore)} / {weights?.availability || 5}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-yellow-500 h-2.5 rounded-full"
+                  style={{ width: `${(scoreDetails.availabilityScore / (weights?.availability || 5)) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center mb-2">
+                <FaSync className="text-yellow-500 mr-2" />
+                <span className="font-medium">Frequency Match:</span>
+                <span className="ml-2">{Math.round(scoreDetails.frequencyScore)} / {weights?.frequency || 2.5}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-yellow-500 h-2.5 rounded-full"
+                  style={{ width: `${(scoreDetails.frequencyScore / (weights?.frequency || 2.5)) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -193,13 +310,13 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
             <div>
               <div className="flex items-center mb-2">
                 <FaClock className="text-yellow-500 mr-2" />
-                <span className="font-medium">Availability Match:</span>
-                <span className="ml-2">{scoreDetails.availabilityScore} / 10</span>
+                <span className="font-medium">Timing Match:</span>
+                <span className="ml-2">{Math.round(scoreDetails.timingScore)} / {weights?.timing || 2.5}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div
                   className="bg-yellow-500 h-2.5 rounded-full"
-                  style={{ width: `${(scoreDetails.availabilityScore / 10) * 100}%` }}
+                  style={{ width: `${(scoreDetails.timingScore / (weights?.timing || 2.5)) * 100}%` }}
                 ></div>
               </div>
             </div>
@@ -227,6 +344,16 @@ const MatchDetails = ({ jobRequestId, seniorId, onClose }) => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Debug Information (can be removed in production) */}
+      <div className="mb-6">
+        <details className="bg-gray-100 p-4 rounded-lg">
+          <summary className="cursor-pointer font-medium text-gray-700">Debug: Senior Data Structure</summary>
+          <pre className="mt-2 text-xs text-gray-600 overflow-auto max-h-40">
+            {JSON.stringify(senior, null, 2)}
+          </pre>
+        </details>
       </div>
 
       <div className="flex justify-end">
