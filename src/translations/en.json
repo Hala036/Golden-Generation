@@ -929,6 +929,13 @@
   "dashboard": {
     "welcome": "Welcome",
     "profile": "Profile",
+    "sidebar": {
+        "user": "User",
+        "noUserLoggedIn": "No user is logged in.",
+        "failedToLoadUser": "Failed to load user data.",
+        "failedToLogout": "Failed to logout. Please try again.",
+        "loggedOut": "Logged out successfully!"
+      },
     "settings": {
       "title": "Settings",
       "options": {
