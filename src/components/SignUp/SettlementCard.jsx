@@ -43,7 +43,11 @@ const SettlementCard = ({
     </div>
     <hr className="my-2 border-blue-100" />
     <div className="flex flex-col gap-2 text-base mt-2 flex-1">
-      {adminInfo && (adminInfo.username || adminInfo.email || adminInfo.phone) ? (
+      {(!isAvailable && (!adminInfo || !(adminInfo.username || adminInfo.email || adminInfo.phone))) ? (
+        <div className="text-gray-400 italic flex items-center gap-2 mt-2">
+          <FaUser className="text-blue-200" /> Admin was deleted when this settlement was disabled.
+        </div>
+      ) : adminInfo && (adminInfo.username || adminInfo.email || adminInfo.phone) ? (
         <>
           <div className="flex items-center gap-2 text-blue-700 font-semibold">
             <FaUser className="text-blue-400" aria-label="Admin username" />
