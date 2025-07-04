@@ -298,14 +298,8 @@ const AdminManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">Admin Management</h1>
-        <button
-          onClick={openAddModal}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold px-2.5 py-1.5 rounded flex items-center gap-1 text-xs shadow self-start sm:self-auto"
-        >
-          <FaPlus className="text-sm" /> <span className="hidden sm:inline">Add Admin</span><span className="sm:hidden">Add</span>
-        </button>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">Admin Management</h1>
       </div>
 
       {/* Admins Table */}
