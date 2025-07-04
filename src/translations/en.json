@@ -1602,7 +1602,14 @@
     "addCandidate": "Add Candidate",
     "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
     "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria",
-    "noPastEventsMessage": "No events have ended yet."
+    "noPastEventsMessage": "No events have ended yet.",
+    "noViewedRequests": "No Viewed Requests",
+    "noViewedRequestsMessage": "You haven't viewed any requests yet. Check back later or view all requests to see what's available.",
+    "noViewedRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available.",
+    "noViewedRequestsFilter": "No viewed requests found",
+    "noPendingRequests": "No Pending Requests",
+    "noPendingRequestsMessage": "There are no pending requests at the moment.",
+    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available."
   },
   "loading": {
     "messages": "Loading messages...",

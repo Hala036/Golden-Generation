@@ -1598,7 +1598,15 @@
     "addCandidate": "הוסף מועמד",
     "noUpcomingEventsMessage": "חזור מאוחר יותר לאירועים חדשים או עיין באירועים מהעבר בלוח השנה",
     "noUpcomingEventsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
-    "noPastEventsMessage": "עדיין לא הסתיימו אירועים."
+    "noPastEventsMessage": "עדיין לא הסתיימו אירועים.",
+    "noViewedRequests": "אין בקשות שנצפו",
+    "noViewedRequestsMessage": "עדיין לא צפית באף בקשות. בדוק שוב מאוחר יותר או צפה בכל הבקשות כדי לראות מה זמין.",
+    "noViewedRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noViewedRequestsFilter": "אין בקשות שנצפו",
+    "noPendingRequests": "אין בקשות ממתינות",
+    "noPendingRequestsMessage": "אין כרגע בקשות ממתינות.",
+    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון"
+
   }
 } 
 
