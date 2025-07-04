@@ -1093,7 +1093,7 @@ const Retirees = () => {
         {/* Mobile: cards */}
         <div className="block sm:hidden space-y-3">
           {filteredRetirees.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">No retirees found.</div>
+            <div className="text-center text-gray-500 py-8">{t("admin.retirees.noRetireesFound")}</div>
           ) : (
             filteredRetirees.map((retiree) => (
               <div
@@ -1107,11 +1107,19 @@ const Retirees = () => {
                     {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">
-                  <div><span className="font-semibold text-gray-700">Age:</span> {retiree.idVerification?.age || "N/A"}</div>
-                  <div><span className="font-semibold text-gray-700">Gender:</span> {retiree.idVerification?.gender || "N/A"}</div>
-                  <div><span className="font-semibold text-gray-700">Settlement:</span> {retiree.idVerification?.settlement || "N/A"}</div>
-                  <div><span className="font-semibold text-gray-700">Job:</span> {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}</div>
+                <div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.age")}:</span> {retiree.idVerification?.age || t("common.notAvailable")}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.gender")}:</span> {retiree.idVerification?.gender || t("common.notAvailable")}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.settlement")}:</span> {retiree.idVerification?.settlement || t("common.notAvailable")}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.job")}:</span> {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || t("common.notAvailable")}
+                  </div>
                 </div>
               </div>
             ))
@@ -1180,14 +1188,14 @@ const Retirees = () => {
       ) : (
         filteredRetirees.length === 0 && (
           <div className="text-center text-gray-500 py-8">
-            No retirees found.
+            {t("admin.retirees.noRetireesFound")}
           </div>
         )
       )}
 
       {/* Load Filter Modal */}
       {showLoadModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" role="dialog" aria-modal="true" aria-label="Load Filter Set Modal">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/5" role="dialog" aria-modal="true" aria-label="Load Filter Set Modal">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] max-w-[90vw]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">{t("admin.retirees.filters.loadFilterSet")}</h2>

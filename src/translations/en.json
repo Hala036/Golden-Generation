@@ -16,8 +16,8 @@
     "step": "Step",
     "of": "of",
     "select": "Select",
-    "change":"change"
-
+    "change":"change",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "errors": {
@@ -1171,6 +1171,10 @@
       "retireeEmail": "Email",
       "retireePhone": "Phone Number",
       "showingCount": "Showing {{filtered}} of {{total}} retirees",
+      "age": "Age",
+      "settlement": "Settlement",
+      "job": "Job",
+      "gender": "Gender",
         "filters": {
           "selectField": "Select Field...",
           "globalSearch": "Global Search",

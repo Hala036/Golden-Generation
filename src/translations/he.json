@@ -16,7 +16,8 @@
     "step": "שלב",
     "of": "מתוך",
     "select": "בחר",
-    "change": "שנה"
+    "change": "שנה",
+    "notAvailable": "לא זמין"
   },
   "auth": {
     "errors": {
@@ -1176,6 +1177,10 @@
       "retireeEmail": "אימייל",
       "retireePhone": "מספר טלפון",
       "showingCount": "מציג {{filtered}} מתוך {{total}} ותיקים",
+      "age": "גיל",
+      "gender": "מין",
+      "job": "עיסוק",
+      "settlement": "שכונה",
       "filters": {
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
