@@ -967,15 +967,15 @@ const Retirees = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white p-6 rounded shadow mb-6">
+      <div className="bg-white p-3 md:p-4 rounded shadow mb-6 max-w-xl mx-auto">        {/* ...existing code for search and filters... */}
         {/* Global Search */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Global Search
+            {t("admin.retirees.filters.globalSearch")}
           </label>
           <input
             type="text"
-            placeholder="Search across all fields..."
+            placeholder={t("admin.retirees.filters.search")}
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -983,31 +983,31 @@ const Retirees = () => {
         </div>
 
         {/* Filter Actions */}
-        <div className="flex space-x-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1 space-x-4 mb-6">
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
             onClick={addFilter}
             disabled={availableFields.length === 0}
           >
-            + Add Filter
+            {t("admin.retirees.filters.addFilter")}
           </button>
           <button
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
             onClick={clearAllFilters}
           >
-            Clear All
+            {t("admin.retirees.filters.clearAll")}
           </button>
           <button
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
             onClick={saveFilterSet}
           >
-            Save Filters
+            {t("admin.retirees.filters.saveFilters")}
           </button>
           <button
             className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg"
             onClick={openLoadModal}
           >
-            Load Filters
+            {t("admin.retirees.filters.loadFilters")}
           </button>
         </div>
 
@@ -1029,7 +1029,7 @@ const Retirees = () => {
                         : null
                     }
                     onChange={option => updateFilter(index, "field", option ? option.value : "")}
-                    placeholder="Select Field..."
+                    placeholder={t("admin.retirees.filters.selectField")}
                     isSearchable
                     isClearable
                     menuPlacement="auto"
@@ -1067,7 +1067,7 @@ const Retirees = () => {
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
                   onClick={() => removeFilter(index)}
                 >
-                  Remove
+                  {t("admin.retirees.filters.remove")}
                 </button>
               </div>
               {/* Error message for this filter */}
@@ -1084,53 +1084,93 @@ const Retirees = () => {
 
         {/* Results Count */}
         <div className="mt-4 text-sm text-gray-600">
-          Showing {filteredRetirees.length} of {retirees.length} retirees
+          {t("admin.retirees.showingCount", { filtered: filteredRetirees.length, total: retirees.length })}
         </div>
       </div>
 
-      {/* Retirees Table */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.name")}
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.age")}
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.gender")}
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Settlement
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("admin.retirees.table.work")}
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredRetirees.map((retiree) => (
-              <tr key={retiree.id}
-                className="cursor-pointer hover:bg-gray-100"
+      {/* Retirees List: Cards on mobile, table on desktop */}
+      <div>
+        {/* Mobile: cards */}
+        <div className="block sm:hidden space-y-3">
+          {filteredRetirees.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">{t("admin.retirees.noRetireesFound")}</div>
+          ) : (
+            filteredRetirees.map((retiree) => (
+              <div
+                key={retiree.id}
+                className="bg-white rounded-lg shadow p-3 flex flex-col gap-2 cursor-pointer hover:bg-gray-50"
                 onClick={() => handleViewProfile(retiree)}
               >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.settlement || "N/A"}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                <div className="flex items-center gap-3 mb-1">
+                  <FaUsers className="text-xl text-gray-400" />
+                  <div className="font-medium text-gray-900 text-base flex-1 truncate">
+                    {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.age")}:</span> {retiree.idVerification?.age || t("common.notAvailable")}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.gender")}:</span> {retiree.idVerification?.gender || t("common.notAvailable")}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.settlement")}:</span> {retiree.idVerification?.settlement || t("common.notAvailable")}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.job")}:</span> {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || t("common.notAvailable")}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Desktop: table */}
+        <div className="hidden sm:block">
+          <div className="bg-white rounded shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.name")}
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.age")}
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.gender")}
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Settlement
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("admin.retirees.table.work")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredRetirees.map((retiree) => (
+                  <tr key={retiree.id}
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleViewProfile(retiree)}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.settlement || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      
+
       {retirees.length === 0 && !loading ? (
         userRole === "admin" && !adminSettlement ? (
           <EmptyState
@@ -1141,24 +1181,24 @@ const Retirees = () => {
         ) : (
           <EmptyState
             icon={<FaUsers />}
-            title="No retirees found"
-            message="Try adjusting your filters or add a new retiree."
+            title= {t("admin.retirees.noRetireesFound")}
+            message={t("admin.retirees.noRetireesMessage")}
           />
         )
       ) : (
         filteredRetirees.length === 0 && (
           <div className="text-center text-gray-500 py-8">
-            No retirees found.
+            {t("admin.retirees.noRetireesFound")}
           </div>
         )
       )}
 
       {/* Load Filter Modal */}
       {showLoadModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" role="dialog" aria-modal="true" aria-label="Load Filter Set Modal">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/5" role="dialog" aria-modal="true" aria-label="Load Filter Set Modal">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] max-w-[90vw]">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold">Load Filter Set</h2>
+              <h2 className="text-lg font-bold">{t("admin.retirees.filters.loadFilterSet")}</h2>
               <button
                 className="text-gray-500 hover:text-gray-700 text-xl font-bold"
                 onClick={() => setShowLoadModal(false)}
@@ -1168,7 +1208,7 @@ const Retirees = () => {
               </button>
             </div>
             {savedFilterSets.length === 0 ? (
-              <div className="text-gray-500">No saved filter sets found.</div>
+              <div className="text-gray-500">{t("admin.retirees.filters.noFiltersLoad")}</div>
             ) : (
               <ul className="space-y-2 max-h-60 overflow-y-auto" tabIndex={0}>
                 {savedFilterSets.map(([name, filterSet]) => (

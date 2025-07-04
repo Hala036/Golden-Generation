@@ -16,7 +16,8 @@
     "step": "שלב",
     "of": "מתוך",
     "select": "בחר",
-    "change": "שנה"
+    "change": "שנה",
+    "notAvailable": "לא זמין"
   },
   "auth": {
     "errors": {
@@ -81,8 +82,8 @@
         "streetName": "שם הרחוב",
         "additionalAddressDetails": "פרטי כתובת נוספים (אופציונלי)",
         "languageAndBackground": {
-          "title": "שפה ורקע",
-          "description": "ספר לנו על השפה והרקע שלך"
+            "title": "שפה ורקע",
+            "description": "ספר לנו על השפה והרקע שלך"
         },
         "nativeLanguage": "שפת אם",
       "hebrewLevel": {
@@ -324,7 +325,7 @@
           "Homemaker": "עקרת בית",
           "ReligiousWorker": "עובד דתי",
           "Volunteer": "מתנדב",
-          "Retired": "גמלאי",
+          "Retired": "ותיק",
           "Student": "סטודנט"
         }
       },
@@ -651,7 +652,7 @@
       },
       "logout": "התנתק",
       "homePage": "דף הבית",
-      "retirees": "גמלאים",
+      "retirees": "ותיקים",
       "volunteerRequests": "בקשות התנדבות",
       "serviceRequests": "בקשות שירות",
       "service": "בקש שירותים",
@@ -750,7 +751,7 @@
           "messagePlaceholder": "הודעת התראה",
         "target": {
             "everyone": "כולם",
-            "retiree": "גמלאים",
+            "retiree": "ותיקים",
             "admin": "מנהלים",
             "custom": "משתמשים ספציפיים (שמות משתמש)"
           },
@@ -774,7 +775,7 @@
           "loggedOut": "התנתקת בהצלחה!",
           "home": "דף הבית",
           "upcomingEvents": "אירועים קרובים",
-          "retirees": "גמלאים",
+          "retirees": "ותיקים",
           "volunteerRequests": "בקשות התנדבות",
           "serviceRequests": "בקשות שירות",
           "management": "ניהול",
@@ -849,13 +850,14 @@
       }
     },
     "adminSettlements": {
-          "manageAvailableSettlements": "נהל יישובים זמינים",
-          "addNewSettlement": "הוסף יישוב חדש",
-          "enterSettlementName": "הזן שם יישוב",
-          "add": "הוסף",
-          "loadError": "נכשל בטעינת היישובים.",
-          "updateError": "נכשל בעדכון היישוב.",
-          "addError": "נכשל בהוספת היישוב."
+      "loading": "טוען יישובים...",
+      "manageAvailableSettlements": "נהל יישובים זמינים",
+      "addNewSettlement": "הוסף יישוב חדש",
+      "enterSettlementName": "הזן שם יישוב",
+      "add": "הוסף",
+      "loadError": "נכשל בטעינת היישובים.",
+      "updateError": "נכשל בעדכון היישוב.",
+      "addError": "נכשל בהוספת היישוב."
     },
     "categoryManagement": {
       "title": "ניהול קטגוריות",
@@ -935,8 +937,8 @@
     }
   },
   "dashboard": {
-          "welcome": "ברוך הבא",
-          "profile": "פרופיל",
+    "welcome": "ברוך הבא",
+    "profile": "פרופיל",
     "settings": {
       "options": {
               "editProfile": "ערוך פרופיל",
@@ -983,9 +985,9 @@
               "reauthPassword": "אמת מחדש עם הסיסמה הנוכחית",
               "deleteConfirm": "הקלד DELETE לאישור",
               "enterPassword": "הזן את הסיסמה שלך"
-            }
-          },
-          "toast": {
+      }
+    },
+    "toast": {
             "failedToLoadProfile": "נכשל בטעינת הפרופיל",
             "notLoggedIn": "אתה לא מחובר",
             "profileUpdated": "הפרופיל עודכן בהצלחה",
@@ -1009,10 +1011,10 @@
             "profileAndEmailUpdated": "הפרופיל והאימייל עודכנו בהצלחה",
             "reauthenticationFailed": "האימות מחדש נכשל",
             "failedToSavePreference": "נכשל בשמירת ההעדפה"
-          },
-          "logout": "התנתק",
+    },
+    "logout": "התנתק",
           "homePage": "דף הבית",
-          "retirees": "גמלאים",
+          "retirees": "ותיקים",
           "volunteerRequests": "בקשות מתנדבים",
           "serviceRequests": "בקשות שירות",
           "service": "בקש שירותים",
@@ -1025,7 +1027,11 @@
     "arrowClose": "←",
     "arrowOpen": "→",
     "events": {
+      "upcomingEventsDescription": "גלו והצטרפו לאירועים מרגשים שיתקיימו בקרוב",
             "upcomingEvents": "אירועים קרובים",
+            "noUpcomingEvents": "אין אירועים קרובים",
+            "noUpcomingEventsFilter": "לא נמצאו אירועים קרובים",
+            "noPastEvents": "אין אירועים קודמים",
             "addEvent": "הוסף אירוע",
             "addEvents": "הוסף אירועים",
             "events": "אירועים",
@@ -1050,13 +1056,14 @@
 
     },
     "filter": {
-            "allCategories": "כל הקטגוריות",
-            "trip": "טיול",
-            "vacation": "חופשה",
-            "workshop": "סדנה",
-            "lecture": "הרצאה",
-            "houseparty": "מסיבה ביתית",
-            "socialevent": "אירוע חברתי"
+      "myEvents": "האירועים שלי",
+      "allCategories": "כל הקטגוריות",
+      "trip": "טיול",
+      "vacation": "חופשה",
+      "workshop": "סדנה",
+      "lecture": "הרצאה",
+      "houseparty": "מסיבה ביתית",
+      "socialevent": "אירוע חברתי"
     },
     "search": {
             "searchCategories": "חפש קטגוריות",
@@ -1111,7 +1118,7 @@
       "quickActions": {
               "calendar": "לוח שנה",
               "viewAllRequests": "צפה בכל הבקשות",
-              "manageRetirees": "נהל גמלאים",
+              "manageRetirees": "נהל ותיקים",
               "reportsAnalytics": "דוחות וניתוחים",
               "adminManagement": "ניהול מנהלים",
               "addSettlements": "הוסף יישובים"
@@ -1159,22 +1166,35 @@
   },
   "admin": {
     "retirees": {
-            "title": "ניהול גמלאים",
-            "addRetiree": "הוסף גמלאי",
-            "viewRetiree": "צפה בגמלאי",
-            "searchRetirees": "חפש גמלאים",
-            "noRetireesFound": "לא נמצאו גמלאים",
-            "retireeDetails": "פרטי גמלאי",
-            "retireeName": "שם",
-            "retireeEmail": "אימייל",
-            "retireePhone": "מספר טלפון",
-        "filters": {
-              "search": "חפש לפי כל מאפיין...",
-              "addFilter": "הוסף מסנן",
-              "remove": "הסר",
-              "select": "בחר מאפיין",
-              "enterValue": "הזן ערך"
-        },
+      "title": "ניהול ותיקים", 
+      "addRetiree": "הוסף ותיק",
+      "viewRetiree": "צפה בותיק",
+      "searchRetirees": "חפש ותיקים",
+      "noRetireesFound": "לא נמצאו ותיקים",
+      "noRetireesMessage": "נסה להתאים את המסננים שלך או להוסיף גמלאי חדש.",
+      "retireeDetails": "פרטי ותיק",
+      "retireeName": "שם",
+      "retireeEmail": "אימייל",
+      "retireePhone": "מספר טלפון",
+      "showingCount": "מציג {{filtered}} מתוך {{total}} ותיקים",
+      "age": "גיל",
+      "gender": "מין",
+      "job": "עיסוק",
+      "settlement": "שכונה",
+      "filters": {
+        "selectField": "בחר שדה...",
+        "globalSearch": "חיפוש גלובלי ",
+        "search": "חפש לפי כל מאפיין...",
+        "addFilter": "+ הוסף מסנן",
+        "remove": "הסר",
+        "select": "בחר מאפיין",    
+        "enterValue": "הזן ערך",
+        "clearAll": "נקה הכל",    
+        "saveFilters": "שמור מסננים",
+        "loadFilters": "טען מסננים",
+        "loadFilterSet": "טען מסננים",
+        "noFiltersLoad": "לא נמצאו פילטרים שמורים לטעינה"
+      },
         "table": {
               "name": "שם",
               "age": "גיל",
@@ -1248,7 +1268,7 @@
     }
   },
   "calendar": {
-          "title": "לוח שנה לפעילות גמלאים",
+          "title": "לוח שנה לפעילות ותיקים",
           "welcomeBack": "ברוך שובך, {{name}} ({{role}})",
           "adminName": "המנהל שרה",
           "searchEvents": "חפש אירועים...",
@@ -1294,7 +1314,7 @@
             "title": "מקרא",
             "createdByMe": "נוצרו על ידי",
             "createdByOtherAdmins": "נוצרו על ידי מנהלים אחרים",
-            "retireeSubmissions": "הגשות גמלאים",
+            "retireeSubmissions": "הגשות ותיקים",
             "joinedEvents": "אירועים שהצטרפתי",
             "pendingApproval": "ממתינים לאישור",
             "pastEvents": "אירועים מהעבר"
@@ -1439,7 +1459,7 @@
   "sidebar": {
           "home": "דף הבית",
           "upcomingEvents": "אירועים קרובים",
-          "retirees": "גמלאים",
+          "retirees": "ותיקים",
           "volunteerRequests": "בקשות מתנדבים",
           "serviceRequests": "בקשות שירות",
           "management": "ניהול",
@@ -1453,17 +1473,17 @@
   },
   "volunteer": {
     "tabs": {
-            "requests": "בקשות התנדבות",
-            "info": "מידע התנדבות"
+      "requests": "בקשות התנדבות",
+      "info": "מידע התנדבות"
     },
     "section": {
-            "requests": "בקשות התנדבות",
-            "info": "מידע התנדבות",
-            "current": "התנדבות נוכחית",
-            "areas": "תחומי התנדבות",
-            "frequency": "תדירות",
-            "hours": "שעות מועדפות",
-            "days": "ימים זמינים"
+      "requests": "בקשות התנדבות",
+      "info": "מידע התנדבות",
+      "current": "התנדבות נוכחית",
+      "areas": "תחומי התנדבות",
+      "frequency": "תדירות",
+      "hours": "שעות מועדפות",
+      "days": "ימים זמינים"
     },
     "label": {
             "timing": "שעה:",
@@ -1534,6 +1554,75 @@
             "loading": "טוען מידע התנדבות...",
             "noRequests": "אין בקשות התנדבות זמינות.",
             "noUser": "אף משתמש לא מחובר."
+    }
+  },
+  "emptyStates": {
+    "noMessages": "עדיין אין הודעות",
+    "noMessagesMessage": "התחל שיחה עם משתמשים אחרים כדי לראות הודעות כאן.",
+    "startConversation": "התחל שיחה",
+    "noNotifications": "אין התראות",
+    "noNotificationsMessage": "סיימת הכל! חזור מאוחר יותר לעדכונים חדשים.",
+    "noJobs": "אין בקשות עבודה",
+    "noJobsMessage": "עדיין לא נוצרו בקשות עבודה התנדבותיות.",
+    "createJobRequest": "צור בקשת עבודה",
+    "noServiceRequests": "אין בקשות שירות",
+    "noServiceRequestsMessage": "עדיין לא נשלחו בקשות שירות.",
+    "createServiceRequest": "צור בקשת שירות",
+    "noEvents": "אין אירועים",
+    "noEventsMessage": "עדיין לא נוצרו אירועים. התחל ביצירת האירוע הראשון שלך!",
+    "createEvent": "צור אירוע",
+    "noAdmins": "אין מנהלים",
+    "noAdminsMessage": "עדיין לא נוספו מנהלים למערכת.",
+    "addAdmin": "הוסף מנהל",
+    "noTowns": "אין ערים",
+    "noTownsMessage": "עדיין לא נוספו ערים למערכת.",
+    "addTown": "הוסף עיר",
+    "noSettlements": "אין יישובים",
+    "noSettlementsMessage": "עדיין לא נוספו יישובים למערכת.",
+    "addSettlement": "הוסף יישוב",
+    "noRetirees": "אין ותיקים",
+    "noRetireesMessage": "עדיין לא נרשמו ותיקים.",
+    "addRetiree": "הוסף ותיק",
+    "noVolunteers": "אין מתנדבים",
+    "noVolunteersMessage": "עדיין לא נרשמו מתנדבים.",
+    "addVolunteer": "הוסף מתנדב",
+    "noAnalytics": "אין נתוני אנליטיקה",
+    "noAnalyticsMessage": "עדיין אין נתוני אנליטיקה זמינים. נתונים יופיעו כאן לאחר יצירת אירועים ופעילויות.",
+    "noPendingEvents": "אין אירועים ממתינים",
+    "noPendingEventsMessage": "כל האירועים נבדקו ואושרו.",
+    "noCategories": "אין קטגוריות",
+    "noCategoriesMessage": "עדיין לא נוצרו קטגוריות אירועים.",
+    "addCategory": "הוסף קטגוריה",
+    "noCandidates": "אין מועמדים",
+    "noCandidatesMessage": "עדיין לא נרשמו מועמדים.",
+    "addCandidate": "הוסף מועמד",
+    "noUpcomingEventsMessage": "חזור מאוחר יותר לאירועים חדשים או עיין באירועים מהעבר בלוח השנה",
+    "noUpcomingEventsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noPastEventsMessage": "עדיין לא הסתיימו אירועים.",
+    "noViewedRequests": "אין בקשות שנצפו",
+    "noViewedRequestsMessage": "עדיין לא צפית באף בקשות. בדוק שוב מאוחר יותר או צפה בכל הבקשות כדי לראות מה זמין.",
+    "noViewedRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noViewedRequestsFilter": "אין בקשות שנצפו",
+    "noPendingRequests": "אין בקשות ממתינות",
+    "noPendingRequestsMessage": "אין כרגע בקשות ממתינות.",
+    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון"
+
+  },
+  "superadmin": {
+    "admins": {
+      "title": "ניהול מנהלים",
+      "settlement": "יישוב",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "retirees": "ותיקים רשומים",
+      "table": {
+        "name": "שם מנהל",
+        "settlement": "יישוב",
+        "email": "אימייל",
+        "phone": "טלפון",
+        "retirees": "ותיקים רשומים",
+        "actions": "פעולות"
+      }
     }
   }
 } 

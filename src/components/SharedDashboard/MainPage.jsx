@@ -549,19 +549,13 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6 w-full">
       {/* Header */}
-      <div className="mb-4 md:mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-4">
-            {/* <DefaultProfilePic 
-              name={userName} 
-              size={50} 
-              fontSize="1.8rem"
-              bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
-            /> */}
+      <div className="mb-4 md:mb-8 w-full">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-2 md:gap-0">
+          <div className="flex items-center gap-2 md:gap-4 md:w-auto">
             <div>
-              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2 truncate">
                 {i18n.t('dashboard.main.welcome', { userName: userName })}
               </h1>
               <p className="text-xs md:text-base text-gray-600">
@@ -570,20 +564,21 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
             </div>
           </div>
           {/* Quick Actions */}
-          <div className={`grid gap-1 md:gap-2 w-full max-w-s md:mr-3 md:ml-3 grid-cols-2 xs:grid-cols-3 sm:grid-cols-4`}>
+          <div className="grid gap-1 md:gap-2 w-full md:w-auto grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 flex-shrink-0">
             {allQuickActions.map((action, index) => (
               <button
                 key={index}
                 onClick={action.onClick}
-                className={`${action.color} text-white p-1 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-0.5 md:space-y-1`}
+                className={`${action.color} text-white p-1 md:p-3 rounded-md transition-all duration-200 hover:shadow-md hover:scale-105 flex flex-col items-center space-y-0.5 md:space-y-1 w-full`}
+                style={{ minWidth: 0 }}
               >
                 <span className="text-base md:text-xl">{action.icon}</span>
-                <span className="text-[9px] md:text-xs font-small text-center">{action.title}</span>
+                <span className="text-[9px] md:text-xs font-small text-center truncate">{action.title}</span>
               </button>
             ))}
           </div>
           {/* Clock for desktop only */}
-          <div className="text-right hidden md:block">
+          <div className="text-right hidden md:block flex-shrink-0">
             <div className="text-sm text-gray-500">
               {t('dashboard.main.currentTime')}
             </div>
@@ -595,42 +590,43 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6">
+      <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6 w-full">
         {overviewCards.map((card, index) => (
           <div
             key={index}
-            onClick={card.onClick} // Handle card click
-            className={`${card.color} border-2 rounded-lg p-2 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative`}
+            onClick={card.onClick}
+            className={`${card.color} border-2 rounded-lg p-2 md:p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer relative w-full min-w-0`}
+            style={{ minWidth: 0 }}
           >
-            <div className="flex flex-col items-center justify-between h-full mb-1">
+            <div className="flex flex-col items-center justify-between h-full mb-1 w-full">
               {/* Title and Icon */}
               <div className="flex items-center justify-between w-full">
-                <p className="text-[11px] md:text-sm font-medium text-gray-600">{card.title}</p>
+                <p className="text-[11px] md:text-sm font-medium text-gray-600 truncate">{card.title}</p>
                 <div className="text-base md:text-3xl">{card.icon}</div>
               </div>
               {/* Value */}
-              <p className="text-lg md:text-3xl font-bold text-gray-800 text-center">{card.value}</p>
+              <p className="text-lg md:text-3xl font-bold text-gray-800 text-center break-words">{card.value}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-4 md:gap-8 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-3 w-full">
         {/* Recent Activity Feed */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
+        <div className="lg:col-span-2 w-full">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 w-full">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
               {t('dashboard.main.recentActivityFeed')}
             </h2>
-            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
+            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full">
               {recentActivity.length === 0 && (
                 <div className="text-center text-gray-500 py-2 md:py-4">
                   {t('dashboard.main.noRecentActivity')}
                 </div>
               )}
               {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-2 md:space-x-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div key={activity.id} className="flex items-start space-x-2 md:space-x-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-full">
                   <div className="flex-shrink-0 mt-1">
                     {activity.type === 'join' ? (
                       <div className="w-8 h-8">
@@ -645,9 +641,9 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
                       getActivityIcon(activity.type)
                     )}
                   </div>
-                  <div className="flex-grow">
-                    <p className="text-xs md:text-sm text-gray-800">{getActivityAction(activity)}</p>
-                    <p className="text-[10px] md:text-xs text-gray-500 mt-1">{getTimeAgo(new Date(activity.time))}</p>
+                  <div className="flex-grow min-w-0">
+                    <p className="text-xs md:text-sm text-gray-800 truncate">{getActivityAction(activity)}</p>
+                    <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">{getTimeAgo(new Date(activity.time))}</p>
                   </div>
                 </div>
               ))}
@@ -656,13 +652,13 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         </div>
 
         {/* Alerts & Quick Actions */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
-            <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center">
-              <FaBell className="mr-2 text-red-500" />
+        <div className="lg:col-span-1 flex flex-col w-full min-w-0">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 flex flex-col w-full min-w-0">
+            <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center min-w-0">
+              <FaBell className="mr-2 text-red-500 flex-shrink-0" />
               {t('dashboard.main.alertsAndNotifications')}
             </h2>
-            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto">
+            <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full min-w-0">
               <Notifications 
                 setSelectedTab={setSelected} 
                 setShowNotificationsPopup={setShowNotificationsPopup} 

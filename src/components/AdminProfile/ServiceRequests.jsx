@@ -221,7 +221,7 @@ const ServiceRequests = () => {
                 icon={<FaHandsHelping className="text-6xl text-gray-300" />}
                 title={t('emptyStates.noPendingRequests')}
                 message={t('emptyStates.noPendingRequestsMessage')}
-                className="p-6"
+                className="p-6 flex-grow"
               />
             ) : (
               <ul className="space-y-4">
@@ -256,7 +256,7 @@ const ServiceRequests = () => {
                 icon={<FaEye className="text-6xl text-gray-300" />}
                 title={t('emptyStates.noViewedRequests')}
                 message={t('emptyStates.noViewedRequestsMessage')}
-                className="p-6"
+                className="p-6 flex-grow"
               />
             ) : (
               <ul className="space-y-4">

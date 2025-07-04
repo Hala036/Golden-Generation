@@ -16,8 +16,8 @@
     "step": "Step",
     "of": "of",
     "select": "Select",
-    "change":"change"
-
+    "change":"change",
+    "notAvailable": "Not Available"
   },
   "auth": {
     "errors": {
@@ -844,6 +844,7 @@
       }
     },
     "adminSettlements": {
+      "loading": "Loading settlements...",
       "manageAvailableSettlements": "Manage Available Settlements",
       "addNewSettlement": "Add New Settlement",
       "enterSettlementName": "Enter settlement name",
@@ -1164,16 +1165,34 @@
       "viewRetiree": "View Retiree",
       "searchRetirees": "Search Retirees",
       "noRetireesFound": "No retirees found",
+      "noRetireesMessage": "Try adjusting your filters or add a new retiree.",
       "retireeDetails": "Retiree Details",
       "retireeName": "Name",
       "retireeEmail": "Email",
       "retireePhone": "Phone Number",
+      "showingCount": "Showing {{filtered}} of {{total}} retirees",
+      "age": "Age",
+      "settlement": "Settlement",
+      "job": "Job",
+      "gender": "Gender",
         "filters": {
-          "search": "Search by any feature...",
-          "addFilter": "Add Filter",
+          "selectField": "Select Field...",
+          "globalSearch": "Global Search",
+          "search": "Search across all fields...",
+          "addFilter": "+ Add Filter",
           "remove": "Remove",
           "select": "Select Feature",
-          "enterValue": "Enter Value"
+          "enterValue": "Enter Value",
+          "clearAll": "Clear All",
+          "saveFilters": "Save Filters",
+          "loadFilters": "Load Filters",
+          "loadFilterSet": "Load Filter Set",
+          "noFiltersLoad": "No saved filters to load",
+          "fields": {
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone Number"
+          }
         },
         "table": {
           "name": "Name",
@@ -1583,7 +1602,14 @@
     "addCandidate": "Add Candidate",
     "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
     "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria",
-    "noPastEventsMessage": "No events have ended yet."
+    "noPastEventsMessage": "No events have ended yet.",
+    "noViewedRequests": "No Viewed Requests",
+    "noViewedRequestsMessage": "You haven't viewed any requests yet. Check back later or view all requests to see what's available.",
+    "noViewedRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available.",
+    "noViewedRequestsFilter": "No viewed requests found",
+    "noPendingRequests": "No Pending Requests",
+    "noPendingRequestsMessage": "There are no pending requests at the moment.",
+    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available."
   },
   "loading": {
     "messages": "Loading messages...",
@@ -1646,6 +1672,23 @@
       "title": "Analytics Error",
       "message": "Failed to load analytics data. Please try again.",
       "retry": "Retry"
+    }
+  },
+  "superadmin": {
+    "admins": {
+      "title": "Admin Management",
+      "settlement": "Settlement",
+      "email": "Email",
+      "phone": "Phone",
+      "retirees": "Registered Retirees",
+      "table": {
+        "name": "Admin Name",
+        "settlement": "Settlement",
+        "email": "Email",
+        "phone": "Phone",
+        "retirees": "Registered Retirees",
+        "actions": "Actions"
+      }
     }
   }
 }

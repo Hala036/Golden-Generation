@@ -299,102 +299,157 @@ const AdminManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Admin Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t("superadmin.admins.title")}</h1>
       </div>
 
-      {/* Admins Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Admins Content */}
         {admins.length === 0 ? (
           <EmptyState
             icon={<FaUserShield className="text-6xl text-gray-300" />}
-            title={t('emptyStates.noAdmins')}
-            message={t('emptyStates.noAdminsMessage')}
-            actionLabel={t('emptyStates.addAdmin')}
+            title={t("emptyStates.noAdmins")}
+            message={t("emptyStates.noAdminsMessage")}
+            actionLabel={t("emptyStates.addAdmin")}
             onAction={openAddModal}
             className="p-8"
           />
         ) : (
           <>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Admin Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Settlement
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Registered Retirees
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {admins.map((admin) => (
-                  <tr key={admin.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {admin.credentials?.username || admin.idVerification?.firstName || 'N/A'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {admin.idVerification?.settlement || admin.settlement || 'N/A'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {admin.credentials?.email || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {admin.credentials?.phone || admin.idVerification?.phone || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <FaUsers className="mr-1" />
-                        {retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0} retirees
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => openViewModal(admin)}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="View"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          onClick={() => openEditModal(admin)}
-                          className="text-yellow-600 hover:text-yellow-900"
-                          title="Edit"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteAdmin(admin)}
-                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                          title="Delete admin"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
+            {/* Cards for Small Screens */}
+            <div className="block sm:hidden space-y-4">
+              {admins.map((admin) => (
+                <div
+                  className="bg-white rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
+                  style={{ minWidth: '220px' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <FaUserShield className="text-xl text-gray-400" />
+                    <div className="font-medium text-gray-900 text-base flex-1 truncate">
+                      {admin.credentials?.username || admin.idVerification?.firstName || t("common.notAvailable")}
+                    </div>
+                  </div>
+                  <div>
+                    <p>
+                      <strong>{t("superadmin.admins.settlement")}:</strong> {admin.idVerification?.settlement || admin.settlement || t("common.notAvailable")}
+                    </p>
+                    <p>
+                      <strong>{t("superadmin.admins.email")}:</strong> {admin.credentials?.email || t("common.notAvailable")}
+                    </p>
+                    <p>
+                      <strong>{t("superadmin.admins.phone")}:</strong> {admin.credentials?.phone || admin.idVerification?.phone || t("common.notAvailable")}
+                    </p>
+                    <p>
+                      <strong>{t("superadmin.admins.retirees")}:</strong> {retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 mt-2">
+                    <button
+                      onClick={() => openViewModal(admin)}
+                      className="text-blue-600 hover:text-blue-900"
+                      title={t("common.view")}
+                    >
+                      <FaEye />
+                    </button>
+                    <button
+                      onClick={() => openEditModal(admin)}
+                      className="text-yellow-600 hover:text-yellow-900"
+                      title={t("common.edit")}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteAdmin(admin)}
+                      className="text-red-600 hover:text-red-900"
+                      title={t("common.delete")}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Table for Larger Screens */}
+            <div className="hidden sm:block">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("superadmin.admins.table.name")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("superadmin.admins.table.settlement")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("superadmin.admins.table.email")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("superadmin.admins.table.phone")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("superadmin.admins.table.retirees")}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t("superadmin.admins.table.actions")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {admins.map((admin) => (
+                    <tr key={admin.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {admin.credentials?.username || admin.idVerification?.firstName || t("common.notAvailable")}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {admin.idVerification?.settlement || admin.settlement || t("common.notAvailable")}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {admin.credentials?.email || t("common.notAvailable")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {admin.credentials?.phone || admin.idVerification?.phone || t("common.notAvailable")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <FaUsers className="mr-1" />
+                          {retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => openViewModal(admin)}
+                            className="text-blue-600 hover:text-blue-900"
+                            title={t("common.view")}
+                          >
+                            <FaEye />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(admin)}
+                            className="text-yellow-600 hover:text-yellow-900"
+                            title={t("common.edit")}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAdmin(admin)}
+                            className="text-red-600 hover:text-red-900"
+                            title={t("common.delete")}
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </>
         )}
-      </div>
 
       {/* Edit Admin Modal */}
       <Modal
