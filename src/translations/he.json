@@ -1607,6 +1607,23 @@
     "noPendingRequestsMessage": "אין כרגע בקשות ממתינות.",
     "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון"
 
+  },
+  "superadmin": {
+    "admins": {
+      "title": "ניהול מנהלים",
+      "settlement": "יישוב",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "retirees": "ותיקים רשומים",
+      "table": {
+        "name": "שם מנהל",
+        "settlement": "יישוב",
+        "email": "אימייל",
+        "phone": "טלפון",
+        "retirees": "ותיקים רשומים",
+        "actions": "פעולות"
+      }
+    }
   }
 } 
 

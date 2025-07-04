@@ -1673,5 +1673,22 @@
       "message": "Failed to load analytics data. Please try again.",
       "retry": "Retry"
     }
+  },
+  "superadmin": {
+    "admins": {
+      "title": "Admin Management",
+      "settlement": "Settlement",
+      "email": "Email",
+      "phone": "Phone",
+      "retirees": "Registered Retirees",
+      "table": {
+        "name": "Admin Name",
+        "settlement": "Settlement",
+        "email": "Email",
+        "phone": "Phone",
+        "retirees": "Registered Retirees",
+        "actions": "Actions"
+      }
+    }
   }
 }
