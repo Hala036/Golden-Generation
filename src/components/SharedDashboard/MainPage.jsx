@@ -47,6 +47,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
 
   const [notifications, setNotifications] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]); // State for recent activity
+  const [searchQuery, setSearchQuery] = useState(''); // State for search functionality
 
   // Define recentActivity array
   const defaultRecentActivity = [
@@ -480,6 +481,14 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     },
   ];
 
+  // Filter recent activity based on search query
+  const filteredRecentActivity = recentActivity.filter(activity => {
+    if (!searchQuery) return true;
+    const searchLower = searchQuery.toLowerCase();
+    return activity.action.toLowerCase().includes(searchLower) ||
+           activity.type.toLowerCase().includes(searchLower);
+  });
+
   const quickActions = [
     { title: t('dashboard.main.quickActions.calendar'), icon: <FaCalendarAlt />, color: 'bg-green-500 hover:bg-green-600', onClick: () => setSelected("calendar") },
     { title: t('dashboard.main.quickActions.viewAllRequests'), icon: <FaSearch />, color: 'bg-blue-500 hover:bg-blue-600', onClick: () => setSelected("service") },
@@ -589,6 +598,22 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-4 md:mb-6 w-full">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <FaSearch className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            className="block w-full pl-10 pr-3 py-2 md:py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500 text-sm md:text-base"
+            placeholder="Search recent activity, events, or community members..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+
       {/* Overview Cards */}
       <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-4 md:mb-6 w-full">
         {overviewCards.map((card, index) => (
@@ -620,12 +645,12 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               {t('dashboard.main.recentActivityFeed')}
             </h2>
             <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full">
-              {recentActivity.length === 0 && (
+              {filteredRecentActivity.length === 0 && (
                 <div className="text-center text-gray-500 py-2 md:py-4">
-                  {t('dashboard.main.noRecentActivity')}
+                  {searchQuery ? "No matching activity found" : t('dashboard.main.noRecentActivity')}
                 </div>
               )}
-              {recentActivity.map((activity) => (
+              {filteredRecentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-start space-x-2 md:space-x-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-full">
                   <div className="flex-shrink-0 mt-1">
                     {activity.type === 'join' ? (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaHome, FaSearch } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -157,6 +157,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
         {/* Top Bar */}
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-2 md:px-6 py-2 md:py-4 z-10 flex items-center justify-between">
           <h1 className="text-lg md:text-xl font-bold text-yellow-500">Golden Generation</h1>
+          
           <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center gap-2 md:gap-3">
               <FaPlusCircle
