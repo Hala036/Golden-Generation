@@ -37,7 +37,8 @@ const AdminManagement = () => {
       setAdmins(adminsData);
       setLoading(false);
     }, (error) => {
-      toast.error('Failed to fetch admins');
+      console.error('Firebase connection error:', error);
+      toast.error('Failed to fetch admins. Please check your internet connection.');
       setLoading(false);
     });
     return () => unsub();
@@ -318,6 +319,7 @@ const AdminManagement = () => {
             <div className="block sm:hidden space-y-4">
               {admins.map((admin) => (
                 <div
+                  key={admin.id}
                   className="bg-white rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
                   style={{ minWidth: '220px' }}
                 >

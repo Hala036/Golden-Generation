@@ -657,14 +657,14 @@ const AdminSettlements = () => {
         <div>
           {/* Mobile: single column, compact cards */}
           <div className="block md:hidden w-full min-w-0 flex flex-col gap-3 items-center">
-            {paginatedSettlements.map(settlement => {
+            {paginatedSettlements.map((settlement, index) => {
               const enabled = availableSettlements.includes(settlement.name);
               const adminInfo = Object.entries(settlementAdmins).find(
                 ([key]) => key.trim() === settlement.name.trim()
               )?.[1] || {};
               return (
                 <div
-                  key={settlement.name}
+                  key={`mobile-${settlement.name}-${index}`}
                   className="rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm min-w-[220px]"
                   style={{ minWidth: '220px', backgroundColor: enabled ? '#f6fffa' : '#f9fafb' }}
                 >
@@ -718,14 +718,14 @@ const AdminSettlements = () => {
           </div>
           {/* Desktop: grid layout, keep old style */}
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-            {paginatedSettlements.map(settlement => {
+            {paginatedSettlements.map((settlement, index) => {
               const enabled = availableSettlements.includes(settlement.name);
               const adminInfo = Object.entries(settlementAdmins).find(
                 ([key]) => key.trim() === settlement.name.trim()
               )?.[1] || {};
               return (
                 <div
-                  key={settlement.name}
+                  key={`desktop-${settlement.name}-${index}`}
                   className={`rounded-xl shadow flex flex-col justify-between w-full min-w-0 ${enabled ? 'bg-green-50' : 'bg-gray-50'}`}
                   style={{ minHeight: '160px' }}
                 >
