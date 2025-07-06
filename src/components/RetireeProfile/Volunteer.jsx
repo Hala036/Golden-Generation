@@ -235,11 +235,11 @@ const Volunteer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6 w-full">
       {/* Tabs */}
-      <div className="flex justify-center gap-2">
+      <div className="flex justify-center gap-2 flex-wrap">
         <button
-          className={`px-6 py-3 w-full ml-7 font-bold rounded-t-lg ${
+          className={`px-6 py-3 w-full sm:w-auto font-bold rounded-t-lg ${
             activeTab === "requests"
               ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
               : "bg-gray-200 text-gray-600"
@@ -249,7 +249,7 @@ const Volunteer = () => {
           {t('volunteer.tabs.requests')}
         </button>
         <button
-          className={`px-6 py-3 w-full mr-7 font-bold rounded-t-lg ${
+          className={`px-6 py-3 w-full sm:w-auto font-bold rounded-t-lg ${
             activeTab === "info"
               ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
               : "bg-gray-200 text-gray-600"
@@ -262,7 +262,7 @@ const Volunteer = () => {
 
       {/* Tab Content */}
       {activeTab === "requests" && (
-        <div className="bg-white rounded-b-2xl ml-6 mr-6 mb-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+        <div className="bg-white rounded-b-2xl mx-auto mb-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95 max-w-screen-md w-full">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
               {t('volunteer.section.requests')}
@@ -337,9 +337,9 @@ const Volunteer = () => {
             e.preventDefault();
             handleUpdateVolunteerInfo();
           }}
-          className="space-y-12"
+          className="space-y-12 max-w-screen-md w-full mx-auto"
         >
-          <div className="bg-white rounded-b-2xl ml-6 mr-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
+          <div className="bg-white rounded-b-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
               {t('volunteer.section.info')}
             </h2>
