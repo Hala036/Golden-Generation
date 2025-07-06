@@ -3,7 +3,7 @@ import { db } from "../../firebase";
 import { collection, doc, getDocs, updateDoc, deleteDoc, setDoc, query, where, writeBatch } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { useLanguage } from "../../context/LanguageContext";
-import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaEye, FaSearch } from "react-icons/fa";
 import i18n from "i18next";
 
 const CategoryManagement = () => {
@@ -20,6 +20,7 @@ const CategoryManagement = () => {
     translations: { en: "", he: "", ar: "" },
     color: "#CCCCCC"
   });
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch categories
   useEffect(() => {
@@ -305,6 +306,22 @@ const CategoryManagement = () => {
     setShowAddModal(true);
   };
 
+  // Filter categories based on search query
+  const filteredCategories = categories.filter(category => {
+    const searchLower = searchQuery.toLowerCase();
+    const name = (category.translations?.[language] || category.translations?.en || category.name || '').toLowerCase();
+    const enTranslation = (category.translations?.en || '').toLowerCase();
+    const heTranslation = (category.translations?.he || '').toLowerCase();
+    const arTranslation = (category.translations?.ar || '').toLowerCase();
+    const color = (category.color || '').toLowerCase();
+    
+    return name.includes(searchLower) || 
+           enTranslation.includes(searchLower) || 
+           heTranslation.includes(searchLower) || 
+           arTranslation.includes(searchLower) ||
+           color.includes(searchLower);
+  });
+
   const Modal = ({ isOpen, onClose, title, children, onSubmit, submitText }) => {
     if (!isOpen) return null;
 
@@ -366,38 +383,78 @@ const CategoryManagement = () => {
         </div>
       </div>
 
-      {/* Categories Table for md+ */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto hidden md:block">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50">
-            <tr>
+      {/* Search Bar */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <FaSearch className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500"
+          placeholder="Search categories by name, translations, or color..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("auth.categoryManagement.tableHeaders.category")}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("auth.categoryManagement.tableHeaders.color")}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("auth.categoryManagement.tableHeaders.translations")}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("auth.categoryManagement.tableHeaders.eventsUsing")}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("auth.categoryManagement.tableHeaders.actions")}
-              </th>
-
-              {/* <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Category</th>
-              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Color</th>
-              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Translations</th>
-              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Events Using</th>
-              <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Actions</th> */}
-
-            </tr>
-          </thead>
+      {/* Categories Content */}
+      {filteredCategories.length === 0 ? (
+        <div className="text-center py-8">
+          <div className="text-gray-400 mb-4">
+            <FaEye className="mx-auto h-12 w-12" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {searchQuery ? "No matching categories found" : "No categories available"}
+          </h3>
+          <p className="text-gray-500 mb-4">
+            {searchQuery 
+              ? `No categories found matching "${searchQuery}". Try adjusting your search terms.`
+              : "Get started by adding your first category."
+            }
+          </p>
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md"
+            >
+              Clear Search
+            </button>
+          ) : (
+            <button
+              onClick={openAddModal}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center gap-2 mx-auto"
+            >
+              <FaPlus />
+              Add Category
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Categories Table for md+ */}
+          <div className="bg-white rounded-lg shadow overflow-x-auto hidden md:block">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("auth.categoryManagement.tableHeaders.category")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("auth.categoryManagement.tableHeaders.color")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("auth.categoryManagement.tableHeaders.translations")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("auth.categoryManagement.tableHeaders.eventsUsing")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("auth.categoryManagement.tableHeaders.actions")}
+                  </th>
+                </tr>
+              </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {categories.map((category) => (
+            {filteredCategories.map((category) => (
               <tr key={category.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis">
                   <div className="font-medium text-gray-900">
@@ -463,7 +520,7 @@ const CategoryManagement = () => {
       {/* Mobile Category List (below md) */}
       <div className="block md:hidden">
         <div className="space-y-3 flex flex-col items-center">
-          {categories.map((category) => (
+          {filteredCategories.map((category) => (
             <div
               key={category.id}
               className="bg-white rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
@@ -518,6 +575,8 @@ const CategoryManagement = () => {
           ))}
         </div>
       </div>
+        </>
+      )}
 
       {/* Add Category Modal */}
       <Modal
