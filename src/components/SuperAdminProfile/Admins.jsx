@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaPlus, FaEye, FaUsers, FaUserShield } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaEye, FaUsers, FaUserShield, FaSearch } from 'react-icons/fa';
 import { db } from '../../firebase';
 import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
@@ -23,6 +23,7 @@ const AdminManagement = () => {
     settlement: '',
     phone: ''
   });
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Real-time admins from Firestore
   useEffect(() => {
@@ -191,6 +192,20 @@ const AdminManagement = () => {
     setShowAddModal(true);
   };
 
+  // Filter admins based on search query
+  const filteredAdmins = admins.filter(admin => {
+    const searchLower = searchQuery.toLowerCase();
+    const name = (admin.credentials?.username || admin.idVerification?.firstName || '').toLowerCase();
+    const email = (admin.credentials?.email || '').toLowerCase();
+    const settlement = (admin.idVerification?.settlement || admin.settlement || '').toLowerCase();
+    const phone = (admin.credentials?.phone || admin.idVerification?.phone || '').toLowerCase();
+    
+    return name.includes(searchLower) || 
+           email.includes(searchLower) || 
+           settlement.includes(searchLower) || 
+           phone.includes(searchLower);
+  });
+
   // Modal component
   const Modal = ({ isOpen, onClose, title, children, onSubmit, submitText }) => {
     if (!isOpen) return null;
@@ -303,21 +318,35 @@ const AdminManagement = () => {
         <h1 className="text-2xl font-bold text-gray-800">{t("superadmin.admins.title")}</h1>
       </div>
 
+      {/* Search Bar */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <FaSearch className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500"
+          placeholder="Search admins by name, email, settlement, or phone..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       {/* Admins Content */}
-        {admins.length === 0 ? (
+        {filteredAdmins.length === 0 ? (
           <EmptyState
             icon={<FaUserShield className="text-6xl text-gray-300" />}
-            title={t("emptyStates.noAdmins")}
-            message={t("emptyStates.noAdminsMessage")}
-            actionLabel={t("emptyStates.addAdmin")}
-            onAction={openAddModal}
+            title={searchQuery ? "No matching admins found" : t("emptyStates.noAdmins")}
+            message={searchQuery ? `No admins found matching "${searchQuery}". Try adjusting your search terms.` : t("emptyStates.noAdminsMessage")}
+            actionLabel={searchQuery ? "Clear Search" : t("emptyStates.addAdmin")}
+            onAction={searchQuery ? () => setSearchQuery('') : openAddModal}
             className="p-8"
           />
         ) : (
           <>
             {/* Cards for Small Screens */}
             <div className="block sm:hidden space-y-4">
-              {admins.map((admin) => (
+              {filteredAdmins.map((admin) => (
                 <div
                   key={admin.id}
                   className="bg-white rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
@@ -396,7 +425,7 @@ const AdminManagement = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {admins.map((admin) => (
+                  {filteredAdmins.map((admin) => (
                     <tr key={admin.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
