@@ -1371,6 +1371,7 @@
       "status": {
         "pending": "Pending",
         "confirmed": "Confirmed",
+        "completed": "Completed",
         "other": "Other"
       },
       "approve": "Approve",

@@ -415,6 +415,7 @@ const BaseCalendar = ({
                     <option value="all">All Events</option>
                     <option value="created">Created by Me</option>
                     <option value="joined">My Events</option>
+                    <option value="completed">Completed Events</option>
                     {userRole === 'admin' || userRole === 'superadmin' ? (
                       <>
                         <option value="pending-approval">Pending Approval</option>
@@ -692,11 +693,12 @@ const BaseCalendar = ({
                                   <Tooltip.Trigger asChild>
                                     <div
                                       onClick={() => handleEventClick(event)}
-                                      className={`p-0.5 sm:p-1 rounded-md text-white text-left text-xs sm:text-xs md:text-sm cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
-                                      style={appearance.style}
+                                      className={`p-0.5 sm:p-1 rounded-md text-white text-left text-xs sm:text-xs md:text-sm cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${event.status === 'completed' ? 'opacity-60 bg-gray-400 text-gray-800 cursor-default pointer-events-none relative' : isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                                      style={event.status === 'completed' ? { backgroundColor: '#9CA3AF' } : appearance.style}
                                     >
                                       <span className="font-semibold">{event.timeFrom}</span> {event.title}
-                                      {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
+                                      {event.status === 'completed' && <span className="ml-2 bg-blue-600 text-white px-1 rounded text-[10px]">Completed</span>}
+                                      {isPastEvent(event) && event.status !== 'completed' && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
                                     </div>
                                   </Tooltip.Trigger>
                                   <Tooltip.Portal>
@@ -771,14 +773,15 @@ const BaseCalendar = ({
                           return (
                             <Tooltip.Root key={event.id}>
                               <Tooltip.Trigger asChild>
-                                <div
-                                  onClick={() => handleEventClick(event)}
-                                  className={`p-0.5 sm:p-1 rounded-md text-white text-left text-xs sm:text-xs md:text-sm cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
-                                  style={appearance.style}
-                                >
-                                  <span className="font-semibold">{event.timeFrom}</span> {event.title}
-                                  {isPastEvent(event) && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
-                                </div>
+                                                            <div
+                              onClick={() => handleEventClick(event)}
+                              className={`p-0.5 sm:p-1 rounded-md text-white text-left text-xs sm:text-xs md:text-sm cursor-pointer truncate ${appearance.className || ''} ${isPending ? 'pending-event-pattern' : ''} ${event.status === 'completed' ? 'opacity-60 bg-gray-400 text-gray-800 cursor-default pointer-events-none relative' : isPastEvent(event) ? 'opacity-50 bg-gray-300 text-gray-700 cursor-default pointer-events-none relative' : ''}`}
+                              style={event.status === 'completed' ? { backgroundColor: '#9CA3AF' } : appearance.style}
+                            >
+                              <span className="font-semibold">{event.timeFrom}</span> {event.title}
+                              {event.status === 'completed' && <span className="ml-2 bg-blue-600 text-white px-1 rounded text-[10px]">Completed</span>}
+                              {isPastEvent(event) && event.status !== 'completed' && <span className="ml-2 bg-gray-700 text-white px-1 rounded text-[10px]">Past</span>}
+                            </div>
                               </Tooltip.Trigger>
                               <Tooltip.Portal>
                                 <Tooltip.Content side="right" sideOffset={5} className="radix-side-right:animate-slide-left-fade radix-side-bottom:animate-slide-up-fade">
