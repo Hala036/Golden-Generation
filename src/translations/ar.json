@@ -592,7 +592,30 @@
         "isTyping": "يكتب..."
       },
       "notifications": "الإشعارات",
-      "calendar": "التقويم"
+      "calendar": "التقويم",
+      "eventDetails": {
+        "close": "إغلاق",
+        "date": "التاريخ",
+        "time": "الوقت",
+        "from": "من",
+        "to": "إلى",
+        "notSpecified": "غير محدد",
+        "location": "الموقع",
+        "notAvailable": "غير متوفر",
+        "description": "الوصف",
+        "noDescription": "لا يوجد وصف.",
+        "participants": "المشاركون",
+        "status": {
+          "pending": "قيد الانتظار",
+          "confirmed": "مؤكد",
+          "completed": "مكتمل",
+          "other": "آخر"
+        },
+        "approve": "موافقة",
+        "reject": "رفض",
+        "noParticipants": "لا يوجد مشاركون بعد",
+        "joinedCount": "{{count}} مشارك{{count, plural, one {} other {ين}}} انضم."
+      }
     },
     "errors": {
       "required": "هذا الحقل مطلوب",

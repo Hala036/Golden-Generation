@@ -177,6 +177,8 @@ export const useCalendarEvents = (userRole) => {
             return event.status === 'pending';
           case 'approved':
             return event.status === 'active' || event.status === 'open';
+          case 'completed':
+            return event.status === 'completed';
           case 'my-pending':
             return event.status === 'pending' && event.createdBy === auth.currentUser?.uid;
           case 'my-approved':

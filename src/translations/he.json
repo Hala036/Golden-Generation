@@ -1367,6 +1367,7 @@
       "status": {
               "pending": "ממתין",
               "confirmed": "מאושר",
+              "completed": "הושלם",
               "other": "אחר"
             },
             "approve": "אשר",
