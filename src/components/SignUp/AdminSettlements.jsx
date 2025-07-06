@@ -664,7 +664,7 @@ const AdminSettlements = () => {
               )?.[1] || {};
               return (
                 <div
-                  key={`mobile-${settlement.name}-${index}`}
+                  key={`mobile-${index}-${settlement.name}-${settlement.english_name || ''}-${settlement.shem_napa || ''}`}
                   className="rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm min-w-[220px]"
                   style={{ minWidth: '220px', backgroundColor: enabled ? '#f6fffa' : '#f9fafb' }}
                 >
@@ -725,7 +725,7 @@ const AdminSettlements = () => {
               )?.[1] || {};
               return (
                 <div
-                  key={`desktop-${settlement.name}-${index}`}
+                  key={`desktop-${index}-${settlement.name}-${settlement.english_name || ''}-${settlement.shem_napa || ''}`}
                   className={`rounded-xl shadow flex flex-col justify-between w-full min-w-0 ${enabled ? 'bg-green-50' : 'bg-gray-50'}`}
                   style={{ minHeight: '160px' }}
                 >
@@ -854,9 +854,9 @@ const AdminSettlements = () => {
               {/* Suggestions dropdown */}
               {showSuggestions && settlementForm.name && filteredModalSettlements.length > 0 && (
                 <ul className="absolute z-10 bg-white border border-gray-200 rounded w-full mt-1 max-h-40 overflow-y-auto shadow-lg">
-                  {filteredModalSettlements.map(s => (
+                  {filteredModalSettlements.map((s, idx) => (
                     <li
-                      key={s.name}
+                      key={`suggestion-${idx}-${s.name}-${s.english_name || ''}-${s.shem_napa || ''}`}
                       className="px-4 py-2 cursor-pointer hover:bg-yellow-100"
                       onMouseDown={() => {
                         setSettlementForm({ original: s.name, name: s.name, isEdit: true });
