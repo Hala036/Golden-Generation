@@ -139,53 +139,32 @@ const ServiceRequests = () => {
 
   // Loading skeleton for service requests
   const ServiceRequestsSkeleton = () => (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {[1, 2, 3].map((i) => (
         <div key={i} className="p-4 border rounded-lg bg-white shadow-sm">
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
               <div className="flex space-x-2 mb-1">
-                <div className="h-4 bg-gray-200 rounded w-20"></div>
-                <div className="h-4 bg-gray-200 rounded w-24"></div>
-                <div className="h-4 bg-gray-200 rounded w-16"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/5"></div>
               </div>
             </div>
             <div className="flex space-x-2">
-              <div className="h-6 bg-gray-200 rounded w-16"></div>
-              <div className="h-6 bg-gray-200 rounded w-6"></div>
-              <div className="h-6 bg-gray-200 rounded w-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/6"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/12"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/12"></div>
             </div>
           </div>
           <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
           <div className="flex justify-between items-center">
-            <div className="h-3 bg-gray-200 rounded w-32"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/3"></div>
             <div className="flex space-x-2">
-              <div className="h-6 bg-gray-200 rounded w-24"></div>
-              <div className="h-6 bg-gray-200 rounded w-16"></div>
-              <div className="h-6 bg-gray-200 rounded w-20"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/5"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/3"></div>
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  // Loading skeleton for table rows
-  const TableSkeleton = () => (
-    <div className="space-y-2">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center p-4 border-b border-gray-200">
-          <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-1/3 mb-1"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-          </div>
-          <div className="h-6 bg-gray-200 rounded w-20 mx-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-24 mx-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-16 mx-4"></div>
-          <div className="flex space-x-2">
-            <div className="h-6 bg-gray-200 rounded w-6"></div>
-            <div className="h-6 bg-gray-200 rounded w-6"></div>
           </div>
         </div>
       ))}
@@ -195,11 +174,11 @@ const ServiceRequests = () => {
   // Render loading state
   if (loading && !requests.length) {
     return (
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Service Requests</h1>
-          <div className="flex space-x-4">
-            <div className="h-10 bg-gray-200 rounded w-40"></div>
+      <div className="p-4 sm:p-6 max-w-screen mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6">
+          <h1 className="text-lg sm:text-1xl md:text-3xl font-bold">Service Requests</h1>
+          <div className="flex space-x-2 sm:space-x-4 mt-2 sm:mt-0">
+            <div className="h-8 sm:h-10 bg-gray-200 rounded w-20 sm:w-40"></div>
           </div>
         </div>
         <ServiceRequestsSkeleton />
