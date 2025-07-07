@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { auth, getUserData, getUsersBySettlement, db } from "../../firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, query, where, getDocs, updateDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 
 const Support = () => {
@@ -36,28 +36,36 @@ const Support = () => {
           return;
         }
 
-        const usersInSettlement = await getUsersBySettlement(settlement);
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("settlement", "==", settlement), where("role", "==", "admin"));
+        const querySnapshot = await getDocs(q);
 
-        if (!usersInSettlement || usersInSettlement.length === 0) {
-          console.error(t("retiree.errors.noUsersInSettlement"));
-          toast.error(t("retiree.errors.noUsersInSettlement"));
-          return;
-        }
-
-        const adminDoc = usersInSettlement.find((user) => user.role === "admin");
-
-        if (!adminDoc) {
+        if (querySnapshot.empty) {
           console.error(t("retiree.errors.noAdminFound"));
           toast.error(t("retiree.errors.noAdminFound"));
           return;
         }
 
-        // Include the admin's document ID (uid) in the adminInfo object
+        // Extract admin document and set the id (uid)
+        const adminDoc = querySnapshot.docs.map((doc) => ({
+          id: doc.id, // Document ID (UID)
+          ...doc.data(), // Document data
+        }))[0]; // Assuming there's only one admin per settlement
+
+        console.log("Admin Document:", adminDoc); // Debugging log
+
+        if (!adminDoc || !adminDoc.id) {
+          console.error(t("retiree.errors.missingAdminUID"));
+          toast.error(t("retiree.errors.missingAdminUID"));
+          return;
+        }
+
+        // Include the admin's UID in the adminInfo object
         setAdminInfo({
-          // uid: adminDoc.idVerification.idNumber, // Document ID (admin's UID)
+          uid: adminDoc.id, // Use document ID as UID
           username: adminDoc.credentials?.username || t("retiree.admin.defaultUsername"),
-          // firstname: adminDoc?.firstName || t("retiree.admin.defaultFirstName"),
-          lastname: adminDoc.idVerification?.lastName || t("retiree.admin.defaultLastName"),
+          firstname: adminDoc.credentials?.firstName || t("retiree.admin.defaultFirstName"),
+          lastname: adminDoc.credentials?.lastName || t("retiree.admin.defaultLastName"),
           email: adminDoc.credentials?.email || t("retiree.admin.defaultEmail"),
           phone: adminDoc.credentials?.phone || t("retiree.admin.defaultPhone"),
         });
@@ -70,6 +78,12 @@ const Support = () => {
     fetchAdminInfo();
   }, [t]);
 
+  useEffect(() => {
+    if (adminInfo) {
+      console.log("Admin Info:", adminInfo); // Log after state update
+    }
+  }, [adminInfo]);
+
   const handleSendMessage = async () => {
     if (!message.trim()) {
       toast.error(t("retiree.errors.emptyMessage"));
@@ -77,27 +91,75 @@ const Support = () => {
     }
 
     if (!adminInfo || !auth.currentUser) {
-      toast.error("Unable to send message. Admin or user information is missing.");
+      toast.error(t("retiree.errors.missingAdminOrUser"));
+      return;
+    }
+
+    // Debugging logs
+    console.log("Current User UID:", auth.currentUser.uid);
+    console.log("Admin Info UID:", adminInfo.uid);
+
+    if (!auth.currentUser.uid || !adminInfo.uid) {
+      toast.error(t("retiree.errors.missingParticipantUIDs"));
       return;
     }
 
     setIsSending(true);
 
     try {
+      const conversationsRef = collection(db, "conversations");
+
+      // Query to find a conversation with both participants
+      const q = query(
+        conversationsRef,
+        where("participants", "array-contains", auth.currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+
+      let conversationDoc = null;
+
+      // Check if any conversation matches both participants
+      querySnapshot.forEach((doc) => {
+        const participants = doc.data().participants;
+        if (participants.includes(adminInfo.uid)) {
+          conversationDoc = doc;
+        }
+      });
+
+      if (!conversationDoc) {
+        // Create a new conversation document if none exists
+        const conversationData = {
+          participants: [auth.currentUser.uid, adminInfo.uid],
+          lastMessage: message.trim(),
+          lastMessageTime: serverTimestamp(),
+          createdAt: serverTimestamp(),
+        };
+
+        console.log("Creating conversation:", conversationData); // Debugging log
+        conversationDoc = await addDoc(conversationsRef, conversationData);
+      } else {
+        // Update the lastMessage and lastMessageTime fields in the existing conversation
+        await updateDoc(conversationDoc.ref, {
+          lastMessage: message.trim(),
+          lastMessageTime: serverTimestamp(),
+        });
+      }
+
+      // Send the message
       const messageData = {
-        conversationId: `${auth.currentUser.uid}_${adminInfo.uid}`, // Unique conversation ID
+        conversationId: conversationDoc.id,
         senderId: auth.currentUser.uid,
-        receiverId: adminInfo.uid,
         text: message.trim(),
         timestamp: serverTimestamp(),
       };
 
+      console.log("Sending message:", messageData); // Debugging log
       await addDoc(collection(db, "messages"), messageData);
-      toast.success("Your message has been sent successfully!");
+      toast.success(t("retiree.support.messageSent"));
       setMessage(""); // Clear the input field
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Failed to send the message.");
+      toast.error(t("retiree.support.messageFailed"));
     } finally {
       setIsSending(false);
     }

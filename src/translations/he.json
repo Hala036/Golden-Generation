@@ -939,6 +939,13 @@
   "dashboard": {
     "welcome": "ברוך הבא",
     "profile": "פרופיל",
+    "sidebar": {
+        "user": "משתמש",
+        "noUserLoggedIn": "אף משתמש לא מחובר.",
+        "failedToLoadUser": "נכשל בטעינת נתוני המשתמש.",
+        "failedToLogout": "נכשל בהתנתקות. אנא נסה שוב.",
+        "loggedOut": "התנתקת בהצלחה!"
+      },
     "settings": {
       "options": {
               "editProfile": "ערוך פרופיל",

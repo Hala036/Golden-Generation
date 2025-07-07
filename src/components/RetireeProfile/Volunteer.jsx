@@ -235,248 +235,249 @@ const Volunteer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 relative">
-      {/* Tabs */}
-      <div className="flex justify-center gap-2">
-        <button
-          className={`px-6 py-3 w-full ml-7 font-bold rounded-t-lg ${
-            activeTab === "requests"
-              ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-              : "bg-gray-200 text-gray-600"
-          }`}
-          onClick={() => setActiveTab("requests")}
-        >
-          {t('volunteer.tabs.requests')}
-        </button>
-        <button
-          className={`px-6 py-3 w-full mr-7 font-bold rounded-t-lg ${
-            activeTab === "info"
-              ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-              : "bg-gray-200 text-gray-600"
-          }`}
-          onClick={() => setActiveTab("info")}
-        >
-          {t('volunteer.tabs.info')}
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === "requests" && (
-        <div className="bg-white rounded-b-2xl ml-6 mr-6 mb-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
-              {t('volunteer.section.requests')}
-            </h2>
-            {requests && requests.length > 0 ? (
-              <ul className="space-y-4">
-                {requests.map((request) => {
-                  // Check if the current user has a status in the assignedSeniors array
-                  const userAssignment = request.assignedSeniors?.find(
-                    (senior) => senior.seniorId === userId
-                  );
-
-                  return (
-                    <li key={request.id} className="border border-gray-300 rounded-lg p-4 shadow-sm">
-                      <h3 className="text-lg font-semibold">{request.title}</h3>
-                      <p className="text-sm text-gray-600">{request.description}</p>
-                      <p className="text-sm text-gray-500">
-                        <strong>{t('volunteer.label.timing')}</strong> {request.volunteerHours || t('volunteer.label.notSpecified')}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        <strong>{t('volunteer.label.location')}</strong> {request.location || t('volunteer.label.notSpecified')}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        <strong>{t('volunteer.label.frequency')}</strong> {request.volunteerFrequency || t('volunteer.label.notSpecified')}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        <strong>{t('volunteer.label.professionalBackground')}</strong>{" "}
-                        {request.professionalBackground || t('volunteer.label.notSpecified')}
-                      </p>
-
-                      {/* Display status if the user is assigned */}
-                      {userAssignment ? (
-                        <p
-                          className={`text-lg font-bold mt-4 ${
-                            userAssignment.status === "Accepted"
-                              ? "text-green-500"
-                              : "text-red-500"
-                          } text-center`}
-                        >
-                          {userAssignment.status === "Accepted" ? t('volunteer.label.accepted') : t('volunteer.label.declined')}
-                        </p>
-                      ) : (
-                        <div className="flex space-x-4 mt-4 justify-center">
-                          <button
-                            onClick={() => handleAcceptInvite(request.id)}
-                            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-                          >
-                            {t('volunteer.label.accept')}
-                          </button>
-                          <button
-                            onClick={() => handleRejectInvite(request.id)}
-                            className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-                          >
-                            {t('volunteer.label.reject')}
-                          </button>
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="text-gray-500">{t('volunteer.toast.noRequests')}</p>
-            )}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6 w-full flex flex-col">
+      {/* Tabs and Content Wrapper */}
+      <div className="flex flex-col items-center w-full max-w-screen-md mx-auto">
+        {/* Tabs */}
+        <div className="flex justify-center gap-2 w-full">
+          <button
+            className={`px-6 py-3 w-full sm:w-auto font-bold rounded-t-lg ${
+              activeTab === "requests"
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                : "bg-gray-200 text-gray-600"
+            }`}
+            onClick={() => setActiveTab("requests")}
+          >
+            {t('volunteer.tabs.requests')}
+          </button>
+          <button
+            className={`px-6 py-3 w-full sm:w-auto font-bold rounded-t-lg ${
+              activeTab === "info"
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                : "bg-gray-200 text-gray-600"
+            }`}
+            onClick={() => setActiveTab("info")}
+          >
+            {t('volunteer.tabs.info')}
+          </button>
         </div>
-      )}
 
-      {activeTab === "info" && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleUpdateVolunteerInfo();
-          }}
-          className="space-y-12"
-        >
-          <div className="bg-white rounded-b-2xl ml-6 mr-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
-              {t('volunteer.section.info')}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {t('volunteer.label.managePreferences')}
-            </p>
-            {/* Current Volunteering */}
-            <div className="flex items-center mb-6">
-              <Star className="w-8 h-8 text-yellow-500 mr-3" />
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {t('volunteer.section.current')}
-                </h3>
-                <p className="text-gray-600 text-lg">{t('volunteer.label.currentlyVolunteering')}</p>
-              </div>
-            </div>
+        {/* Tab Content */}
+        {activeTab === "requests" && (
+          <div className="bg-white rounded-b-2xl mx-auto mb-6 p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95 w-full">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
+                {t('volunteer.section.requests')}
+              </h2>
+              {requests && requests.length > 0 ? (
+                <ul className="space-y-4">
+                  {requests.map((request) => {
+                    const userAssignment = request.assignedSeniors?.find(
+                      (senior) => senior.seniorId === userId
+                    );
 
-            <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={volunteerInfo.isVolunteer}
-                onChange={(e) =>
-                  setVolunteerInfo({ ...volunteerInfo, isVolunteer: e.target.checked })
-                }
-                className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
-              />
-              <span className="text-lg font-semibold text-gray-800">
-                {t('volunteer.label.yesCurrentlyVolunteering')}
-              </span>
-            </label>
+                    return (
+                      <li key={request.id} className="border border-gray-300 rounded-lg p-4 shadow-sm">
+                        <h3 className="text-lg font-semibold">{request.title}</h3>
+                        <p className="text-sm text-gray-600">{request.description}</p>
+                        <p className="text-sm text-gray-500">
+                          <strong>{t('volunteer.label.timing')}</strong> {request.volunteerHours || t('volunteer.label.notSpecified')}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          <strong>{t('volunteer.label.location')}</strong> {request.location || t('volunteer.label.notSpecified')}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          <strong>{t('volunteer.label.frequency')}</strong> {request.volunteerFrequency || t('volunteer.label.notSpecified')}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          <strong>{t('volunteer.label.professionalBackground')}</strong>{" "}
+                          {request.professionalBackground || t('volunteer.label.notSpecified')}
+                        </p>
 
-            {volunteerInfo.isVolunteer && (
-              <div className="mt-8 space-y-8">
-                {/* Volunteer Areas */}
-                <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-4">{t('volunteer.section.areas')}</h4>
-                  <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-                    {volunteerAreaOptions.map((area) => (
-                      <SelectionCard
-                        key={area.id}
-                        isSelected={volunteerInfo.volunteerAreas?.includes(area.id)}
-                        onClick={() => handleArraySelection("volunteerAreas", area.id)}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{area.icon}</span>
-                          <span className="font-semibold text-gray-800">{area.label}</span>
-                        </div>
-                      </SelectionCard>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Frequency */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <div className="flex items-center mb-4">
-                      <Calendar className="w-6 h-6 text-blue-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.frequency')}</h4>
-                    </div>
-                    <select
-                      value={volunteerInfo.volunteerFrequency}
-                      onChange={(e) =>
-                        setVolunteerInfo({ ...volunteerInfo, volunteerFrequency: e.target.value })
-                      }
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
-                    >
-                      <option value="">{t('volunteer.placeholder.selectFrequency')}</option>
-                      {frequencyOptions.map((freq) => (
-                        <option key={freq} value={freq}>
-                          {freq}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Hours */}
-                  <div>
-                    <div className="flex items-center mb-4">
-                      <Clock className="w-6 h-6 text-green-500 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.hours')}</h4>
-                    </div>
-                    <select
-                      value={volunteerInfo.volunteerHours}
-                      onChange={(e) =>
-                        setVolunteerInfo({ ...volunteerInfo, volunteerHours: e.target.value })
-                      }
-                      className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
-                    >
-                      <option value="">{t('volunteer.placeholder.selectHours')}</option>
-                      {timeOptions.map((time) => (
-                        <option key={time} value={time}>
-                          {time}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Days */}
-                <div>
-                  <div className="flex items-center mb-4">
-                    <MapPin className="w-6 h-6 text-purple-500 mr-2" />
-                    <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.days')}</h4>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {dayOptions.map((day) => (
-                      <SelectionCard
-                        key={day.id}
-                        isSelected={volunteerInfo.volunteerDays?.includes(day.id)}
-                        onClick={() => handleArraySelection("volunteerDays", day.id)}
-                      >
-                        <div className="text-center">
-                          <div className="font-bold text-gray-800">{day.short}</div>
-                          <div className="text-sm text-gray-600">{day.label}</div>
-                        </div>
-                      </SelectionCard>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* Submit Button */}
-            <div className="text-center pt-8">
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
-              >
-                <span className="flex items-center justify-center space-x-2">
-                  <Star className="w-6 h-6" />
-                  <span>{t('volunteer.label.saveChanges')}</span>
-                  <Star className="w-6 h-6" />
-                </span>
-              </button>
+                        {userAssignment ? (
+                          <p
+                            className={`text-lg font-bold mt-4 ${
+                              userAssignment.status === "Accepted"
+                                ? "text-green-500"
+                                : "text-red-500"
+                            } text-center`}
+                          >
+                            {userAssignment.status === "Accepted" ? t('volunteer.label.accepted') : t('volunteer.label.declined')}
+                          </p>
+                        ) : (
+                          <div className="flex space-x-4 mt-4 justify-center">
+                            <button
+                              onClick={() => handleAcceptInvite(request.id)}
+                              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                            >
+                              {t('volunteer.label.accept')}
+                            </button>
+                            <button
+                              onClick={() => handleRejectInvite(request.id)}
+                              className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                            >
+                              {t('volunteer.label.reject')}
+                            </button>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="text-gray-500">{t('volunteer.toast.noRequests')}</p>
+              )}
             </div>
           </div>
-        </form>
-      )}
+        )}
+
+        {activeTab === "info" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdateVolunteerInfo();
+            }}
+            className="space-y-12 w-full"
+          >
+            <div className="bg-white rounded-b-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95 w-full">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center mb-6">
+                {t('volunteer.section.info')}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                {t('volunteer.label.managePreferences')}
+              </p>
+              {/* Current Volunteering */}
+              <div className="flex items-center mb-6">
+                <Star className="w-8 h-8 text-yellow-500 mr-3" />
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {t('volunteer.section.current')}
+                  </h3>
+                  <p className="text-gray-600 text-lg">{t('volunteer.label.currentlyVolunteering')}</p>
+                </div>
+              </div>
+
+              <label className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-300 transition-all duration-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={volunteerInfo.isVolunteer}
+                  onChange={(e) =>
+                    setVolunteerInfo({ ...volunteerInfo, isVolunteer: e.target.checked })
+                  }
+                  className="w-5 h-5 text-yellow-500 border-2 border-gray-300 rounded focus:ring-yellow-400 focus:ring-2 transition-all duration-200"
+                />
+                <span className="text-lg font-semibold text-gray-800">
+                  {t('volunteer.label.yesCurrentlyVolunteering')}
+                </span>
+              </label>
+
+              {volunteerInfo.isVolunteer && (
+                <div className="mt-8 space-y-8">
+                  {/* Volunteer Areas */}
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-800 mb-4">{t('volunteer.section.areas')}</h4>
+                    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                      {volunteerAreaOptions.map((area) => (
+                        <SelectionCard
+                          key={area.id}
+                          isSelected={volunteerInfo.volunteerAreas?.includes(area.id)}
+                          onClick={() => handleArraySelection("volunteerAreas", area.id)}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{area.icon}</span>
+                            <span className="font-semibold text-gray-800">{area.label}</span>
+                          </div>
+                        </SelectionCard>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Frequency */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <div className="flex items-center mb-4">
+                        <Calendar className="w-6 h-6 text-blue-500 mr-2" />
+                        <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.frequency')}</h4>
+                      </div>
+                      <select
+                        value={volunteerInfo.volunteerFrequency}
+                        onChange={(e) =>
+                          setVolunteerInfo({ ...volunteerInfo, volunteerFrequency: e.target.value })
+                        }
+                        className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
+                      >
+                        <option value="">{t('volunteer.placeholder.selectFrequency')}</option>
+                        {frequencyOptions.map((freq) => (
+                          <option key={freq} value={freq}>
+                            {freq}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Hours */}
+                    <div>
+                      <div className="flex items-center mb-4">
+                        <Clock className="w-6 h-6 text-green-500 mr-2" />
+                        <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.hours')}</h4>
+                      </div>
+                      <select
+                        value={volunteerInfo.volunteerHours}
+                        onChange={(e) =>
+                          setVolunteerInfo({ ...volunteerInfo, volunteerHours: e.target.value })
+                        }
+                        className="w-full border-2 border-gray-200 rounded-xl p-4 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 bg-white hover:border-gray-300"
+                      >
+                        <option value="">{t('volunteer.placeholder.selectHours')}</option>
+                        {timeOptions.map((time) => (
+                          <option key={time} value={time}>
+                            {time}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Days */}
+                  <div>
+                    <div className="flex items-center mb-4">
+                      <MapPin className="w-6 h-6 text-purple-500 mr-2" />
+                      <h4 className="text-xl font-bold text-gray-800">{t('volunteer.section.days')}</h4>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {dayOptions.map((day) => (
+                        <SelectionCard
+                          key={day.id}
+                          isSelected={volunteerInfo.volunteerDays?.includes(day.id)}
+                          onClick={() => handleArraySelection("volunteerDays", day.id)}
+                        >
+                          <div className="text-center">
+                            <div className="font-bold text-gray-800">{day.short}</div>
+                            <div className="text-sm text-gray-600">{day.label}</div>
+                          </div>
+                        </SelectionCard>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Submit Button */}
+              <div className="text-center pt-8">
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 transform active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <span className="flex items-center justify-center space-x-2">
+                    <Star className="w-6 h-6" />
+                    <span>{t('volunteer.label.saveChanges')}</span>
+                    <Star className="w-6 h-6" />
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

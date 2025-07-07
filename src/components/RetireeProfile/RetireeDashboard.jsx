@@ -22,7 +22,7 @@ const RetireeDashboard = () => {
     { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaCalendarAlt /> },
     { id: "service", label: t('dashboard.service'), icon: <FaHandsHelping /> },
-    { id: "settings", label: t('dashboard.settings'), icon: <FaCog /> },
+    { id: "settings", label: t('dashboard.settings.title'), icon: <FaCog /> },
   ];
 
   const customButtons = [
