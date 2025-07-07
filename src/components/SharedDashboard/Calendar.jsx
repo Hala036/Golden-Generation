@@ -540,7 +540,7 @@ const RetireeCalendar = () => {
 
       {/* Event Details Modal */}
       {showEventModal && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xl font-bold">{selectedEvent.title}</h3>
@@ -628,7 +628,7 @@ const RetireeCalendar = () => {
 
       {/* Create Event Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">{t('calendar.createNewEvent')}</h3>
