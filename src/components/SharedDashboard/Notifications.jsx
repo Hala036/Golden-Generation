@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react';
-import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope, FaBell } from 'react-icons/fa';
+import { FaInfoCircle, FaExclamationTriangle, FaCheckCircle, FaEnvelope } from 'react-icons/fa';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db, getUserData } from '../../firebase';
+import { db, getUserData, auth } from '../../firebase';
 import useAuth from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
-import { useLanguage } from '../../context/LanguageContext';
-import EmptyState from '../EmptyState';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
 const iconMap = {
   info: <FaInfoCircle className="text-yellow-500 text-xl" />,
@@ -18,69 +13,61 @@ const iconMap = {
 };
 
 const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => { // Add setShowNotificationsPopup as a prop
-  const { currentUser } = useAuth();
-  const { t } = useLanguage();
+  const  currentUser = auth.currentUser;
   const [userRole, setUserRole] = useState(null);
-
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateNotificationModal, setShowCreateNotificationModal] = useState(false); // Modal for creating notifications
   const [showModal, setShowModal] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
-  const [showSendNotification, setShowSendNotification] = useState(false);
 
-  // Fetch notifications based on user role
+  // Fetch user role
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const fetchUserRole = async () => {
       if (!currentUser?.uid) return;
 
       try {
         const userData = await getUserData(currentUser.uid);
-        const userRole = userData?.role;
-
-        if (!userRole) {
-          console.error("User role not found for UID:", currentUser.uid);
-          return;
-        }
-
-        let notificationsQuery;
-        if (userRole === 'superadmin') {
-          // Super admin sees all notifications
-          notificationsQuery = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
-        } else if (userRole === 'admin') {
-          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-          const userSettlement = userDoc.data()?.idVerification?.settlement;
-          if (!userSettlement) {
-            setNotifications([]);
-            setLoading(false);
-            return;
-          }
-          notificationsQuery = query(
-            collection(db, "notifications"),
-            where("settlement", "==", userSettlement),
-            orderBy("createdAt", "desc")
-          );
+        if (userData?.role) {
+          setUserRole(userData.role);
         } else {
-          // Regular users see their own notifications
-          notificationsQuery = query(
-            collection(db, "notifications"),
-            where("recipientId", "==", currentUser.uid),
-            orderBy("createdAt", "desc")
-          );
+          console.error("User role not found for UID:", currentUser.uid);
         }
+      } catch (err) {
+        console.error("Error fetching user role:", err);
+      }
+    };
 
-        const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
-          const notifs = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          setNotifications(notifs);
-          setLoading(false);
-        });
+    fetchUserRole();
+  }, [currentUser]);
 
-        return unsubscribe;
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
+  // Fetch notifications
+  useEffect(() => {
+    if (!currentUser) { return; }
+
+    const fetchNotifications = async () => {
+      setLoading(true);
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        const userData = userDoc.data();
+        const userNotifications = userData?.notifs || [];
+
+        const enrichedNotifications = await Promise.all(
+          userNotifications.map(async (notif) => {
+            const notifDoc = await getDoc(doc(db, "notifications", notif.id));
+            return {
+              id: notif.id,
+              ...notifDoc.data(),
+              read: notif.read,
+            };
+          })
+        );
+        const displayedNotifications = limit ? enrichedNotifications.slice(0, limit) : enrichedNotifications;
+
+        setNotifications(displayedNotifications);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      } finally {
         setLoading(false);
       }
     };
@@ -88,56 +75,57 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
     fetchNotifications();
   }, [currentUser]);
 
-  // Mark notification as read
-  const markAsRead = async (notificationId) => {
-    if (!currentUser) { return; }
-
+  const handleMarkAsRead = async (notificationId) => {
     try {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      const currentNotifs = userDoc.data()?.notifs || [];
-      
-      const updatedNotifs = currentNotifs.map(notif => 
+      const userData = userDoc.data();
+      const updatedNotifs = userData.notifs.map((notif) =>
         notif.id === notificationId ? { ...notif, read: true } : notif
       );
 
       await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
+
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === notificationId ? { ...notif, read: true } : notif
+        )
+      );
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
     }
   };
 
-  // Mark all notifications as read
-  const markAllAsRead = async () => {
-    if (!currentUser) { return; }
-
+  const handleMarkAllAsRead = async () => {
     try {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      const currentNotifs = userDoc.data()?.notifs || [];
-      
-      const updatedNotifs = currentNotifs.map(notif => ({ ...notif, read: true }));
+      const userData = userDoc.data();
+      const updatedNotifs = userData.notifs.map((notif) => ({
+        ...notif,
+        read: true,
+      }));
 
       await updateDoc(doc(db, "users", currentUser.uid), { notifs: updatedNotifs });
-    } catch (error) {
-      console.error("Error marking all notifications as read:", error);
+
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, read: true }))
+      );
+    } catch (err) {
+      console.error("Error marking all notifications as read:", err);
     }
   };
 
   const handleNotificationClick = (notification) => {
     // Mark the notification as read
-    markAsRead(notification.id);
+    handleMarkAsRead(notification.id);
 
     // Redirect based on notification type
     if (notification.type === "message" && setSelectedTab) {
       setSelectedTab("messages");
-      if (setShowNotificationsPopup) {
-        setShowNotificationsPopup(false); // Close the notifications popup
-      }
+      setShowNotificationsPopup(false); // Close the notifications popup
       setShowModal(false); // Close the notification modal
     } else if (notification.type === "request" && setSelectedTab) {
       setSelectedTab("volunteer"); // Redirect to Volunteer tab
-      if (setShowNotificationsPopup) {
-        setShowNotificationsPopup(false); // Close the notifications popup
-      }
+      setShowNotificationsPopup(false); // Close the notifications popup
       setShowModal(false); // Close the notification modal
     } else {
       setSelectedNotification(notification);
@@ -161,55 +149,31 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
     };
   }, [selectedNotification]);
 
-  // Loading skeleton for notifications
-  const NotificationsSkeleton = () => (
-    <div className="space-y-3">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="relative p-3 rounded-lg border-l-4 mb-3 shadow-lg bg-gray-50">
-          <div className="flex items-start">
-            <div className="w-6 h-6 bg-gray-200 rounded mr-3 mt-1"></div>
-            <div className="flex-1 min-w-0">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/3"></div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <div className="w-full max-w-2xl mx-auto p-2 md:p-4">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-4">
           <button
             className="text-sm text-blue-500 hover:underline"
-            onClick={markAllAsRead}
+            onClick={handleMarkAllAsRead}
           >
-            {t('auth.dashboard.notifications.markAllAsRead')}
+            Mark all as read
           </button>
-          {currentUser?.role !== "retiree" && (
+          {userRole !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
               onClick={() => setShowCreateNotificationModal(true)}
             >
-              {t('auth.dashboard.notifications.createNotification')}
+              Create Notification
             </button>
           )}
         </div>
       </div>
       <div className="bg-white rounded-xl divide-y">
         {loading ? (
-
-          <NotificationsSkeleton />
+          <div className="p-8 text-center text-gray-400">Loading...</div>
         ) : notifications.length === 0 ? (
-          <EmptyState
-            icon={<FaBell className="text-6xl text-gray-300" />}
-            title={t('emptyStates.noNotifications')}
-            message={t('emptyStates.noNotificationsMessage')}
-            className="p-8"
-          />
+          <div className="p-8 text-center text-gray-400">No notifications</div>
         ) : (
           notifications.map((n) => (
             <div
@@ -236,7 +200,7 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
                 {iconMap[n.type] || iconMap.info}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-800 truncate">{n.title || t('auth.dashboard.notifications.notification')}</div>
+                <div className="font-semibold text-gray-800 truncate">{n.title || "Notification"}</div>
                 <div className="text-sm text-gray-600 truncate">{n.message}</div>
                 <div className="text-xs text-gray-400 mt-1">
                   {n.createdAt
@@ -259,12 +223,12 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           <div className="absolute inset-0 bg-gray-200 opacity-50"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{selectedNotification.title || t('dashboard.notifications.notification')}</h3>
+              <h3 className="text-xl font-bold">{selectedNotification.title || "Notification"}</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowModal(false)}
               >
-                {t('auth.dashboard.notifications.close')}
+                &times;
               </button>
             </div>
             <p className="text-gray-700">{selectedNotification.message}</p>
@@ -278,12 +242,12 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
           <div className="absolute inset-0 bg-gray-200"></div>
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{t('dashboard.notifications.modalTitle')}</h3>
+              <h3 className="text-xl font-bold">Create Notification</h3>
               <button
                 className="text-red-500 hover:text-red-700"
                 onClick={() => setShowCreateNotificationModal(false)} // Close the modal
               >
-                {t('dashboard.notifications.close')}
+                &times;
               </button>
             </div>
             <SendNotification onClose={() => setShowCreateNotificationModal(false)} /> {/* Pass onClose callback */}
