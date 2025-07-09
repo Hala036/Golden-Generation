@@ -1632,6 +1632,61 @@
         "actions": "פעולות"
       }
     }
+  },
+  "settlementsManager": {
+    "title": "מנהל יישובים",
+    "uploadCSV": "העלה CSV",
+    "searchPlaceholder": "חפש יישובים...",
+    "assignAdminTitle": "שייך מנהל ליישוב",
+    "selectExistingUser": "בחר משתמש קיים",
+    "createNewAdmin": "צור מנהל חדש",
+    "selectSettlement": "בחר יישוב",
+    "adminAssigned": " (מנהל משויך)",
+    "emailPlaceholder": "אימייל",
+    "usernamePlaceholder": "שם משתמש",
+    "phonePlaceholder": "טלפון",
+    "createAssign": "צור ושייך",
+    "settlementHasAdmin": "ליישוב זה כבר משויך מנהל.",
+    "selectUser": "בחר משתמש",
+    "assignAdmin": "שייך מנהל",
+    "settlementsListTitle": "יישובים ומנהלים משויכים",
+    "available": "זמין",
+    "disabled": "מושבת",
+    "retirees": "ותיקים",
+    "edit": "ערוך",
+    "remove": "הסר",
+    "addAdmin": "הוסף מנהל",
+    "adminDetailsTitle": "פרטי מנהל",
+    "username": "שם משתמש",
+    "email": "אימייל",
+    "phone": "טלפון",
+    "role": "תפקיד",
+    "settlement": "יישוב",
+    "registeredRetirees": "ותיקים רשומים",
+    "noSettlementsTitle": "לא נמצאו יישובים",
+    "noSettlementsMessage": "נסה להעלות CSV או בדוק את המסננים.",
+    "toggle": "החלף מצב",
+    "errors": {
+      "csvParse": "שגיאה בניתוח קובץ CSV של יישובים: {{error}}",
+      "failedToLoad": "נכשל בטעינת היישובים"
+    },
+    "toast": {
+      "toggleSuccess": "הסטטוס של {{settlement}} הוחלף",
+      "toggleError": "נכשל בהחלפת סטטוס היישוב",
+      "deleteSuccess": "הוסר: {{settlement}}",
+      "deleteError": "נכשל בהסרת היישוב",
+      "csvUploadSuccess": "היישובים הועלו מקובץ CSV",
+      "csvUploadError": "העלאת קובץ CSV נכשלה",
+      "selectBoth": "אנא בחר גם יישוב וגם משתמש.",
+      "assignSuccess": "המנהל שויך בהצלחה!",
+      "assignError": "נכשל בשיוך המנהל.",
+      "fillAllFields": "אנא מלא את כל השדות.",
+      "createAssignSuccess": "מנהל חדש נוצר, שויך ונשלח מייל לאיפוס סיסמה!",
+      "createAssignError": "נכשל ביצירת ושיוך מנהל: {{error}}"
+    },
+    "confirm": {
+      "delete": "האם אתה בטוח שברצונך למחוק לצמיתות את \"{{settlement}}\"?"
+    }
   }
 } 
 

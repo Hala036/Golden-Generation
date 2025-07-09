@@ -1698,5 +1698,60 @@
         "actions": "Actions"
       }
     }
+  },
+  "settlementsManager": {
+    "title": "Settlement Manager",
+    "uploadCSV": "Upload CSV",
+    "searchPlaceholder": "Search settlements...",
+    "assignAdminTitle": "Assign Admin to Settlement",
+    "selectExistingUser": "Select Existing User",
+    "createNewAdmin": "Create New Admin",
+    "selectSettlement": "Select Settlement",
+    "adminAssigned": " (Admin assigned)",
+    "emailPlaceholder": "Email",
+    "usernamePlaceholder": "Username",
+    "phonePlaceholder": "Phone",
+    "createAssign": "Create & Assign",
+    "settlementHasAdmin": "This settlement already has an admin.",
+    "selectUser": "Select User",
+    "assignAdmin": "Assign Admin",
+    "settlementsListTitle": "Settlements & Assigned Admins",
+    "available": "Available",
+    "disabled": "Disabled",
+    "retirees": "retirees",
+    "edit": "Edit",
+    "remove": "Remove",
+    "addAdmin": "Add Admin",
+    "adminDetailsTitle": "Admin Details",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "settlement": "Settlement",
+    "registeredRetirees": "Registered Retirees",
+    "noSettlementsTitle": "No settlements found",
+    "noSettlementsMessage": "Try uploading a CSV or check your filters.",
+    "toggle": "Toggle",
+    "errors": {
+      "csvParse": "Error parsing settlements CSV: {{error}}",
+      "failedToLoad": "Failed to load settlements"
+    },
+    "toast": {
+      "toggleSuccess": "{{settlement}} availability toggled",
+      "toggleError": "Failed to toggle settlement",
+      "deleteSuccess": "Removed: {{settlement}}",
+      "deleteError": "Failed to remove settlement",
+      "csvUploadSuccess": "Settlements uploaded from CSV",
+      "csvUploadError": "CSV upload failed",
+      "selectBoth": "Please select both a settlement and a user.",
+      "assignSuccess": "Admin assigned successfully!",
+      "assignError": "Failed to assign admin.",
+      "fillAllFields": "Please fill all fields.",
+      "createAssignSuccess": "New admin created, assigned, and password reset email sent!",
+      "createAssignError": "Failed to create and assign admin: {{error}}"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to permanently delete \"{{settlement}}\"?"
+    }
   }
 }
