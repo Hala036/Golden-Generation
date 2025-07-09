@@ -71,12 +71,18 @@ const AdminManagement = () => {
     return () => unsub();
   }, [admins]);
 
+  const isValidUsername = (username) => /^[A-Za-z\u0590-\u05FF0-9_ ]+$/.test(username);
+
   const handleAddAdmin = async () => {
     if (!formData.name || !formData.email || !formData.settlement) {
       toast.error('Please fill in all required fields');
       return;
     }
-
+    // Username validation: allow Hebrew, English, numbers, underscore, space
+    if (!isValidUsername(formData.name)) {
+      toast.error('שם משתמש יכול להכיל אותיות בעברית, אנגלית, מספרים, רווחים וקו תחתון בלבד');
+      return;
+    }
     try {
       // Create admin document
       const adminData = {
@@ -117,7 +123,11 @@ const AdminManagement = () => {
       toast.error('Please fill in all required fields');
       return;
     }
-
+    // Username validation: allow Hebrew, English, numbers, underscore, space
+    if (!isValidUsername(formData.name)) {
+      toast.error('שם משתמש יכול להכיל אותיות בעברית, אנגלית, מספרים, רווחים וקו תחתון בלבד');
+      return;
+    }
     try {
       const adminRef = doc(db, 'users', selectedAdmin.id);
       await updateDoc(adminRef, {

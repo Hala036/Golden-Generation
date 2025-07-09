@@ -47,8 +47,7 @@ const SettlementsManager = () => {
           const settlements = results.data.map(row => row.name?.trim()).filter(Boolean);
           setAllSettlements(settlements);
           setAvailableSettlements(settlements);
-          setSettlementDetails(results.data); // If you want more details per row
-          // Optionally, clear adminNames/adminDetails if not available from CSV
+          setSettlementDetails(results.data);
           setAdminNames({});
           setAdminDetails({});
         },
@@ -64,7 +63,6 @@ const SettlementsManager = () => {
     }
   };
 
-  // Fetch non-admin users for assignment
   const fetchNonAdminUsers = async () => {
     const usersRef = collection(db, 'users');
     const snapshot = await getDocs(usersRef);
@@ -74,7 +72,6 @@ const SettlementsManager = () => {
     setUsers(nonAdmins);
   };
 
-  // Fetch retiree counts for each settlement
   const fetchRetireeCounts = async (settlements) => {
     const counts = {};
     for (const s of settlements) {
@@ -98,7 +95,6 @@ const SettlementsManager = () => {
     if (settlementDetails.length > 0) fetchRetireeCounts(settlementDetails);
   }, [settlementDetails]);
 
-  // ✅ Toggle availability
   const handleToggle = async (settlement) => {
     try {
       await toggleSettlementAvailability(settlement);
@@ -109,7 +105,6 @@ const SettlementsManager = () => {
     }
   };
 
-  // ✅ Delete permanently
   const handleDelete = async (settlement) => {
     if (!window.confirm(t('settlementsManager.confirm.delete', { settlement }))) return;
     try {
@@ -121,7 +116,6 @@ const SettlementsManager = () => {
     }
   };
 
-  // ✅ Upload from CSV and refresh
   const handleCSVUpload = async () => {
     try {
       await uploadSettlementsFromCSV();
@@ -133,7 +127,6 @@ const SettlementsManager = () => {
     }
   };
 
-  // Assign admin to settlement
   const handleAssignAdmin = async () => {
     if (!selectedSettlement || !selectedUser) {
       toast.error(t('settlementsManager.toast.selectBoth'));
@@ -151,23 +144,30 @@ const SettlementsManager = () => {
     }
   };
 
-  // Create and assign a new admin
+  const isValidHebrewUsername = (username) => {
+    return /^[\u0590-\u05FFa-zA-Z0-9\s]+$/.test(username);
+  };
+
   const handleCreateAndAssignAdmin = async () => {
     if (!selectedSettlement || !newAdmin.email || !newAdmin.username || !newAdmin.phone) {
       toast.error(t('settlementsManager.toast.fillAllFields'));
       return;
     }
+    
+    if (!isValidHebrewUsername(newAdmin.username)) {
+      toast.error(t('settlementsManager.toast.invalidUsername'));
+      return;
+    }
+
     let newUserId = null;
     let userCredential = null;
     try {
-      // 1. Create user in Firebase Auth
       const auth = getAuth();
       const tempPassword = newAdmin.email + '_Temp123';
       userCredential = await createUserWithEmailAndPassword(auth, newAdmin.email, tempPassword);
       newUserId = userCredential.user.uid;
-      // 2. Send password reset email
       await sendPasswordResetEmail(auth, newAdmin.email);
-      // 3. Create user in Firestore
+      
       const usersRef = collection(db, 'users');
       const newUserRef = doc(usersRef, newUserId);
       await setDoc(newUserRef, {
@@ -181,7 +181,7 @@ const SettlementsManager = () => {
         createdAt: new Date().toISOString(),
         profileComplete: false,
       });
-      // 4. Assign as admin to settlement
+      
       await assignAdminToSettlement(selectedSettlement, newUserId);
       toast.success(t('settlementsManager.toast.createAssignSuccess'));
       setNewAdmin({ email: '', username: '', phone: '' });
@@ -189,7 +189,6 @@ const SettlementsManager = () => {
       fetchSettlements();
       fetchNonAdminUsers();
     } catch (err) {
-      // Rollback: delete Auth user if Firestore creation fails
       if (userCredential && newUserId) {
         try { await deleteAuthUser(userCredential.user); } catch (e) { /* ignore */ }
       }
@@ -201,7 +200,6 @@ const SettlementsManager = () => {
     s.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Replace AdminDetailsModal with shared Modal
   const AdminDetailsModal = ({ admin, onClose }) => (
     <Modal onClose={onClose} title={t('settlementsManager.adminDetailsTitle')}>
       <div className="space-y-2">
@@ -238,7 +236,6 @@ const SettlementsManager = () => {
         />
       </div>
 
-      {/* Admin Assignment UI */}
       <div className="mb-8 p-4 bg-white rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-3">{t('settlementsManager.assignAdminTitle')}</h2>
         <div className="flex gap-2 mb-2">
@@ -246,7 +243,7 @@ const SettlementsManager = () => {
           <button onClick={() => setCreateNew(true)} className={`px-3 py-1 rounded ${createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>{t('settlementsManager.createNewAdmin')}</button>
         </div>
         {createNew ? (
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 flex-wrap">
             <select
               value={selectedSettlement}
               onChange={e => setSelectedSettlement(e.target.value)}
@@ -260,11 +257,12 @@ const SettlementsManager = () => {
               ))}
             </select>
             <input
-              type="text"
+              type="email"
               placeholder={t('settlementsManager.emailPlaceholder')}
               value={newAdmin.email}
               onChange={e => setNewAdmin({ ...newAdmin, email: e.target.value })}
               className="px-3 py-2 border rounded"
+              required
             />
             <input
               type="text"
@@ -272,13 +270,17 @@ const SettlementsManager = () => {
               value={newAdmin.username}
               onChange={e => setNewAdmin({ ...newAdmin, username: e.target.value })}
               className="px-3 py-2 border rounded"
+              pattern="[\u0590-\u05FFa-zA-Z0-9\s]+"
+              title={t('settlementsManager.usernameValidationMessage')}
+              required
             />
             <input
-              type="text"
+              type="tel"
               placeholder={t('settlementsManager.phonePlaceholder')}
               value={newAdmin.phone}
               onChange={e => setNewAdmin({ ...newAdmin, phone: e.target.value })}
               className="px-3 py-2 border rounded"
+              required
             />
             <button
               onClick={handleCreateAndAssignAdmin}
@@ -292,7 +294,7 @@ const SettlementsManager = () => {
             )}
           </div>
         ) : (
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 flex-wrap">
             <select
               value={selectedSettlement}
               onChange={e => setSelectedSettlement(e.target.value)}
@@ -329,7 +331,6 @@ const SettlementsManager = () => {
         )}
       </div>
 
-      {/* Settlements List with assigned admins */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-2">{t('settlementsManager.settlementsListTitle')}</h3>
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -424,4 +425,3 @@ const SettlementsManager = () => {
 };
 
 export default SettlementsManager;
-// This component manages settlements, allowing toggling availability, deleting, and uploading from CSV.
