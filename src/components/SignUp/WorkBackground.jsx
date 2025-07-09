@@ -493,7 +493,7 @@ const WorkBackground = ({ onComplete }) => {
               <div className="text-center">
                 <div className="text-2xl mb-2">{sub.icon}</div>
                 <div className="text-sm font-medium text-gray-800">{sub.label}</div>
-              </div>
+            </div>
             </SelectionCard>
           ))}
         </div>
@@ -527,7 +527,7 @@ const WorkBackground = ({ onComplete }) => {
               <div className="text-center">
                 <div className="text-2xl mb-2">{job.icon}</div>
                 <div className="text-sm font-medium text-gray-800">{job.label}</div>
-              </div>
+            </div>
             </SelectionCard>
           ))}
         </div>
@@ -658,6 +658,37 @@ const WorkBackground = ({ onComplete }) => {
                 </SelectionCard>
               ))}
             </div>
+
+            {/* Retirement Date Field */}
+            {(formData.retirementStatus === 'partially' || formData.retirementStatus === 'fully') && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.signup.workBackground.retirementDateLabel') || 'When did you retire?'}
+                </label>
+                <input
+                  type="date"
+                  value={formData.retirementDate}
+                  onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Expected Retirement Date Field */}
+            {formData.retirementStatus === 'not_retired' && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.signup.workBackground.expectedRetirementDateLabel') || 'Expected retirement date (optional)'}
+                </label>
+                <input
+                  type="date"
+                  value={formData.expectedRetirementDate}
+                  onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                />
+              </div>
+            )}
           </div>
 
           {/* Current Employment */}
@@ -671,17 +702,17 @@ const WorkBackground = ({ onComplete }) => {
               </div>
               
               <div className="mb-6">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.currentlyWorking}
-                    onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.currentlyWorking}
+                  onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
                     className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
+                />
                   <span className="text-gray-700">
                     {t('auth.signup.workBackground.currentEmployment.yes')}
                   </span>
-                </label>
+              </label>
               </div>
 
               {formData.currentlyWorking && (
@@ -689,12 +720,12 @@ const WorkBackground = ({ onComplete }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {t('auth.signup.expectedDischargeDate')}
                   </label>
-                  <input
-                    type="date"
-                    value={formData.dischargeDate}
-                    onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
+                <input
+                  type="date"
+                  value={formData.dischargeDate}
+                  onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                  />
+                />
                 </div>
               )}
             </div>
@@ -707,7 +738,7 @@ const WorkBackground = ({ onComplete }) => {
               <h2 className="text-2xl font-bold text-gray-800">
                 {isSelectionComplete() ? t('auth.signup.workBackground.yourSelectedJob') : t('auth.signup.workBackground.selectYourJob')}
               </h2>
-            </div>
+          </div>
 
             {/* Search bar - only show when no job is selected */}
             {!selectedJob && (
@@ -722,7 +753,7 @@ const WorkBackground = ({ onComplete }) => {
               </div>
             )}
 
-            {renderJobSelection()}
+              {renderJobSelection()}
           </div>
 
           {/* Academic Degrees */}
@@ -747,7 +778,7 @@ const WorkBackground = ({ onComplete }) => {
                   </div>
                 </SelectionCard>
               ))}
-            </div>
+              </div>
           </div>
 
           {/* Submit Button */}
