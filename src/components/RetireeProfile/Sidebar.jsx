@@ -12,18 +12,22 @@ import {
   FaSignOutAlt,
   FaBell,
   FaComments,
+  FaSearch,
 } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ activeKey = "home", onNavigate }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();
 
   const navItems = [
     { section: null, items: [
       { icon: <FaHome />, text: t('sidebar.home'), key: "home" },
       { icon: <FaCalendarAlt />, text: t('sidebar.upcomingEvents'), key: "events" },
       { icon: <FaUserFriends />, text: t('sidebar.retirees'), key: "retirees" },
+      { icon: <FaSearch />, text: t('sidebar.searchRetirees', 'Find Retirees'), key: "searchRetirees" },
       { icon: <FaHandsHelping />, text: t('sidebar.volunteerRequests'), key: "volunteers" },
       { icon: <FaClipboardList />, text: t('sidebar.serviceRequests'), key: "services" },
     ]},
@@ -60,7 +64,13 @@ const Sidebar = ({ activeKey = "home", onNavigate }) => {
                 text={item.text}
                 isOpen={isOpen}
                 active={activeKey === item.key}
-                onClick={() => onNavigate && onNavigate(item.key)}
+                onClick={() => {
+                  if (item.key === 'searchRetirees') {
+                    navigate('/retiree/search');
+                  } else if (onNavigate) {
+                    onNavigate(item.key);
+                  }
+                }}
               />
             ))}
             {idx < navItems.length - 1 && <div className="my-2 border-t" />}
