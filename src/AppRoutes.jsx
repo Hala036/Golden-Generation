@@ -14,6 +14,7 @@ import AdminDashboard from './components/AdminProfile/AdminDashboard';
 import AdminManagement from './components/SuperAdminProfile/Admins.jsx';
 import AdminSettlements from './components/SignUp/AdminSettlements';
 import EditSignUpData from "./components/SignUp/EditSignUpData";
+import RetireeSearch from './components/RetireeProfile/RetireeSearch';
 
 
 const AppRoutes = () => {
@@ -97,6 +98,14 @@ const AppRoutes = () => {
           }
         />
         <Route path="/edit-signup-data" element={<EditSignUpData />} />
+        <Route
+          path="/retiree/search"
+          element={
+            <ProtectedRoute>
+              <RetireeSearch />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Catch all route - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
