@@ -1701,7 +1701,11 @@
   },
   "settlementsManager": {
     "title": "Settlement Manager",
+    "Yes, Disable": "Yes, Disable",
+    "This action cannot be undone": "This action cannot be undone.",
+    "Are you sure you want to disable and remove": "Are you sure you want to disable and remove \"{{settlement}}\"? This action cannot be undone.",
     "uploadCSV": "Upload CSV",
+    "This will remove the settlement from available settlements and delete all associated data": "This will remove the settlement from available settlements and delete all associated data.",
     "searchPlaceholder": "Search settlements...",
     "assignAdminTitle": "Assign Admin to Settlement",
     "selectExistingUser": "Select Existing User",
@@ -1718,6 +1722,7 @@
     "settlementsListTitle": "Settlements & Assigned Admins",
     "available": "Available",
     "disabled": "Disabled",
+    "Confirm Disable": "Confirm Disable",
     "retirees": "retirees",
     "edit": "Edit",
     "remove": "Remove",
@@ -1751,7 +1756,7 @@
       "createAssignError": "Failed to create and assign admin: {{error}}"
     },
     "confirm": {
-      "delete": "Are you sure you want to permanently delete \"{{settlement}}\"?"
+      "delete": "Are you sure you want to permanently delete \"{{settlement}}\"? This action cannot be undone."
     }
   }
 }

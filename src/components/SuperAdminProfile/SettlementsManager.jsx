@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import {
   getAvailableSettlements,
   removeSettlement
@@ -16,6 +15,7 @@ import Modal from '../Modal';
 import { FaEdit, FaTrash, FaEye, FaUserPlus, FaUsers } from 'react-icons/fa';
 import EmptyState from '../EmptyState';
 import { FaSearch } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const SettlementsManager = () => {
   const { t } = useTranslation();
@@ -35,7 +35,6 @@ const SettlementsManager = () => {
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [retireeCounts, setRetireeCounts] = useState({});
 
-  // Enhanced fetch to get admin info for each settlement
   const fetchSettlements = async () => {
     try {
       const response = await fetch('/data/settlments_list.csv');
@@ -155,7 +154,7 @@ const SettlementsManager = () => {
     }
     
     if (!isValidHebrewUsername(newAdmin.username)) {
-      toast.error(t('settlementsManager.toast.invalidUsername'));
+      toast.error(t('settlementsManager.errors.usernameValidation'));
       return;
     }
 
@@ -239,8 +238,18 @@ const SettlementsManager = () => {
       <div className="mb-8 p-4 bg-white rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-3">{t('settlementsManager.assignAdminTitle')}</h2>
         <div className="flex gap-2 mb-2">
-          <button onClick={() => setCreateNew(false)} className={`px-3 py-1 rounded ${!createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>{t('settlementsManager.selectExistingUser')}</button>
-          <button onClick={() => setCreateNew(true)} className={`px-3 py-1 rounded ${createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}>{t('settlementsManager.createNewAdmin')}</button>
+          <button 
+            onClick={() => setCreateNew(false)} 
+            className={`px-3 py-1 rounded ${!createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}
+          >
+            {t('settlementsManager.selectExistingUser')}
+          </button>
+          <button 
+            onClick={() => setCreateNew(true)} 
+            className={`px-3 py-1 rounded ${createNew ? 'bg-yellow-300 font-bold' : 'bg-gray-200'}`}
+          >
+            {t('settlementsManager.createNewAdmin')}
+          </button>
         </div>
         {createNew ? (
           <div className="flex gap-2 mb-2 flex-wrap">
@@ -271,7 +280,7 @@ const SettlementsManager = () => {
               onChange={e => setNewAdmin({ ...newAdmin, username: e.target.value })}
               className="px-3 py-2 border rounded"
               pattern="[\u0590-\u05FFa-zA-Z0-9\s]+"
-              title={t('settlementsManager.usernameValidationMessage')}
+              title={t('settlementsManager.errors.usernameValidation')}
               required
             />
             <input
@@ -350,7 +359,9 @@ const SettlementsManager = () => {
                     ? 'bg-green-200 text-green-800'
                     : 'bg-gray-200 text-gray-600'
                 }`}>
-                  {availableSettlements.includes(settlement.name) ? t('settlementsManager.available') : t('settlementsManager.disabled')}
+                  {availableSettlements.includes(settlement.name) 
+                    ? t('settlementsManager.available') 
+                    : t('settlementsManager.disabled')}
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-1">

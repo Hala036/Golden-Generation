@@ -839,7 +839,7 @@
             "label": "אימות סיסמה",
             "placeholder": "הזן שוב את הסיסמה",
             "required": "אנא אמת את הסיסמה שלך.",
-            "mismatch": "הסיסמאות לא תואמות."
+            "mismatch": "הסיסאות לא תואמות."
       },
       "validation": {
             "wait": "בודק זמינות...",
@@ -1467,7 +1467,7 @@
   "sidebar": {
           "home": "דף הבית",
           "upcomingEvents": "אירועים קרובים",
-          "retirees": "ותיקים",
+                   "retirees": "ותיקים",
           "volunteerRequests": "בקשות מתנדבים",
           "serviceRequests": "בקשות שירות",
           "management": "ניהול",
@@ -1636,7 +1636,11 @@
   "settlementsManager": {
     "title": "מנהל יישובים",
     "uploadCSV": "העלה CSV",
+    "Yes, Disable": "כן, השבת",
+    "Are you sure you want to disable and remove": "האם אתה בטוח שברצונך להשבית ולהסיר את היישוב",
+    "This action cannot be undone": "פעולה זו לא ניתנת לביטול",
     "searchPlaceholder": "חפש יישובים...",
+    "This will remove the settlement from available settlements and delete all associated data": "פעולה זו תסיר את היישוב מהיישובים הזמינים ותמחק את כל הנתונים המשויכים אליו",
     "assignAdminTitle": "שייך מנהל ליישוב",
     "selectExistingUser": "בחר משתמש קיים",
     "createNewAdmin": "צור מנהל חדש",
@@ -1654,6 +1658,7 @@
     "disabled": "מושבת",
     "retirees": "ותיקים",
     "edit": "ערוך",
+    "Confirm Disable": "אשר השבתה",
     "remove": "הסר",
     "addAdmin": "הוסף מנהל",
     "adminDetailsTitle": "פרטי מנהל",
@@ -1688,5 +1693,5 @@
       "delete": "האם אתה בטוח שברצונך למחוק לצמיתות את \"{{settlement}}\"?"
     }
   }
-} 
+}
 
