@@ -48,6 +48,7 @@ const ListRow = ({ icon, label, items, emojiMap }) => (
 
 const ProfileDetails = ({ retireeData }) => {
   if (!retireeData) return <div>Loading...</div>;
+
   const idv = retireeData.idVerification || {};
   const creds = retireeData.credentials || {};
   const personal = retireeData.personalDetails || {};
@@ -56,13 +57,17 @@ const ProfileDetails = ({ retireeData }) => {
   const veterans = retireeData.veteransCommunity || {};
 
   return (
-    <div className="max-w-3xl mx-auto py-8">
+    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       {/* Profile Header */}
-      <div className="flex items-center mb-8">
-        <img src={retireeData.profilePicture || profile} alt="Profile" className="w-28 h-28 rounded-full object-cover mr-6 border-4 border-yellow-200" />
-        <div>
-          <h2 className="text-3xl font-bold mb-1">{idv.firstName} {idv.lastName}</h2>
-          <div className="flex flex-wrap items-center text-gray-600">
+      <div className="flex flex-col sm:flex-row items-center mb-8">
+        <img
+          src={retireeData.profilePicture || profile}
+          alt="Profile"
+          className="w-28 h-28 rounded-full object-cover mb-4 sm:mb-0 sm:mr-6 border-4 border-yellow-200"
+        />
+        <div className="text-center sm:text-left">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-1">{idv.firstName} {idv.lastName}</h2>
+          <div className="flex flex-wrap justify-center sm:justify-start text-gray-600">
             <InfoRow icon={<FaBirthdayCake />} label="Age" value={idv.age} />
             <InfoRow icon={<FaTransgender />} label="Gender" value={idv.gender} />
             <InfoRow icon={<FaMapMarkerAlt />} label="Settlement" value={idv.settlement} />
