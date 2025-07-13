@@ -1060,11 +1060,15 @@
       "leave": "עזוב אירוע",
       "moreDetails": "מידע נוסף",
       "participants": "משתתפים",
-      "noParticipants": "עדיין אין משתתפים"
+      "noParticipants": "עדיין אין משתתפים",
+      "pastEvents": "אירועים קודמים",
+      "allSettlements": "כל היישובים",
+      "createdByMe": "נוצר על ידי"
     },
     "filter": {
       "myEvents": "האירועים שלי",
       "allCategories": "כל הקטגוריות",
+      "myEventsOnly": "האירועים שלי בלבד",
       "trip": "טיול",
       "vacation": "חופשה",
       "workshop": "סדנה",
@@ -1749,5 +1753,31 @@
     "arrowNext": "←",
     "tip": "לחץ על כל אירוע כדי לצפות בפרטים. אירועים קודמים דהויים ולא ניתן לקיים איתם אינטראקציה.",
     "tipTitle": "טיפ: "
+  },
+  "eventDetails": {
+    "status": {
+        "pending": "ממתין",
+        "confirmed": "מאושר",
+        "cancelled": "בוטל"
+    },
+    "creator": "יוצר",
+    "noParticipants": "אין משתתפים עדיין.",
+    "participants": "משתתפים",
+    "date": "תאריך",
+    "time": "זמן",
+    "from": "מ-",
+    "to": "עד",
+    "location": "מיקום",
+    "description": "תיאור",
+    "noDescription": "לא סופק תיאור.",
+    "notSpecified": "לא צויין",
+    "createdByMe": "נוצר על ידי",
+    "editEvent": "ערוך אירוע",
+    "deleteEvent": "מחק אירוע",
+    "joinEvent": "הצטרף לאירוע",
+    "leaveEvent": "עזוב אירוע",
+    "processing": "מעבד...",
+    "loading": "טוען אירועים קרובים...",
+    "mySettlement": "היישוב שלי"
   }
 }

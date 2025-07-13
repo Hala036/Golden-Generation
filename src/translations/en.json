@@ -1054,7 +1054,9 @@
       "participants": "Participants",
       "noParticipants": "No participants yet",
       "joined": "Joined",
-      "noPastEvents": "No past events"
+      "noPastEvents": "No past events",
+      "pastEvents": "Past Events",
+      "allSettlements": "All Settlements"
     },
     "filter": {
       "allCategories": "All Categories",
@@ -1818,5 +1820,31 @@
     "arrowNext": "→",
     "tip": " Click on any event to view details. Past events are faded and cannot be interacted with.",
     "tipTitle": "Tip:"
+  },
+  "eventDetails": {
+    "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled"
+    },
+    "creator": "Creator",
+    "noParticipants": "No participants yet.",
+    "participants": "Participants",
+    "date": "Date",
+    "time": "Time",
+    "from": "From",
+    "to": "To",
+    "location": "Location",
+    "description": "Description",
+    "noDescription": "No description provided.",
+    "notSpecified": "Not specified",
+    "createdByMe": "Created by me",
+    "editEvent": "Edit Event",
+    "deleteEvent": "Delete Event",
+    "joinEvent": "Join Event",
+    "leaveEvent": "Leave Event",
+    "processing": "Processing...",
+    "loading": "Loading upcoming details...",
+    "mySettlement": "My Settlement"
   }
 }

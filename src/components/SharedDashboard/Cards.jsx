@@ -441,8 +441,8 @@ const Cards = ({ setSelected }) => {
             value={settlementFilter}
             onChange={(e) => setSettlementFilter(e.target.value)}
           >
-            <option value="all">All Settlements</option>
-            {userRole === 'admin' && <option value="my-settlement">My Settlement</option>}
+            <option value="all">{t('dashboard.events.allSettlements')}</option>
+            {userRole === 'admin' && <option value="my-settlement">{t('eventDetails.mySettlement')}</option>}
             {userRole === 'superadmin' && settlements.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
@@ -474,7 +474,7 @@ const Cards = ({ setSelected }) => {
       {/* Badges Row */}
       <div className="w-full flex flex-wrap gap-2 items-center mb-4 relative z-0">
         {showMyEventsOnly && (
-          <span className="bg-blue-700 text-white px-3 py-1 rounded-full font-bold text-xs">Created by me</span>
+          <span className="bg-blue-700 text-white px-3 py-1 rounded-full font-bold text-xs">{t('eventDetails.createdByMe')}</span>
         )}
       </div>
 
@@ -484,20 +484,20 @@ const Cards = ({ setSelected }) => {
           className={`px-4 py-2 rounded ${!showPast ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
           onClick={() => setShowPast(false)}
         >
-          Upcoming Events
+          {t("dashboard.events.upcomingEvents") || "Upcoming Events"}
         </button>
         <button
           className={`px-4 py-2 rounded ${showPast ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
           onClick={() => setShowPast(true)}
         >
-          Past Events
+          {t("dashboard.events.pastEvents") || "Past Events"}
         </button>
       </div>
 
       {loading && (
         <div className="flex items-center justify-center p-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
-          <span className="ml-2 text-gray-600">Loading upcoming events...</span>
+          <span className="ml-2 text-gray-600">{t('eventDetails.loading')}</span>
         </div>
       )}
 
