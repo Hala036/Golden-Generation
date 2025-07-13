@@ -878,6 +878,7 @@
       "cleanup": "ניקוי",
       "cleanupOrphanedEvents": "ניקוי ({{count}})",
       "cleanupOrphanedEventsTitle": "נקה {{count}} אירועים יתומים",
+      "searchPlaceholder": "חפש קטגוריות לפי שם, תרגומים או צבע...",
       "tableHeaders": {
         "category": "קטגוריה",
         "color": "צבע",

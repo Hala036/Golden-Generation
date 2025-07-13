@@ -873,6 +873,7 @@
       "cleanup": "Cleanup",
       "cleanupOrphanedEvents": "Cleanup ({{count}})",
       "cleanupOrphanedEventsTitle": "Clean up {{count}} orphaned events",
+      "searchPlaceholder": "Search categories by name, translations, or color...",
       "tableHeaders": {
         "category": "Category",
         "color": "Color",
