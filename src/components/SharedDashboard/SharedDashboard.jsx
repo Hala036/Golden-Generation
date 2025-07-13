@@ -183,7 +183,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ar">العربية</Select.Option>
+                {/* <Select.Option value="ar">العربية</Select.Option> */}
               </Select>
             </div>
           </div>
