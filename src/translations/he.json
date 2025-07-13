@@ -1033,8 +1033,8 @@
     "pendingEvents": "אירועים ממתינים",
     "categoryManagement": "ניהול קטגוריות",
     "volunteer": "התנדבות",
-    "arrowClose": "←",
-    "arrowOpen": "→",
+    "arrowClose": "→",
+    "arrowOpen": "←",
     "events": {
       "upcomingEventsDescription": "גלו והצטרפו לאירועים מרגשים שיתקיימו בקרוב",
       "upcomingEvents": "אירועים קרובים",
