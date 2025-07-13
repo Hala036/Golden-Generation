@@ -8,6 +8,59 @@ import { useLanguage } from '../../context/LanguageContext';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
+const AdminFormFields = ({ formData, setFormData }) => (
+  <div className="space-y-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Admin Name *
+      </label>
+      <input
+        type="text"
+        className="border px-3 py-2 rounded-md w-full"
+        value={formData.name}
+        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        placeholder="Enter admin name"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Email *
+      </label>
+      <input
+        type="email"
+        className="border px-3 py-2 rounded-md w-full"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        placeholder="Enter email address"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Settlement *
+      </label>
+      <input
+        type="text"
+        className="border px-3 py-2 rounded-md w-full"
+        value={formData.settlement}
+        onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
+        placeholder="Enter settlement name"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Phone
+      </label>
+      <input
+        type="tel"
+        className="border px-3 py-2 rounded-md w-full"
+        value={formData.phone}
+        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        placeholder="Enter phone number"
+      />
+    </div>
+  </div>
+);
+
 const AdminManagement = () => {
   const { t } = useLanguage();
   const [admins, setAdmins] = useState([]);
@@ -123,10 +176,22 @@ const AdminManagement = () => {
       await updateDoc(adminRef, {
         'credentials.username': formData.name,
         'credentials.email': formData.email,
+        'credentials.phone': formData.phone,
         'idVerification.firstName': formData.name,
         'idVerification.settlement': formData.settlement,
-        'idVerification.phone': formData.phone
+        'idVerification.phone': formData.phone,
+        'role': 'admin'
       });
+
+      // Update the availableSettlements document with new admin details (same as add logic)
+      const settlementRef = doc(db, 'availableSettlements', formData.settlement);
+      await setDoc(settlementRef, {
+        available: true,
+        adminId: selectedAdmin.id,
+        adminUsername: formData.name,
+        adminEmail: formData.email,
+        adminPhone: formData.phone
+      }, { merge: true });
 
       toast.success('Admin updated successfully!');
       setShowEditModal(false);
@@ -490,56 +555,7 @@ const AdminManagement = () => {
         onSubmit={handleEditAdmin}
         submitText="Update Admin"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Admin Name *
-            </label>
-            <input
-              type="text"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Enter admin name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
-            </label>
-            <input
-              type="email"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="Enter email address"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Settlement *
-            </label>
-            <input
-              type="text"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.settlement}
-              onChange={(e) => setFormData({ ...formData, settlement: e.target.value })}
-              placeholder="Enter settlement name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone
-            </label>
-            <input
-              type="tel"
-              className="border px-3 py-2 rounded-md w-full"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="Enter phone number"
-            />
-          </div>
-        </div>
+        <AdminFormFields formData={formData} setFormData={setFormData} />
       </Modal>
 
       {/* View Admin Modal */}
