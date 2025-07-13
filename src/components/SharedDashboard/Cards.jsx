@@ -150,15 +150,6 @@ const Cards = ({ setSelected }) => {
       eventDate.setHours(23, 59, 59, 999);
     }
 
-    // Debug log
-    console.log('isEventUpcoming:', {
-      eventId: event.id,
-      eventTitle: event.title,
-      eventDate: eventDate,
-      now: now,
-      result: eventDate > now
-    });
-
     return eventDate > now;
   };
 
@@ -237,15 +228,6 @@ const Cards = ({ setSelected }) => {
       eventDate.setHours(23, 59, 59, 999);
     }
 
-    // Debug log
-    console.log('isPastEvent:', {
-      eventId: event.id,
-      eventTitle: event.title,
-      eventDate: eventDate,
-      now: now,
-      result: eventDate < now
-    });
-
     return eventDate < now;
   };
 
@@ -272,21 +254,15 @@ const Cards = ({ setSelected }) => {
         
         const unsubscribe = onSnapshot(eventsQuery, (snapshot) => {
             const eventsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-            
-            console.log('All events fetched:', eventsData.length, eventsData);
-            
+                        
             // Filter events based on role (do NOT filter by isEventUpcoming here)
             const roleBasedEvents = userRole === 'admin' || userRole === 'superadmin'
                 ? eventsData.filter(event => (event.status === 'active' || event.status === 'pending' || event.status === 'completed'))
                 : eventsData.filter(event => (event.status === 'active' || event.status === 'completed' || (event.status === 'pending' && event.createdBy === (currentUser && currentUser.uid))));
-            
-            console.log('Role-based filtered events:', roleBasedEvents.length, roleBasedEvents);
-            
+                        
             // Sort events by date (upcoming first)
             const sortedEvents = sortEventsByDate(roleBasedEvents);
-            
-            console.log('Final sorted events:', sortedEvents.length, sortedEvents);
-            
+                        
             setEvents(sortedEvents);
             setFilteredEvents(sortedEvents);
             setLoading(false);
@@ -313,13 +289,11 @@ const Cards = ({ setSelected }) => {
     // Filter by "My Events Only" if enabled
     if (showMyEventsOnly && currentUser) {
       filtered = filtered.filter(event => isEventCreatedByMe(event));
-      console.log('After My Events Only filter:', filtered);
     }
 
     // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(event => event.categoryId === selectedCategory);
-      console.log('After Category filter:', filtered);
     }
 
     // Filter by search query
@@ -327,7 +301,6 @@ const Cards = ({ setSelected }) => {
       filtered = filtered.filter(event => 
         event.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      console.log('After Search filter:', filtered);
     }
 
     // Settlement filter
@@ -340,7 +313,6 @@ const Cards = ({ setSelected }) => {
     }
 
     setFilteredEvents(filtered);
-    console.log('After all filters, filteredEvents:', filtered);
   }, [events, selectedCategory, searchQuery, showMyEventsOnly, currentUser, settlementFilter, userRole, userSettlement]);
 
   // Handle category filter
@@ -360,7 +332,6 @@ const Cards = ({ setSelected }) => {
   };
 
   // Log filteredEvents before filtering for past events
-  console.log('Filtering for past events:', filteredEvents);
   const displayedEvents = showPast
     ? filteredEvents.filter(event => {
         const result = isPastEvent(event) &&
@@ -371,7 +342,6 @@ const Cards = ({ setSelected }) => {
               (Array.isArray(event.participants) && event.participants.includes(currentUser.uid))
             ))
           );
-        console.log('Past event filter result:', { eventId: event.id, eventTitle: event.title, result });
         return result;
       })
     : filteredEvents.filter(event => !isPastEvent(event));
@@ -382,7 +352,6 @@ const Cards = ({ setSelected }) => {
 
     const isCreator = selectedEvent.createdBy === currentUser?.uid;
     const isAdmin = userRole === 'admin' || userRole === 'superadmin';
-    console.log('userRole:', userRole, 'isAdmin:', isAdmin, 'isCreator:', isCreator, 'currentUser:', currentUser);
 
     return (
       <BaseEventDetails

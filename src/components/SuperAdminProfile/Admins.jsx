@@ -130,6 +130,7 @@ const AdminManagement = () => {
   // Helper functions for validation
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPhone = (phone) => /^\d{9,15}$/.test(phone.replace(/\D/g, ''));
+  const isValidUsername = (username) => /^[A-Za-z\u0590-\u05FF0-9_ ]+$/.test(username);
 
   const isDuplicateEmail = (email, excludeId = null) => {
     return admins.some(admin =>
@@ -145,6 +146,11 @@ const AdminManagement = () => {
   const handleAddAdmin = async () => {
     if (!formData.name || !formData.email || !formData.settlement) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+    // Username validation: allow Hebrew, English, numbers, underscore, space
+    if (!isValidUsername(formData.name)) {
+      toast.error('שם משתמש יכול להכיל אותיות בעברית, אנגלית, מספרים, רווחים וקו תחתון בלבד');
       return;
     }
     if (!isValidEmail(formData.email)) {
@@ -166,7 +172,6 @@ const AdminManagement = () => {
       toast.error('An admin is already assigned to this settlement');
       return;
     }
-
     try {
       // Create admin document
       const adminData = {
@@ -207,6 +212,11 @@ const AdminManagement = () => {
       toast.error('Please fill in all required fields');
       return;
     }
+    // Username validation: allow Hebrew, English, numbers, underscore, space
+    if (!isValidUsername(formData.name)) {
+      toast.error('שם משתמש יכול להכיל אותיות בעברית, אנגלית, מספרים, רווחים וקו תחתון בלבד');
+      return;
+    }
     if (!isValidEmail(formData.email)) {
       toast.error('Please enter a valid email address');
       return;
@@ -226,7 +236,6 @@ const AdminManagement = () => {
       toast.error('An admin is already assigned to this settlement');
       return;
     }
-
     try {
       const adminRef = doc(db, 'users', selectedAdmin.id);
       await updateDoc(adminRef, {

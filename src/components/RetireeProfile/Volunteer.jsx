@@ -69,9 +69,6 @@ const Volunteer = () => {
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userData = userDoc.data();
-        console.log("Fetched User Data:", userData); // Debug log
-        console.log("Veterans Community Data:", userData.veteransCommunity); // Debug log
-
         // Set the state with the fetched veteransCommunity data
         setVolunteerInfo({
           volunteerAreas: userData.veteransCommunity?.volunteerAreas || [],
@@ -161,7 +158,6 @@ const Volunteer = () => {
 
       await updateJobRequest(jobRequestId, { assignedSeniors: updatedAssignedSeniors });
 
-      console.log(`Accepted invite for job request ID: ${jobRequestId}`);
       toast.success(t('volunteer.toast.accepted'));
 
       // Update local state
@@ -193,7 +189,6 @@ const Volunteer = () => {
 
       await updateJobRequest(jobRequestId, { assignedSeniors: updatedAssignedSeniors });
 
-      console.log(`Rejected invite for job request ID: ${jobRequestId}`);
       toast.success(t('volunteer.toast.rejected'));
 
       // Update local state
