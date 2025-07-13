@@ -1280,6 +1280,7 @@
       "sendFailed": "Failed to send the message."
     }
   },
+  
   "calendar": {
     "title": "Retiree Activity Calendar",
     "welcomeBack": "Welcome back, {{name}} ({{role}})",
@@ -1760,5 +1761,57 @@
     "confirm": {
       "delete": "Are you sure you want to permanently delete \"{{settlement}}\"? This action cannot be undone."
     }
+  },
+  "activityCalendar": {
+    "title": "Activity Calendar",
+    "createEvent": "Create Event",
+    "searchPlaceholder": "Search events...",
+    "advancedFilters": "Advanced Filters",
+    "clearFilters": "Clear Filters",
+    "showPastEvents": "Show Past Events",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "analytics": "Analytics",
+    "eventAnalytics": "Event Analytics",
+    "daily": "Daily",
+    "hourly": "Hourly",
+    "weekly": "Weekly",
+    "noEvents": "No events scheduled for this day",
+    "addEvent": "Add Event",
+    "eventColorGuide": "Event Color Guide",
+    "eventCategories": "Event Categories",
+    "general": "General",
+    "pastEvents": "Past events",
+    "fullCapacity": "Full capacity",
+    "specialEvents": "Special events",
+    "overlappingEvents": "Overlapping events",
+    "timelineLine": "Timeline line",
+    "currentTime": "Current time",
+    "status": "Status",
+    "allEvents": "All Events",
+    "createdByMe": "Created by Me",
+    "myEvents": "My Events",
+    "completedEvents": "Completed Events",
+    "pendingApproval": "Pending Approval",
+    "upcomingEvents": "Upcoming Events",
+    "pending": "Pending",
+    "approved": "Approved",
+    "myPending": "My Pending",
+    "myApproved": "My Approved",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "dateRange": "Date Range",
+    "allDates": "All Dates",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "nextWeek": "Next Week",
+    "thisMonth": "This Month",
+    "settlement": "Settlement",
+    "allSettlements": "All Settlements",
+    "mySettlement": "My Settlement",
+    "arrowPrev": "←",
+    "arrowNext": "→"
   }
 }

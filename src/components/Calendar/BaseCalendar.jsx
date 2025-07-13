@@ -15,6 +15,8 @@ import EventPopover from './EventPopover';
 import BaseEventDetails from './BaseEventDetails';
 import { auth } from '../../firebase';
 import { getAllSettlements } from '../../utils/getSettlements';
+import { useTranslation } from "react-i18next";
+import { useLanguage } from '../../context/LanguageContext';
 
 const BaseCalendar = ({
   userRole,
@@ -24,6 +26,8 @@ const BaseCalendar = ({
   additionalFilters = [],
   eventDetailsComponent: EventDetailsComponent
 }) => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState('month');
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -309,7 +313,7 @@ const BaseCalendar = ({
             <div>
               <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
                 <Calendar className="text-blue-600" />
-                Activity Calendar
+                {t("activityCalendar.title")}
               </h1>
             </div>
             
@@ -318,7 +322,7 @@ const BaseCalendar = ({
                 onClick={() => setShowCreateModal(true)}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition-colors"
               >
-                Create Event
+                {t("activityCalendar.createEvent")}
               </button>
             )}
           </div>
@@ -331,7 +335,7 @@ const BaseCalendar = ({
                 <Search size={20} className="text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search events..."
+                  placeholder={t("activityCalendar.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="border rounded-lg px-3 py-2 w-64"
@@ -345,7 +349,7 @@ const BaseCalendar = ({
                 }`}
               >
                 <Filter size={16} />
-                Advanced Filters
+                {t("activityCalendar.advancedFilters")}
               </button>
 
               {hasActiveFilters && (
@@ -354,7 +358,7 @@ const BaseCalendar = ({
                   className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
                 >
                   <X size={16} />
-                  Clear Filters
+                  {t("activityCalendar.clearFilters")}
                 </button>
               )}
 
@@ -363,19 +367,19 @@ const BaseCalendar = ({
                   onClick={() => setViewMode('month')}
                   className={`px-3 py-1 rounded ${viewMode === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
                 >
-                  Month
+                  {t("activityCalendar.month")}
                 </button>
                 <button
                   onClick={() => setViewMode('week')}
                   className={`px-3 py-1 rounded ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
                 >
-                  Week
+                  {t("activityCalendar.week")}
                 </button>
                 <button
                   onClick={() => setViewMode('day')}
                   className={`px-3 py-1 rounded ${viewMode === 'day' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
                 >
-                  Day
+                  {t("activityCalendar.day")}
                 </button>
                 <button
                   onClick={() => setShowAnalytics(!showAnalytics)}
@@ -384,7 +388,7 @@ const BaseCalendar = ({
                   }`}
                 >
                   <BarChart3 size={16} />
-                  Analytics
+                  {t("activityCalendar.analytics")}
                 </button>
               </div>
             </div>
@@ -398,7 +402,9 @@ const BaseCalendar = ({
                 onChange={() => setShowPastEvents(v => !v)}
                 className="form-checkbox h-4 w-4 text-blue-600"
               />
-              <label htmlFor="showPastEvents" className="text-sm text-gray-700">Show Past Events</label>
+              <label htmlFor="showPastEvents" className="text-sm text-gray-700">
+                {t("activityCalendar.showPastEvents")}
+              </label>
             </div>
 
             {/* Advanced Filters Row */}
@@ -406,28 +412,30 @@ const BaseCalendar = ({
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("activityCalendar.status")}
+                  </label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                     className="w-full border rounded-lg px-3 py-2 text-sm"
                   >
-                    <option value="all">All Events</option>
-                    <option value="created">Created by Me</option>
-                    <option value="joined">My Events</option>
-                    <option value="completed">Completed Events</option>
+                    <option value="all">{t("activityCalendar.allEvents")}</option>
+                    <option value="created">{t("activityCalendar.createdByMe")}</option>
+                    <option value="joined">{t("activityCalendar.myEvents")}</option>
+                    <option value="completed">{t("activityCalendar.completedEvents")}</option>
                     {userRole === 'admin' || userRole === 'superadmin' ? (
                       <>
-                        <option value="pending-approval">Pending Approval</option>
-                        <option value="upcoming">Upcoming Events</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
+                        <option value="pending-approval">{t("activityCalendar.pendingApproval")}</option>
+                        <option value="upcoming">{t("activityCalendar.upcomingEvents")}</option>
+                        <option value="pending">{t("activityCalendar.pending")}</option>
+                        <option value="approved">{t("activityCalendar.approved")}</option>
                       </>
                     ) : null}
                     {userRole === 'retiree' ? (
                       <>
-                        <option value="my-pending">My Pending</option>
-                        <option value="my-approved">My Approved</option>
+                        <option value="my-pending">{t("activityCalendar.myPending")}</option>
+                        <option value="my-approved">{t("activityCalendar.myApproved")}</option>
                       </>
                     ) : null}
                   </select>
@@ -435,16 +443,18 @@ const BaseCalendar = ({
 
                 {/* Category Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("activityCalendar.category")}
+                  </label>
                   <select
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
                     className="w-full border rounded-lg px-3 py-2 text-sm"
                   >
-                    <option value="all">All Categories</option>
+                    <option value="all">{t("activityCalendar.allCategories")}</option>
                     {categories.map(category => (
                       <option key={category.id} value={category.id}>
-                        {category.name}
+                        {category.translations[language] || category.translations.en}
                       </option>
                     ))}
                   </select>
@@ -452,32 +462,36 @@ const BaseCalendar = ({
 
                 {/* Date Range Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("activityCalendar.dateRange")}
+                  </label>
                   <select
                     value={dateRangeFilter}
                     onChange={(e) => setDateRangeFilter(e.target.value)}
                     className="w-full border rounded-lg px-3 py-2 text-sm"
                   >
-                    <option value="all">All Dates</option>
-                    <option value="today">Today</option>
-                    <option value="tomorrow">Tomorrow</option>
-                    <option value="this-week">This Week</option>
-                    <option value="next-week">Next Week</option>
-                    <option value="this-month">This Month</option>
+                    <option value="all">{t("activityCalendar.allDates")}</option>
+                    <option value="today">{t("activityCalendar.today")}</option>
+                    <option value="tomorrow">{t("activityCalendar.tomorrow")}</option>
+                    <option value="this-week">{t("activityCalendar.thisWeek")}</option>
+                    <option value="next-week">{t("activityCalendar.nextWeek")}</option>
+                    <option value="this-month">{t("activityCalendar.thisMonth")}</option>
                   </select>
                 </div>
 
                 {/* Settlement Filter */}
                 {(userRole === 'admin' || userRole === 'superadmin') && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Settlement</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {t("activityCalendar.settlement")}
+                    </label>
                     <select
                       value={settlementFilter}
                       onChange={(e) => setSettlementFilter(e.target.value)}
                       className="w-full border rounded-lg px-3 py-2 text-sm"
                     >
-                      <option value="all">All Settlements</option>
-                      {userRole === 'admin' && <option value="my-settlement">My Settlement</option>}
+                      <option value="all">{t("activityCalendar.allSettlements")}</option>
+                      {userRole === 'admin' && <option value="my-settlement">{t("activityCalendar.mySettlement")}</option>}
                       {userRole === 'superadmin' && settlements.map(s => (
                         <option key={s.id} value={s.id}>{s.name}</option>
                       ))}
@@ -492,7 +506,7 @@ const BaseCalendar = ({
               <div className="flex flex-wrap gap-2">
                 {statusFilter !== 'all' && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                    Status: {statusFilter}
+                    {t("activityCalendar.status")}: {statusFilter}
                     <button onClick={() => setStatusFilter('all')} className="ml-1">
                       <X size={12} />
                     </button>
@@ -500,7 +514,7 @@ const BaseCalendar = ({
                 )}
                 {categoryFilter !== 'all' && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
-                    Category: {categories.find(c => c.id === categoryFilter)?.name || categoryFilter}
+                    {t("activityCalendar.category")}: {categories.find(c => c.id === categoryFilter)?.name || categoryFilter}
                     <button onClick={() => setCategoryFilter('all')} className="ml-1">
                       <X size={12} />
                     </button>
@@ -508,7 +522,7 @@ const BaseCalendar = ({
                 )}
                 {dateRangeFilter !== 'all' && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
-                    Date: {dateRangeFilter}
+                    {t("activityCalendar.dateRange")}: {dateRangeFilter}
                     <button onClick={() => setDateRangeFilter('all')} className="ml-1">
                       <X size={12} />
                     </button>
@@ -516,7 +530,7 @@ const BaseCalendar = ({
                 )}
                 {settlementFilter !== 'all' && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
-                    Settlement: {settlementFilter}
+                    {t("activityCalendar.settlement")}: {settlementFilter}
                     <button onClick={() => setSettlementFilter('all')} className="ml-1">
                       <X size={12} />
                     </button>
@@ -524,7 +538,7 @@ const BaseCalendar = ({
                 )}
                 {searchTerm && (
                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
-                    Search: "{searchTerm}"
+                    {t("activityCalendar.search")}: "{searchTerm}"
                     <button onClick={() => setSearchTerm('')} className="ml-1">
                       <X size={12} />
                     </button>
@@ -542,7 +556,7 @@ const BaseCalendar = ({
               onClick={() => navigateMonth(-1)}
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              ←
+              {t('activityCalendar.arrowPrev')}
             </button>
             <h2 className="text-xl font-semibold">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -551,7 +565,7 @@ const BaseCalendar = ({
               onClick={() => navigateMonth(1)}
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              →
+              {t('activityCalendar.arrowNext')}
             </button>
           </div>
         </div>
@@ -1065,4 +1079,4 @@ const BaseCalendar = ({
   );
 };
 
-export default BaseCalendar; 
+export default BaseCalendar;
