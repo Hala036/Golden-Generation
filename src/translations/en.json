@@ -1474,6 +1474,8 @@
   "sidebar": {
     "home": "Home Page",
     "upcomingEvents": "Upcoming Events",
+    "categoryManagement": "Category Management",
+    "adninManagement": "Admin Management",
     "retirees": "Retirees",
     "volunteerRequests": "Volunteer Requests",
     "serviceRequests": "Service Requests",
@@ -1484,7 +1486,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "updatePastEvents": "Update Past Events"
   },
   "volunteer": {
     "tabs": {

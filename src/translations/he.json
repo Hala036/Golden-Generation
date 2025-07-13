@@ -947,6 +947,7 @@
       "loggedOut": "התנתקת בהצלחה!"
     },
     "settings": {
+      "title": "הגדרות",
       "options": {
         "editProfile": "ערוך פרופיל",
         "editProfileDesc": "עדכן את שמך, שם המשתמש, הטלפון והאימייל",
@@ -1467,17 +1468,20 @@
   "sidebar": {
     "home": "דף הבית",
     "upcomingEvents": "אירועים קרובים",
+    "categoryManagement": "ניהול קטגוריות",
+    "adminManagement": "ניהול מנהלים",
     "retirees": "ותיקים",
     "volunteerRequests": "בקשות מתנדבים",
     "serviceRequests": "בקשות שירות",
     "management": "ניהול",
-    "analytics": "ניתוחים",
+    "analytics": "אנליטיקה",
     "addSettlements": "הוסף יישובים",
     "settingsSection": "הגדרות",
     "settings": "הגדרות",
     "logout": "התנתק",
     "collapse": "צמצם סרגל צד",
-    "expand": "הרחב סרגל צד"
+    "expand": "הרחב סרגל צד",
+    "updatePastEvents": "עדכן אירועים קודמים"
   },
   "volunteer": {
     "tabs": {
