@@ -736,7 +736,8 @@
         "uploadInstructions": "אנא העלה או סרוק את תעודת הזהות שלך למילוי אוטומטי, או מלא את הטופס ידנית.",
         "startScanning": "התחל סריקה",
         "acceptedFormats": "פורמטים מקובלים: JPG, JPEG, PNG (מקסימום 5MB)",
-      "notifications": {
+      
+        "notifications": {
           "markAllAsRead": "סמן הכל כנקרא",
           "createNotification": "צור התראה",
           "loading": "טוען...",
@@ -1141,12 +1142,13 @@
             "noRecentActivity": "אין פעילות אחרונה להצגה.",
             "alertsAndNotifications": "התראות והודעות",
       "activity": {
-              "joinedCommunity": " הצטרף לקהילה",
+              "joinedCommunity": "{{username}} הצטרף לקהילה",
               "createdEvent": "האירוע '{{title}}' נוצר",
               "completedVolunteerService": "{{username}} השלים שירות התנדבותי",
               "newServiceRequest": "בקשת שירות חדשה: {{title}}",
               "eventFullyBooked": "האירוע '{{title}}' מלא",
-              "volunteerMatchCreated": "נוצרה התאמת מתנדב עבור '{{title}}'"
+              "volunteerMatchCreated": "נוצרה התאמת מתנדב עבור '{{title}}'",
+              "placeholder": "חפש פעילות, אירועים או חברי קהילה אחרונים..."
       },
       "time": {
               "minutesAgo": "לפני {{count}} דקות",

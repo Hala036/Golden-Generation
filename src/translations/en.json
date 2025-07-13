@@ -182,15 +182,15 @@
         "label": "Academic Degrees",
           "placeholder": "Enter your academic degrees",
           "highSchool": "High School",
-  "associateDegree": "Associate Degree",
-  "bachelorsDegree": "Bachelor's Degree",
-  "mastersDegree": "Master's Degree",
-  "phd": "PhD",
-  "postDoc": "Postdoctoral",
-  "professionalCert": "Professional Certificate",
-  "vocationalTraining": "Vocational Training",
-  "noFormalEducation": "No Formal Education",
-  "other": "Other"          
+    "associateDegree": "Associate Degree",
+    "bachelorsDegree": "Bachelor's Degree",
+    "mastersDegree": "Master's Degree",
+    "phd": "PhD",
+    "postDoc": "Postdoctoral",
+    "professionalCert": "Professional Certificate",
+    "vocationalTraining": "Vocational Training",
+    "noFormalEducation": "No Formal Education",
+    "other": "Other"          
         },
         "continue": "Continue",
         "jobCategories": "Job Categories",
@@ -534,6 +534,7 @@
         }
       }
     },
+
     "dashboard": {
       "welcome": "Welcome",
       "profile": "Profile",
@@ -1140,7 +1141,8 @@
         "completedVolunteerService": "{{username}} completed volunteer service",
         "newServiceRequest": "New service request: {{title}}",
         "eventFullyBooked": "Event '{{title}}' fully booked",
-        "volunteerMatchCreated": "Volunteer match created for '{{title}}'"
+        "volunteerMatchCreated": "Volunteer match created for '{{title}}'",
+        "placeholder": "Search recent activity, events, or community members..."
       },
       "time": {
         "minutesAgo": "{{count}} minutes ago",

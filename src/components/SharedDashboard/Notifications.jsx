@@ -4,6 +4,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, getUserData, auth } from '../../firebase';
 import useAuth from '../../hooks/useAuth';
 import SendNotification from './SendNotification';
+import { useLanguage } from "../../context/LanguageContext";
+import i18n from "i18next";
 
 const iconMap = {
   info: <FaInfoCircle className="text-yellow-500 text-xl" />,
@@ -157,23 +159,23 @@ const Notifications = ({ setSelectedTab, setShowNotificationsPopup, limit }) => 
             className="text-sm text-blue-500 hover:underline"
             onClick={handleMarkAllAsRead}
           >
-            Mark all as read
+            {i18n.t('auth.dashboard.notifications.markAllAsRead')}
           </button>
           {userRole !== "retiree" && (
             <button
               className="text-sm text-green-500 hover:underline"
               onClick={() => setShowCreateNotificationModal(true)}
             >
-              Create Notification
+              {i18n.t('auth.dashboard.notifications.createNotification')}
             </button>
           )}
         </div>
       </div>
       <div className="bg-white rounded-xl divide-y">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-gray-400">{i18n.t('auth.dashboard.notifications.loading')}</div>
         ) : notifications.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No notifications</div>
+          <div className="p-8 text-center text-gray-400">{i18n.t('auth.dashboard.notifications.noNotifications')}</div>
         ) : (
           notifications.map((n) => (
             <div
