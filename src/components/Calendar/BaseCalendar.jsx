@@ -1010,12 +1010,12 @@ const BaseCalendar = ({
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <div className="w-4 h-4 bg-blue-500 rounded"></div>
-            Event Color Guide
+            {t("activityCalendar.eventColorGuide")}
           </h3>
           <div className="space-y-6">
             {/* Dynamic category color legend */}
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">Event Categories</h4>
+              <h4 className="font-medium text-gray-700 mb-2">{t("activityCalendar.eventCategories")}</h4>
               <div className="flex flex-wrap gap-4">
                 {categories && categories.length > 0 ? (
                   categories.map(category => (
@@ -1023,54 +1023,54 @@ const BaseCalendar = ({
                       <div
                         className="w-5 h-5 rounded-full border border-gray-300"
                         style={{ backgroundColor: category.color || '#CCCCCC' }}
-                        title={category.translations?.en || category.name}
+                        title={category.translations?.[language] || category.translations?.en || category.name}
                       ></div>
                       <span className="text-sm text-gray-700">
-                        {category.translations?.en || category.name}
+                        {category.translations?.[language] || category.translations?.en || category.name}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <span className="text-gray-400 text-sm">No categories found</span>
+                  <span className="text-gray-400 text-sm">{t("activityCalendar.noCategoriesFound")}</span>
                 )}
               </div>
             </div>
 
             {/* General legend */}
             <div className="space-y-3">
-              <h4 className="font-medium text-gray-700 mb-2">General</h4>
+              <h4 className="font-medium text-gray-700 mb-2">{t("activityCalendar.general")}</h4>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 bg-gray-300 rounded border border-gray-400"></div>
-                <span className="text-sm text-gray-600">Past events</span>
+                <span className="text-sm text-gray-600">{t("activityCalendar.pastEvents")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span className="text-sm text-gray-600">Full capacity</span>
+                <span className="text-sm text-gray-600">{t("activityCalendar.fullCapacity")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                <span className="text-sm text-gray-600">Special events</span>
+                <span className="text-sm text-gray-600">{t("activityCalendar.specialEvents")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-4 h-4 bg-blue-500 rounded border-2 border-white shadow-lg"></div>
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
                 </div>
-                <span className="text-sm text-gray-600">Overlapping events</span>
+                <span className="text-sm text-gray-600">{t("activityCalendar.overlappingEvents")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-1 bg-gray-400 rounded-full opacity-30"></div>
-                <span className="text-sm text-gray-600">Timeline line</span>
+                <span className="text-sm text-gray-600">{t("activityCalendar.timelineLine")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-0.5 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">Current time</span>
+                <span className="text-sm text-gray-600">{t("activityCalendar.currentTime")}</span>
               </div>
             </div>
           </div>
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-xs text-blue-700">
-              <strong>Tip:</strong> Click on any event to view details. Past events are faded and cannot be interacted with.
+              <strong>{t("activityCalendar.tipTitle")}</strong> {t("activityCalendar.tip")}
             </p>
           </div>
         </div>

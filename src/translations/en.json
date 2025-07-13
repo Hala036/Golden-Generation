@@ -1815,6 +1815,8 @@
     "allSettlements": "All Settlements",
     "mySettlement": "My Settlement",
     "arrowPrev": "←",
-    "arrowNext": "→"
+    "arrowNext": "→",
+    "tip": " Click on any event to view details. Past events are faded and cannot be interacted with.",
+    "tipTitle": "Tip:"
   }
 }
