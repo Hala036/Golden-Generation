@@ -9,7 +9,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import Select from 'react-select';
 import { Users, Star, Check } from 'lucide-react';
-import { validateIsraeliID, validateRequiredField } from '../../utils/validation';
+import { validateIsraeliID, validateRequiredField, validateGender } from '../../utils/validation';
 
 const IDVerification = ({ onComplete, editMode = false, data }) => {
   const { t } = useLanguage();
@@ -238,21 +238,20 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
 
     // Explicit translation-based validation (added)
     if (!idNumber?.trim()) {
-      newErrors.idNumber = t('auth.idVerification.errors.idRequired');
+      newErrors.idNumber = t('auth.dashboard.errors.idRequired');
     } else if (!/^\d{9}$/.test(idNumber)) {
-      newErrors.idNumber = t('auth.idVerification.errors.idFormat');
+      newErrors.idNumber = t('auth.dashboard.errors.idFormat');
     }
     if (!firstName?.trim()) {
-      newErrors.firstName = t('auth.idVerification.errors.firstNameRequired');
+      newErrors.firstName = t('auth.dashboard.errors.firstNameRequired');
     }
     if (!lastName?.trim()) {
-      newErrors.lastName = t('auth.idVerification.errors.lastNameRequired');
+      newErrors.lastName = t('auth.dashboard.errors.lastNameRequired');
     }
-    if (!gender) {
-      newErrors.gender = t('auth.idVerification.errors.genderRequired');
-    }
+    const genderError = validateGender(gender);
+    if (genderError) newErrors.gender = t(genderError);
     if (!settlement) {
-      newErrors.settlement = t('auth.idVerification.form.failedToLoadSettlements');
+      newErrors.settlement = t('auth.dashboard.errors.settlementRequired');
     }
 
     // ID Number
@@ -273,18 +272,13 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
 
     // Date of Birth
     if (!dateOfBirth) {
-      newErrors.dateOfBirth = t('auth.idVerification.errors.dateOfBirthRequired');
+      newErrors.dateOfBirth = t('auth.dashboard.errors.dateOfBirthRequired');
     } else {
       const age = calculateAge(dateOfBirth);
       if (age < 50) {
-        newErrors.dateOfBirth = t('auth.idVerification.errors.ageRequirement');
-        toast.error(t('auth.idVerification.errors.ageRequirementNotMet'));
+        newErrors.dateOfBirth = t('auth.dashboard.errors.ageRequirement');
+        toast.error(t('auth.dashboard.errors.ageRequirementNotMet'));
       }
-    }
-
-    // Gender
-    if (!gender) {
-      newErrors.gender = t('Gender is required');
     }
 
     // Settlement
@@ -478,7 +472,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t('auth.idVerification.form.gender')} <span className="text-red-500">*</span>
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div
                   onClick={() => handleChange({ target: { name: 'gender', value: 'male' } })}
                   className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
@@ -510,24 +504,6 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                     {t('auth.idVerification.form.genderFemale')}
                   </span>
                   {idVerificationData.gender === 'female' && (
-                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
-                      <Check size={16} />
-                    </div>
-                  )}
-                </div>
-                <div
-                  onClick={() => handleChange({ target: { name: 'gender', value: 'other' } })}
-                  className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
-                    idVerificationData.gender === 'other'
-                      ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-xl shadow-yellow-200/50 scale-105 -translate-y-0.5'
-                      : 'border-gray-200 hover:border-yellow-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <FaGenderless className={`text-2xl ${idVerificationData.gender === 'other' ? 'text-purple-600' : 'text-gray-500'}`} />
-                  <span className={`text-base font-semibold ${idVerificationData.gender === 'other' ? 'text-gray-900' : 'text-gray-600'}`}>
-                    {t('auth.idVerification.form.genderOther')}
-                  </span>
-                  {idVerificationData.gender === 'other' && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
                       <Check size={16} />
                     </div>

@@ -431,15 +431,11 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
       newErrors.houseNumber = t('auth.signup.personalDetails.errors.houseNumberFormat');
     }
     // Add format validation for phone number
-    if (formData.phoneNumber && !/^05\d{8}$/.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = t('auth.signup.personalDetails.errors.phoneNumberFormat');
-    }
+    const phoneError = validatePhoneNumber(formData.phoneNumber);
+    if (phoneError) newErrors.phoneNumber = t(phoneError);
     // Validate house number
     const houseNumberError = validateHouseNumber(formData.houseNumber);
     if (houseNumberError) newErrors.houseNumber = houseNumberError;
-    // Validate Israeli phone number
-    const phoneError = validatePhoneNumber(formData.phoneNumber);
-    if (phoneError) newErrors.phoneNumber = phoneError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData, t]);

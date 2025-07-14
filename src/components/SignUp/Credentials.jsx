@@ -84,39 +84,20 @@ const Credentials = ({ onComplete }) => {
       newErrors.email = t('auth.credentials.email.invalid');
     }
 
-    if (!username) {
-      newErrors.username = t('auth.credentials.username.required');
-    } else if (username.length < 3) {
-      newErrors.username = t('auth.credentials.username.minLength');
-    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      newErrors.username = t('auth.credentials.username.invalid');
-    }
+    // Username
+    const usernameError = validateUsername(username);
+    if (usernameError) newErrors.username = t(usernameError);
 
-    if (!password) {
-      newErrors.password = t('auth.credentials.password.required');
-    } else if (password.length < 8) {
-      newErrors.password = t('auth.credentials.password.minLength');
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      newErrors.password = t('auth.credentials.password.requirements');
-    }
+    // Password
+    const passwordError = validatePassword(password);
+    if (passwordError) newErrors.password = t(passwordError);
 
-    if (!confirmPassword) {
-      newErrors.confirmPassword = t('auth.credentials.confirmPassword.required');
-    } else if (confirmPassword !== password) {
-      newErrors.confirmPassword = t('auth.credentials.confirmPassword.mismatch');
-    }
+    // Confirm Password
+    const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
+    if (confirmPasswordError) newErrors.confirmPassword = t(confirmPasswordError);
 
     const emailError = validateEmail(email);
     if (emailError) newErrors.email = emailError;
-
-    const usernameError = validateUsername(username);
-    if (usernameError) newErrors.username = usernameError;
-
-    const passwordError = validatePassword(password);
-    if (passwordError) newErrors.password = passwordError;
-
-    const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
-    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

@@ -24,7 +24,7 @@
       "notLoggedIn": "אתה לא מחובר"
     },
     "login": {
-      "title": "התחבר כ",
+      "title": "כניסה למערכת כ",
       "email": "כתובת אימייל",
       "password": "סיסמה",
       "forgotPassword": "שכחת סיסמה?",
@@ -40,7 +40,7 @@
       "imageAlt": "זוג נהנה מאירוע"
     },
     "signup": {
-      "logo": "דור הזהב",
+      "logo": "תור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
       "continue": "המשך",
@@ -126,6 +126,10 @@
     "workBackground": {
         "title": "רקע תעסוקתי",
         "subtitle": "ספר לנו על הניסיון המקצועי שלך",
+        "expectedRetirementDateLabel": "תאריך פרישה צפוי",
+        "retirementDateLabel":"מתי פרשת?",
+
+
       "categories": {
           "healthcare": "בריאות",
           "engineeringTechnology": "הנדסה וטכנולוגיה",
@@ -519,7 +523,7 @@
         "loadingSettlements": "טוען יישובים...",
         "failedToLoadSettlements": "טעינת היישובים נכשלה. אנא נסה שוב מאוחר יותר.",
         "settlementPlaceholder": "בחר יישוב...",
-        "submit": "שלח"
+        "submit": "המשך"
       },
       "idNumber": {
         "label": "מספר תעודת זהות",
@@ -583,7 +587,7 @@
         },
         "announcements": {
           "welcome": {
-            "title": "ברוכים הבאים לדור הזהב!",
+            "title": "ברוכים הבאים לתור הזהב!",
             "content": "אנחנו שמחים לקבל אתכם על הסיפון."
           },
           "darkMode": {
@@ -788,7 +792,7 @@
           "expand": "הרחב סרגל צד"
       },
       "topbar": {
-          "title": "דור הזהב"
+          "title": "תור הזהב"
       },
       "main": {
           "noComponent": "לא נמצא רכיב"
@@ -1084,7 +1088,7 @@
             "arabic": "ערבית"
     },
     "header": {
-            "title": "דור הזהב",
+            "title": "תור הזהב",
             "logout": "התנתק"
     },
     "messages": {
