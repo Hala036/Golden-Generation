@@ -10,14 +10,14 @@ import { toast } from 'react-hot-toast';
 import { auth, db, getUserData } from '../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import WorkBackground from './WorkBackground';
 import Lifestyle from './Lifestyle';
 import VeteransCommunity from './VeteransCommunity';
 import { triggerNotification } from '../SharedDashboard/TriggerNotifications'; // Import the triggerNotification function
 
 const SignUp = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { 
     currentStep, 
@@ -126,7 +126,7 @@ const SignUp = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      navigate('/login');
+      navigate(-1); // Go back to previous page in history
     }
   };
 
@@ -178,10 +178,19 @@ const SignUp = () => {
             {/* Back Button */}
             <button
               onClick={handleBack}
-              className="absolute top-4 left-4 flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              className={`absolute top-4 ${language === 'he' ? 'right-4' : 'left-4'} flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200`}
             >
-              <FaArrowLeft className="mr-2" />
-              <span className="text-sm font-medium">{t('auth.signup.back')}</span>
+              {language === 'he' ? (
+                <>
+                  <FaArrowRight className="mr-2" />
+                  <span className="text-sm font-medium">{t('auth.signup.back')}</span>
+                </>
+              ) : (
+                <>
+                  <FaArrowRight className="mr-2" />
+                  <span className="text-sm font-medium">{t('auth.signup.back')}</span>
+                </>
+              )}
             </button>
             {renderStep()}
           </div>

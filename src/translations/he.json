@@ -24,7 +24,7 @@
       "notLoggedIn": "אתה לא מחובר"
     },
     "login": {
-      "title": "התחבר כ",
+      "title": "כניסה למערכת כ",
       "email": "כתובת אימייל",
       "password": "סיסמה",
       "forgotPassword": "שכחת סיסמה?",
@@ -126,7 +126,12 @@
       "workBackground": {
         "title": "רקע תעסוקתי",
         "subtitle": "ספר לנו על הניסיון המקצועי שלך",
-        "categories": {
+        "expectedRetirementDateLabel": "תאריך פרישה צפוי",
+        "retirementDateLabel":"מתי פרשת?",
+
+
+      "categories": {
+
           "healthcare": "בריאות",
           "engineeringTechnology": "הנדסה וטכנולוגיה",
           "businessFinance": "עסקים ופיננסים",
@@ -519,7 +524,7 @@
         "loadingSettlements": "טוען יישובים...",
         "failedToLoadSettlements": "טעינת היישובים נכשלה. אנא נסה שוב מאוחר יותר.",
         "settlementPlaceholder": "בחר יישוב...",
-        "submit": "שלח"
+        "submit": "המשך"
       },
       "idNumber": {
         "label": "מספר תעודת זהות",
@@ -788,7 +793,8 @@
         "expand": "הרחב סרגל צד"
       },
       "topbar": {
-        "title": "תור הזהב"
+          "title": "תור הזהב"
+
       },
       "main": {
         "noComponent": "לא נמצא רכיב"
@@ -1136,8 +1142,9 @@
       "arabic": "ערבית"
     },
     "header": {
-      "title": "תור הזהב",
-      "logout": "התנתק"
+            "title": "תור הזהב",
+            "logout": "התנתק"
+
     },
     "messages": {
       "title": "הודעות",

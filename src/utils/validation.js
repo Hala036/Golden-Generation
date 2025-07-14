@@ -1,56 +1,56 @@
 // Email validation
 export function validateEmail(email) {
-  if (!email) return 'Email is required';
-  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return 'Invalid email format';
+  if (!email) return 'auth.credentials.email.required';
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) return 'auth.credentials.email.invalid';
   return '';
 }
 
 // Username validation
 export function validateUsername(username) {
-  if (!username) return 'Username is required';
-  if (username.length < 3) return 'Username must be at least 3 characters';
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) return 'Username can only contain letters, numbers, and underscores';
+  if (!username) return 'auth.credentials.username.required';
+  if (username.length < 3) return 'auth.credentials.username.minLength';
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) return 'auth.credentials.username.invalid';
   return '';
 }
 
 // Password validation
 export function validatePassword(password) {
-  if (!password) return 'Password is required';
-  if (password.length < 8) return 'Password must be at least 8 characters';
-  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) return 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+  if (!password) return 'auth.credentials.password.required';
+  if (password.length < 8) return 'auth.credentials.password.minLength';
+  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) return 'auth.credentials.password.requirements';
   return '';
 }
 
 // Confirm password validation
 export function validateConfirmPassword(password, confirmPassword) {
-  if (!confirmPassword) return 'Please confirm your password';
-  if (confirmPassword !== password) return 'Passwords do not match';
+  if (!confirmPassword) return 'auth.credentials.confirmPassword.required';
+  if (confirmPassword !== password) return 'auth.credentials.confirmPassword.mismatch';
   return '';
 }
 
 // Israeli phone number validation
 export function validatePhoneNumber(phone) {
   if (!phone) return '';
-  if (!/^05\d{8}$/.test(phone.trim())) return 'Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)';
+  if (!/^05\d{8}$/.test(phone.trim())) return 'auth.signup.personalDetails.errors.phoneNumberFormat';
   return '';
 }
 
 // House number validation
 export function validateHouseNumber(houseNumber) {
   if (!houseNumber) return '';
-  if (!/^\d{1,4}[A-Z]?$/.test(houseNumber.trim())) return 'House number must be numeric (e.g., 123 or 123A)';
+  if (!/^\d{1,4}[A-Z]?$/.test(houseNumber.trim())) return 'auth.signup.personalDetails.errors.houseNumberFormat';
   return '';
 }
 
 // Required field validation
 export function validateRequiredField(value, fieldName = 'Field') {
-  if (!value || !value.toString().trim()) return `${fieldName} is required`;
+  if (!value || !value.toString().trim()) return 'auth.signup.personalDetails.errors.required';
   return '';
 }
 
 // Israeli ID validation
 export function validateIsraeliID(id) {
-  if (!id || !/^\d{9}$/.test(id)) return 'ID number must be 9 digits';
+  if (!id || !/^\d{9}$/.test(id)) return 'auth.dashboard.errors.idFormat';
   // Pad to 9 digits
   id = id.toString().padStart(9, '0');
   let sum = 0;
@@ -60,6 +60,12 @@ export function validateIsraeliID(id) {
     if (multiplied > 9) multiplied -= 9;
     sum += multiplied;
   }
-  if (sum % 10 !== 0) return 'Invalid Israeli ID number';
+  if (sum % 10 !== 0) return 'auth.dashboard.errors.invalidIdNumber';
+  return '';
+}
+
+// Gender required validation
+export function validateGender(gender) {
+  if (!gender) return 'auth.dashboard.errors.genderRequired';
   return '';
 } 

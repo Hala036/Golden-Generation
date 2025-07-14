@@ -5,7 +5,7 @@
     "success": "Success",
     "back": "Back",
     "continue": "Continue",
-    "submit": "Submit",
+    "submit": "Continue",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -127,6 +127,9 @@
     "workBackground": {
       "title": "Work Background",
       "subtitle": "Tell us about your professional experience",
+      "expectedRetirementDateLabel": "Expected retirement date",
+      "retirementDateLabel":"When did you retire?",
+
       "categories": {
         "healthcare": "Healthcare",
       "engineeringTechnology": "Engineering & Technology",
