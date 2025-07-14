@@ -19,9 +19,9 @@ import EmptyState from '../EmptyState';
 import { UserContext as AppUserContext } from "../../context/UserContext";
 import { useTranslation } from "react-i18next";
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import i18n from "i18next";
 
-
-const AdminSettlements = () => {
+const AdminSettlements = ({ setSelected }) => {
   console.debug('[AdminSettlements] mounted');
   const { t } = useLanguage();
   const [allSettlements, setAllSettlements] = useState([]);
@@ -530,11 +530,10 @@ const AdminSettlements = () => {
     return <div className="text-center py-8">{t('auth.adminSettlements.loading')}</div>;
   }
 
-  console.debug('[AdminSettlements] rendering');
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4">
-        <h1 className="text-2xl font-bold mb-2 sm:mb-0">Manage Available Settlements</h1>
+        <h1 className="text-2xl font-bold mb-2 sm:mb-0">{t('auth.adminSettlements.manageAvailableSettlements')}</h1>
         <div className="flex flex-wrap gap-2 items-center">
           <label className="flex items-center gap-1 text-xs font-medium" title="Replace all settlements with this file">
             <input
@@ -543,20 +542,20 @@ const AdminSettlements = () => {
               onChange={e => setReplaceAll(e.target.checked)}
               className="accent-yellow-500 w-4 h-4"
             />
-            <span>Replace all</span>
+            <span>{t('auth.adminSettlements.upload.replaceAll')}</span>
           </label>
           {replaceAll && (
             <span className="text-xs text-red-600 flex items-center gap-1">
               <FaExclamationTriangle className="inline mr-1" />
-              This will delete all!
+              {t('auth.adminSettlements.upload.replaceWarning')}
             </span>
           )}
           <label htmlFor="firestore-upload" className="bg-blue-500 hover:bg-blue-600 text-white px-2.5 py-1.5 rounded cursor-pointer flex items-center gap-1 text-xs" title="Upload a JSON or CSV file to add settlements">
             <FaUpload />
             {uploading ? (
-              <span className="flex items-center gap-1"><FaSpinner className="animate-spin" /> Uploading...</span>
+              <span className="flex items-center gap-1"><FaSpinner className="animate-spin" /> {t('auth.adminSettlements.upload.uploading')}</span>
             ) : (
-              'Upload'
+              t('auth.adminSettlements.upload.uploadButton')
             )}
             <input id="firestore-upload" name="firestore-upload" type="file" accept=".json,.csv,application/json,text/csv" onChange={handleUploadFile} style={{ display: 'none' }} disabled={uploading} />
           </label>
@@ -564,13 +563,13 @@ const AdminSettlements = () => {
             onClick={() => setShowSettlementModal(true)}
             className="bg-green-500 hover:bg-green-600 text-white font-bold px-2.5 py-1.5 rounded flex items-center gap-1 text-xs shadow"
           >
-            <FaPlus /> Add/Edit
+            <FaPlus /> {t('auth.adminSettlements.actions.addEdit')}
           </button>
           <button
-            onClick={() => navigate('/superadmin/admins')}
+            onClick={() => setSelected('admins')}
             className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-2.5 py-1.5 rounded flex items-center gap-1 text-xs shadow"
           >
-            <FaUserShield /> Admins
+            <FaUserShield /> {t('auth.adminSettlements.actions.admins')}
           </button>
         </div>
       </div>
@@ -581,28 +580,28 @@ const AdminSettlements = () => {
           className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm transition font-semibold
             ${availabilityFilter === 'all' ? 'bg-yellow-400 text-black' : 'bg-gray-100 text-gray-700 hover:bg-yellow-100'}`}
         >
-          <FaList /> All
+          <FaList /> {t('auth.adminSettlements.filters.all')}
         </button>
         <button
           onClick={() => setAvailabilityFilter('available')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm transition font-semibold
             ${availabilityFilter === 'available' ? 'bg-green-400 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-100'}`}
         >
-          <FaCheckCircle /> Available
+          <FaCheckCircle /> {t('auth.adminSettlements.filters.available')}
         </button>
           <button
           onClick={() => setAvailabilityFilter('disabled')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm transition font-semibold
             ${availabilityFilter === 'disabled' ? 'bg-red-400 text-white' : 'bg-gray-100 text-gray-700 hover:bg-red-100'}`}
           >
-          <FaMinusCircle /> Disabled
+          <FaMinusCircle /> {t('auth.adminSettlements.filters.disabled')}
           </button>
         </div>
       {/* Search and Filter Input */}
       <div className="relative w-full max-w-md mx-auto mb-6">
         <input
           type="text"
-          placeholder="Search settlements..."
+          placeholder={t('auth.adminSettlements.search.placeholder')}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           className={`pl-10 pr-10 py-2 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 w-full ${isRTL ? 'text-right' : ''}`}
@@ -623,7 +622,9 @@ const AdminSettlements = () => {
       </div>
       {/* Results Count */}
       <div className="text-sm text-gray-600 mb-4 text-center">
-        Showing {filteredSettlements.length} settlement{filteredSettlements.length !== 1 ? 's' : ''}
+        {i18n.t('auth.adminSettlements.showingSettlements', {
+          count: filteredSettlements.length,
+        })}
       </div>
       {/* Settlements List */}
       {loading ? (
@@ -787,10 +788,12 @@ const AdminSettlements = () => {
               className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
               aria-label="Previous page"
             >
-              {isRTL ? '→' : '←'} Previous
+              {t('auth.adminSettlements.pagination.previous')}
             </button>
             <span className="text-sm text-gray-600">
-              Page {page} of {totalPages}
+              {i18n.t('auth.adminSettlements.pagination.pageInfo', {
+                current: page, total: totalPages
+              })} 
             </span>
             <button
               onClick={() => setPage(page + 1)}
@@ -798,7 +801,7 @@ const AdminSettlements = () => {
               className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
               aria-label="Next page"
             >
-              Next {isRTL ? '←' : '→'}
+              {t('auth.adminSettlements.pagination.next')}
             </button>
       </div>
         )}
@@ -833,7 +836,7 @@ const AdminSettlements = () => {
       />
       {/* Settlement Modal */}
       {showSettlementModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">{settlementForm.isEdit ? 'Edit Settlement' : 'Add Settlement'}</h2>
             <div className="mb-4 relative">
@@ -897,7 +900,7 @@ const AdminSettlements = () => {
       )}
       {/* Confirmation Modal for Replace All */}
       {showConfirmModal && pendingFile && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg flex flex-col items-center">
             <FaExclamationTriangle className="text-4xl text-red-500 mb-4" />
             <h2 className="text-xl font-bold mb-2 text-center">Are you sure?</h2>
@@ -927,7 +930,7 @@ const AdminSettlements = () => {
       )}
       {/* Edit Modal */}
       {editModal.open && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Edit Settlement</h2>
             <div className="mb-4 grid grid-cols-1 gap-2">
@@ -966,7 +969,7 @@ const AdminSettlements = () => {
       )}
       {/* Delete Modal */}
       {deleteModal.open && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4 text-center text-red-600">Delete Settlement</h2>
             <p className="mb-6 text-center">Are you sure you want to delete <span className="font-bold">{deleteModal.settlement.name}</span>? This action cannot be undone.</p>

@@ -857,7 +857,54 @@
       "add": "הוסף",
       "loadError": "נכשל בטעינת היישובים.",
       "updateError": "נכשל בעדכון היישוב.",
-      "addError": "נכשל בהוספת היישוב."
+      "addError": "נכשל בהוספת היישוב.",
+      "showingSettlements": "מציג {{count}} יישובים",
+      "deleteConfirmation": {
+        "title": "מחק יישוב",
+        "message": "האם אתה בטוח שברצונך למחוק את \"{{settlementName}}\"? פעולה זו אינה ניתנת לביטול."
+      },
+      "editSettlement": {
+        "title": "ערוך יישוב",
+        "name": "שם",
+        "englishName": "שם באנגלית",
+        "region": "אזור",
+        "municipality": "מועצה",
+        "office": "לשכה",
+        "save": "שמור",
+        "cancel": "בטל"
+      },
+      "pagination": {
+        "previous": "הקודם ←",
+        "next": "→ הבא",
+        "pageInfo": "עמוד {{current}} מתוך {{total}}"
+      },
+      "filters": {
+        "all": "הכל",
+        "available": "זמין",
+        "disabled": "מושבת"
+      },
+      "search": {
+        "placeholder": "חפש יישובים..."
+      },
+      "upload": {
+        "replaceAll": "החלף הכל",
+        "replaceWarning": "זה ימחק הכל!",
+        "uploadButton": "העלה",
+        "uploading": "מעלה...",
+        "success": "היישובים הועלו בהצלחה!",
+        "error": "נכשל בהעלאת היישובים."
+      },
+      "actions": {
+        "enable": "הפעל יישוב",
+        "disable": "השבת יישוב",
+        "addEdit": "הוסף/ערוך",
+        "admins": "מנהלים"
+      },
+      "emptyState": {
+        "title": "לא נמצאו יישובים",
+        "message": "נסה להתאים את החיפוש או המסננים.",
+        "clearSearch": "נקה חיפוש"
+      }
     },
     "categoryManagement": {
       "title": "ניהול קטגוריות",

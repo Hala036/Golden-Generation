@@ -852,7 +852,54 @@
       "add": "Add",
       "loadError": "Failed to load settlements.",
       "updateError": "Failed to update settlement.",
-      "addError": "Failed to add settlement."
+      "addError": "Failed to add settlement.",
+      "showingSettlements": "Showing {{count}} settlements",
+      "deleteConfirmation": {
+        "title": "Delete Settlement",
+        "message": "Are you sure you want to delete \"{{settlementName}}\"? This action cannot be undone."
+      },
+      "editSettlement": {
+        "title": "Edit Settlement",
+        "name": "Name",
+        "englishName": "English Name",
+        "region": "Region",
+        "municipality": "Municipality",
+        "office": "Office",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "pagination": {
+        "previous": "← Previous",
+        "next": "Next →",
+        "pageInfo": "Page {{current}} of {{total}}"
+      },
+      "filters": {
+        "all": "All",
+        "available": "Available",
+        "disabled": "Disabled"
+      },
+      "search": {
+        "placeholder": "Search settlements..."
+      },
+      "upload": {
+        "replaceAll": "Replace all",
+        "replaceWarning": "This will delete all!",
+        "uploadButton": "Upload",
+        "uploading": "Uploading...",
+        "success": "Settlements uploaded successfully!",
+        "error": "Failed to upload settlements."
+      },
+      "actions": {
+        "enable": "Enable settlement",
+        "disable": "Disable settlement",
+        "addEdit": "Add/Edit",
+        "admins": "Admins"
+      },
+      "emptyState": {
+        "title": "No settlements found",
+        "message": "Try adjusting your search or filters.",
+        "clearSearch": "Clear Search"
+      }
     },
     "categoryManagement": {
       "title": "Category Management",
