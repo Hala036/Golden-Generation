@@ -53,7 +53,7 @@ export const useChartData = (users, jobs, availableSettlements = [], events = []
   const jobRequestsByStatus = useMemo(() => {
     const statusCounts = {};
     jobs.forEach(job => {
-      const status = job.status || "Unknown";
+      const status = job.status || "Unknown"; // Provide a default if status is missing
       statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
     return Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
@@ -85,8 +85,8 @@ export const useChartData = (users, jobs, availableSettlements = [], events = []
   const usersByRoleDistribution = useMemo(() => {
     const roleCounts = {};
     users.forEach(user => {
-      if (!user.role) return; // Skip users with no role
-      roleCounts[user.role] = (roleCounts[user.role] || 0) + 1;
+      const role = user.role || "Unknown"; // Provide a default if role is missing
+      roleCounts[role] = (roleCounts[role] || 0) + 1;
     });
     return Object.entries(roleCounts).map(([name, value]) => ({ name, value }));
   }, [users]);
@@ -94,7 +94,7 @@ export const useChartData = (users, jobs, availableSettlements = [], events = []
   const eventsByCategoryData = useMemo(() => {
     const categoryCounts = {};
     events.forEach(event => {
-      const category = event.category || "Unknown";
+      const category = event.category || "Unknown"; // Provide a default if category is missing
       categoryCounts[category] = (categoryCounts[category] || 0) + 1;
     });
     return Object.entries(categoryCounts).map(([name, value]) => ({ name, value }));
