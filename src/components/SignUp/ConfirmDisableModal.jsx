@@ -34,7 +34,7 @@ const ConfirmDisableModal = ({ open, settlement, onCancel, onConfirm, loading = 
     >
       {/* Backdrop with animation */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+        className="absolute inset-0 backdrop-blur-sm bg-black/5 transition-opacity duration-300"
         onClick={onCancel}
         aria-hidden="true"
       />
