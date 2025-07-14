@@ -1194,6 +1194,9 @@
       "gender": "מין",
       "job": "עיסוק",
       "settlement": "שכונה",
+      "profile": "פרופיל",
+      "sendMessage": "שלח הודעה",
+      "backToProfile": "חזור לפרופיל שלי",
       "filters": {
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
