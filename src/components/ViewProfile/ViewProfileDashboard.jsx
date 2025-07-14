@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaUser, FaComments, FaArrowLeft } from "react-icons/fa";
+import { FaUser, FaComments, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -16,7 +16,7 @@ const ViewProfileDashboard = () => {
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [selected, setSelected] = useState("profile");
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true); // Sidebar toggle state
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false); // Sidebar toggle state
 
   // Retrieve the retiree ID from the state passed via navigation
   const location = useLocation();
@@ -32,8 +32,8 @@ const ViewProfileDashboard = () => {
   }, [retireeIdNumber, navigate]);
 
   const icons = [
-    { id: "profile", label: "Profile", icon: <FaUser /> },
-    { id: "messages", label: "Send Messages", icon: <FaComments /> }
+    { id: "profile", label: t('admin.retirees.profile'), icon: <FaUser /> },
+    { id: "messages", label: t('admin.retirees.sendMessage'), icon: <FaComments /> }
   ];
 
   const handleBackToProfile = () => {
@@ -125,8 +125,12 @@ const ViewProfileDashboard = () => {
               isSidebarExpanded ? "space-x-1 md:space-x-2" : "justify-center"
             } text-gray-600 hover:text-gray-800 w-full mt-1 md:mt-2`}
           >
-            <FaArrowLeft className="text-xl" />
-            {isSidebarExpanded && <span className="text-sm">Back To Profile</span>}
+            {language === "he" ? (
+              <FaArrowRight className="text-xl" />
+            ) : (
+              <FaArrowLeft className="text-xl" />
+            )}
+            {isSidebarExpanded && <span className="text-sm">{t('admin.retirees.backToProfile')}</span>}
           </button>
         </div>
       </div>
@@ -135,7 +139,7 @@ const ViewProfileDashboard = () => {
       <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative">
         {/* Top Bar */}
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-2 md:px-6 py-2 md:py-4 z-10 flex items-center justify-between">
-          <h1 className="text-lg md:text-xl font-bold text-yellow-500">Golden Generation</h1>
+          <h1 className="text-lg md:text-xl font-bold text-yellow-500">{t('auth.dashboard.topbar.title')}</h1>
           
           <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center gap-1 text-xs md:text-sm ml-2 md:ml-5">
@@ -148,14 +152,14 @@ const ViewProfileDashboard = () => {
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ar">العربية</Select.Option>
+                {/* <Select.Option value="ar">العربية</Select.Option> */}
               </Select>
             </div>
           </div>
         </div>
 
         {/* Scrollable Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto flex-1 mt-16">
+      <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative overflow-y-auto mt-8 md:mt-12">
           {selected === "profile" && <ProfileDetails retireeData={retireeData} />}
           {selected === "messages" && <Messages retireeData={retireeData} />}
         </div>

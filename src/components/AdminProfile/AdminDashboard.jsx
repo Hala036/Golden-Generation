@@ -46,21 +46,21 @@ const AdminDashboard = () => {
   };
 
   const customIcons = [
-    { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
-    { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
+    { id: "main", label: t("sidebar.homePage"), icon: <FaHome /> },
+    { id: "upcoming", label: t("sidebar.upcomingEvents"), icon: <FaCalendarCheck /> },
     { id: "categoryManagement", label: t("dashboard.categoryManagement"), icon: <FaTags /> },
-    { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
-    { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
-    { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
-    { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
-    { id: "settings", label: t("dashboard.settings.title"), icon: <FaCog /> },
+    { id: "retirees", label: t("sidebar.retirees"), icon: <FaUser /> },
+    { id: "jobs", label: t("sidebar.volunteerRequests"), icon: <FaBriefcase /> },
+    { id: "service", label: t("sidebar.serviceRequests"), icon: <FaHandsHelping /> },
+    { id: "analysis", label: t("sidebar.analytics"), icon: <FaChartBar /> },
+    { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
     //{ id: "comprehensiveAnalytics", label: t("dashboard.advancedAnalytics"), icon: <FaChartLine /> },
   ];
 
   const customButtons = [
     {
       id: "updatePastEvents",
-      label: "Update Past Events",
+      label: t("sidebar.updatePastEvents"),
       icon: <FaSync />,
       onClick: handleUpdatePastEvents,
       className: "bg-blue-500 hover:bg-blue-600 text-white"

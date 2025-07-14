@@ -539,7 +539,7 @@ const CategoryManagement = () => {
         <input
           type="text"
           className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500"
-          placeholder="Search categories by name, translations, or color..."
+          placeholder={t("auth.categoryManagement.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -622,7 +622,7 @@ const CategoryManagement = () => {
                   <div className="space-y-1">
                     <div>EN: {category.translations?.en || "N/A"}</div>
                     <div>HE: {category.translations?.he || "N/A"}</div>
-                    <div>AR: {category.translations?.ar || "N/A"}</div>
+                    {/* <div>AR: {category.translations?.ar || "N/A"}</div> */}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -684,7 +684,7 @@ const CategoryManagement = () => {
                 <div className="text-xs text-gray-500">
                   <div>EN: {category.translations?.en || "N/A"}</div>
                   <div>HE: {category.translations?.he || "N/A"}</div>
-                  <div>AR: {category.translations?.ar || "N/A"}</div>
+                  {/* <div>AR: {category.translations?.ar || "N/A"}</div> */}
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium mt-1 ml-2 ${
                   (categoryUsage[category.id] || 0) > 0 
@@ -783,7 +783,7 @@ const CategoryManagement = () => {
               )}
             </div>
             
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t("auth.categoryManagement.form.arabicTranslation")}
               </label>
@@ -799,7 +799,7 @@ const CategoryManagement = () => {
                 }
                 placeholder={t("auth.categoryManagement.form.arabicPlaceholder")}
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Color Selection */}

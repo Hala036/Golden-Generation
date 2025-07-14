@@ -52,15 +52,15 @@ const RetireeDashboard = () => {
   };
 
   const customIcons = [
-      { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
-      { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
-    { id: "categoryManagement", label: "Category Management", icon: <FaTags /> },
-    { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
-    { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
-    { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
-    { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
-    { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
-    { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
+    { id: "main", label: t("sidebar.home"), icon: <FaHome /> },
+    { id: "upcoming", label: t("sidebar.upcomingEvents"), icon: <FaCalendarCheck /> },
+    { id: "categoryManagement", label: t("sidebar.categoryManagement"), icon: <FaTags /> },
+    { id: "addSettlements", label: t("sidebar.addSettlements"), icon: <FaPlus /> },
+    { id: "admins", label: t("sidebar.adminManagement"), icon: <FaUserShield /> },
+    { id: "retirees", label: t("sidebar.retirees"), icon: <FaUser /> },
+    { id: "jobs", label: t("sidebar.volunteerRequests"), icon: <FaBriefcase /> },
+    { id: "service", label: t("sidebar.serviceRequests"), icon: <FaHandsHelping /> },
+    { id: "analysis", label: t("sidebar.analytics"), icon: <FaChartBar /> },
     { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
   ];
 
@@ -68,7 +68,7 @@ const RetireeDashboard = () => {
   const customButtons = [
     {
       id: "updatePastEvents",
-      label: "Update Past Events",
+      label: t("sidebar.updatePastEvents"),
       icon: <FaSync />,
       onClick: handleUpdatePastEvents,
       className: "bg-blue-500 hover:bg-blue-600 text-white"
@@ -87,7 +87,7 @@ const RetireeDashboard = () => {
     service: <ServiceRequests />,
     analysis: <Analysis />,
     eventRequests: <EventRequests />,
-    addSettlements: <AdminSettlements />,
+    addSettlements: <AdminSettlements setSelected={setSelected} />,
     admins: <AdminManagement />,
     categoryManagement: <CategoryManagement />,
   };

@@ -4,6 +4,8 @@ import { MdWork, MdVolunteerActivism } from "react-icons/md";
 import { GiSkills, GiPartyPopper } from "react-icons/gi";
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import profile from "../../assets/profile.jpeg";
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Emoji mappings (should match your sign up logic)
 const interestEmojis = {
@@ -47,7 +49,10 @@ const ListRow = ({ icon, label, items, emojiMap }) => (
 );
 
 const ProfileDetails = ({ retireeData }) => {
-  if (!retireeData) return <div>Loading...</div>;
+  const { t } = useTranslation();
+  const { language, changeLanguage } = useLanguage();
+  console.log('language:', language);
+  if (!retireeData) return <div>{t('common.loading')}</div>;
 
   const idv = retireeData.idVerification || {};
   const creds = retireeData.credentials || {};
@@ -66,77 +71,77 @@ const ProfileDetails = ({ retireeData }) => {
           className="w-28 h-28 rounded-full object-cover mb-4 sm:mb-0 sm:mr-6 border-4 border-yellow-200"
         />
         <div className="text-center sm:text-left">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-1">{idv.firstName} {idv.lastName}</h2>
+          <h2   className={`text-2xl sm:text-3xl font-bold mb-1 ${language === 'he' ? 'text-right' : 'text-left'}`}>{idv.firstName} {idv.lastName}</h2>
           <div className="flex flex-wrap justify-center sm:justify-start text-gray-600">
-            <InfoRow icon={<FaBirthdayCake />} label="Age" value={idv.age} />
-            <InfoRow icon={<FaTransgender />} label="Gender" value={idv.gender} />
-            <InfoRow icon={<FaMapMarkerAlt />} label="Settlement" value={idv.settlement} />
+            <InfoRow icon={<FaBirthdayCake />} label={t('viewProfile.profileHeader.age')} value={idv.age} />
+            <InfoRow icon={<FaTransgender />} label={t('viewProfile.profileHeader.gender')} value={idv.gender} />
+            <InfoRow icon={<FaMapMarkerAlt />} label={t('viewProfile.profileHeader.settlement')} value={idv.settlement} />
           </div>
         </div>
       </div>
 
       {/* Personal Info */}
-      <Section icon={<FaUser />} title="Personal Information">
-        <InfoRow icon={<FaIdCard />} label="ID Number" value={idv.idNumber} />
-        <InfoRow icon={<FaEnvelope />} label="Email" value={idv.email || creds.email} />
-        <InfoRow icon={<FaPhone />} label="Phone" value={idv.phoneNumber} />
-        <InfoRow icon={<FaHome />} label="Address" value={personal.address} />
-        <InfoRow icon={<FaBook />} label="Marital Status" value={personal.maritalStatus} />
-        <InfoRow icon={<FaGraduationCap />} label="Education" value={personal.education} />
-        <InfoRow icon={<FaLanguage />} label="Native Language" value={personal.nativeLanguage} />
-        <InfoRow icon={<FaGlobe />} label="Origin Country" value={personal.originCountry} />
+      <Section icon={<FaUser />} title={t('viewProfile.personalInfo.title')}>
+        <InfoRow icon={<FaIdCard />} label={t('viewProfile.personalInfo.idNumber')} value={idv.idNumber} />
+        <InfoRow icon={<FaEnvelope />} label={t('viewProfile.personalInfo.email')} value={idv.email || creds.email} />
+        <InfoRow icon={<FaPhone />} label={t('viewProfile.personalInfo.phone')} value={idv.phoneNumber} />
+        <InfoRow icon={<FaHome />} label={t('viewProfile.personalInfo.address')} value={personal.address} />
+        <InfoRow icon={<FaBook />} label={t('viewProfile.personalInfo.maritalStatus')} value={personal.maritalStatus} />
+        <InfoRow icon={<FaGraduationCap />} label={t('viewProfile.personalInfo.education')} value={personal.education} />
+        <InfoRow icon={<FaLanguage />} label={t('viewProfile.personalInfo.nativeLanguage')} value={personal.nativeLanguage} />
+        <InfoRow icon={<FaGlobe />} label={t('viewProfile.personalInfo.originCountry')} value={personal.originCountry} />
       </Section>
 
       {/* Credentials */}
-      <Section icon={<BsFillPersonLinesFill />} title="Credentials">
-        <InfoRow icon={<FaUser />} label="Username" value={creds.username} />
-        <InfoRow icon={<FaEnvelope />} label="Email" value={creds.email} />
+      <Section icon={<BsFillPersonLinesFill />} title={t('viewProfile.credentials.title')}>
+        <InfoRow icon={<FaUser />} label={t('viewProfile.credentials.username')} value={creds.username} />
+        <InfoRow icon={<FaEnvelope />} label={t('viewProfile.credentials.email')} value={creds.email} />
       </Section>
 
       {/* Work Background */}
-      <Section icon={<MdWork />} title="Work Background">
-        <InfoRow icon={<FaBriefcase />} label="Job Title" value={work.customJobInfo?.originalSelection?.jobTitle} />
-        <InfoRow icon={<FaStar />} label="Industry" value={work.customJobInfo?.originalSelection?.industry} />
-        <InfoRow icon={<GiSkills />} label="Years of Experience" value={work.yearsOfExperience} />
-        <InfoRow icon={<FaCheck />} label="Retired" value={work.retired ? "Yes" : work.retired === false ? "No" : undefined} />
-        <InfoRow icon={<FaBook />} label="Professional Background" value={work.professionalBackground} />
+      <Section icon={<MdWork />} title={t('viewProfile.workBackground.title')}>
+        <InfoRow icon={<FaBriefcase />} label={t('viewProfile.workBackground.jobTitle')} value={work.customJobInfo?.originalSelection?.jobTitle} />
+        <InfoRow icon={<FaStar />} label={t('viewProfile.workBackground.industry')} value={work.customJobInfo?.originalSelection?.industry} />
+        <InfoRow icon={<GiSkills />} label={t('viewProfile.workBackground.yearsOfExperience')} value={work.yearsOfExperience} />
+        <InfoRow icon={<FaCheck />} label={t('viewProfile.workBackground.retired')} value={work.retired ? t('common.yes') : work.retired === false ? t('common.no') : undefined} />
+        <InfoRow icon={<FaBook />} label={t('viewProfile.workBackground.professionalBackground')} value={work.professionalBackground} />
       </Section>
 
       {/* Lifestyle */}
-      <Section icon={<GiPartyPopper />} title="Lifestyle">
-        <ListRow icon={<FaBook />} label="Hobbies" items={lifestyle.hobbies} emojiMap={hobbyEmojis} />
-        <ListRow icon={<FaStar />} label="Interests" items={lifestyle.interests} emojiMap={interestEmojis} />
-        <ListRow icon={<FaLanguage />} label="Languages Spoken" items={lifestyle.languages} />
-        <InfoRow icon={<FaLaptop />} label="Computer Ability" value={lifestyle.computerAbility} />
-        <InfoRow icon={<FaUsers />} label="Sport Activity Level" value={lifestyle.sportActivity} />
-        <InfoRow icon={<FaCalendarAlt />} label="Weekly Schedule Occupancy" value={lifestyle.weeklySchedule} />
+      <Section icon={<GiPartyPopper />} title={t('viewProfile.lifestyle.title')}>
+        <ListRow icon={<FaBook />} label={t('viewProfile.lifestyle.hobbies')} items={lifestyle.hobbies} emojiMap={hobbyEmojis} />
+        <ListRow icon={<FaStar />} label={t('viewProfile.lifestyle.interests')} items={lifestyle.interests} emojiMap={interestEmojis} />
+        <ListRow icon={<FaLanguage />} label={t('viewProfile.lifestyle.languagesSpoken')} items={lifestyle.languages} />
+        <InfoRow icon={<FaLaptop />} label={t('viewProfile.lifestyle.computerAbility')} value={lifestyle.computerAbility} />
+        <InfoRow icon={<FaUsers />} label={t('viewProfile.lifestyle.sportActivityLevel')} value={lifestyle.sportActivity} />
+        <InfoRow icon={<FaCalendarAlt />} label={t('viewProfile.lifestyle.weeklyScheduleOccupancy')} value={lifestyle.weeklySchedule} />
       </Section>
 
       {/* Volunteering & Veterans Community */}
-      <Section icon={<MdVolunteerActivism />} title="Volunteering & Community">
-        <ListRow icon={<FaHeart />} label="Current Activities" items={veterans.currentActivities} />
-        <InfoRow icon={<FaBook />} label="Not Participating Reason" value={veterans.notParticipatingReason} />
-        <InfoRow icon={<FaCheck />} label="Is Volunteer" value={veterans.isVolunteer ? "Yes" : veterans.isVolunteer === false ? "No" : undefined} />
-        <ListRow icon={<FaUsers />} label="Volunteer Areas" items={veterans.volunteerAreas} emojiMap={volunteerAreaEmojis} />
-        <InfoRow icon={<FaClock />} label="Volunteer Frequency" value={veterans.volunteerFrequency} />
-        <InfoRow icon={<FaClock />} label="Volunteer Hours" value={veterans.volunteerHours} />
-        <ListRow icon={<FaCalendarAlt />} label="Volunteer Days" items={veterans.volunteerDays} />
-        <InfoRow icon={<FaCheck />} label="Additional Volunteering" value={veterans.additionalVolunteering ? "Yes" : veterans.additionalVolunteering === false ? "No" : undefined} />
-        <ListRow icon={<FaUsers />} label="Additional Volunteer Fields" items={veterans.additionalVolunteerFields} />
-        <InfoRow icon={<FaClock />} label="Additional Volunteer Frequency" value={veterans.additionalVolunteerFrequency} />
-        <InfoRow icon={<FaClock />} label="Additional Volunteer Hours" value={veterans.additionalVolunteerHours} />
-        <ListRow icon={<FaCalendarAlt />} label="Additional Volunteer Days" items={veterans.additionalVolunteerDays} />
-        <InfoRow icon={<FaCheck />} label="Needs Consultation" value={veterans.needsConsultation ? "Yes" : veterans.needsConsultation === false ? "No" : undefined} />
-        <ListRow icon={<FaUsers />} label="Consultation Fields" items={veterans.consultationFields} />
-        <InfoRow icon={<FaMapMarkerAlt />} label="Community Settlement" value={veterans.settlement} />
-        <InfoRow icon={<FaBook />} label="Community Professional Background" value={veterans.professionalBackground} />
+      <Section icon={<MdVolunteerActivism />} title={t('viewProfile.volunteering.title')}>
+        <ListRow icon={<FaHeart />} label={t('viewProfile.volunteering.currentActivities')} items={veterans.currentActivities} />
+        <InfoRow icon={<FaBook />} label={t('viewProfile.volunteering.notParticipatingReason')} value={veterans.notParticipatingReason} />
+        <InfoRow icon={<FaCheck />} label={t('viewProfile.volunteering.isVolunteer')} value={veterans.isVolunteer ? t('common.yes') : veterans.isVolunteer === false ? t('common.no') : undefined} />
+        <ListRow icon={<FaUsers />} label={t('viewProfile.volunteering.volunteerAreas')} items={veterans.volunteerAreas} emojiMap={volunteerAreaEmojis} />
+        <InfoRow icon={<FaClock />} label={t('viewProfile.volunteering.volunteerFrequency')} value={veterans.volunteerFrequency} />
+        <InfoRow icon={<FaClock />} label={t('viewProfile.volunteering.volunteerHours')} value={veterans.volunteerHours} />
+        <ListRow icon={<FaCalendarAlt />} label={t('viewProfile.volunteering.volunteerDays')} items={veterans.volunteerDays} />
+        <InfoRow icon={<FaCheck />} label={t('viewProfile.volunteering.additionalVolunteering')} value={veterans.additionalVolunteering ? t('common.yes') : veterans.additionalVolunteering === false ? t('common.no') : undefined} />
+        <ListRow icon={<FaUsers />} label={t('viewProfile.volunteering.additionalVolunteerFields')} items={veterans.additionalVolunteerFields} />
+        <InfoRow icon={<FaClock />} label={t('viewProfile.volunteering.additionalVolunteerFrequency')} value={veterans.additionalVolunteerFrequency} />
+        <InfoRow icon={<FaClock />} label={t('viewProfile.volunteering.additionalVolunteerHours')} value={veterans.additionalVolunteerHours} />
+        <ListRow icon={<FaCalendarAlt />} label={t('viewProfile.volunteering.additionalVolunteerDays')} items={veterans.additionalVolunteerDays} />
+        <InfoRow icon={<FaCheck />} label={t('viewProfile.volunteering.needsConsultation')} value={veterans.needsConsultation ? t('common.yes') : veterans.needsConsultation === false ? t('common.no') : undefined} />
+        <ListRow icon={<FaUsers />} label={t('viewProfile.volunteering.consultationFields')} items={veterans.consultationFields} />
+        <InfoRow icon={<FaMapMarkerAlt />} label={t('viewProfile.volunteering.communitySettlement')} value={veterans.settlement} />
+        <InfoRow icon={<FaBook />} label={t('viewProfile.volunteering.communityProfessionalBackground')} value={veterans.professionalBackground} />
       </Section>
 
       {/* System Info */}
-      <Section icon={<FaInfoCircle />} title="System Info">
-        <InfoRow icon={<FaCheck />} label="Role" value={retireeData.role} />
-        <InfoRow icon={<FaCalendarAlt />} label="Joined" value={retireeData.createdAt && new Date(retireeData.createdAt).toLocaleDateString()} />
-        <InfoRow icon={<FaCalendarAlt />} label="Last Login" value={retireeData.lastLogin && new Date(retireeData.lastLogin).toLocaleDateString()} />
+      <Section icon={<FaInfoCircle />} title={t('viewProfile.systemInfo.title')}>
+        <InfoRow icon={<FaCheck />} label={t('viewProfile.systemInfo.role')} value={retireeData.role} />
+        <InfoRow icon={<FaCalendarAlt />} label={t('viewProfile.systemInfo.joined')} value={retireeData.createdAt && new Date(retireeData.createdAt).toLocaleDateString()} />
+        <InfoRow icon={<FaCalendarAlt />} label={t('viewProfile.systemInfo.lastLogin')} value={retireeData.lastLogin && new Date(retireeData.lastLogin).toLocaleDateString()} />
       </Section>
     </div>
   );

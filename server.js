@@ -154,6 +154,22 @@ const __dirname = path.dirname(__filename);
       }
     });
 
+    // Update Admin Email in Firebase Auth
+    app.post('/api/admins/update-email', async (req, res) => {
+      const { uid, newEmail } = req.body;
+
+      if (!uid || !newEmail) {
+        return res.status(400).json({ error: 'Missing uid or newEmail' });
+      }
+
+      try {
+        await admin.auth().updateUser(uid, { email: newEmail });
+        res.json({ success: true });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
     // Start the server (moved outside the async IIFE)
     app.listen(PORT, '127.0.0.1', () => {
       console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);

@@ -17,18 +17,21 @@ import {
 import useFetchAnalysisData from "../../../hooks/useFetchAnalysisData";
 import { useChartData } from "../../../hooks/useChartData";
 import { db } from '../../../firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import EmptyState from '../../EmptyState';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const Analysis = () => {
   const { users, jobs, events } = useFetchAnalysisData();
+  const { language } = useLanguage();
   // Real-time retiree counts for available settlements
   const [retireeCounts, setRetireeCounts] = useState({});
   const [availableSettlements, setAvailableSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -64,6 +67,15 @@ const Analysis = () => {
     return () => unsub();
   }, [availableSettlements]);
 
+  useEffect(() => {
+    // Fetch categories for mapping category IDs to names
+    const fetchCategories = async () => {
+      const snapshot = await getDocs(collection(db, 'categories'));
+      setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    };
+    fetchCategories();
+  }, []);
+
   // Prepare data for charts
   const townChartData = availableSettlements.map(name => ({
     name,
@@ -90,6 +102,41 @@ const Analysis = () => {
     availableSettlements || [],
     events || []
   );
+
+  // Helper to get category name by id
+  const getCategoryName = (id) => {
+    if (!id || id === "undefined") return 'Unknown';
+    const cat = categories.find(c => c.id === id);
+    if (!cat) return 'Unknown';
+    return cat.translations?.[language] || cat.translations?.en || cat.name || 'Unknown';
+  };
+
+  // Helper to get readable role name
+  const getRoleName = (role) => {
+    if (!role || role === "undefined") return 'Unknown';
+    const map = {
+      admin: 'Admin',
+      superadmin: 'Super Admin',
+      retiree: 'Retiree',
+      volunteer: 'Volunteer',
+    };
+    return map[role.toLowerCase()] || role.charAt(0).toUpperCase() + role.slice(1);
+  };
+  // Helper to get readable job status
+  const getStatusName = (status) => {
+    if (!status || status === "undefined") return 'Unknown';
+    const map = {
+      active: 'Active',
+      pending: 'Pending',
+      completed: 'Completed',
+      open: 'Open',
+      closed: 'Closed',
+      approved: 'Approved',
+      rejected: 'Rejected',
+      unknown: 'Unknown',
+    };
+    return map[status.toLowerCase()] || status.charAt(0).toUpperCase() + status.slice(1);
+  };
 
   if (loading) {
     return (
@@ -124,12 +171,12 @@ const Analysis = () => {
     return <div className="text-red-500 text-center py-8">{error}</div>;
   }
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const data = payload[0];
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-gray-800">{`${label}`}</p>
-          <p className="text-blue-600">{`Value: ${payload[0].value}`}</p>
+          <p className="font-semibold text-gray-800">{`${data.name}: ${data.value}`}</p>
         </div>
       );
     }
@@ -270,7 +317,7 @@ const Analysis = () => {
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <PieChart>
                   <Pie
-                    data={jobRequestsByStatus}
+                    data={jobRequestsByStatus.map(entry => ({ ...entry, name: getStatusName(entry.name) }))}
                     cx="50%"
                     cy="50%"
                     innerRadius={40}
@@ -306,7 +353,7 @@ const Analysis = () => {
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <PieChart>
                   <Pie
-                    data={usersByRoleDistribution}
+                    data={usersByRoleDistribution.map(entry => ({ ...entry, name: getRoleName(entry.name) }))}
                     cx="50%"
                     cy="50%"
                     innerRadius={40}
@@ -344,7 +391,7 @@ const Analysis = () => {
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
                 <PieChart>
                   <Pie
-                    data={eventsByCategoryData}
+                    data={eventsByCategoryData.map(entry => ({ ...entry, name: getCategoryName(entry.name) }))}
                     cx="50%"
                     cy="50%"
                     innerRadius={40}

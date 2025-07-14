@@ -10,8 +10,8 @@ i18n.use(initReactI18next).init({
     he: { translation: heTranslations },
     ar: { translation: arTranslations },
   },
-  lng: 'en', // Default language
-  fallbackLng: 'en', // Fallback language
+  lng: 'he', // Default language
+  fallbackLng: 'he', // Fallback language
   interpolation: {
     escapeValue: false,
   },

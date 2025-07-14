@@ -75,7 +75,7 @@ const AssignAdminModal = ({
       aria-modal="true"
       aria-labelledby="create-admin-title"
     >
-      <div className="fixed inset-0 bg-black bg-opacity-30 z-40"></div>
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/5 z-40"></div>
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-50">
         <button
           className="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-600"
