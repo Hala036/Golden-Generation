@@ -171,7 +171,7 @@ const BaseEventDetails = ({
               <div className="flex items-start">
                 <span className="flex items-center justify-center w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 mr-3"><FaCalendarAlt size={20}/></span>
                 <div>
-                  <h3 className="font-semibold text-gray-700">Date</h3>
+                  <h3 className="font-semibold text-gray-700">{t('eventDetails.date')}</h3>
                   <p className="text-gray-600">
                     {formatDate(event.startDate || event.date)}
                     {event.endDate && event.endDate !== (event.startDate || event.date) && ` - ${formatDate(event.endDate)}`}
@@ -182,19 +182,18 @@ const BaseEventDetails = ({
               <div className="flex items-start">
                 <span className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-700 mr-3"><FaClock size={20}/></span>
                 <div>
-                  <h3 className="font-semibold text-gray-700">Time</h3>
+                  <h3 className="font-semibold text-gray-700">{t('eventDetails.time')}</h3>
                   {event.timeFrom ? (
                     <p className="text-gray-600">
-                      From {event.timeFrom} {event.timeTo && `to ${event.timeTo}`}
-                    </p>
-                  ) : <p className="text-gray-500 italic">Not specified</p>}
+                      {t('eventDetails.from')} {event.timeFrom} {event.timeTo && `${t('eventDetails.to')} ${event.timeTo}`}                    </p>
+                  ) : <p className="text-gray-500 italic">{t('eventDetails.notSpecified')}</p>}
                 </div>
               </div>
 
               <div className="flex items-start">
                 <span className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-700 mr-3"><FaMapPin size={20}/></span>
                 <div>
-                  <h3 className="font-semibold text-gray-700">Location</h3>
+                  <h3 className="font-semibold text-gray-700">{t('eventDetails.location')}</h3>
                   <p className="text-gray-600">{event.location || 'N/A'}</p>
                 </div>
               </div>
@@ -202,8 +201,8 @@ const BaseEventDetails = ({
               <div className="flex items-start">
                 <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-700 mr-3"><FaInfoCircle size={20}/></span>
                 <div>
-                  <h3 className="font-semibold text-gray-700">Description</h3>
-                  <p className="text-gray-600 whitespace-pre-wrap">{event.description || 'No description provided.'}</p>
+                  <h3 className="font-semibold text-gray-700">{t('eventDetails.description')}</h3>
+                  <p className="text-gray-600 whitespace-pre-wrap">{event.description || t('eventDetails.noDescription')}</p>
                 </div>
               </div>
             </div>
@@ -215,7 +214,7 @@ const BaseEventDetails = ({
               <div className="bg-gray-50 rounded-xl shadow p-4 h-full flex flex-col">
                 <h3 className="font-semibold text-gray-700 mb-2 flex items-center">
                   <FaUsers className="text-gray-400 mr-3" size={20}/>
-                  Participants ({participants.length}/{event.maxParticipants || event.capacity || '∞'})
+                  {t('eventDetails.participants')} ({participants.length}/{event.maxParticipants || event.capacity || '∞'})
                 </h3>
                 <div className="border-b border-gray-200 mb-2" />
                 {userRole === 'admin' || userRole === 'superadmin' ? (
@@ -226,21 +225,23 @@ const BaseEventDetails = ({
                           {getInitials(p.username)}
                         </div>
                         <span className="font-medium text-gray-700">
-                          {p.username}{p.uid === currentUser?.uid ? ' (You)' : ''}
+                          {p.username}{p.uid === currentUser?.uid ? ` (${t("eventDetails.createdByMe")})` : ''}
                         </span>
                         {p.isCreator && (
-                          <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300" title="Event Creator">Creator</span>
+                          <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300" title={t("eventDetails.creator")}>
+                            {t("eventDetails.creator")}
+                          </span>
                         )}
                         <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${
                           p.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                           p.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                           'bg-gray-200 text-gray-700'
                         }`}>
-                          {t(`calendar.eventDetails.status.${p.status}`)}
+                          {t(`eventDetails.status.${p.status}`)}
                         </span>
                       </li>
                     )) : (
-                      <p className="text-center text-gray-500 italic p-4">No participants yet.</p>
+                      <p className="text-center text-gray-500 italic p-4">{t("eventDetails.noParticipants")}</p>
                     )}
                   </ul>
                 ) : (
@@ -266,14 +267,14 @@ const BaseEventDetails = ({
                 className="px-4 py-2 rounded font-semibold bg-yellow-500 hover:bg-yellow-600 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors duration-200 w-full md:w-auto"
                 aria-label="Edit Event"
               >
-                <FaEdit className="inline mr-2" /> Edit
+                <FaEdit className="inline mr-2" /> {t('eventDetails.editEvent')}
               </button>
               <button
                 onClick={handleDeleteEvent}
                 className="px-4 py-2 rounded font-semibold bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors duration-200 w-full md:w-auto"
                 aria-label="Delete Event"
               >
-                <FaTrash className="inline mr-2" /> Delete
+                <FaTrash className="inline mr-2" /> {t('eventDetails.deleteEvent')}
               </button>
             </>
           )}
@@ -290,8 +291,8 @@ const BaseEventDetails = ({
               disabled={loadingAction}
             >
               {loadingAction ? (
-                <span className="flex items-center gap-2 justify-center"><svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Processing...</span>
-              ) : isJoined ? 'Leave Event' : 'Join Event'}
+                <span className="flex items-center gap-2 justify-center"><svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>{t('eventDetails.processing')}</span>
+              ) : isJoined ? t('eventDetails.leaveEvent') : t('eventDetails.joinEvent')}
             </button>
           )}
         </div>
@@ -317,4 +318,4 @@ const BaseEventDetails = ({
   );
 };
 
-export default BaseEventDetails; 
+export default BaseEventDetails;

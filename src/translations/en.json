@@ -182,15 +182,15 @@
         "label": "Academic Degrees",
           "placeholder": "Enter your academic degrees",
           "highSchool": "High School",
-  "associateDegree": "Associate Degree",
-  "bachelorsDegree": "Bachelor's Degree",
-  "mastersDegree": "Master's Degree",
-  "phd": "PhD",
-  "postDoc": "Postdoctoral",
-  "professionalCert": "Professional Certificate",
-  "vocationalTraining": "Vocational Training",
-  "noFormalEducation": "No Formal Education",
-  "other": "Other"          
+    "associateDegree": "Associate Degree",
+    "bachelorsDegree": "Bachelor's Degree",
+    "mastersDegree": "Master's Degree",
+    "phd": "PhD",
+    "postDoc": "Postdoctoral",
+    "professionalCert": "Professional Certificate",
+    "vocationalTraining": "Vocational Training",
+    "noFormalEducation": "No Formal Education",
+    "other": "Other"          
         },
         "continue": "Continue",
         "jobCategories": "Job Categories",
@@ -534,6 +534,7 @@
         }
       }
     },
+
     "dashboard": {
       "welcome": "Welcome",
       "profile": "Profile",
@@ -872,6 +873,7 @@
       "cleanup": "Cleanup",
       "cleanupOrphanedEvents": "Cleanup ({{count}})",
       "cleanupOrphanedEventsTitle": "Clean up {{count}} orphaned events",
+      "searchPlaceholder": "Search categories by name, translations, or color...",
       "tableHeaders": {
         "category": "Category",
         "color": "Color",
@@ -1053,7 +1055,9 @@
       "participants": "Participants",
       "noParticipants": "No participants yet",
       "joined": "Joined",
-      "noPastEvents": "No past events"
+      "noPastEvents": "No past events",
+      "pastEvents": "Past Events",
+      "allSettlements": "All Settlements"
     },
     "filter": {
       "allCategories": "All Categories",
@@ -1140,7 +1144,8 @@
         "completedVolunteerService": "{{username}} completed volunteer service",
         "newServiceRequest": "New service request: {{title}}",
         "eventFullyBooked": "Event '{{title}}' fully booked",
-        "volunteerMatchCreated": "Volunteer match created for '{{title}}'"
+        "volunteerMatchCreated": "Volunteer match created for '{{title}}'",
+        "placeholder": "Search recent activity, events, or community members..."
       },
       "time": {
         "minutesAgo": "{{count}} minutes ago",
@@ -1278,6 +1283,7 @@
       "sendFailed": "Failed to send the message."
     }
   },
+  
   "calendar": {
     "title": "Retiree Activity Calendar",
     "welcomeBack": "Welcome back, {{name}} ({{role}})",
@@ -1471,6 +1477,8 @@
   "sidebar": {
     "home": "Home Page",
     "upcomingEvents": "Upcoming Events",
+    "categoryManagement": "Category Management",
+    "adninManagement": "Admin Management",
     "retirees": "Retirees",
     "volunteerRequests": "Volunteer Requests",
     "serviceRequests": "Service Requests",
@@ -1481,7 +1489,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "updatePastEvents": "Update Past Events"
   },
   "volunteer": {
     "tabs": {
@@ -1758,5 +1767,85 @@
     "confirm": {
       "delete": "Are you sure you want to permanently delete \"{{settlement}}\"? This action cannot be undone."
     }
+  },
+  "activityCalendar": {
+    "title": "Activity Calendar",
+    "createEvent": "Create Event",
+    "searchPlaceholder": "Search events...",
+    "advancedFilters": "Advanced Filters",
+    "clearFilters": "Clear Filters",
+    "showPastEvents": "Show Past Events",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "analytics": "Analytics",
+    "eventAnalytics": "Event Analytics",
+    "daily": "Daily",
+    "hourly": "Hourly",
+    "weekly": "Weekly",
+    "noEvents": "No events scheduled for this day",
+    "addEvent": "Add Event",
+    "eventColorGuide": "Event Color Guide",
+    "eventCategories": "Event Categories",
+    "general": "General",
+    "pastEvents": "Past events",
+    "fullCapacity": "Full capacity",
+    "specialEvents": "Special events",
+    "overlappingEvents": "Overlapping events",
+    "timelineLine": "Timeline line",
+    "currentTime": "Current time",
+    "status": "Status",
+    "allEvents": "All Events",
+    "createdByMe": "Created by Me",
+    "myEvents": "My Events",
+    "completedEvents": "Completed Events",
+    "pendingApproval": "Pending Approval",
+    "upcomingEvents": "Upcoming Events",
+    "pending": "Pending",
+    "approved": "Approved",
+    "myPending": "My Pending",
+    "myApproved": "My Approved",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "dateRange": "Date Range",
+    "allDates": "All Dates",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "nextWeek": "Next Week",
+    "thisMonth": "This Month",
+    "settlement": "Settlement",
+    "allSettlements": "All Settlements",
+    "mySettlement": "My Settlement",
+    "arrowPrev": "←",
+    "arrowNext": "→",
+    "tip": " Click on any event to view details. Past events are faded and cannot be interacted with.",
+    "tipTitle": "Tip:"
+  },
+  "eventDetails": {
+    "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled"
+    },
+    "creator": "Creator",
+    "noParticipants": "No participants yet.",
+    "participants": "Participants",
+    "date": "Date",
+    "time": "Time",
+    "from": "From",
+    "to": "To",
+    "location": "Location",
+    "description": "Description",
+    "noDescription": "No description provided.",
+    "notSpecified": "Not specified",
+    "createdByMe": "Created by me",
+    "editEvent": "Edit Event",
+    "deleteEvent": "Delete Event",
+    "joinEvent": "Join Event",
+    "leaveEvent": "Leave Event",
+    "processing": "Processing...",
+    "loading": "Loading upcoming details...",
+    "mySettlement": "My Settlement"
   }
 }

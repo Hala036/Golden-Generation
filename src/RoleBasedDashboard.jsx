@@ -3,6 +3,7 @@ import { auth, db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
+import { toast } from 'react-hot-toast';
 
 import Dashboard from './components/RetireeProfile/RetireeDashboard';
 import Shared from './components/SharedDashboard/SharedDashboard';
@@ -130,7 +131,9 @@ const RoleBasedDashboard = () => {
     case undefined:
       return <Login />;
     default:
-      return <div className="p-4">Unauthorized or unknown user.</div>;
+      toast.error("Unauthorized or unknown user.");
+      navigate('/login', { replace: true });
+      return null;
   }
 };
 

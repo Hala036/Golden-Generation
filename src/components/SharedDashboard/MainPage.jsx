@@ -49,15 +49,6 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
   const [recentActivity, setRecentActivity] = useState([]); // State for recent activity
   const [searchQuery, setSearchQuery] = useState(''); // State for search functionality
 
-  // Define recentActivity array
-  const defaultRecentActivity = [
-    { id: 1, action: 'Ruth Cohen joined the community', time: '5 minutes ago', type: 'join' },
-    { id: 2, action: 'Moshe Levi created the event "Garden Event"', time: '12 minutes ago', type: 'apply' },
-    { id: 3, action: 'Sarah Davis completed volunteer service', time: '1 hour ago', type: 'complete' },
-    { id: 4, action: 'New service request: Home cleaning', time: '2 hours ago', type: 'request' },
-    { id: 5, action: 'Event "Music Workshop" fully booked', time: '3 hours ago', type: 'event' }
-  ];
-
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => {
@@ -607,7 +598,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
           <input
             type="text"
             className="block w-full pl-10 pr-3 py-2 md:py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500 text-sm md:text-base"
-            placeholder="Search recent activity, events, or community members..."
+            placeholder= {i18n.t('dashboard.main.activity.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

@@ -183,7 +183,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ar">العربية</Select.Option>
+                {/* <Select.Option value="ar">العربية</Select.Option> */}
               </Select>
             </div>
           </div>
@@ -197,7 +197,11 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
 
         {/* Notifications Popup */}
         {showNotificationsPopup && (
-          <div className="absolute top-20 right-10 bg-white rounded-lg shadow-lg p-6 w-96 z-50">
+          <div
+            className={`absolute top-20 ${
+              language === "he" || language === "ar" ? "left-10" : "right-10"
+            } bg-white rounded-lg shadow-lg p-6 w-96 z-50`}
+>
             <div className="flex justify-between items-center mb-4">
 
               <button
