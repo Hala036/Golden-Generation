@@ -132,7 +132,15 @@ const RoleBasedDashboard = () => {
       return <Login />;
     default:
       toast.error("Unauthorized or unknown user.");
-      return <Login />;
+      const auth = getAuth();
+      signOut(auth)
+        .then(() => {
+          navigate('/login', { replace: true });
+        })
+        .catch((error) => {
+          console.error("Error during sign out:", error);
+        });
+      return null; // Prevent rendering anything while redirecting
   }
 };
 
