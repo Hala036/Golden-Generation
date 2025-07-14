@@ -632,7 +632,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
 
       <div className="grid gap-4 md:gap-8 lg:grid-cols-3 w-full">
         {/* Recent Activity Feed */}
-        <div className="lg:col-span-2 w-full">
+        <div className="lg:col-span-1 flex flex-col w-full min-w-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 w-full">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
