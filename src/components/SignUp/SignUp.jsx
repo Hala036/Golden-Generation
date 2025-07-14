@@ -35,7 +35,6 @@ const SignUp = () => {
   } = useSignupStore();
 
   const [creating, setCreating] = useState(false);
-  const [credentialsError, setCredentialsError] = useState(null);
 
   // Reset store when component mounts
   useEffect(() => {
@@ -52,75 +51,66 @@ const SignUp = () => {
         // Debug log for idVerificationData
         console.log('idVerificationData before user creation:', idVerificationData);
         // 1. Create user in Firebase Auth
-        try {
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            credentialsData.email,
-            credentialsData.password
-          );
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          credentialsData.email,
+          credentialsData.password
+        );
 
-          // 2. Prepare user data
-          const userData = {
-            idVerification: {
-              ...idVerificationData,
-              settlement: idVerificationData.settlement // ensure settlement is nested
-            },
-            credentials: {
-              email: credentialsData.email,
-              username: credentialsData.username
-            },
-            personalDetails: personalData,
-            workBackground: workData || {},
-            lifestyle: lifestyleData || {},
-            veteransCommunity: veteransData || {},
-            role: 'retiree',
-            createdAt: new Date().toISOString(),
-          };
+        // 2. Prepare user data
+        const userData = {
+          idVerification: {
+            ...idVerificationData,
+            settlement: idVerificationData.settlement // ensure settlement is nested
+          },
+          credentials: {
+            email: credentialsData.email,
+            username: credentialsData.username
+          },
+          personalDetails: personalData,
+          workBackground: workData || {},
+          lifestyle: lifestyleData || {},
+          veteransCommunity: veteransData || {},
+          role: 'retiree',
+          createdAt: new Date().toISOString(),
+        };
 
-          // Clean undefined values before saving
-          const cleanedUserData = removeUndefined(userData);
+        // Clean undefined values before saving
+        const cleanedUserData = removeUndefined(userData);
 
-          // 3. Write to Firestore
-          await setDoc(doc(db, 'users', userCredential.user.uid), cleanedUserData);
+        // 3. Write to Firestore
+        await setDoc(doc(db, 'users', userCredential.user.uid), cleanedUserData);
 
-          // 4. Create username document
-          await setDoc(doc(db, 'usernames', credentialsData.username.toLowerCase()), {
-            uid: userCredential.user.uid
-          });
+        // 4. Create username document
+        await setDoc(doc(db, 'usernames', credentialsData.username.toLowerCase()), {
+          uid: userCredential.user.uid
+        });
 
-          // 5. Send welcome notification
-          const welcomeMessage = `${t('auth.signup.welcomeMessage')} ${credentialsData.username}! ${t('auth.signup.welcomeSubmessage')}`;
-          await triggerNotification({
-            message: welcomeMessage,
-            target: [userCredential.user.uid], // Send notification to the newly created user
-            link: '/dashboard', // Link to the dashboard
-            createdBy: 'system', // System-generated notification
-            type: 'info' // Notification type
-          });
+        // 5. Send welcome notification
+        const welcomeMessage = `${t('auth.signup.welcomeMessage')} ${credentialsData.username}! ${t('auth.signup.welcomeSubmessage')}`;
+        await triggerNotification({
+          message: welcomeMessage,
+          target: [userCredential.user.uid], // Send notification to the newly created user
+          link: '/dashboard', // Link to the dashboard
+          createdBy: 'system', // System-generated notification
+          type: 'info' // Notification type
+        });
 
-          // 6. Sign in the user (optional, for direct dashboard access)
-          await signInWithEmailAndPassword(auth, credentialsData.email, credentialsData.password);
+        // 6. Sign in the user (optional, for direct dashboard access)
+        await signInWithEmailAndPassword(auth, credentialsData.email, credentialsData.password);
 
-          // Fetch user data and set role in Zustand
-          const userDataFromFirestore = await getUserData(userCredential.user.uid);
-          if (userDataFromFirestore?.role) {
-            setRole(userDataFromFirestore.role);
-          }
-
-          // 7. Success handling
-          resetStore();
-          toast.success(t('auth.signup.accountCreatedSuccess'), { id: 'signup' });
-
-          // 8. Navigate to dashboard
-          navigate('/dashboard');
-        } catch (error) {
-          if (error.code === 'auth/email-already-in-use') {
-            setCredentialsError({ field: 'email', message: t('auth.credentials.email.inUse') });
-            setStepValidation(1, false); // Mark credentials step as invalid
-            return;
-          }
-          throw error;
+        // Fetch user data and set role in Zustand
+        const userDataFromFirestore = await getUserData(userCredential.user.uid);
+        if (userDataFromFirestore?.role) {
+          setRole(userDataFromFirestore.role);
         }
+
+        // 7. Success handling
+        resetStore();
+        toast.success(t('auth.signup.accountCreatedSuccess'), { id: 'signup' });
+
+        // 8. Navigate to dashboard
+        navigate('/dashboard');
       } catch (error) {
         console.error('Signup error:', error);
         toast.error(error.message || t('auth.signup.accountCreationFailed'), { id: 'signup' });
@@ -136,7 +126,7 @@ const SignUp = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      navigate('/login');
+      navigate(-1); // Go back to previous page in history
     }
   };
 
@@ -145,7 +135,7 @@ const SignUp = () => {
       case 0:
         return <IDVerification onComplete={() => handleStepComplete(0)} />;
       case 1:
-        return <Credentials onComplete={() => handleStepComplete(1)} externalError={credentialsError} setExternalError={setCredentialsError} />;
+        return <Credentials onComplete={() => handleStepComplete(1)} />;
       case 2:
         return <PersonalDetails onComplete={() => handleStepComplete(2)} />;
       case 3:

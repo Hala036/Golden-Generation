@@ -12,19 +12,32 @@ import { validateEmail, validateUsername, validatePassword, validateConfirmPassw
 import PasswordInput from '../PasswordInput';
 
 
-const Credentials = ({ onComplete, externalError, setExternalError }) => {
+const Credentials = ({ onComplete }) => {
   const { t } = useLanguage();
 
   const [errors, setErrors] = useState({});
   const [isChecking, setIsChecking] = useState(false);
   const { credentialsData, updateCredentialsData } = useSignupStore();
 
-  // Show external error (from parent) in email field
-  React.useEffect(() => {
-    if (externalError && externalError.field === 'email') {
-      setErrors(prev => ({ ...prev, email: externalError.message }));
+  // Debounced email check
+  const checkEmailAvailability = debounce(async (email) => {
+    if (!email) return;
+    setIsChecking(true);
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('credentials.email', '==', email.toLowerCase()), where("role", "==", "retiree"));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setErrors(prev => ({ ...prev, email: t('auth.credentials.email.inUse') }));
+        toast.error(t('auth.credentials.email.inUse'));
+      }
+    } catch (error) {
+      console.error('Error checking email:', error);
+      toast.error(t('auth.credentials.validation.error'));
+    } finally {
+      setIsChecking(false);
     }
-  }, [externalError]);
+  }, 500);
 
   // Debounced username check
   const checkUsernameAvailability = debounce(async (username) => {
@@ -49,26 +62,20 @@ const Credentials = ({ onComplete, externalError, setExternalError }) => {
     const { name, value } = e.target;
     updateCredentialsData({ [name]: value });
 
-    if (name === 'email') {
-      if (errors.email) {
-        setErrors(prev => ({ ...prev, email: '' }));
-      }
-      if (setExternalError) setExternalError(null);
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
 
     if (name === 'username' && value.length >= 3) {
       checkUsernameAvailability(value);
+    } else if (name === 'email') {
+      checkEmailAvailability(value);
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
     const { email, password, confirmPassword, username } = credentialsData;
-
-    // Email error from async check
-    if (errors.email) {
-      newErrors.email = errors.email;
-    }
 
     // Explicit translation-based validation (added)
     if (!email) {
@@ -107,17 +114,6 @@ const Credentials = ({ onComplete, externalError, setExternalError }) => {
     toast.loading(t('auth.credentials.validation.processing'), { id: 'credentials-check' });
 
     try {
-      // Check if email is already in use (only on submit)
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('credentials.email', '==', credentialsData.email.toLowerCase()), where("role", "==", "retiree"));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        setErrors(prev => ({ ...prev, email: t('auth.credentials.email.inUse') }));
-        toast.error(t('auth.credentials.email.inUse'), { id: 'credentials-check' });
-        setIsChecking(false);
-        return;
-      }
-
       const [formIsValid, usernameAvailable] = await Promise.all([
         validateForm(),
         checkUsernameFinal(credentialsData.username)
@@ -125,14 +121,12 @@ const Credentials = ({ onComplete, externalError, setExternalError }) => {
 
       if (!formIsValid) {
         toast.error(t('auth.credentials.validation.fix'), { id: 'credentials-check' });
-        setIsChecking(false);
         return;
       }
 
       if (!usernameAvailable) {
         setErrors(prev => ({ ...prev, username: t('auth.credentials.username.inUse') }));
         toast.error(t('auth.credentials.username.inUse'), { id: 'credentials-check' });
-        setIsChecking(false);
         return;
       }
 
@@ -141,7 +135,6 @@ const Credentials = ({ onComplete, externalError, setExternalError }) => {
         if (methods.length > 0) {
           setErrors(prev => ({ ...prev, email: t('auth.credentials.email.inUse') }));
           toast.error(t('auth.credentials.email.inUse'), { id: 'credentials-check' });
-          setIsChecking(false);
           return;
         }
       } catch (error) {
@@ -149,7 +142,6 @@ const Credentials = ({ onComplete, externalError, setExternalError }) => {
         if (error.code === 'auth/invalid-email') {
           setErrors(prev => ({ ...prev, email: t('auth.credentials.email.invalid') }));
           toast.error(t('auth.credentials.email.invalid'), { id: 'credentials-check' });
-          setIsChecking(false);
           return;
         }
         throw error;
