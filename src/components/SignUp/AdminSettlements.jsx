@@ -575,7 +575,7 @@ const AdminSettlements = () => {
         </div>
       </div>
       {/* Availability Filter Buttons */}
-      <div className="mb-6 flex gap-3 justify-center">
+      <div className="flex flex-wrap gap-2 mb-6 flex gap-3 justify-center">
         <button
           onClick={() => setAvailabilityFilter('all')}
           className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm transition font-semibold
@@ -656,7 +656,7 @@ const AdminSettlements = () => {
         {/* Responsive settlements list: mobile = cards, md+ = grid */}
         <div>
           {/* Mobile: single column, compact cards */}
-          <div className="block md:hidden w-full min-w-0 flex flex-col gap-3 items-center">
+          <div className="block md:hidden w-full flex flex-col gap-3 items-center">
             {paginatedSettlements.map((settlement, index) => {
               const enabled = availableSettlements.includes(settlement.name);
               const adminInfo = Object.entries(settlementAdmins).find(
@@ -665,8 +665,8 @@ const AdminSettlements = () => {
               return (
                 <div
                   key={`mobile-${index}-${settlement.name}-${settlement.english_name || ''}-${settlement.shem_napa || ''}`}
-                  className="rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm min-w-[220px]"
-                  style={{ minWidth: '220px', backgroundColor: enabled ? '#f6fffa' : '#f9fafb' }}
+                  className="rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
+                  style={{ backgroundColor: enabled ? '#f6fffa' : '#f9fafb' }}
                 >
                   <div className="flex items-center gap-3 mb-1">
                     <div className={`w-6 h-6 rounded-full border ${enabled ? 'border-green-400' : 'border-gray-300'}`} style={{ backgroundColor: enabled ? '#bbf7d0' : '#f3f4f6' }}></div>
