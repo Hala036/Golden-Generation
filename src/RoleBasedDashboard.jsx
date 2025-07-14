@@ -12,39 +12,39 @@ import SuperAdminDashboard from './components/SuperAdminProfile/SuperAdminDashbo
 import Login from './components/Login';
 
 // Enhanced Unauthorized Page as a standalone component
-const UnauthorizedPage = () => {
-  const navigate = useNavigate();
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (!user) {
-        navigate('/login', { replace: true });
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-yellow-50 to-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
-        <div className="mb-4">
-          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mx-auto text-yellow-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" /></svg>
-        </div>
-        <h1 className="text-2xl font-bold text-red-600 mb-2">Unauthorized</h1>
-        <p className="mb-4 text-gray-700">You do not have permission to view this page.<br/>Please log in with an authorized account.</p>
-        <button
-          onClick={async () => {
-            const auth = getAuth();
-            await signOut(auth);
-            window.location.href = '/login';
-          }}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded font-semibold shadow"
-        >
-          Go back to login
-        </button>
-      </div>
-    </div>
-  );
-};
+// const UnauthorizedPage = () => {
+//   const navigate = useNavigate();
+//   useEffect(() => {
+//     const auth = getAuth();
+//     const unsubscribe = auth.onAuthStateChanged(user => {
+//       if (!user) {
+//         navigate('/login', { replace: true });
+//       }
+//     });
+//     return () => unsubscribe();
+//   }, [navigate]);
+//   return (
+//     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-yellow-50 to-gray-100">
+//       <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
+//         <div className="mb-4">
+//           <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mx-auto text-yellow-400"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" /></svg>
+//         </div>
+//         <h1 className="text-2xl font-bold text-red-600 mb-2">Unauthorized</h1>
+//         <p className="mb-4 text-gray-700">You do not have permission to view this page.<br/>Please log in with an authorized account.</p>
+//         <button
+//           onClick={async () => {
+//             const auth = getAuth();
+//             await signOut(auth);
+//             window.location.href = '/login';
+//           }}
+//           className="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded font-semibold shadow"
+//         >
+//           Go back to login
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
 const RoleBasedDashboard = () => {
   const [role, setRole] = useState(null);
@@ -132,8 +132,7 @@ const RoleBasedDashboard = () => {
       return <Login />;
     default:
       toast.error("Unauthorized or unknown user.");
-      navigate('/login', { replace: true });
-      return null;
+      return <Login />;
   }
 };
 
