@@ -1915,6 +1915,12 @@
       "role": "Role",
       "joined": "Joined",
       "lastLogin": "Last Login"
+    },
+    "sendMessage": {
+      "title": "Send Message",
+      "placeholder": "Write a message to {{name}}",
+      "button": "Send",
+      "successMessage": "Message sent successfully!"
     }
   }
 }

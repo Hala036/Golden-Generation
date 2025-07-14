@@ -1847,6 +1847,12 @@
       "role": "תפקיד",
       "joined": "הצטרף",
       "lastLogin": "כניסה אחרונה"
+    },
+    "sendMessage": {
+      "title": "שלח הודעה",
+      "placeholder": "כתוב הודעה ל{{name}}",
+      "button": "שלח",
+      "successMessage": "ההודעה נשלחה בהצלחה!"
     }
   }
 }
