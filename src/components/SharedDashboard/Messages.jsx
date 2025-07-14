@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../../firebase';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaVideo, FaComments, FaMicrophone, FaMicrophoneSlash, FaPhoneSlash } from 'react-icons/fa';
+import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaComments } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import profile from '../../assets/profile.jpeg';
 import { useTheme } from '../../context/ThemeContext';
@@ -171,7 +171,7 @@ const Messages = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const messagesEndRef = useRef(null);
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { theme } = useTheme();
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -472,7 +472,7 @@ const Messages = () => {
                 alt={selectedUser?.username} 
                 className="w-16 h-16 rounded-full object-cover border-2 border-orange-500"
               />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
+              {/* <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div> */}
             </div>
             <div>
               <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{selectedUser?.username}</h2>
@@ -525,7 +525,7 @@ const Messages = () => {
                 <div className="flex items-center space-x-3">
                   <div className="relative">
                     <img src={sender?.avatarUrl || profile} alt={sender?.username} className="w-12 h-12 rounded-full object-cover border-2 border-orange-500" />
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                    {/* <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div> */}
                   </div>
                   <div>
                     <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{sender?.username}</p>
@@ -559,7 +559,7 @@ const Messages = () => {
     <div className="animate-pulse">
       {[1, 2, 3].map((i) => (
         <div key={i} className="flex items-center p-4 border-b border-gray-100">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4 ml-4"></div>
           <div className="flex-1">
             <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
             <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -588,7 +588,7 @@ const Messages = () => {
     <div className="animate-pulse">
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className="flex items-center p-4 border-b border-gray-100">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4 ml-4"></div>
           <div className="flex-1">
             <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
             <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -616,16 +616,19 @@ const Messages = () => {
 
       {/* Chat List */}
       {(!selectedChat || isMediumScreen) && (
-        <div className={`w-full md:w-1/3 lg:w-1/4 border-r ${isMediumScreen ? 'block' : 'md:block hidden'} ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'bg-gray-50'}`}>
+        <div className={`w-full md:w-1/3 lg:w-1/4 border-r border-l ${isMediumScreen ? 'block' : 'md:block hidden'} ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'bg-gray-50'}`}>
           {/* Search Bar */}
-          <div className={`p-4 border-b sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : 'bg-white'}`}>
+          <div 
+            className={`p-4 border-b sticky top-0 z-10 'bg-white`}
+            style={{ height: '70px' }}
+          >
             <div className="relative">
               <input
                 type="text"
                 placeholder={t('dashboard.messages.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-10 pr-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
+                className={`w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
                   theme === 'dark' 
                     ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-[#FFD966]' 
                     : 'border-gray-300 bg-white placeholder-gray-500 focus:border-orange-500'
@@ -651,8 +654,8 @@ const Messages = () => {
                   }`}
                 >
                   <div className="relative">
-                    <img src={profile} alt={user.username} className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-orange-500" />
-                    <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                    <img src={profile} alt={user.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
+                    {/* <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
                   </div>
                   <div className="flex-1">
                     <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{user.username}</h3>
@@ -680,8 +683,8 @@ const Messages = () => {
                     }`}
                   >
                     <div className="relative">
-                      <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-orange-500" />
-                      <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                      <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
+                      {/* <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-center">
@@ -706,7 +709,10 @@ const Messages = () => {
           {selectedChat ? (
             <>
               {/* Chat Header */}
-              <div className={`p-4 border-b sticky top-0 z-10 flex items-center justify-between shadow-sm ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : 'bg-white'}`}>
+              <div 
+                className={`p-4 border-b sticky top-0 z-10 flex items-center justify-between shadow-sm bg-white`}
+                style={{ height: '70px' }}
+              >
                 <div className="flex items-center">
                   <div className="relative">
                     <img
@@ -714,7 +720,7 @@ const Messages = () => {
                       alt="Profile"
                       className="w-10 h-10 rounded-full mr-4 object-cover border-2 border-orange-500"
                     />
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                    {/* <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
                   </div>
                   <div>
                     <h2 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
@@ -726,9 +732,6 @@ const Messages = () => {
                 <div className="flex items-center space-x-4">
                   <button className={`p-2 transition-colors ${theme === 'dark' ? 'text-gray-400 hover:text-[#FFD966]' : 'text-gray-600 hover:text-orange-500'}`} onClick={handleInitiateCall} title="Start Audio Call">
                     <FaPhone />
-                  </button>
-                  <button className={`p-2 transition-colors ${theme === 'dark' ? 'text-gray-400 hover:text-[#FFD966]' : 'text-gray-600 hover:text-orange-500'}`}>
-                    <FaEllipsisV />
                   </button>
                 </div>
               </div>
@@ -755,15 +758,13 @@ const Messages = () => {
                         className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4 items-end`}
                       >
                         {!isMe && (
-                          <img src={otherUser?.avatarUrl || profile} alt="avatar" className="w-8 h-8 rounded-full mr-2 border border-orange-300" />
+                          <img src={otherUser?.avatarUrl || profile} alt="avatar" className="w-8 h-8 rounded-full ml-2 mr-2 border border-orange-300" />
                         )}
                         <div
                           className={`max-w-[70%] rounded-2xl p-3 shadow-sm ${
                             isMe
-                              ? 'bg-orange-500 text-white rounded-tr-none'
-                              : theme === 'dark' 
-                                ? 'bg-gray-700 text-gray-200 border-gray-600 rounded-tl-none' 
-                                : 'bg-white text-gray-800 border-orange-100 rounded-tl-none'
+                              ? 'bg-orange-500 text-white ' + (i18n.language === 'en' ? 'rounded-tr-none' : 'rounded-tl-none')
+                              : (i18n.language === 'en' ? 'rounded-tl-none' : 'rounded-tr-none')
                           }`}
                         >
                           <p className="text-sm break-words">{message.text}</p>
@@ -772,7 +773,7 @@ const Messages = () => {
                           </span>
                         </div>
                         {isMe && (
-                          <img src={profile} alt="avatar" className="w-8 h-8 rounded-full ml-2 border border-orange-300" />
+                          <img src={profile} alt="avatar" className="w-8 h-8 rounded-full ml-2 mr-2 border border-orange-300" />
                         )}
                       </div>
                     );
@@ -815,7 +816,6 @@ const Messages = () => {
             <EmptyState
               icon={<FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
               title={t('dashboard.messages.selectChat')}
-              message={t('dashboard.messages.chooseConversation')}
               className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}
             />
           )}
@@ -831,17 +831,17 @@ const Messages = () => {
               <div className="flex items-center">
                 <button 
                   onClick={() => setSelectedChat(null)}
-                  className={`mr-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                  className={`mr-2 ml-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                 >
-                  ←
+                  {t('dashboard.arrowClose')}
                 </button>
                 <div className="relative">
                   <img
                     src={profile}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full mr-4 object-cover border-2 border-orange-500"
+                    className="w-10 h-10 rounded-full mr-2 ml-2 object-cover border-2 border-orange-500"
                   />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                  {/* <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
                 </div>
                 <div>
                   <h2 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
@@ -849,6 +849,11 @@ const Messages = () => {
                   </h2>
                   <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Online</p>
                 </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <button className={`p-2 transition-colors 'text-gray-600 hover:text-orange-500`} onClick={handleInitiateCall} title="Start Audio Call">
+                  <FaPhone />
+                </button>
               </div>
             </div>
 
@@ -862,10 +867,8 @@ const Messages = () => {
                   <div
                     className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${
                       message.senderId === auth.currentUser?.uid
-                        ? 'bg-orange-500 text-white rounded-tr-none'
-                        : theme === 'dark' 
-                          ? 'bg-gray-700 text-gray-200 rounded-tl-none' 
-                          : 'bg-white text-gray-800 rounded-tl-none'
+                        ? 'bg-orange-500 text-white ' + (i18n.language === 'en' ? 'rounded-tr-none' : 'rounded-tl-none')
+                        : (i18n.language === 'en' ? 'rounded-tl-none' : 'rounded-tr-none')
                     }`}
                   >
                     <p className="text-sm">{message.text}</p>
@@ -904,34 +907,77 @@ const Messages = () => {
             </form>
           </>
         ) : (
-          <div className={`overflow-y-auto ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
-            {/* Render users list or conversations list */}
-            {conversations.map(conv => {
-              const otherUser = users.find(u => 
-                u.id === conv.participants.find(p => p !== auth.currentUser?.uid)
-              );
-              return (
-                <div
-                  key={conv.id}
-                  onClick={() => setSelectedChat(conv)}
-                  className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+          <>
+            {/* Search Bar for Mobile */}
+            <div className={`p-4 border-b sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : 'bg-white'}`}>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={t('dashboard.messages.search')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
                     theme === 'dark' 
-                      ? 'border-gray-700 hover:bg-gray-700' 
-                      : 'border-gray-100 hover:bg-gray-100'
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-[#FFD966]' 
+                      : 'border-gray-300 bg-white placeholder-gray-500 focus:border-orange-500'
                   }`}
-                >
-                  <div className="relative">
-                    <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-orange-500" />
-                    <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                />
+                <FaSearch className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
+              </div>
+            </div>
+
+            {/* Render users list or conversations list */}
+            <div className={`overflow-y-auto ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
+              {searchQuery ? (
+                filteredUsers.map(user => (
+                  <div
+                    key={user.id}
+                    onClick={() => startNewChat(user.id)}
+                    className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+                      theme === 'dark' 
+                        ? 'hover:bg-gray-700 border-gray-700' 
+                        : 'hover:bg-gray-100 border-gray-100'
+                    }`}
+                  >
+                    <div className="relative">
+                      <img src={profile} alt={user.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
+                      {/* <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{user.username}</h3>
+                      <p className={`text-sm truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{user.email}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className={`font-semibold truncate ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{otherUser?.username}</h3>
-                    <p className={`text-sm truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{conv.lastMessage}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                ))
+              ) : (
+                conversations.map(conv => {
+                  const otherUser = users.find(u => 
+                    u.id === conv.participants.find(p => p !== auth.currentUser?.uid)
+                  );
+                  return (
+                    <div
+                      key={conv.id}
+                      onClick={() => setSelectedChat(conv)}
+                      className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+                        theme === 'dark' 
+                          ? 'border-gray-700 hover:bg-gray-700' 
+                          : 'border-gray-100 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className="relative">
+                        <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
+                        {/* <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-semibold truncate ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{otherUser?.username}</h3>
+                        <p className={`text-sm truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{conv.lastMessage}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

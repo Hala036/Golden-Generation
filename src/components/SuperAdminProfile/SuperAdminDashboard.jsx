@@ -87,7 +87,7 @@ const RetireeDashboard = () => {
     service: <ServiceRequests />,
     analysis: <Analysis />,
     eventRequests: <EventRequests />,
-    addSettlements: <AdminSettlements />,
+    addSettlements: <AdminSettlements setSelected={setSelected} />,
     admins: <AdminManagement />,
     categoryManagement: <CategoryManagement />,
   };

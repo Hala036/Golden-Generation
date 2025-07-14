@@ -40,7 +40,7 @@
       "imageAlt": "זוג נהנה מאירוע"
     },
     "signup": {
-      "logo": "דור הזהב",
+      "logo": "תור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
       "continue": "המשך",
@@ -583,7 +583,7 @@
         },
         "announcements": {
           "welcome": {
-            "title": "ברוכים הבאים לדור הזהב!",
+            "title": "ברוכים הבאים לתור הזהב!",
             "content": "אנחנו שמחים לקבל אתכם על הסיפון."
           },
           "darkMode": {
@@ -788,7 +788,7 @@
         "expand": "הרחב סרגל צד"
       },
       "topbar": {
-        "title": "דור הזהב"
+        "title": "תור הזהב"
       },
       "main": {
         "noComponent": "לא נמצא רכיב"
@@ -857,7 +857,54 @@
       "add": "הוסף",
       "loadError": "נכשל בטעינת היישובים.",
       "updateError": "נכשל בעדכון היישוב.",
-      "addError": "נכשל בהוספת היישוב."
+      "addError": "נכשל בהוספת היישוב.",
+      "showingSettlements": "מציג {{count}} יישובים",
+      "deleteConfirmation": {
+        "title": "מחק יישוב",
+        "message": "האם אתה בטוח שברצונך למחוק את \"{{settlementName}}\"? פעולה זו אינה ניתנת לביטול."
+      },
+      "editSettlement": {
+        "title": "ערוך יישוב",
+        "name": "שם",
+        "englishName": "שם באנגלית",
+        "region": "אזור",
+        "municipality": "מועצה",
+        "office": "לשכה",
+        "save": "שמור",
+        "cancel": "בטל"
+      },
+      "pagination": {
+        "previous": "הקודם ←",
+        "next": "→ הבא",
+        "pageInfo": "עמוד {{current}} מתוך {{total}}"
+      },
+      "filters": {
+        "all": "הכל",
+        "available": "זמין",
+        "disabled": "מושבת"
+      },
+      "search": {
+        "placeholder": "חפש יישובים..."
+      },
+      "upload": {
+        "replaceAll": "החלף הכל",
+        "replaceWarning": "זה ימחק הכל!",
+        "uploadButton": "העלה",
+        "uploading": "מעלה...",
+        "success": "היישובים הועלו בהצלחה!",
+        "error": "נכשל בהעלאת היישובים."
+      },
+      "actions": {
+        "enable": "הפעל יישוב",
+        "disable": "השבת יישוב",
+        "addEdit": "הוסף/ערוך",
+        "admins": "מנהלים"
+      },
+      "emptyState": {
+        "title": "לא נמצאו יישובים",
+        "message": "נסה להתאים את החיפוש או המסננים.",
+        "clearSearch": "נקה חיפוש"
+      }
     },
     "categoryManagement": {
       "title": "ניהול קטגוריות",
@@ -1089,11 +1136,12 @@
       "arabic": "ערבית"
     },
     "header": {
-      "title": "דור הזהב",
+      "title": "תור הזהב",
       "logout": "התנתק"
     },
     "messages": {
       "title": "הודעות",
+      "startConversation":"התחל שיחה",
       "search": "חפש משתמשים...",
       "noMessages": "עדיין אין הודעות.",
       "selectChat": "בחר צ'אט כדי להתחיל להחליף הודעות.",
@@ -1194,6 +1242,9 @@
       "gender": "מין",
       "job": "עיסוק",
       "settlement": "שכונה",
+      "profile": "פרופיל",
+      "sendMessage": "שלח הודעה",
+      "backToProfile": "חזור לפרופיל שלי",
       "filters": {
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
@@ -1780,5 +1831,76 @@
     "processing": "מעבד...",
     "loading": "טוען אירועים קרובים...",
     "mySettlement": "היישוב שלי"
+  },
+  "viewProfile": {
+    "profileHeader": {
+      "age": "גיל",
+      "gender": "מגדר",
+      "settlement": "יישוב"
+    },
+    "personalInfo": {
+      "title": "מידע אישי",
+      "idNumber": "מספר זהות",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "address": "כתובת",
+      "maritalStatus": "מצב משפחתי",
+      "education": "השכלה",
+      "nativeLanguage": "שפת אם",
+      "originCountry": "ארץ מוצא"
+    },
+    "credentials": {
+      "title": "אישורים",
+      "username": "שם משתמש",
+      "email": "אימייל"
+    },
+    "workBackground": {
+      "title": "רקע מקצועי",
+      "jobTitle": "תפקיד",
+      "industry": "תעשייה",
+      "yearsOfExperience": "שנות ניסיון",
+      "retired": "גמלאי",
+      "professionalBackground": "רקע מקצועי"
+    },
+    "lifestyle": {
+      "title": "אורח חיים",
+      "hobbies": "תחביבים",
+      "interests": "תחומי עניין",
+      "languagesSpoken": "שפות מדוברות",
+      "computerAbility": "יכולת מחשב",
+      "sportActivityLevel": "רמת פעילות ספורטיבית",
+      "weeklyScheduleOccupancy": "תפוסת לוח זמנים שבועי"
+    },
+    "volunteering": {
+      "title": "התנדבות וקהילה",
+      "currentActivities": "פעילויות נוכחיות",
+      "notParticipatingReason": "סיבת אי השתתפות",
+      "isVolunteer": "מתנדב",
+      "volunteerAreas": "תחומי התנדבות",
+      "volunteerFrequency": "תדירות התנדבות",
+      "volunteerHours": "שעות התנדבות",
+      "volunteerDays": "ימי התנדבות",
+      "additionalVolunteering": "התנדבות נוספת",
+      "additionalVolunteerFields": "תחומי התנדבות נוספים",
+      "additionalVolunteerFrequency": "תדירות התנדבות נוספת",
+      "additionalVolunteerHours": "שעות התנדבות נוספות",
+      "additionalVolunteerDays": "ימי התנדבות נוספים",
+      "needsConsultation": "זקוק לייעוץ",
+      "consultationFields": "תחומי ייעוץ",
+      "communitySettlement": "יישוב קהילתי",
+      "communityProfessionalBackground": "רקע מקצועי קהילתי"
+    },
+    "systemInfo": {
+      "title": "מידע מערכת",
+      "role": "תפקיד",
+      "joined": "הצטרף",
+      "lastLogin": "כניסה אחרונה"
+    },
+    "sendMessage": {
+      "title": "שלח הודעה",
+      "placeholder": "כתוב הודעה ל{{name}}",
+      "button": "שלח",
+      "successMessage": "ההודעה נשלחה בהצלחה!"
+    }
   }
 }

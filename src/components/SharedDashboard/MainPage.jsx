@@ -552,8 +552,9 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6 w-full">
       {/* Header */}
       <div className="mb-4 md:mb-8 w-full">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-2 md:gap-0">
-          <div className="flex items-center gap-2 md:gap-4 md:w-auto">
+        <div className="flex flex-wrap md:items-center md:justify-between w-full gap-2 md:gap-4">
+          {/* Welcome Section */}
+          <div className="flex items-center gap-2 md:gap-4 md:w-auto w-full">
             <div>
               <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2 truncate">
                 {i18n.t('dashboard.main.welcome', { userName: userName })}
@@ -563,6 +564,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               </p>
             </div>
           </div>
+
           {/* Quick Actions */}
           <div className="grid gap-1 md:gap-2 w-full md:w-auto grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 flex-shrink-0">
             {allQuickActions.map((action, index) => (
@@ -577,8 +579,9 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
               </button>
             ))}
           </div>
+
           {/* Clock for desktop only */}
-          <div className="text-right hidden md:block flex-shrink-0">
+          <div className="text-right hidden md:block flex-shrink-0 w-full md:w-auto">
             <div className="text-sm text-gray-500">
               {t('dashboard.main.currentTime')}
             </div>
@@ -629,7 +632,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
 
       <div className="grid gap-4 md:gap-8 lg:grid-cols-3 w-full">
         {/* Recent Activity Feed */}
-        <div className="lg:col-span-2 w-full">
+        <div className="lg:col-span-1 flex flex-col w-full min-w-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 w-full">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
               <FaClock className="mr-2 text-blue-500" />
