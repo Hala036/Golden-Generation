@@ -1134,6 +1134,7 @@
     },
     "messages": {
       "title": "Messages",
+      "startConversation": "Start a conversation",
       "search": "Search for users...",
       "noMessages": "No messages yet.",
       "selectChat": "Select a chat to start messaging.",

@@ -1141,6 +1141,7 @@
     },
     "messages": {
       "title": "הודעות",
+      "startConversation":"התחל שיחה",
       "search": "חפש משתמשים...",
       "noMessages": "עדיין אין הודעות.",
       "selectChat": "בחר צ'אט כדי להתחיל להחליף הודעות.",
