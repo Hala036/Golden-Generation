@@ -1783,5 +1783,70 @@
     "processing": "מעבד...",
     "loading": "טוען אירועים קרובים...",
     "mySettlement": "היישוב שלי"
+  },
+  "viewProfile": {
+    "profileHeader": {
+      "age": "גיל",
+      "gender": "מגדר",
+      "settlement": "יישוב"
+    },
+    "personalInfo": {
+      "title": "מידע אישי",
+      "idNumber": "מספר זהות",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "address": "כתובת",
+      "maritalStatus": "מצב משפחתי",
+      "education": "השכלה",
+      "nativeLanguage": "שפת אם",
+      "originCountry": "ארץ מוצא"
+    },
+    "credentials": {
+      "title": "אישורים",
+      "username": "שם משתמש",
+      "email": "אימייל"
+    },
+    "workBackground": {
+      "title": "רקע מקצועי",
+      "jobTitle": "תפקיד",
+      "industry": "תעשייה",
+      "yearsOfExperience": "שנות ניסיון",
+      "retired": "גמלאי",
+      "professionalBackground": "רקע מקצועי"
+    },
+    "lifestyle": {
+      "title": "אורח חיים",
+      "hobbies": "תחביבים",
+      "interests": "תחומי עניין",
+      "languagesSpoken": "שפות מדוברות",
+      "computerAbility": "יכולת מחשב",
+      "sportActivityLevel": "רמת פעילות ספורטיבית",
+      "weeklyScheduleOccupancy": "תפוסת לוח זמנים שבועי"
+    },
+    "volunteering": {
+      "title": "התנדבות וקהילה",
+      "currentActivities": "פעילויות נוכחיות",
+      "notParticipatingReason": "סיבת אי השתתפות",
+      "isVolunteer": "מתנדב",
+      "volunteerAreas": "תחומי התנדבות",
+      "volunteerFrequency": "תדירות התנדבות",
+      "volunteerHours": "שעות התנדבות",
+      "volunteerDays": "ימי התנדבות",
+      "additionalVolunteering": "התנדבות נוספת",
+      "additionalVolunteerFields": "תחומי התנדבות נוספים",
+      "additionalVolunteerFrequency": "תדירות התנדבות נוספת",
+      "additionalVolunteerHours": "שעות התנדבות נוספות",
+      "additionalVolunteerDays": "ימי התנדבות נוספים",
+      "needsConsultation": "זקוק לייעוץ",
+      "consultationFields": "תחומי ייעוץ",
+      "communitySettlement": "יישוב קהילתי",
+      "communityProfessionalBackground": "רקע מקצועי קהילתי"
+    },
+    "systemInfo": {
+      "title": "מידע מערכת",
+      "role": "תפקיד",
+      "joined": "הצטרף",
+      "lastLogin": "כניסה אחרונה"
+    }
   }
 }

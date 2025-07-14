@@ -1851,5 +1851,70 @@
     "processing": "Processing...",
     "loading": "Loading upcoming details...",
     "mySettlement": "My Settlement"
+  },
+  "viewProfile": {
+    "profileHeader": {
+      "age": "Age",
+      "gender": "Gender",
+      "settlement": "Settlement"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "idNumber": "ID Number",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "maritalStatus": "Marital Status",
+      "education": "Education",
+      "nativeLanguage": "Native Language",
+      "originCountry": "Origin Country"
+    },
+    "credentials": {
+      "title": "Credentials",
+      "username": "Username",
+      "email": "Email"
+    },
+    "workBackground": {
+      "title": "Work Background",
+      "jobTitle": "Job Title",
+      "industry": "Industry",
+      "yearsOfExperience": "Years of Experience",
+      "retired": "Retired",
+      "professionalBackground": "Professional Background"
+    },
+    "lifestyle": {
+      "title": "Lifestyle",
+      "hobbies": "Hobbies",
+      "interests": "Interests",
+      "languagesSpoken": "Languages Spoken",
+      "computerAbility": "Computer Ability",
+      "sportActivityLevel": "Sport Activity Level",
+      "weeklyScheduleOccupancy": "Weekly Schedule Occupancy"
+    },
+    "volunteering": {
+      "title": "Volunteering & Community",
+      "currentActivities": "Current Activities",
+      "notParticipatingReason": "Not Participating Reason",
+      "isVolunteer": "Is Volunteer",
+      "volunteerAreas": "Volunteer Areas",
+      "volunteerFrequency": "Volunteer Frequency",
+      "volunteerHours": "Volunteer Hours",
+      "volunteerDays": "Volunteer Days",
+      "additionalVolunteering": "Additional Volunteering",
+      "additionalVolunteerFields": "Additional Volunteer Fields",
+      "additionalVolunteerFrequency": "Additional Volunteer Frequency",
+      "additionalVolunteerHours": "Additional Volunteer Hours",
+      "additionalVolunteerDays": "Additional Volunteer Days",
+      "needsConsultation": "Needs Consultation",
+      "consultationFields": "Consultation Fields",
+      "communitySettlement": "Community Settlement",
+      "communityProfessionalBackground": "Community Professional Background"
+    },
+    "systemInfo": {
+      "title": "System Info",
+      "role": "Role",
+      "joined": "Joined",
+      "lastLogin": "Last Login"
+    }
   }
 }
