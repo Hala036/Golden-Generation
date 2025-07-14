@@ -105,7 +105,7 @@ const LoginPage = () => {
         <div className="w-full max-w-md space-y-4 sm:space-y-6">
           {/* Logo or Brand Name - Visible on mobile */}
           <div className="lg:hidden text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">Golden Generation</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">{t('dashboard.header.title')}</h1>
           </div>
 
           {/* Header */}

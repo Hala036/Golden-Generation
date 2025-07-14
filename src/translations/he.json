@@ -40,7 +40,7 @@
       "imageAlt": "זוג נהנה מאירוע"
     },
     "signup": {
-      "logo": "דור הזהב",
+      "logo": "תור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
       "continue": "המשך",
@@ -583,7 +583,7 @@
         },
         "announcements": {
           "welcome": {
-            "title": "ברוכים הבאים לדור הזהב!",
+            "title": "ברוכים הבאים לתור הזהב!",
             "content": "אנחנו שמחים לקבל אתכם על הסיפון."
           },
           "darkMode": {
@@ -788,7 +788,7 @@
         "expand": "הרחב סרגל צד"
       },
       "topbar": {
-        "title": "דור הזהב"
+        "title": "תור הזהב"
       },
       "main": {
         "noComponent": "לא נמצא רכיב"
@@ -1089,7 +1089,7 @@
       "arabic": "ערבית"
     },
     "header": {
-      "title": "דור הזהב",
+      "title": "תור הזהב",
       "logout": "התנתק"
     },
     "messages": {
