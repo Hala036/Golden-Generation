@@ -104,7 +104,7 @@
         },
         "healthCondition": "Health Condition",
         "healthConditionPlaceholder": "Please describe any health conditions...",
-        "militaryService": "Military/National Service",
+        "militaryService": "Did you serve in the military or national service?",
         "militaryOptions": {
           "none": "None",
           "military": "Military",

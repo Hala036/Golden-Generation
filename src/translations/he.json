@@ -107,7 +107,7 @@
         },
         "healthCondition": "מצב בריאותי",
         "healthConditionPlaceholder": "אנא תאר כל מצב בריאותי...",
-        "militaryService": "שירות צבאי/לאומי",
+        "militaryService": "האם שירתת בצבא או בשירות לאומי?",
         "militaryOptions": {
           "none": "ללא",
           "military": "צבאי",

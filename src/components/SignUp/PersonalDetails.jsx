@@ -842,20 +842,12 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   getFieldIcon={() => getFieldIcon('healthCondition')}
                   required
                 />
-                <FormField
+                <CheckboxField
                   label={t('auth.signup.personalDetails.militaryService')}
                   name="militaryService"
                   id="personalDetails-militaryService"
-                  type="select"
-                  autoComplete="military-service"
-                  options={militaryOptions.map((option) => ({
-                    value: option,
-                    label: t(`auth.signup.personalDetails.militaryOptions.${option}`),
-                  }))}
-                  value={formData.militaryService}
+                  checked={!!formData.militaryService}
                   onChange={handleInputChange}
-                  error={errors.militaryService}
-                  getFieldIcon={() => getFieldIcon('militaryService')}
                 />
               </div>
               <div className="space-y-3 sm:mt-0">
