@@ -90,7 +90,7 @@
         },
         "nativeLanguage": "Native Language",
       "hebrewLevel": {
-        "label": "Hebrew Speaking/Comprehension Level ()",
+        "label": "Hebrew Speaking/Comprehension Level ",
           "placeholder": "Select your Hebrew level",
           "beginner": "Beginner",
           "intermediate": "Intermediate",
@@ -134,7 +134,8 @@
           "withCaregiver": "With caregiver",
           "nursing": "Nursing-dependent",
           "immobile": "Non-mobile"
-        }
+        },
+        "quickQuestions": "Quick Questions"
     },
     "workBackground": {
       "title": "Work Background",

@@ -307,7 +307,7 @@ const CheckboxField = memo(({ label, name, className = '', checked, onChange, id
 
 const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   const { personalData, updatePersonalData } = useSignupStore();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const formRef = useRef(null);
   const [formData, setFormData] = useState(personalData || {
     phoneNumber: '',
@@ -322,11 +322,11 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
     arrivalDate: '',
     originCountry: '',
     healthCondition: '',
-    militaryService: '',
-    hasCar: false,
-    livingAlone: false,
-    familyInSettlement: false,
-    hasWeapon: false,
+    militaryService: undefined,
+    hasCar: undefined,
+    livingAlone: undefined,
+    familyInSettlement: undefined,
+    hasWeapon: undefined,
     isNewImmigrant: false, // Add this new field
   });
   const [errors, setErrors] = useState({});
@@ -823,168 +823,174 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 <p className="text-gray-600 text-lg">{t('auth.signup.personalDetails.additionalInformation.description')}</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="space-y-4">
-                <FormField
-                  label={t('auth.signup.personalDetails.healthCondition')}
-                  name="healthCondition"
-                  id="personalDetails-healthCondition"
-                  type="select"
-                  options={[
-                    { value: 'healthy', label: t('auth.signup.personalDetails.healthConditionOptions.healthy') },
-                    { value: 'withCaregiver', label: t('auth.signup.personalDetails.healthConditionOptions.withCaregiver') },
-                    { value: 'nursing', label: t('auth.signup.personalDetails.healthConditionOptions.nursing') },
-                    { value: 'immobile', label: t('auth.signup.personalDetails.healthConditionOptions.immobile') }
-                  ]}
-                  value={formData.healthCondition}
-                  onChange={handleInputChange}
-                  error={errors.healthCondition}
-                  getFieldIcon={() => getFieldIcon('healthCondition')}
-                  required
-                />
-                <div className="space-y-3 sm:mt-0">
-                  <div className="p-4 bg-gray-50 rounded-lg space-y-3">
-                    {/* Military Service Yes/No Radio Group */}
-                    <div className="mb-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('auth.signup.personalDetails.militaryService')}
+            {/* Unified Card for Health Condition and Yes/No Questions */}
+            <div className="p-6 space-y-6">
+              <FormField
+                label={t('auth.signup.personalDetails.healthCondition')}
+                name="healthCondition"
+                id="personalDetails-healthCondition"
+                type="select"
+                options={[
+                  { value: 'healthy', label: t('auth.signup.personalDetails.healthConditionOptions.healthy') },
+                  { value: 'withCaregiver', label: t('auth.signup.personalDetails.healthConditionOptions.withCaregiver') },
+                  { value: 'nursing', label: t('auth.signup.personalDetails.healthConditionOptions.nursing') },
+                  { value: 'immobile', label: t('auth.signup.personalDetails.healthConditionOptions.immobile') }
+                ]}
+                value={formData.healthCondition}
+                onChange={handleInputChange}
+                error={errors.healthCondition}
+                getFieldIcon={() => getFieldIcon('healthCondition')}
+                required
+              />
+              {/* Section Heading for Yes/No Group */}
+              <div className="mb-2 mt-4">
+                <h4 className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2">
+                  {t('auth.signup.personalDetails.quickQuestions') || 'Quick Questions'}
+                </h4>
+              </div>
+              {/* Yes/No Questions Group */}
+              <div className="space-y-3 sm:mt-0">
+                <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+                  {/* Military Service Yes/No Radio Group */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>
+                      {t('auth.signup.personalDetails.militaryService')}
+                    </label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="militaryService"
+                          value="yes"
+                          checked={formData.militaryService === true}
+                          onChange={() => handleInputChange({ target: { name: 'militaryService', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
                       </label>
-                      <div className="flex gap-6 items-center">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="militaryService"
-                            value="yes"
-                            checked={formData.militaryService === true}
-                            onChange={() => handleInputChange({ target: { name: 'militaryService', value: true, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.yes')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="militaryService"
-                            value="no"
-                            checked={formData.militaryService === false}
-                            onChange={() => handleInputChange({ target: { name: 'militaryService', value: false, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.no')}</span>
-                        </label>
-                      </div>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="militaryService"
+                          value="no"
+                          checked={formData.militaryService === false}
+                          onChange={() => handleInputChange({ target: { name: 'militaryService', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
                     </div>
-                    {/* Has Car Yes/No */}
-                    <div className="mb-2">
-                      <label className="block text-sm text-gray-700 mb-1">{t('auth.signup.personalDetails.hasCar')}</label>
-                      <div className="flex gap-6 items-center">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="hasCar"
-                            value="yes"
-                            checked={formData.hasCar === true}
-                            onChange={() => handleInputChange({ target: { name: 'hasCar', value: true, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.yes')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="hasCar"
-                            value="no"
-                            checked={formData.hasCar === false}
-                            onChange={() => handleInputChange({ target: { name: 'hasCar', value: false, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.no')}</span>
-                        </label>
-                      </div>
+                  </div>
+                  {/* Has Car Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.hasCar')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasCar"
+                          value="yes"
+                          checked={formData.hasCar === true}
+                          onChange={() => handleInputChange({ target: { name: 'hasCar', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasCar"
+                          value="no"
+                          checked={formData.hasCar === false}
+                          onChange={() => handleInputChange({ target: { name: 'hasCar', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
                     </div>
-                    {/* Living Alone Yes/No */}
-                    <div className="mb-2">
-                      <label className="block text-sm text-gray-700 mb-1">{t('auth.signup.personalDetails.livingAlone')}</label>
-                      <div className="flex gap-6 items-center">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="livingAlone"
-                            value="yes"
-                            checked={formData.livingAlone === true}
-                            onChange={() => handleInputChange({ target: { name: 'livingAlone', value: true, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.yes')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="livingAlone"
-                            value="no"
-                            checked={formData.livingAlone === false}
-                            onChange={() => handleInputChange({ target: { name: 'livingAlone', value: false, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.no')}</span>
-                        </label>
-                      </div>
+                  </div>
+                  {/* Living Alone Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.livingAlone')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="livingAlone"
+                          value="yes"
+                          checked={formData.livingAlone === true}
+                          onChange={() => handleInputChange({ target: { name: 'livingAlone', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="livingAlone"
+                          value="no"
+                          checked={formData.livingAlone === false}
+                          onChange={() => handleInputChange({ target: { name: 'livingAlone', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
                     </div>
-                    {/* Family in Settlement Yes/No */}
-                    <div className="mb-2">
-                      <label className="block text-sm text-gray-700 mb-1">{t('auth.signup.personalDetails.familyInSettlement')}</label>
-                      <div className="flex gap-6 items-center">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="familyInSettlement"
-                            value="yes"
-                            checked={formData.familyInSettlement === true}
-                            onChange={() => handleInputChange({ target: { name: 'familyInSettlement', value: true, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.yes')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="familyInSettlement"
-                            value="no"
-                            checked={formData.familyInSettlement === false}
-                            onChange={() => handleInputChange({ target: { name: 'familyInSettlement', value: false, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.no')}</span>
-                        </label>
-                      </div>
+                  </div>
+                  {/* Family in Settlement Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.familyInSettlement')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="familyInSettlement"
+                          value="yes"
+                          checked={formData.familyInSettlement === true}
+                          onChange={() => handleInputChange({ target: { name: 'familyInSettlement', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="familyInSettlement"
+                          value="no"
+                          checked={formData.familyInSettlement === false}
+                          onChange={() => handleInputChange({ target: { name: 'familyInSettlement', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
                     </div>
-                    {/* Has Weapon Yes/No */}
-                    <div className="mb-2">
-                      <label className="block text-sm text-gray-700 mb-1">{t('auth.signup.personalDetails.hasWeapon')}</label>
-                      <div className="flex gap-6 items-center">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="hasWeapon"
-                            value="yes"
-                            checked={formData.hasWeapon === true}
-                            onChange={() => handleInputChange({ target: { name: 'hasWeapon', value: true, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.yes')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="hasWeapon"
-                            value="no"
-                            checked={formData.hasWeapon === false}
-                            onChange={() => handleInputChange({ target: { name: 'hasWeapon', value: false, type: 'radio' } })}
-                            className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
-                          />
-                          <span>{t('common.no')}</span>
-                        </label>
-                      </div>
+                  </div>
+                  {/* Has Weapon Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.hasWeapon')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasWeapon"
+                          value="yes"
+                          checked={formData.hasWeapon === true}
+                          onChange={() => handleInputChange({ target: { name: 'hasWeapon', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasWeapon"
+                          value="no"
+                          checked={formData.hasWeapon === false}
+                          onChange={() => handleInputChange({ target: { name: 'hasWeapon', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
                     </div>
                   </div>
                 </div>

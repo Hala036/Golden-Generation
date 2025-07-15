@@ -133,7 +133,8 @@
           "withCaregiver": " עם מטפל",
           "nursing": "סיעודי",
           "immobile": "לא נייד"
-        }
+        },
+        "quickQuestions": "שאלות קצרות"
       },
       "workBackground": {
         "title": "רקע תעסוקתי",
