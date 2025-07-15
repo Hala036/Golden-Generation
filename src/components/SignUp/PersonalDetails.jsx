@@ -104,7 +104,8 @@ const FormField = memo(
     setSearchTerm,
     getLanguageIcon,
     id, // new prop for id
-    autoComplete // new prop for autocomplete
+    autoComplete, // new prop for autocomplete
+    t // <-- add t as a prop
   }) => {
     const fieldId = id || `field-${name}`;
     const autoCompleteAttr = autoComplete || name;
@@ -123,7 +124,7 @@ const FormField = memo(
             options={options}
             isDisabled={disabled}
             classNamePrefix="react-select"
-            placeholder={`Select ${label.toLowerCase()}`}
+            placeholder={`${t('common.select')} ${label.toLowerCase()}`}
             isSearchable
             formatOptionLabel={option => {
               const flagCode = languageFlagMap[option.value?.toLowerCase()] || option.value?.toLowerCase();
@@ -174,7 +175,7 @@ const FormField = memo(
             options={options}
             isDisabled={disabled}
             classNamePrefix="react-select"
-            placeholder={`Select ${label.toLowerCase()}`}
+            placeholder={`${t('common.select')} ${label.toLowerCase()}`}
             formatOptionLabel={option => (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {option.value && (
@@ -229,7 +230,7 @@ const FormField = memo(
             }}
             autoComplete={autoCompleteAttr}
           >
-            <option value="">{`Select ${label.toLowerCase()}`}</option>
+            <option value="">{`${t('common.select')} ${label.toLowerCase()}`}</option>
             {options.map((option) => (
               <option key={option.value || option} value={option.value || option}>
                 {option.label || option.charAt(0).toUpperCase() + option.slice(1)}
@@ -366,7 +367,14 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
           label: t(`auth.signup.personalDetails.languageOptions.${value}`)
         }))
       );
-      setCountries(Array.isArray(countryList) ? countryList.map((c) => ({ value: c.code || c.name, label: c.name })) : []);
+      setCountries(
+        Array.isArray(countryList)
+          ? countryList.map((c) => ({
+              value: c.code || c.name,
+              label: t(`countries.${c.code}`, { defaultValue: c.name })
+            }))
+          : []
+      );
       setLoading(prev => ({ ...prev, languages: false }));
     } catch (error) {
       console.error('Error loading languages or countries list:', error);
@@ -376,7 +384,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
       setCountries([]);
       setLoading(prev => ({ ...prev, languages: false }));
     }
-  }, []);
+  }, [t]);
 
   // Add this useEffect to fix the loading state issue
   useEffect(() => {
@@ -621,6 +629,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 required
                 inputMode="numeric"
                 pattern="[0-9]{10}"
+                t={t}
               />
               {/* Marital Status */}
               <FormField
@@ -634,6 +643,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 onChange={handleInputChange}
                 error={errors.maritalStatus}
                 getFieldIcon={() => getFieldIcon('maritalStatus')}
+                t={t}
               />
             </div>
           </div>
@@ -674,6 +684,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 getFieldIcon={() => getFieldIcon('houseNumber')}
                 inputMode="text"
                 pattern="\d{1,4}[A-Za-z]?"
+                t={t}
               />
               <FormField
                 label={t('auth.signup.personalDetails.streetName')}
@@ -687,6 +698,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 onChange={handleInputChange}
                 error={errors.streetName}
                 getFieldIcon={() => getFieldIcon('streetName')}
+                t={t}
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -703,6 +715,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 getFieldIcon={() => getFieldIcon('floorNumber')}
                 inputMode="text"
                 required={true}
+                t={t}
               />
               <FormField
                 label={t('auth.signup.personalDetails.postalCode')}
@@ -717,6 +730,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 getFieldIcon={() => getFieldIcon('postalCode')}
                 inputMode="text"
                 required={true}
+                t={t}
               />
             </div>
             <FormField
@@ -731,6 +745,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
               onChange={handleInputChange}
               error={errors.address}
               getFieldIcon={() => getFieldIcon('address')}
+              t={t}
             />
           </div>
 
@@ -763,6 +778,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 getLanguageIcon={getLanguageIcon}
+                t={t}
               />
               <FormField
                 label={t('auth.signup.personalDetails.hebrewLevel.label')}
@@ -776,6 +792,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 error={errors.hebrewLevel}
                 getFieldIcon={() => getFieldIcon('hebrewLevel')}
                 placeholder={t('auth.signup.personalDetails.hebrewLevel.placeholder')}
+                t={t}
               />
             </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
@@ -790,6 +807,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   onChange={handleInputChange}
                   error={errors.arrivalDate}
                   getFieldIcon={() => getFieldIcon('arrivalDate')}
+                  t={t}
                 />
                 <FormField
                   label={t('auth.signup.personalDetails.originCountry')}
@@ -803,6 +821,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   onChange={handleInputChange}
                   error={errors.originCountry}
                   getFieldIcon={() => getFieldIcon('originCountry')}
+                  t={t}
                 selectProps={{
                   menuPortalTarget: typeof window !== 'undefined' ? document.body : null,
                   styles: {
@@ -842,6 +861,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 error={errors.healthCondition}
                 getFieldIcon={() => getFieldIcon('healthCondition')}
                 required
+                t={t}
               />
               {/* Section Heading for Yes/No Group */}
               <div className="mb-2 mt-4">

@@ -203,7 +203,7 @@ const SignUp = () => {
                 </>
               ) : (
                 <>
-                  <FaArrowRight className="mr-2" />
+                  <FaArrowLeft className="mr-2" />
                   <span className="text-sm font-medium">{t('auth.signup.back')}</span>
                 </>
               )}
@@ -218,7 +218,8 @@ const SignUp = () => {
             {t('auth.signup.alreadyHaveAccount')}{' '}
             <button
               onClick={() => navigate('/login')}
-              className="text-[#FFD966] hover:text-[#FFB800] font-medium transition-colors duration-200"
+              className="font-semibold text-yellow-700 hover:text-yellow-800 transition duration-200"
+              style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
             >
               {t('auth.signup.signIn')}
             </button>
