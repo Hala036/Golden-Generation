@@ -11,139 +11,140 @@ import jobsList from '../../data/jobs.json';
 import volunteerAreasList from '../../data/volunteerAreas.json';
 import EmptyState from '../EmptyState';
 import { FaUsers } from 'react-icons/fa';
-
-const fieldGroups = [
-  {
-    label: "Personal Info",
-    fields: [
-      "idVerification.firstName",
-      "idVerification.lastName",
-      "idVerification.age",
-      "idVerification.gender",
-      "idVerification.settlement",
-      "idVerification.phoneNumber",
-      "idVerification.email",
-      "personalDetails.maritalStatus",
-      "personalDetails.education"
-    ]
-  },
-  {
-    label: "Work",
-    fields: [
-      "workBackground.customJobInfo.originalSelection.jobTitle",
-      "workBackground.customJobInfo.originalSelection.industry"
-    ]
-  },
-  {
-    label: "Lifestyle",
-    fields: [
-      "lifestyle.interests",
-      "lifestyle.hobbies"
-    ]
-  },
-  {
-    label: "System",
-    fields: [
-      "createdAt"
-    ]
-  }
-];
-
-// Optional: group icons (add your own SVGs or emoji if desired)
-const groupIcons = {
-  "Personal Info": "👤",
-  "Work": "💼",
-  "Lifestyle": "🌱",
-  "System": "⚙️"
-};
-
-// Emoji mapping for interests
-const interestEmojis = {
-  'Safety read books': '📚',
-  'culture': '🎭',
-  'cooking': '🍳',
-  'trips': '✈️',
-  'Photography': '📷',
-  'sport': '🏆',
-  'other': '🔍',
-  "don't have": '❌',
-  'study': '🎓',
-  'gardening': '🌱',
-  'computer': '💻',
-  'craftsmanship': '🔨',
-  'music': '🎵',
-  'art': '🎨',
-  'dancing': '💃',
-  'hiking': '🥾',
-  'meditation': '🧘',
-  'yoga': '🧘‍♀️',
-  'gaming': '🎮',
-  'writing': '✍️',
-  'volunteering': '🤝',
-  'podcasts': '🎧',
-  'movies': '🎬',
-  'fashion': '👕',
-  'languages': '🗣️',
-  'astronomy': '🔭',
-  'history': '📜',
-  'science': '🔬',
-  'technology': '📱',
-  'baking': '🍰'
-};
-
-// Emoji mapping for hobbies (reuse interestEmojis and add new ones)
-const hobbyEmojis = {
-  ...interestEmojis,
-  'reading': '📖',
-  'sports': '🏅',
-  'technology': '💻',
-  'science': '🔬',
-  'fashion': '👗',
-  'other': '🔍'
-};
-
-// Emoji mapping for jobs (partial, add more as needed)
-const jobEmojis = {
-  'Doctor': '🩺',
-  'Nurse': '👩‍⚕️',
-  'Dentist': '🦷',
-  'Pharmacist': '💊',
-  'Software Engineer': '💻',
-  'Civil Engineer': '🏗️',
-  'Teacher': '👩‍🏫',
-  'Lawyer': '⚖️',
-  'Artist': '🎨',
-  'Musician': '🎵',
-  'Chef/Cook': '👨‍🍳',
-  'Electrician': '💡',
-  'Mechanic': '🔧',
-  'Police Officer': '👮',
-  'Firefighter': '🧑‍🚒',
-  'Scientist': '🔬',
-  'Volunteer': '🤝',
-  'Retired': '🏖️',
-  'Student': '📚',
-  'Other': '❓'
-};
-
-// Emoji mapping for volunteer areas
-const volunteerAreaEmojis = {
-  'publicity': '📢',
-  'health': '🏥',
-  'eater': '🍽️',
-  'teaching': '👨‍🏫',
-  'high-tech': '💻',
-  'tourism': '🗺️',
-  'safety': '🛡️',
-  'funds': '💰',
-  'special-treat': '🎉',
-  'craftsmanship': '🔨',
-  'aaliyah': '✈️',
-  'culture': '🎭'
-};
+import i18n from "i18next";
 
 const Retirees = () => {
   const { t } = useTranslation();
+  const fieldGroups = [
+    {
+      label: t("admin.retirees.fieldGroups.personalInfo"),
+      fields: [
+        "idVerification.firstName",
+        "idVerification.lastName",
+        "idVerification.age",
+        "idVerification.gender",
+        "idVerification.settlement",
+        "idVerification.phoneNumber",
+        "idVerification.email",
+        "personalDetails.maritalStatus",
+        "personalDetails.education"
+      ]
+    },
+    {
+      label: t("admin.retirees.fieldGroups.work"),
+      fields: [
+        "workBackground.customJobInfo.originalSelection.jobTitle",
+        "workBackground.customJobInfo.originalSelection.industry"
+      ]
+    },
+    {
+      label: t("admin.retirees.fieldGroups.lifestyle"),
+      fields: [
+        "lifestyle.interests",
+        "lifestyle.hobbies"
+      ]
+    },
+    {
+      label: t("admin.retirees.fieldGroups.system"),
+      fields: [
+        "createdAt"
+      ]
+    }
+  ];
+
+  // Optional: group icons (add your own SVGs or emoji if desired)
+  const groupIcons = {
+    "Personal Info": "👤",
+    "Work": "💼",
+    "Lifestyle": "🌱",
+    "System": "⚙️"
+  };
+
+  // Emoji mapping for interests
+  const interestEmojis = {
+    'Safety read books': '📚',
+    'culture': '🎭',
+    'cooking': '🍳',
+    'trips': '✈️',
+    'Photography': '📷',
+    'sport': '🏆',
+    'other': '🔍',
+    "don't have": '❌',
+    'study': '🎓',
+    'gardening': '🌱',
+    'computer': '💻',
+    'craftsmanship': '🔨',
+    'music': '🎵',
+    'art': '🎨',
+    'dancing': '💃',
+    'hiking': '🥾',
+    'meditation': '🧘',
+    'yoga': '🧘‍♀️',
+    'gaming': '🎮',
+    'writing': '✍️',
+    'volunteering': '🤝',
+    'podcasts': '🎧',
+    'movies': '🎬',
+    'fashion': '👕',
+    'languages': '🗣️',
+    'astronomy': '🔭',
+    'history': '📜',
+    'science': '🔬',
+    'technology': '📱',
+    'baking': '🍰'
+  };
+
+  // Emoji mapping for hobbies (reuse interestEmojis and add new ones)
+  const hobbyEmojis = {
+    ...interestEmojis,
+    'reading': '📖',
+    'sports': '🏅',
+    'technology': '💻',
+    'science': '🔬',
+    'fashion': '👗',
+    'other': '🔍'
+  };
+
+  // Emoji mapping for jobs (partial, add more as needed)
+  const jobEmojis = {
+    'Doctor': '🩺',
+    'Nurse': '👩‍⚕️',
+    'Dentist': '🦷',
+    'Pharmacist': '💊',
+    'Software Engineer': '💻',
+    'Civil Engineer': '🏗️',
+    'Teacher': '👩‍🏫',
+    'Lawyer': '⚖️',
+    'Artist': '🎨',
+    'Musician': '🎵',
+    'Chef/Cook': '👨‍🍳',
+    'Electrician': '💡',
+    'Mechanic': '🔧',
+    'Police Officer': '👮',
+    'Firefighter': '🧑‍🚒',
+    'Scientist': '🔬',
+    'Volunteer': '🤝',
+    'Retired': '🏖️',
+    'Student': '📚',
+    'Other': '❓'
+  };
+
+  // Emoji mapping for volunteer areas
+  const volunteerAreaEmojis = {
+    'publicity': '📢',
+    'health': '🏥',
+    'eater': '🍽️',
+    'teaching': '👨‍🏫',
+    'high-tech': '💻',
+    'tourism': '🗺️',
+    'safety': '🛡️',
+    'funds': '💰',
+    'special-treat': '🎉',
+    'craftsmanship': '🔨',
+    'aaliyah': '✈️',
+    'culture': '🎭'
+  };
+
   const [searchTerm, setSearchTerm] = useState("");
   const [dynamicFilters, setDynamicFilters] = useState([]);
   const [retirees, setRetirees] = useState([]);
@@ -165,85 +166,85 @@ const Retirees = () => {
   // Field definitions with user-friendly names and input types
   const fieldDefinitions = {
     "idVerification.firstName": {
-      label: "First Name",
+      label: t("admin.retirees.fields.idVerification.firstName"),
       type: "text",
       path: ["idVerification", "firstName"]
     },
     "idVerification.lastName": {
-      label: "Last Name", 
+      label: t("admin.retirees.fields.idVerification.lastName"),
       type: "text",
       path: ["idVerification", "lastName"]
     },
     "idVerification.age": {
-      label: "Age",
+      label: t("admin.retirees.fields.idVerification.age"),
       type: "range",
       path: ["idVerification", "age"]
     },
     "idVerification.gender": {
-      label: "Gender",
+      label: t("admin.retirees.fields.idVerification.gender"),
       type: "select",
       options: ["Male", "Female", "Other"],
       path: ["idVerification", "gender"]
     },
     "idVerification.settlement": {
-      label: "Settlement",
+      label: t("admin.retirees.fields.idVerification.settlement"),
       type: "select",
       options: settlements,
       path: ["idVerification", "settlement"]
     },
     "idVerification.phoneNumber": {
-      label: "Phone Number",
+      label: t("admin.retirees.fields.idVerification.phoneNumber"),
       type: "text",
       path: ["idVerification", "phoneNumber"]
     },
     "idVerification.email": {
-      label: "Email",
+      label: t("admin.retirees.fields.idVerification.email"),
       type: "text",
       path: ["idVerification", "email"]
     },
     "personalDetails.maritalStatus": {
-      label: "Marital Status",
+      label: t("admin.retirees.fields.personalDetails.maritalStatus"),
       type: "select",
       options: ["Single", "Married", "Divorced", "Widowed"],
       path: ["personalDetails", "maritalStatus"]
     },
     "personalDetails.education": {
-      label: "Education Level",
+      label: t("admin.retirees.fields.personalDetails.education"),
       type: "select",
       options: ["None", "Primary", "Secondary", "Tertiary", "Other"],
       path: ["personalDetails", "education"]
     },
     "workBackground.customJobInfo.originalSelection.jobTitle": {
-      label: "Job Title",
+      label: t("admin.retirees.fields.workBackground.customJobInfo.originalSelection.jobTitle"),
       type: "text",
       path: ["workBackground", "customJobInfo", "originalSelection", "jobTitle"]
     },
     "workBackground.customJobInfo.originalSelection.industry": {
-      label: "Industry",
+      label: t("admin.retirees.fields.workBackground.customJobInfo.originalSelection.industry"),
       type: "text",
       path: ["workBackground", "customJobInfo", "originalSelection", "industry"]
     },
     "lifestyle.interests": {
-      label: "Interests",
+      label: t("admin.retirees.fields.lifestyle.interests"),
       type: "text",
       path: ["lifestyle", "interests"]
     },
     "lifestyle.hobbies": {
-      label: "Hobbies",
+      label: t("admin.retirees.fields.lifestyle.hobbies"),
       type: "text",
       path: ["lifestyle", "hobbies"]
     },
     "createdAt": {
-      label: "Registration Date",
+      label: t("admin.retirees.fields.createdAt"),
       type: "date",
       path: ["createdAt"]
     },
     "status": {
-      label: "Status",
+      label: t("admin.retirees.fields.status"),
       type: "select",
       options: ["Active", "Inactive", "Pending", "Suspended"],
       path: ["status"]
-    },
+    }
   };
 
   // Fetch settlements for dropdown
@@ -534,7 +535,7 @@ const Retirees = () => {
   };
 
   const saveFilterSet = () => {
-    const filterSetName = prompt("Enter a name for this filter set:");
+    const filterSetName = prompt(t("admin.retirees.alert"));
     if (filterSetName) {
       const savedFilters = JSON.parse(localStorage.getItem("savedRetireeFilters") || "{}");
       savedFilters[filterSetName] = {
@@ -642,7 +643,7 @@ const Retirees = () => {
           (Array.isArray(filter.value) && filter.value.length === 0) ||
           (!Array.isArray(filter.value) && (!filter.value || filter.value.trim() === ""))
         ) {
-          return "Value is required.";
+          return t('admin.retirees.filters.valueRequired');
         }
       }
       return null;
@@ -923,7 +924,7 @@ const Retirees = () => {
         return (
           <input
             type="text"
-            placeholder={`Enter ${fieldDef.label}`}
+            placeholder={i18n.t("admin.retirees.filters.enterValue", { Value: fieldDef.label })}
             className="p-2 border rounded flex-1"
             value={filter.value}
             onChange={(e) => updateFilter(index, "value", e.target.value)}
@@ -948,10 +949,10 @@ const Retirees = () => {
         ];
       default:
         return [
-          { value: "contains", label: "Contains" },
-          { value: "equals", label: "Equals" },
-          { value: "starts_with", label: "Starts With" },
-          { value: "ends_with", label: "Ends With" }
+          { value: "contains", label: t("admin.retirees.defTypes.contains") },
+          { value: "equals", label: t("admin.retirees.defTypes.equals") },
+          { value: "starts_with", label: t("admin.retirees.defTypes.startsWith") },
+          { value: "ends_with", label: t("admin.retirees.defTypes.endsWith") },
         ];
     }
   };
@@ -1015,7 +1016,6 @@ const Retirees = () => {
         <div className="space-y-4">
           {dynamicFilters.map((filter, index) => (
             <div key={index} className="flex flex-col space-y-1">
-              <div className="flex space-x-4 items-center p-4 bg-gray-50 rounded-lg">
                 {/* Field Select (react-select) */}
                 <div className="flex-1 min-w-[220px]">
                   <Select
@@ -1044,6 +1044,7 @@ const Retirees = () => {
                   />
                 </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Operator Select (only if field is selected) */}
                 {filter.field && (
                   <select
@@ -1131,19 +1132,19 @@ const Retirees = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
                     {t("admin.retirees.table.name")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
                     {t("admin.retirees.table.age")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
                     {t("admin.retirees.table.gender")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
                     Settlement
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
                     {t("admin.retirees.table.work")}
                   </th>
                 </tr>

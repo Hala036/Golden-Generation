@@ -1288,32 +1288,62 @@
       "gender": "Gender",
       "profile": "Profile",
       "sendMessage": "Send Message",
+      "alert": "Enter a name for this filter set:",
       "backToProfile": "Back to Profile",
-        "filters": {
-          "selectField": "Select Field...",
-          "globalSearch": "Global Search",
-          "search": "Search across all fields...",
-          "addFilter": "+ Add Filter",
-          "remove": "Remove",
-          "select": "Select Feature",
-          "enterValue": "Enter Value",
-          "clearAll": "Clear All",
-          "saveFilters": "Save Filters",
-          "loadFilters": "Load Filters",
-          "loadFilterSet": "Load Filter Set",
-          "noFiltersLoad": "No saved filters to load",
-          "fields": {
-            "name": "Name",
-            "email": "Email",
-            "phone": "Phone Number"
-          }
-        },
-        "table": {
+      "defTypes": {
+        "contains": "Contains",
+        "equals": "Equals",
+        "startsWith": "Starts With",
+        "endsWith": "Ends With"
+      },
+      "filters": {
+        "valueRequired": "Value is required",
+        "selectField": "Select Field...",
+        "globalSearch": "Global Search",
+        "search": "Search across all fields...",
+        "addFilter": "+ Add Filter",
+        "remove": "Remove",
+        "select": "Select Feature",
+        "enterValue": "Enter {{Value}}",
+        "clearAll": "Clear All",
+        "saveFilters": "Save Filters",
+        "loadFilters": "Load Filters",
+        "loadFilterSet": "Load Filter Set",
+        "noFiltersLoad": "No saved filters to load",
+        "fields": {
           "name": "Name",
-          "age": "Age",
-          "gender": "Gender",
-          "work": "Work Fields"
+          "email": "Email",
+          "phone": "Phone Number"
         }
+      },
+      "table": {
+        "name": "Name",
+        "age": "Age",
+        "gender": "Gender",
+        "work": "Work Fields"
+      },
+      "fieldGroups": {
+        "personalInfo": "Personal Info",
+        "work": "Work",
+        "lifestyle": "Lifestyle",
+        "system": "System"
+      },
+      "fields": {
+        "idVerification.firstName": "First Name",
+        "idVerification.lastName": "Last Name",
+        "idVerification.age": "Age",
+        "idVerification.gender": "Gender",
+        "idVerification.settlement": "Settlement",
+        "idVerification.phoneNumber": "Phone Number",
+        "idVerification.email": "Email",
+        "personalDetails.maritalStatus": "Marital Status",
+        "personalDetails.education": "Education",
+        "workBackground.customJobInfo.originalSelection.jobTitle": "Job Title",
+        "workBackground.customJobInfo.originalSelection.industry": "Industry",
+        "lifestyle.interests": "Interests",
+        "lifestyle.hobbies": "Hobbies",
+        "createdAt": "Created At"
+      }
     },
     "createEvent": {
       "title": "Create Event",

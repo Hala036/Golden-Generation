@@ -1301,14 +1301,22 @@
       "profile": "פרופיל",
       "sendMessage": "שלח הודעה",
       "backToProfile": "חזור לפרופיל שלי",
+      "alert": "הזן שם עבור קבוצת מסננים זו:",
+      "defTypes": {
+        "contains": "מכיל",
+        "equals": "שווה ל",
+        "startsWith": "מתחיל ב",
+        "endsWith": "נגמר ב"
+      },
       "filters": {
+        "valueRequired": "ערך נדרש",
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
         "search": "חפש לפי כל מאפיין...",
         "addFilter": "+ הוסף מסנן",
         "remove": "הסר",
         "select": "בחר מאפיין",
-        "enterValue": "הזן ערך",
+        "enterValue": "הזן {{Value}}",
         "clearAll": "נקה הכל",
         "saveFilters": "שמור מסננים",
         "loadFilters": "טען מסננים",
@@ -1320,6 +1328,28 @@
         "age": "גיל",
         "gender": "מין",
         "work": "תחומי עיסוק"
+      },
+      "fieldGroups": {
+        "personalInfo": "מידע אישי",
+        "work": "עבודה",
+        "lifestyle": "אורח חיים",
+        "system": "מערכת"
+      },
+      "fields": {
+        "idVerification.firstName": "שם פרטי",
+        "idVerification.lastName": "שם משפחה",
+        "idVerification.age": "גיל",
+        "idVerification.gender": "מין",
+        "idVerification.settlement": "יישוב",
+        "idVerification.phoneNumber": "מספר טלפון",
+        "idVerification.email": "אימייל",
+        "personalDetails.maritalStatus": "מצב משפחתי",
+        "personalDetails.education": "השכלה",
+        "workBackground.customJobInfo.originalSelection.jobTitle": "תפקיד",
+        "workBackground.customJobInfo.originalSelection.industry": "תעשייה",
+        "lifestyle.interests": "תחומי עניין",
+        "lifestyle.hobbies": "תחביבים",
+        "createdAt": "נוצר בתאריך"
       }
     },
     "createEvent": {
