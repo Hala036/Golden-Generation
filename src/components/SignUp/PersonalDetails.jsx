@@ -420,7 +420,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber', 'floorNumber', 'postalCode', 'arrivalDate', 'originCountry']; // Base required fields
+    const requiredFields = ['phoneNumber', 'streetName', 'houseNumber', 'floorNumber', 'postalCode', 'arrivalDate', 'originCountry']; // Now phoneNumber is required
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
         let fieldKey = '';
