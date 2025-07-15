@@ -148,7 +148,7 @@ const LoginPage = () => {
               </button>
             </div>
             {/* Form Fields */}
-            <form onSubmit={handleSubmit} className="space-y-4 mt-8">
+            <form onSubmit={handleSubmit} className="space-y-4 mt-8" noValidate>
               <div className="space-y-4">
                 <div>
                   <input
