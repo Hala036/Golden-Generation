@@ -1305,7 +1305,7 @@
       "fetchCategoriesError": "Failed to fetch categories.",
       "eventCreatedSuccess": "Event created successfully!",
       "createEventError": "Failed to create event. Please try again.",
-      "submit": "Submit"
+      "submit": "Continue"
     },
     "pendingEvents": {
       "fetchEventsError": "Failed to fetch pending events.",
