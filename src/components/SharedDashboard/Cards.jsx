@@ -532,7 +532,7 @@ const Cards = ({ setSelected }) => {
                 return (
                   <div
                     key={event.id}
-                    className={`bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[320px] max-h-[400px] hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 group ${past ? 'opacity-60 grayscale relative' : ''}`}
+                    className={`bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[320px] hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 group ${past ? 'opacity-60 grayscale relative' : ''}`}
                     aria-label={`Event card: ${event.title}`}
                   >
                     {/* Past badge */}

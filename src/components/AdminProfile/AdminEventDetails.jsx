@@ -107,7 +107,7 @@ const AdminEventDetails = ({ event, onClose }) => {
       {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+          <div className="bg-white p-3 md:p-6 rounded-lg max-w-lg w-full">
             <CreateEventForm
               onClose={() => setShowEditModal(false)}
               userRole="admin"
