@@ -159,7 +159,9 @@ const FormField = memo(
                 padding: '8px 12px',
                 fontWeight: state.isSelected ? 600 : 400,
               }),
+              menuPortal: base => ({ ...base, zIndex: 9999 })
             }}
+            menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
             // Add inputProps for autocomplete
             inputProps={{ autoComplete: autoCompleteAttr }}
           />
@@ -194,8 +196,6 @@ const FormField = memo(
                 '&:hover': { borderColor: '#FFD966' },
                 minHeight: 40,
               }),
-
-              
               option: (base, state) => ({
                 ...base,
                 backgroundColor: state.isSelected ? '#FFD96633' : state.isFocused ? '#FFD96611' : undefined,
@@ -203,7 +203,9 @@ const FormField = memo(
                 padding: '8px 12px',
                 fontWeight: state.isSelected ? 600 : 400,
               }),
+              menuPortal: base => ({ ...base, zIndex: 9999 })
             }}
+            menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
             inputProps={{ autoComplete: autoCompleteAttr }}
           />
         ) : type === 'select' ? (
@@ -800,6 +802,12 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 onChange={handleInputChange}
                 error={errors.originCountry}
                 getFieldIcon={() => getFieldIcon('originCountry')}
+                selectProps={{
+                  menuPortalTarget: typeof window !== 'undefined' ? document.body : null,
+                  styles: {
+                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                  }
+                }}
               />
             </div>
           </div>
