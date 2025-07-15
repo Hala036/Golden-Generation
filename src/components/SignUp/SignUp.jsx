@@ -15,6 +15,7 @@ import WorkBackground from './WorkBackground';
 import Lifestyle from './Lifestyle';
 import VeteransCommunity from './VeteransCommunity';
 import { triggerNotification } from '../SharedDashboard/TriggerNotifications'; // Import the triggerNotification function
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const SignUp = () => {
   const { t, language } = useLanguage();
@@ -151,11 +152,19 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* Logo */}
-      <div className="absolute top-4 left-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">
+      {/* Logo - Always Left Aligned */}
+      <div className="w-full flex pt-6 pl-8 justify-start">
+        <h1
+          className="text-4xl sm:text-5xl font-extrabold text-[#FFD966] text-left"
+          dir="ltr"
+        >
           {t('auth.signup.logo')}
         </h1>
+      </div>
+
+      {/* Language Switcher - Positioned by Language */}
+      <div className={`absolute top-4 ${language === 'he' ? 'left-4' : 'right-4'}`}>
+        <LanguageSwitcher />
       </div>
 
       {/* Main Content */}

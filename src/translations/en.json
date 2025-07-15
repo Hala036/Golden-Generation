@@ -17,7 +17,8 @@
     "of": "of",
     "select": "Select",
     "change":"change",
-    "notAvailable": "Not Available"
+    "notAvailable": "Not Available",
+    "ok": "OK"
   },
   "auth": {
     "errors": {
@@ -25,6 +26,8 @@
     },
     "login": {
       "title": "Login as",
+      "mainTitle": "Golden Generation",
+      "subTitle": "Volunteer Management in the Community",
       "email": "Email address",
       "password": "Password",
       "forgotPassword": "Forgot password?",
@@ -37,7 +40,22 @@
       "admin": "Admin",
       "success": "Login successful!",
       "error": "Failed to login. Please check your credentials.",
-      "imageAlt": "Couple enjoying event"
+      "imageAlt": "Couple enjoying event",
+      "errors": {
+        "userNotFound": "No account found with this email.",
+        "wrongPassword": "Incorrect password. Please try again.",
+        "invalidEmail": "Invalid email address.",
+        "tooManyRequests": "Too many failed attempts. Please try again later.",
+        "invalidCredential": "Incorrect email or password. Please try again.",
+        "generic": "Failed to login. Please check your credentials.",
+        "noAccountFound": "No account found with this email.",
+        "userRoleNotFound": "User role not found.",
+        "accessDeniedWrongRole": "Access Denied: You are trying to log in with the wrong role.",
+        "defaultRoleError": "You are trying to log in with the wrong role."
+      },
+      "modal": {
+        "accessDenied": "Access Denied"
+      }
     },
     "signup": {
       "logo": "Golden Generation",
@@ -796,10 +814,11 @@
       }
     },
     "forgotPassword": {
+      "logo": "Golden Generation",
       "title": "Reset Password",
       "emailPlaceholder": "Enter your email",
-      "sendButton": "Send Reset Link",
       "sending": "Sending...",
+      "sendLink": "Send Reset Link",
       "backToLogin": "Back to Login",
       "success": "Password reset email sent! Please check your inbox.",
       "error": "Failed to send reset email"

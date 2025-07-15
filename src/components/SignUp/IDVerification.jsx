@@ -353,7 +353,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-12">
+        <form onSubmit={handleSubmit} className="space-y-12" noValidate>
           {/* ID & Personal Info Section */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <div className="flex items-center mb-6">
@@ -389,6 +389,32 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                   <p className="text-xs text-red-500 flex items-center gap-1">
                     <FaInfoCircle className="flex-shrink-0" />
                     {errors.idNumber}
+                  </p>
+                )}
+              </div>
+              {/* Date of Birth */}
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('auth.idVerification.form.dateOfBirth')} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="dateOfBirth"
+                  value={idVerificationData.dateOfBirth || ''}
+                  onChange={handleChange}
+                  min="1900-01-01"
+                  max={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
+                    errors.dateOfBirth
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
+                  }`}
+                  id="idVerification-dateOfBirth"
+                />
+                {errors.dateOfBirth && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <FaInfoCircle className="flex-shrink-0" />
+                    {errors.dateOfBirth}
                   </p>
                 )}
               </div>
@@ -437,32 +463,6 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                   <p className="text-xs text-red-500 flex items-center gap-1">
                     <FaInfoCircle className="flex-shrink-0" />
                     {errors.lastName}
-                  </p>
-                )}
-              </div>
-              {/* Date of Birth */}
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  {t('auth.idVerification.form.dateOfBirth')} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={idVerificationData.dateOfBirth || ''}
-                  onChange={handleChange}
-                  min="1900-01-01"
-                  max={new Date().toISOString().split('T')[0]}
-                  className={`w-full px-3 py-2 rounded-xl shadow-sm text-base transition-colors duration-200 ${
-                    errors.dateOfBirth
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-100'
-                  }`}
-                  id="idVerification-dateOfBirth"
-                />
-                {errors.dateOfBirth && (
-                  <p className="text-xs text-red-500 flex items-center gap-1">
-                    <FaInfoCircle className="flex-shrink-0" />
-                    {errors.dateOfBirth}
                   </p>
                 )}
               </div>
