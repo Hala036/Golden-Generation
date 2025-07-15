@@ -356,7 +356,13 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   // Replace fetch languages useEffect:
   useEffect(() => {
     try {
-      setLanguages(Object.entries(languageList).map(([value, label]) => ({ value, label })));
+      // Only allow English, Hebrew, and Russian as native language options
+      const allowedLanguages = ['en', 'he', 'ru'];
+      setLanguages(
+        Object.entries(languageList)
+          .filter(([value]) => allowedLanguages.includes(value))
+          .map(([value, label]) => ({ value, label }))
+      );
       setCountries(Array.isArray(countryList) ? countryList.map((c) => ({ value: c.code || c.name, label: c.name })) : []);
       setLoading(prev => ({ ...prev, languages: false }));
     } catch (error) {
