@@ -88,12 +88,12 @@
         },
         "nativeLanguage": "Native Language",
       "hebrewLevel": {
-        "label": "Hebrew Level",
+        "label": "Hebrew Speaking/Comprehension Level ()",
           "placeholder": "Select your Hebrew level",
           "beginner": "Beginner",
           "intermediate": "Intermediate",
           "advanced": "Advanced",
-          "native": "Native"
+          "native": "Native Speaker"
         },
         "isNewImmigrant": "I am a new immigrant to Israel",
         "arrivalDate": "Arrival Date",

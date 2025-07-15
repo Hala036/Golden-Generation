@@ -343,7 +343,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const hebrewLevels = ['beginner', 'intermediate', 'advanced', 'native'];
+  const hebrewLevels = ['0', '1', '2', '3', '4', '5'];
   const militaryOptions = ['none', 'military', 'national'];
 
   const maritalStatusOptions = [
@@ -770,11 +770,12 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 id="personalDetails-hebrewLevel"
                 type="select"
                 autoComplete="hebrew-level"
-                options={hebrewLevels.map(level => ({ value: level, label: t(`auth.signup.personalDetails.hebrewLevel.${level}`) }))}
+                options={hebrewLevels.map(level => ({ value: level, label: level }))}
                 value={formData.hebrewLevel}
                 onChange={handleInputChange}
                 error={errors.hebrewLevel}
                 getFieldIcon={() => getFieldIcon('hebrewLevel')}
+                placeholder={t('auth.signup.personalDetails.hebrewLevel.placeholder')}
               />
             </div>
             {/* New Immigrant Question */}
