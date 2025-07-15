@@ -572,11 +572,32 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
+    <div
+      className={`bg-white rounded-lg p-3 md:p-6 overflow-x-auto w-full mx-2 md:mx-4 ${
+        parseFloat(getComputedStyle(document.documentElement).fontSize) >= 19
+          ? 'max-h-[80vh] max-w-[90vw]'
+          : 'max-h-screen max-w-md'
+      } overflow-y-auto`}
+    >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{isEditing ? 'Edit Event' : 'Create New Event'}</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          {isEditing ? 'Edit Event' : 'Create New Event'}
+        </h2>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
         </button>
       </div>
 
@@ -780,7 +801,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
       {/* Add Category Modal */}
       {showAddCategoryModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-[60]">
-          <div className="bg-white p-6 rounded-lg max-w-lg w-full relative">
+          <div className="bg-white p-3 md:p-6 rounded-lg max-w-lg w-full relative">
             <AddCategoryModal
               onClose={() => setShowAddCategoryModal(false)}
             />
@@ -791,4 +812,4 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
   );
 };
 
-export default CreateEventForm; 
+export default CreateEventForm;
