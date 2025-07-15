@@ -12,6 +12,7 @@ import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Notifications from './Notifications'; // Import the Notifications component
 import DefaultProfilePic from '../DefaultProfilePic';
+import { set } from "lodash";
 
 const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => {
   const { t } = useTranslation();
@@ -19,10 +20,12 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
   const { language, changeLanguage } = useLanguage();
   const [selected, setSelected] = useState("main");
   const [userData, setUserData] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true); // Track sidebar state
   const [showNotificationsPopup, setShowNotificationsPopup] = useState(false); // State for notifications popup
   const [showFontSize, setShowFontSize] = useState(false);
   const [fontSize, setFontSize] = useState(16);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [theme, setTheme] = useState('light'); // fallback if not using context
   // Define colors for different user types
   const defaultColors = {
@@ -58,6 +61,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
           return;
         }
         setUserData(data.credentials);
+        setUserRole(data.role);
       } catch (error) {
         toast.error("Failed to load user data.");
       }
