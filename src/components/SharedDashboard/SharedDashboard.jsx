@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaHome, FaSearch } from "react-icons/fa";
+import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FiType, FaSignOutAlt, FaHome, FaSearch } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
@@ -22,6 +22,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showFontSize, setShowFontSize] = useState(false);
 
   // Define colors for different user types
   const defaultColors = {
@@ -172,6 +173,11 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
                 className="text-gray-600 text-lg md:text-[1.4rem] cursor-pointer hover:text-gray-800"
                 onClick={() => setSelected("messages")}
               />
+              <FiType
+                className="text-gray-600 text-lg md:text-[1.4rem] cursor-pointer hover:text-yellow-500"
+                title="Font Size"
+                onClick={() => setShowFontSize(true)}
+              />
             </div>
             <div className="flex items-center gap-1 text-xs md:text-sm ml-2 md:ml-5">
               <MdLanguage className="text-base md:text-lg text-gray-600" />
@@ -216,8 +222,70 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
               <Notifications setSelectedTab={setSelected} setShowNotificationsPopup={setShowNotificationsPopup} />
             </div>
           </div>
-        )}
+        )}        
 
+        {/* Font Size Modal */}
+        {showFontSize && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
+            <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] relative">
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl"
+                onClick={() => setShowFontSize(false)}
+              >
+                &times;
+              </button>
+              <h2 className="text-lg font-bold mb-4 text-yellow-600">Font Size</h2>
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleFontSizeChange(fontSize - 1)}
+                    className="px-3 py-1 rounded text-xl font-bold bg-gray-200 hover:bg-yellow-400"
+                    disabled={fontSize <= 2}
+                  >
+                    –
+                  </button>
+                  <input
+                    type="number"
+                    min={2}
+                    max={40}
+                    value={fontSize}
+                    onChange={e => handleFontSizeChange(Number(e.target.value))}
+                    className="w-16 text-center border rounded p-2 text-lg font-semibold bg-white border-gray-300"
+                  />
+                  <button
+                    onClick={() => handleFontSizeChange(fontSize + 1)}
+                    className="px-3 py-1 rounded text-xl font-bold bg-gray-200 hover:bg-yellow-400"
+                    disabled={fontSize >= 40}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center mt-2">
+                  {[
+                    { label: "Small", size: 12 },
+                    { label: "Medium", size: 16 },
+                    { label: "Large", size: 20 }
+                  ].map(option => (
+                    <button
+                      key={option.label}
+                      onClick={() => handleFontSizeChange(option.size)}
+                      className={`px-3 py-1 rounded border ${
+                        fontSize === option.size 
+                          ? "bg-yellow-500 text-white border-yellow-500" 
+                          : "bg-white border-gray-300 hover:bg-yellow-100"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-4 text-gray-600" style={{ fontSize: fontSize }}>
+                  Live preview: The quick brown fox jumps over the lazy dog.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Create Event Modal */}
         {showCreateModal && (
           <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
