@@ -122,7 +122,11 @@
           "required": "This field is required",
           "houseNumberFormat": "House number must be numeric (e.g., 123 or 123A)",
           "phoneNumberFormat": "Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)"
-      }
+      },
+        "floorNumber": "Floor Number",
+        "floorNumberPlaceholder": "Enter floor number",
+        "postalCode": "Postal Code",
+        "postalCodePlaceholder": "Enter postal code"
     },
     "workBackground": {
       "title": "Work Background",

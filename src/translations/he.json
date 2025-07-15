@@ -79,6 +79,10 @@
           "description": "היכן אתה גר?"
         },
         "houseNumber": "מספר בית",
+        "floorNumber": "קומה",
+        "floorNumberPlaceholder": "הזן מספר קומה",
+        "postalCode": "מיקוד",
+        "postalCodePlaceholder": "הזן מיקוד",
         "streetName": "שם הרחוב",
         "additionalAddressDetails": "פרטי כתובת נוספים (אופציונלי)",
         "languageAndBackground": {

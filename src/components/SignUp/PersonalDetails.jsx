@@ -312,6 +312,8 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
     maritalStatus: '',
     streetName: '',
     houseNumber: '',
+    floorNumber: '',
+    postalCode: '',
     address: '',
     nativeLanguage: '',
     hebrewLevel: '',
@@ -409,7 +411,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber']; // Base required fields
+    const requiredFields = ['streetName', 'houseNumber', 'floorNumber', 'postalCode']; // Base required fields
     if (formData.isNewImmigrant) {
       requiredFields.push('arrivalDate', 'originCountry');
     }
@@ -678,6 +680,36 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 onChange={handleInputChange}
                 error={errors.streetName}
                 getFieldIcon={() => getFieldIcon('streetName')}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <FormField
+                label={t('auth.signup.personalDetails.floorNumber')}
+                name="floorNumber"
+                id="personalDetails-floorNumber"
+                type="text"
+                autoComplete="address-level2"
+                placeholder={t('auth.signup.personalDetails.floorNumberPlaceholder')}
+                value={formData.floorNumber}
+                onChange={handleInputChange}
+                error={errors.floorNumber}
+                getFieldIcon={() => getFieldIcon('floorNumber')}
+                inputMode="text"
+                required={true}
+              />
+              <FormField
+                label={t('auth.signup.personalDetails.postalCode')}
+                name="postalCode"
+                id="personalDetails-postalCode"
+                type="text"
+                autoComplete="postal-code"
+                placeholder={t('auth.signup.personalDetails.postalCodePlaceholder')}
+                value={formData.postalCode}
+                onChange={handleInputChange}
+                error={errors.postalCode}
+                getFieldIcon={() => getFieldIcon('postalCode')}
+                inputMode="text"
+                required={true}
               />
             </div>
             <FormField
