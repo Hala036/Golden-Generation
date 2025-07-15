@@ -126,7 +126,13 @@
         "floorNumber": "Floor Number",
         "floorNumberPlaceholder": "Enter floor number",
         "postalCode": "Postal Code",
-        "postalCodePlaceholder": "Enter postal code"
+        "postalCodePlaceholder": "Enter postal code",
+        "healthConditionOptions": {
+          "healthy": "independent",
+          "withCaregiver": "With caregiver",
+          "nursing": "Nursing-dependent",
+          "immobile": "Non-mobile"
+        }
     },
     "workBackground": {
       "title": "Work Background",

@@ -125,6 +125,12 @@
           "required": "שדה זה נדרש",
           "houseNumberFormat": "מספר בית חייב להיות מספרי (למשל 123 או 123א)",
           "phoneNumberFormat": "מספר הטלפון חייב להיות מספר ישראלי תקין (למשל 05XXXXXXXX)"
+        },
+        "healthConditionOptions": {
+          "healthy": "עצמאי",
+          "withCaregiver": " עם מטפל",
+          "nursing": "סיעודי",
+          "nonMobile": "לא נייד"
         }
       },
       "workBackground": {

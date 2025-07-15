@@ -777,39 +777,39 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 placeholder={t('auth.signup.personalDetails.hebrewLevel.placeholder')}
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
-              <FormField
-                label={t('auth.signup.personalDetails.arrivalDate')}
-                name="arrivalDate"
-                id="personalDetails-arrivalDate"
-                type="date"
-                required={true}
-                autoComplete="bday"
-                value={formData.arrivalDate}
-                onChange={handleInputChange}
-                error={errors.arrivalDate}
-                getFieldIcon={() => getFieldIcon('arrivalDate')}
-              />
-              <FormField
-                label={t('auth.signup.personalDetails.originCountry')}
-                name="originCountry"
-                id="personalDetails-originCountry"
-                type="select"
-                required={true}
-                autoComplete="country"
-                options={countries}
-                value={formData.originCountry}
-                onChange={handleInputChange}
-                error={errors.originCountry}
-                getFieldIcon={() => getFieldIcon('originCountry')}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+                <FormField
+                  label={t('auth.signup.personalDetails.arrivalDate')}
+                  name="arrivalDate"
+                  id="personalDetails-arrivalDate"
+                  type="date"
+                  required={true}
+                  autoComplete="bday"
+                  value={formData.arrivalDate}
+                  onChange={handleInputChange}
+                  error={errors.arrivalDate}
+                  getFieldIcon={() => getFieldIcon('arrivalDate')}
+                />
+                <FormField
+                  label={t('auth.signup.personalDetails.originCountry')}
+                  name="originCountry"
+                  id="personalDetails-originCountry"
+                  type="select"
+                  required={true}
+                  autoComplete="country"
+                  options={countries}
+                  value={formData.originCountry}
+                  onChange={handleInputChange}
+                  error={errors.originCountry}
+                  getFieldIcon={() => getFieldIcon('originCountry')}
                 selectProps={{
                   menuPortalTarget: typeof window !== 'undefined' ? document.body : null,
                   styles: {
                     menuPortal: base => ({ ...base, zIndex: 9999 })
                   }
                 }}
-              />
-            </div>
+                />
+              </div>
           </div>
 
           {/* Additional Information */}
@@ -829,13 +829,18 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   label={t('auth.signup.personalDetails.healthCondition')}
                   name="healthCondition"
                   id="personalDetails-healthCondition"
-                  type="textarea"
-                  autoComplete="health-condition"
-                  placeholder={t('auth.signup.personalDetails.healthConditionPlaceholder')}
+                  type="select"
+                  options={[
+                    { value: 'healthy', label: t('auth.signup.personalDetails.healthConditionOptions.healthy') },
+                    { value: 'withCaregiver', label: t('auth.signup.personalDetails.healthConditionOptions.withCaregiver') },
+                    { value: 'nursing', label: t('auth.signup.personalDetails.healthConditionOptions.nursing') },
+                    { value: 'nonMobile', label: t('auth.signup.personalDetails.healthConditionOptions.nonMobile') }
+                  ]}
                   value={formData.healthCondition}
                   onChange={handleInputChange}
                   error={errors.healthCondition}
                   getFieldIcon={() => getFieldIcon('healthCondition')}
+                  required
                 />
                 <FormField
                   label={t('auth.signup.personalDetails.militaryService')}
