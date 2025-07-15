@@ -11,6 +11,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Notifications from './Notifications'; // Import the Notifications component
+import DefaultProfilePic from '../DefaultProfilePic';
 
 const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => {
   const { t } = useTranslation();
@@ -23,6 +24,13 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
   const [showFontSize, setShowFontSize] = useState(false);
   const [fontSize, setFontSize] = useState(16);
   const [theme, setTheme] = useState('light'); // fallback if not using context
+  // Define colors for different user types
+  const defaultColors = {
+    admin: '#4F46E5', // Indigo
+    superadmin: '#DC2626', // Red
+    retiree: '#059669', // Green
+    default: '#6B7280', // Gray
+  };
 
   const baseIcons = [
     { id: "main", label: t('dashboard.homePage'), icon: <FaHome /> },
