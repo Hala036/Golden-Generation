@@ -2051,5 +2051,32 @@
       "button": "Send",
       "successMessage": "Message sent successfully!"
     }
+  },
+  "createEventForm": {
+    "title": "Event Title",
+    "titlePlaceholder": "e.g., Morning Yoga Session",
+    "category": "Category",
+    "categoryPlaceholder": "Select a category",
+    "addCategory": "Add New Category",
+    "timeDateSection": "Time & Date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "additionalDetailsSection": "Additional Details",
+    "description": "Description",
+    "descriptionPlaceholder": "Provide details about the event...",
+    "location": "Location",
+    "locationPlaceholder": "e.g., Community Hall",
+    "maxParticipants": "Max Participants",
+    "maxParticipantsPlaceholder": "e.g., 10",
+    "eventImage": "Event Image",
+    "eventImageOptional": "(optional, JPG/PNG/GIF/WebP, max 5MB)",
+    "settlement": "Settlement",
+    "settlementPlaceholder": "Select a settlement",
+    "cancelButton": "Cancel",
+    "submitButtonCreate": "Create Event",
+    "submitButtonUpdate": "Update Event",
+    "submitting": "Submitting..."
   }
 }

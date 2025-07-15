@@ -1988,5 +1988,32 @@
       "button": "שלח",
       "successMessage": "ההודעה נשלחה בהצלחה!"
     }
+  },
+  "createEventForm": {
+    "title": "כותרת האירוע",
+    "titlePlaceholder": "לדוגמה: מפגש יוגה בבוקר",
+    "category": "קטגוריה",
+    "categoryPlaceholder": "בחר קטגוריה",
+    "addCategory": "הוסף קטגוריה חדשה",
+    "timeDateSection": "זמן ותאריך",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "startTime": "שעת התחלה",
+    "endTime": "שעת סיום",
+    "additionalDetailsSection": "פרטים נוספים",
+    "description": "תיאור",
+    "descriptionPlaceholder": "ספק פרטים על האירוע...",
+    "location": "מיקום",
+    "locationPlaceholder": "לדוגמה: אולם קהילתי",
+    "maxParticipants": "מספר משתתפים מקסימלי",
+    "maxParticipantsPlaceholder": "לדוגמה: 10",
+    "eventImage": "תמונת האירוע",
+    "eventImageOptional": "(אופציונלי, JPG/PNG/GIF/WebP, עד 5MB)",
+    "settlement": "יישוב",
+    "settlementPlaceholder": "בחר יישוב",
+    "cancelButton": "ביטול",
+    "submitButtonCreate": "צור אירוע",
+    "submitButtonUpdate": "עדכן אירוע",
+    "submitting": "שולח..."
   }
 }

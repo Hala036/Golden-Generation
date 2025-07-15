@@ -11,8 +11,12 @@ import SearchableDropdown from '../SearchableDropdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryAppearance } from '../../utils/categoryColors';
 import { getAllSettlements } from '../../utils/getSettlements';
+import { useTranslation } from 'react-i18next';
 
 const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, isEditing = false }) => {
+  const { t, i18n } = useTranslation();
+  const language = i18n.language; // Get the current language
+
   const [categories, setCategories] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -556,7 +560,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
   const categoryOptions = categories.map(cat => ({
     value: cat.id,
-    label: cat.name,
+    label: cat.translations[language] || cat.translations.en || cat.name, // Use translations or fallback to English/name
   }));
 
   // Handle SearchableDropdown change
@@ -574,24 +578,28 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
   return (
     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{isEditing ? 'Edit Event' : 'Create New Event'}</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          {isEditing ? t("createEventForm.submitButtonUpdate") : t("createEventForm.submitButtonCreate")}
+        </h2>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Event Title <span className="text-red-500">*</span>
+            {t("createEventForm.title")} <span className="text-red-500">*</span>
           </label>
-          {renderInput("title", "text", "e.g., Morning Yoga Session", { required: true, minLength: 3 })}
+          {renderInput("title", "text", t("createEventForm.titlePlaceholder"), { required: true, minLength: 3 })}
         </div>
 
         <div className="flex items-end">
           <div className="flex-grow">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category <span className="text-red-500">*</span>
+              {t("createEventForm.category")} <span className="text-red-500">*</span>
             </label>
             <SearchableDropdown
               name="categoryId"
@@ -601,7 +609,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
               onBlur={handleBlur}
               touched={touched.categoryId}
               error={validationErrors.categoryId}
-              placeholder="Select a category"
+              placeholder={t("createEventForm.categoryPlaceholder")}
             />
             {touched.categoryId && validationErrors.categoryId && (
               <p className="text-red-500 text-xs mt-1">{validationErrors.categoryId}</p>
@@ -613,7 +621,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 type="button"
                 onClick={() => setShowAddCategoryModal(true)}
                 className="p-2.5 border rounded-lg hover:bg-gray-100"
-                title="Add New Category"
+                title={t("createEventForm.addCategory")}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -625,33 +633,31 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
         {/* Time and Date Section */}
         <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Time & Date</h3>
+          <h3 className="text-lg font-medium text-gray-800 mb-4">{t("createEventForm.timeDateSection")}</h3>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date <span className="text-red-500">*</span>
+                  {t("createEventForm.startDate")} <span className="text-red-500">*</span>
                 </label>
                 {renderInput("startDate", "date", "", { required: true, min: getTodayDate() }, true)}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date
+                  {t("createEventForm.endDate")}
                 </label>
                 {renderInput("endDate", "date", "", { min: eventData.startDate || getTodayDate() })}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Start Time <span className="text-red-500">*</span>
-                  </label>
-                </div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("createEventForm.startTime")} <span className="text-red-500">*</span>
+                </label>
                 <CustomTimePickerWrapper
                   name="timeFrom"
                   value={eventData.timeFrom}
-            onChange={handleChange}
+                  onChange={handleChange}
                   onBlur={handleBlur}
                   timeSlots={timeSlots}
                   getIsDisabled={getStartTimeDisabledStatus}
@@ -663,15 +669,13 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 )}
               </div>
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    End Time <span className="text-red-500">*</span>
-                  </label>
-                </div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("createEventForm.endTime")} <span className="text-red-500">*</span>
+                </label>
                 <CustomTimePickerWrapper
                   name="timeTo"
                   value={eventData.timeTo}
-            onChange={handleChange}
+                  onChange={handleChange}
                   onBlur={handleBlur}
                   timeSlots={timeSlots}
                   getIsDisabled={getEndTimeDisabledStatus}
@@ -688,35 +692,35 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
         {/* Additional Details Section */}
         <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Additional Details</h3>
+          <h3 className="text-lg font-medium text-gray-800 mb-4">{t("createEventForm.additionalDetailsSection")}</h3>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                {t("createEventForm.description")}
               </label>
-              {renderInput("description", "textarea", "Provide details about the event...")}
+              {renderInput("description", "textarea", t("createEventForm.descriptionPlaceholder"))}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
+                  {t("createEventForm.location")}
                 </label>
-                {renderInput("location", "text", "e.g., Community Hall")}
+                {renderInput("location", "text", t("createEventForm.locationPlaceholder"))}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Max Participants
+                  {t("createEventForm.maxParticipants")}
                 </label>
-                {renderInput("capacity", "number", "e.g., 10", { min: 1 })}
+                {renderInput("capacity", "number", t("createEventForm.maxParticipantsPlaceholder"), { min: 1 })}
               </div>
             </div>
 
             {/* Image Upload Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Event Image
-                <span className="text-gray-400 text-xs ml-1">(optional, JPG/PNG/GIF/WebP, max 5MB)</span>
+                {t("createEventForm.eventImage")}
+                <span className="text-gray-400 text-xs ml-1">{t("createEventForm.eventImageOptional")}</span>
               </label>
               <input
                 type="file"
@@ -741,7 +745,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
             {actualUserRole === 'superadmin' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Settlement <span className="text-red-500">*</span>
+                  {t("createEventForm.settlement")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="settlement"
@@ -761,7 +765,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         
         <div className="flex justify-end pt-6 border-t border-gray-200">
           <button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg mr-2 hover:bg-gray-300">
-            Cancel
+            {t("createEventForm.cancelButton")}
           </button>
           <button
             type="submit"
@@ -772,7 +776,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
                 : 'bg-green-600 hover:bg-green-700'
             }`}
           >
-            {isSubmitting ? 'Submitting...' : (isEditing ? 'Update Event' : 'Create Event')}
+            {isSubmitting ? t("createEventForm.submitting") : (isEditing ? t("createEventForm.submitButtonUpdate") : t("createEventForm.submitButtonCreate"))}
           </button>
         </div>
       </form>
@@ -791,4 +795,4 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
   );
 };
 
-export default CreateEventForm; 
+export default CreateEventForm;
