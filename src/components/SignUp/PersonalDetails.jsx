@@ -418,10 +418,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber', 'floorNumber', 'postalCode']; // Base required fields
-    if (formData.isNewImmigrant) {
-      requiredFields.push('arrivalDate', 'originCountry');
-    }
+    const requiredFields = ['streetName', 'houseNumber', 'floorNumber', 'postalCode', 'arrivalDate', 'originCountry']; // Base required fields
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
         let fieldKey = '';
@@ -778,46 +775,33 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 placeholder={t('auth.signup.personalDetails.hebrewLevel.placeholder')}
               />
             </div>
-            {/* New Immigrant Question */}
-            <div className="mt-4">
-              <CheckboxField
-                label={t('auth.signup.personalDetails.isNewImmigrant')}
-                name="isNewImmigrant"
-                id="personalDetails-isNewImmigrant"
-                checked={formData.isNewImmigrant}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
+              <FormField
+                label={t('auth.signup.personalDetails.arrivalDate')}
+                name="arrivalDate"
+                id="personalDetails-arrivalDate"
+                type="date"
+                required={true}
+                autoComplete="bday"
+                value={formData.arrivalDate}
                 onChange={handleInputChange}
+                error={errors.arrivalDate}
+                getFieldIcon={() => getFieldIcon('arrivalDate')}
+              />
+              <FormField
+                label={t('auth.signup.personalDetails.originCountry')}
+                name="originCountry"
+                id="personalDetails-originCountry"
+                type="select"
+                required={true}
+                autoComplete="country"
+                options={countries}
+                value={formData.originCountry}
+                onChange={handleInputChange}
+                error={errors.originCountry}
+                getFieldIcon={() => getFieldIcon('originCountry')}
               />
             </div>
-            {/* Conditional fields for new immigrants */}
-            {formData.isNewImmigrant && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
-                <FormField
-                  label={t('auth.signup.personalDetails.arrivalDate')}
-                  name="arrivalDate"
-                  id="personalDetails-arrivalDate"
-                  type="date"
-                  required={true}
-                  autoComplete="bday"
-                  value={formData.arrivalDate}
-                  onChange={handleInputChange}
-                  error={errors.arrivalDate}
-                  getFieldIcon={() => getFieldIcon('arrivalDate')}
-                />
-                <FormField
-                  label={t('auth.signup.personalDetails.originCountry')}
-                  name="originCountry"
-                  id="personalDetails-originCountry"
-                  type="select"
-                  required={true}
-                  autoComplete="country"
-                  options={countries}
-                  value={formData.originCountry}
-                  onChange={handleInputChange}
-                  error={errors.originCountry}
-                  getFieldIcon={() => getFieldIcon('originCountry')}
-                />
-              </div>
-            )}
           </div>
 
           {/* Additional Information */}
