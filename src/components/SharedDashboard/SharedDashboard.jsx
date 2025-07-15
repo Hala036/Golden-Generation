@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FiType, FaSignOutAlt, FaHome, FaSearch } from "react-icons/fa";
+import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaSignOutAlt, FaHome, FaSearch } from "react-icons/fa";
+import { FiType } from "react-icons/fi";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { auth, getUserData } from "../../firebase";
