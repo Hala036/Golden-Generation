@@ -468,6 +468,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
           const element = document.querySelector(`[name="${firstErrorField}"]`);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
           }
         }
       }

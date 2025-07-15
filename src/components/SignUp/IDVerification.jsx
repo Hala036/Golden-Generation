@@ -291,9 +291,19 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      onComplete();
+    if (!validateForm()) {
+      // Focus the first error field
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        const element = document.querySelector(`[name="${firstErrorField}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }
+      return;
     }
+    onComplete();
   };
 
   // Add the missing extractDataFromOCR function

@@ -121,6 +121,15 @@ const Credentials = ({ onComplete }) => {
 
       if (!formIsValid) {
         toast.error(t('auth.credentials.validation.fix'), { id: 'credentials-check' });
+        // Focus the first error field
+        const firstErrorField = Object.keys(newErrors)[0];
+        if (firstErrorField) {
+          const element = document.querySelector(`[name="${firstErrorField}"]`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
+          }
+        }
         return;
       }
 
