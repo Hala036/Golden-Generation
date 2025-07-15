@@ -831,7 +831,8 @@
         "placeholder": "Create a password",
         "required": "Password is required.",
         "minLength": "Password must be at least 8 characters.",
-        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
+        "rules": "Password must be at least 8 characters and contain uppercase, loמwercase, and a number."
       },
       "confirmPassword": {
         "label": "Confirm Password",
