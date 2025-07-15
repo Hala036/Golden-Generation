@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiUser,
   FiKey,
@@ -13,7 +12,6 @@ import {
   FiEyeOff,
   FiTrash2
 } from "react-icons/fi";
-import { FaEnvelope, FaUser, FaPhone, FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { auth, storage, db } from "../../firebase";
 import { updateProfile, updateEmail, reauthenticateWithCredential, EmailAuthProvider, updatePassword, deleteUser } from "firebase/auth";
@@ -24,9 +22,6 @@ import { useNavigate } from "react-router-dom";
 import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
-import PasswordInput from '../PasswordInput';
-import { useFieldValidation } from '../../hooks/useFieldValidation';
-import { validateEmail, validateUsername, validatePhoneNumber } from '../../utils/validation';
 
 const mockAnnouncements = [
   { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
@@ -51,7 +46,7 @@ const SettingsCards = () => {
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(false);
 
   // Form states
-  const [profileData, setProfileData] = useState({ username: "johndoe", phone: "", email: "john@example.com" });
+  const [profileData, setProfileData] = useState({ name: "John Doe", username: "johndoe", phone: "", email: "john@example.com" });
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [fontSize, setFontSize] = useState(16);
   const [notifications, setNotifications] = useState({ email: true, push: false });
@@ -63,105 +58,8 @@ const SettingsCards = () => {
   const navigate = useNavigate();
   const [deletePassword, setDeletePassword] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [autoSaving, setAutoSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState(null);
-  const [autoSaveTimeout, setAutoSaveTimeout] = useState(null);
 
   const { theme, setTheme } = useTheme();
-
-  // Field validation states for edit profile
-  const [touched, setTouched] = useState({ username: false, phone: false, email: false });
-
-  const usernameField = useFieldValidation({
-    validate: validateUsername,
-  });
-
-  const emailField = useFieldValidation({
-    validate: validateEmail,
-  });
-
-  const phoneField = useFieldValidation({
-    validate: validatePhoneNumber,
-  });
-
-  // Auto-save functionality
-  const debouncedAutoSave = useCallback(async (fieldName, value) => {
-    // Clear existing timeout
-    if (autoSaveTimeout) {
-      clearTimeout(autoSaveTimeout);
-    }
-
-    // Set new timeout for auto-save
-    const timeout = setTimeout(async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      // Only auto-save if the field is valid and has a value
-      let isValid = false;
-      if (fieldName === 'username' && !usernameField.error && usernameField.value && usernameField.value.trim()) {
-        isValid = true;
-      } else if (fieldName === 'email' && !emailField.error && emailField.value && emailField.value.trim()) {
-        isValid = true;
-      } else if (fieldName === 'phone' && !phoneField.error && phoneField.value && phoneField.value.trim()) {
-        isValid = true;
-      }
-
-      if (!isValid) return;
-
-      setAutoSaving(true);
-      try {
-        // Don't auto-save email changes (require re-auth)
-        if (fieldName === 'email' && emailField.value !== user.email) {
-          setAutoSaving(false);
-          return;
-        }
-
-        const updateData = {};
-        if (fieldName === 'username' && usernameField.value && usernameField.value.trim()) {
-          updateData.username = usernameField.value.trim();
-        } else if (fieldName === 'email' && emailField.value && emailField.value.trim()) {
-          updateData.email = emailField.value.trim();
-        } else if (fieldName === 'phone' && phoneField.value && phoneField.value.trim()) {
-          updateData.phone = phoneField.value.trim();
-        }
-
-        // Only proceed if we have valid data to update
-        if (Object.keys(updateData).length > 0) {
-          await updateFirestoreProfile(user.uid, updateData);
-          setLastSaved(new Date());
-          
-          // Show subtle success indicator
-          toast.success(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated`, {
-            duration: 2000,
-            position: 'bottom-right',
-            style: {
-              background: '#10B981',
-              color: 'white',
-            },
-          });
-        }
-      } catch (err) {
-        console.error('Auto-save failed:', err);
-        toast.error(`Failed to auto-save ${fieldName}`, {
-          duration: 3000,
-          position: 'bottom-right',
-        });
-      } finally {
-        setAutoSaving(false);
-      }
-    }, 1500); // 1.5 second delay
-
-    setAutoSaveTimeout(timeout);
-  }, [autoSaveTimeout, usernameField, emailField, phoneField]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimeout) {
-        clearTimeout(autoSaveTimeout);
-      }
-    };
-  }, [autoSaveTimeout]);
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -222,20 +120,13 @@ const SettingsCards = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("Not logged in");
       const userDoc = await getUserData(user.uid);
-      const data = {
+      setProfileData({
+        name: userDoc?.personalDetails?.name || "",
         username: userDoc?.credentials?.username || "",
         phone: userDoc?.personalDetails?.phoneNumber || "",
         email: userDoc?.credentials?.email || user.email || ""
-      };
-      setProfileData(data);
-      
-      // Set field values for validation
-      usernameField.setValue(data.username);
-      emailField.setValue(data.email);
-      phoneField.setValue(data.phone);
-      
+      });
       setShowEditProfile(true);
-      setLastSaved(null);
     } catch (err) {
       toast.error("Failed to load profile");
     } finally {
@@ -243,68 +134,20 @@ const SettingsCards = () => {
     }
   };
 
-  const handleBlur = (field) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    if (field === 'username') usernameField.onBlur();
-    if (field === 'email') emailField.onBlur();
-    if (field === 'phone') phoneField.onBlur();
-  };
-
-  // Enhanced field change handlers with auto-save
-  const handleFieldChange = (field, value, onChange) => {
-    // Create a mock event object for the onChange function
-    const mockEvent = { target: { value } };
-    onChange(mockEvent);
-    
-    // Trigger auto-save for valid fields
-    if (value && value.trim()) {
-      debouncedAutoSave(field, value);
-    }
-  };
-
-  const isValid =
-    !usernameField.error &&
-    !emailField.error &&
-    !phoneField.error &&
-    usernameField.value &&
-    emailField.value &&
-    phoneField.value;
-
   const handleProfileSave = async (e) => {
     e.preventDefault();
-    setTouched({ username: true, email: true, phone: true });
-    usernameField.onBlur();
-    emailField.onBlur();
-    phoneField.onBlur();
-    
-    if (!isValid) {
-      toast.error("Please fix the errors above");
-      return;
-    }
-
     const user = auth.currentUser;
     if (!user) return toast.error("Not logged in");
-    
     try {
       // If email changed, require re-auth
-      if (emailField.value !== user.email) {
-        setPendingProfileData({ 
-          username: usernameField.value,
-          phone: phoneField.value,
-          email: emailField.value
-        });
+      if (profileData.email !== user.email) {
+        setPendingProfileData({ ...profileData });
         setShowReauth(true);
         return;
       }
-      
-      await updateFirestoreProfile(user.uid, {
-        username: usernameField.value,
-        phone: phoneField.value,
-        email: emailField.value
-      });
+      await updateFirestoreProfile(user.uid, profileData);
       toast.success("Profile updated");
       setShowEditProfile(false);
-      setLastSaved(new Date());
     } catch (err) {
       toast.error(err.message || "Failed to update profile");
     }
@@ -470,23 +313,12 @@ const SettingsCards = () => {
   // Update Firestore profile helper
   const updateFirestoreProfile = async (uid, data) => {
     const userRef = doc(db, "users", uid);
-    const updateData = {};
-    
-    // Only add fields that have valid values
-    if (data.username && data.username.trim()) {
-      updateData["credentials.username"] = data.username.trim();
-    }
-    if (data.email && data.email.trim()) {
-      updateData["credentials.email"] = data.email.trim();
-    }
-    if (data.phone && data.phone.trim()) {
-      updateData["personalDetails.phoneNumber"] = data.phone.trim();
-    }
-    
-    // Only update if there are valid fields to update
-    if (Object.keys(updateData).length > 0) {
-      await updateDoc(userRef, updateData);
-    }
+    await updateDoc(userRef, {
+      "credentials.username": data.username,
+      "credentials.email": data.email,
+      "personalDetails.phoneNumber": data.phone,
+      "personalDetails.name": data.name
+    });
   };
 
   // Handle re-auth and email update
@@ -542,7 +374,7 @@ const SettingsCards = () => {
       label: "Edit Profile",
       description: "Update your name, username, phone, and email",
       icon: <FiUser className="text-2xl" />,
-      onClick: () => navigate("/edit-signup-data"),
+      onClick: handleOpenEditProfile,
     },
     {
       label: "Change Password",
@@ -587,10 +419,10 @@ const SettingsCards = () => {
       onClick: () => setShowDeleteAccount(true),
     },
     {
-      label: "Edit User Information",
+      label: "Edit Sign-Up Data",
       description: "Edit all information entered during sign-up",
       icon: <FiSettings className="text-2xl" />,
-      onClick: handleOpenEditProfile,
+      onClick: () => navigate("/edit-signup-data"),
     },
   ];
 
@@ -628,233 +460,160 @@ const SettingsCards = () => {
         ))}
       </div>
 
-      {/* Edit Profile Modal - Unified Design */}
+      {/* Edit Profile Modal */}
       {showEditProfile && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="edit-profile-title"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-30 z-40"></div>
-          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-50">
-            <button
-              className="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-600"
-              onClick={() => setShowEditProfile(false)}
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            <h2
-              id="edit-profile-title"
-              className="text-2xl font-bold mb-8 text-yellow-600 text-left"
-            >
-              Edit Profile
-            </h2>
-            
-            {loadingProfile && (
-              <div className="flex justify-center items-center mb-4">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
+        <Modal onClose={() => setShowEditProfile(false)} title="Edit Profile">
+          {loadingProfile && (
+            <div className="flex justify-center items-center mb-4">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
+            </div>
+          )}
+          {showReauth && (
+            <form onSubmit={handleReauthAndSave} className="space-y-4">
+              <input 
+                type="password" 
+                className={`w-full p-2 border rounded ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
+                placeholder="Re-authenticate with current password" 
+                value={reauthPassword} 
+                onChange={e => setReauthPassword(e.target.value)} 
+                required 
+              />
+              <div className="flex justify-end gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setShowReauth(false)} 
+                  className={`px-4 py-2 rounded ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
+                >
+                  Re-authenticate
+                </button>
               </div>
-            )}
-            
-            {showReauth && (
-              <form onSubmit={handleReauthAndSave} className="flex flex-col gap-4">
-                <div className="relative">
-                  <label htmlFor="reauth-password" className="text-sm font-medium">Current Password</label>
-                  <PasswordInput
-                    id="reauth-password"
-                    value={reauthPassword}
-                    onChange={e => setReauthPassword(e.target.value)}
-                    className="w-full pl-3 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
-                    placeholder="Re-authenticate with current password"
-                    autoComplete="current-password"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end gap-3 mt-8">
-                  <button
-                    type="button"
-                    onClick={() => setShowReauth(false)}
-                    className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600"
-                  >
-                    Re-authenticate
-                  </button>
-                </div>
-              </form>
-            )}
-            
-            {!showReauth && (
-              <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
-                {/* Auto-save status indicator */}
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                  <span>Auto-save enabled</span>
-                  <div className="flex items-center gap-2">
-                    {autoSaving && (
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span>Saving...</span>
-                      </div>
-                    )}
-                    {lastSaved && !autoSaving && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Saved {lastSaved.toLocaleTimeString()}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <label htmlFor="profile-email" className="text-sm font-medium">Email</label>
-                  <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
-                  <input
-                    id="profile-email"
-                    name="email"
-                    type="email"
-                    placeholder="Email"
-                    value={emailField.value}
-                    onChange={(e) => handleFieldChange('email', e.target.value, emailField.onChange)}
-                    onBlur={() => handleBlur('email')}
-                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.email && emailField.error ? 'border-red-500' : touched.email && !emailField.error && emailField.value ? 'border-green-500' : 'border-gray-300'}`}
-                    aria-label="Profile Email"
-                  />
-                </div>
-                {touched.email && emailField.isChecking && (
-                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />Checking...
-                  </span>
-                )}
-                {touched.email && emailField.error && (
-                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />
-                    {emailField.error}
-                  </span>
-                )}
-
-                <div className="relative">
-                  <label htmlFor="profile-username" className="text-sm font-medium">Username</label>
-                  <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
-                  <input
-                    id="profile-username"
-                    name="username"
-                    type="text"
-                    placeholder="Username"
-                    value={usernameField.value}
-                    onChange={(e) => handleFieldChange('username', e.target.value, usernameField.onChange)}
-                    onBlur={() => handleBlur('username')}
-                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.username && usernameField.error ? 'border-red-500' : touched.username && !usernameField.error && usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
-                    aria-label="Profile Username"
-                  />
-                </div>
-                {touched.username && usernameField.isChecking && (
-                  <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />Checking...
-                  </span>
-                )}
-                {touched.username && usernameField.error && (
-                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />
-                    {usernameField.error}
-                  </span>
-                )}
-
-                <div className="relative">
-                  <label htmlFor="profile-phone" className="text-sm font-medium">Phone</label>
-                  <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
-                  <input
-                    id="profile-phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="Phone"
-                    value={phoneField.value}
-                    onChange={(e) => handleFieldChange('phone', e.target.value, phoneField.onChange)}
-                    onBlur={() => handleBlur('phone')}
-                    className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.phone && phoneField.error ? 'border-red-500' : touched.phone && !phoneField.error && phoneField.value ? 'border-green-500' : 'border-gray-300'}`}
-                    aria-label="Profile Phone"
-                  />
-                </div>
-                {touched.phone && phoneField.error && (
-                  <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />
-                    {phoneField.error}
-                  </span>
-                )}
-
-                <div className="flex justify-end gap-3 mt-8">
-                  <button
-                    type="button"
-                    onClick={() => setShowEditProfile(false)}
-                    className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600 disabled:opacity-50 flex items-center justify-center"
-                    disabled={
-                      usernameField.isChecking ||
-                      emailField.isChecking ||
-                      !isValid
-                    }
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
+            </form>
+          )}
+          {!showReauth && (
+            <form onSubmit={handleProfileSave} className="space-y-4">
+              <input 
+                type="text" 
+                className={`w-full p-2 border rounded ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
+                placeholder="Name" 
+                value={profileData.name} 
+                onChange={e => setProfileData({ ...profileData, name: e.target.value })} 
+                required 
+              />
+              <input 
+                type="text" 
+                className={`w-full p-2 border rounded ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
+                placeholder="Username" 
+                value={profileData.username} 
+                onChange={e => setProfileData({ ...profileData, username: e.target.value })} 
+                required 
+              />
+              <input 
+                type="tel" 
+                className={`w-full p-2 border rounded ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
+                placeholder="Phone" 
+                value={profileData.phone} 
+                onChange={e => setProfileData({ ...profileData, phone: e.target.value })} 
+              />
+              <input 
+                type="email" 
+                className={`w-full p-2 border rounded ${
+                  theme === 'dark' 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
+                placeholder="Email" 
+                value={profileData.email} 
+                onChange={e => setProfileData({ ...profileData, email: e.target.value })} 
+                required 
+              />
+              <div className="flex justify-end gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setShowEditProfile(false)} 
+                  className={`px-4 py-2 rounded ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          )}
+        </Modal>
       )}
       {/* Change Password Modal */}
       {showChangePassword && (
         <Modal onClose={() => setShowChangePassword(false)} title="Change Password">
           <form onSubmit={handlePasswordSave} className="space-y-4">
-            <PasswordInput
-              value={passwordData.currentPassword}
-              onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+            <input 
+              type="password" 
               className={`w-full p-2 border rounded ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Current Password"
-              autoComplete="current-password"
-              required
+              placeholder="Current Password" 
+              value={passwordData.currentPassword} 
+              onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} 
+              required 
             />
-            <PasswordInput
-              value={passwordData.newPassword}
-              onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+            <input 
+              type="password" 
               className={`w-full p-2 border rounded ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="New Password"
-              autoComplete="new-password"
-              showStrengthIndicator={true}
-              required
+              placeholder="New Password" 
+              value={passwordData.newPassword} 
+              onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} 
+              required 
             />
-            <PasswordInput
-              value={passwordData.confirmPassword}
-              onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+            <input 
+              type="password" 
               className={`w-full p-2 border rounded ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Confirm New Password"
-              autoComplete="new-password"
-              required
+              placeholder="Confirm New Password" 
+              value={passwordData.confirmPassword} 
+              onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} 
+              required 
             />
             <div className="flex justify-end gap-2">
               <button 
@@ -1024,19 +783,23 @@ const SettingsCards = () => {
               </button>
             </div>
             <div className="flex flex-wrap gap-2 justify-center mt-2">
-              {[8,10,12,14,16,18,20,22,24,28,32,36,40].map(size => (
+              {[
+                { label: "Small", size: 12 },
+                { label: "Medium", size: 16 },
+                { label: "Large", size: 20 }
+              ].map(option => (
                 <button
-                  key={size}
-                  onClick={() => handleFontSizeChange(size)}
+                  key={option.label}
+                  onClick={() => handleFontSizeChange(option.size)}
                   className={`px-3 py-1 rounded border ${
-                    fontSize === size 
+                    fontSize === option.size 
                       ? "bg-yellow-500 text-white border-yellow-500" 
                       : theme === 'dark'
                         ? "bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
                         : "bg-white border-gray-300 hover:bg-yellow-100"
                   }`}
                 >
-                  {size}px
+                  {option.label}
                 </button>
               ))}
             </div>
@@ -1143,12 +906,12 @@ const SettingsCards = () => {
               onChange={e => setDeleteConfirm(e.target.value)}
               required
             />
-            <PasswordInput
-              value={deletePassword}
-              onChange={e => setDeletePassword(e.target.value)}
+            <input 
+              type="password" 
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your password"
-              autoComplete="current-password"
+              placeholder="Enter your password" 
+              value={deletePassword} 
+              onChange={e => setDeletePassword(e.target.value)} 
             />
             <div className="flex justify-end gap-2">
               <button 

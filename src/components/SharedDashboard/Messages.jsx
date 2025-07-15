@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, auth } from '../../firebase';
+import { db, auth, getUserData } from '../../firebase';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaVideo, FaComments, FaMicrophone, FaMicrophoneSlash, FaPhoneSlash } from 'react-icons/fa';
@@ -7,9 +7,6 @@ import { toast } from 'react-hot-toast';
 import profile from '../../assets/profile.jpeg';
 import { useTheme } from '../../context/ThemeContext';
 import { triggerNotification } from './TriggerNotifications'; // Import the triggerNotification function
-import EmptyState from '../EmptyState'; // Import EmptyState component
-import Skeleton from 'react-loading-skeleton'; // Import Skeleton
-import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -174,6 +171,7 @@ const Messages = () => {
   const { theme } = useTheme();
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   // Fetch friend requests
   useEffect(() => {
@@ -390,9 +388,31 @@ const Messages = () => {
   // Modified startNewChat function
   const startNewChat = async (userId) => {
     try {
+      if (userRole === 'admin' || userRole === 'superadmin') {
+        // Admins and superadmins can chat with anyone directly
+        const existing = conversations.find(conv =>
+          conv.participants.length === 2 &&
+          conv.participants.includes(auth.currentUser.uid) &&
+          conv.participants.includes(userId)
+        );
+        if (existing) {
+          setSelectedChat(existing);
+          return;
+        }
+        // Create new conversation if it doesn't exist
+        const conversationData = {
+          participants: [auth.currentUser.uid, userId],
+          lastMessageTime: serverTimestamp(),
+          lastMessage: '',
+          createdAt: serverTimestamp()
+        };
+        const docRef = await addDoc(collection(db, 'conversations'), conversationData);
+        setSelectedChat({ id: docRef.id, ...conversationData });
+        return;
+      }
+      // Retirees: require friend request logic
       const isFriend = await areUsersFriends(auth.currentUser.uid, userId);
       const hasPendingRequest = await checkExistingRequest(auth.currentUser.uid, userId);
-      
       if (!isFriend) {
         if (hasPendingRequest) {
           toast('A friend request is already pending');
@@ -402,19 +422,16 @@ const Messages = () => {
         setShowRequestModal(true);
         return;
       }
-
       // If they are friends, find or create conversation
       const existing = conversations.find(conv =>
         conv.participants.length === 2 &&
         conv.participants.includes(auth.currentUser.uid) &&
         conv.participants.includes(userId)
       );
-
       if (existing) {
         setSelectedChat(existing);
         return;
       }
-
       // Create new conversation if it doesn't exist
       const conversationData = {
         participants: [auth.currentUser.uid, userId],
@@ -475,19 +492,19 @@ const Messages = () => {
         </div>
         {/* Modal body */}
         <div className="p-6">
-          <p className={`text-center mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{t('dashboard.messages.needToBeFriends', { username: selectedUser?.username })}</p>
+          <p className={`text-center mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>You need to be friends with {selectedUser?.username} to start a conversation.</p>
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowRequestModal(false)}
               className={`px-6 py-2.5 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
             >
-              {t('dashboard.messages.cancel')}
+              Cancel
             </button>
             <button
               onClick={() => sendFriendRequest(selectedUser?.id)}
               className="px-6 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors flex items-center gap-2"
             >
-              <span>{t('dashboard.messages.sendRequest')}</span>
+              <span>Send Request</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
@@ -504,8 +521,8 @@ const Messages = () => {
       {/* Header */}
       <div className={`p-4 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="flex items-center justify-between">
-          <h3 className={`font-semibold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{t('dashboard.messages.friendRequests')}</h3>
-          <span className={`px-2.5 py-1 rounded-full text-sm font-medium ${theme === 'dark' ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-600'}`}>{friendRequests.length} {t('dashboard.messages.newRequests')}</span>
+          <h3 className={`font-semibold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Friend Requests</h3>
+          <span className={`px-2.5 py-1 rounded-full text-sm font-medium ${theme === 'dark' ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-600'}`}>{friendRequests.length} new</span>
         </div>
       </div>
       {/* Requests list */}
@@ -530,13 +547,13 @@ const Messages = () => {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>{t('dashboard.messages.accept')}</span>
+                    <span>Accept</span>
                   </button>
                   <button onClick={() => rejectFriendRequest(request.id)} className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors flex items-center gap-1.5">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span>{t('dashboard.messages.reject')}</span>
+                    <span>Reject</span>
                   </button>
                 </div>
               </div>
@@ -547,49 +564,14 @@ const Messages = () => {
     </div>
   );
 
-  // Loading skeleton for conversation list
-  const ConversationSkeleton = () => (
-    <div className="animate-pulse">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center p-4 border-b border-gray-100">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
-          <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  // Loading skeleton for messages
-  const MessagesSkeleton = () => (
-    <div className="space-y-4 p-4">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
-          <div className={`max-w-[70%] ${i % 2 === 0 ? 'bg-gray-200' : 'bg-gray-300'} rounded-2xl p-3`}>
-            <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
-            <div className="h-3 bg-gray-300 rounded w-1/3"></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  // Loading skeleton for users list
-  const UsersSkeleton = () => (
-    <div className="animate-pulse">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center p-4 border-b border-gray-100">
-          <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
-          <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  useEffect(() => {
+    const fetchRole = async () => {
+      if (!auth.currentUser) return;
+      const userDoc = await getUserData(auth.currentUser.uid);
+      setUserRole(userDoc?.role || null);
+    };
+    fetchRole();
+  }, []);
 
   return (
     <div className={`flex h-[calc(100vh-200px)] rounded-lg shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'}`}>
@@ -628,9 +610,7 @@ const Messages = () => {
 
         {/* Users List */}
         <div className="overflow-y-auto h-[calc(100%-80px)]">
-          {loadingMessages ? (
-            <UsersSkeleton />
-          ) : searchQuery ? (
+          {searchQuery ? (
             filteredUsers.map(user => (
               <div
                 key={user.id}
@@ -725,15 +705,11 @@ const Messages = () => {
             {/* Messages */}
             <div className={`flex-1 overflow-y-auto p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               {loadingMessages ? (
-                <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>{t('dashboard.messages.loadingMessages')}</div>
-
+                <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>Loading messages...</div>
               ) : messages.length === 0 ? (
-                <EmptyState
-                  icon={<FaComments className={`text-6xl ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
-                  title={t('dashboard.messages.noMessages')}
-                  message={t('dashboard.messages.startConversation')}
-                  className={`h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}
-                />
+                <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {t('dashboard.messages.noMessages')}
+                </div>
               ) : (
                 messages.map(message => {
                   const isMe = message.senderId === auth.currentUser?.uid;
@@ -769,7 +745,7 @@ const Messages = () => {
               )}
               {typing && (
                 <div className={`flex items-center gap-2 text-xs mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
-                  <span className="animate-pulse">{t('dashboard.messages.isTyping', { username: otherUser?.username })}</span>
+                  <span className="animate-pulse">{otherUser?.username} is typing...</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -801,12 +777,12 @@ const Messages = () => {
             </form>
           </>
         ) : (
-          <EmptyState
-            icon={<FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
-            title={t('dashboard.messages.selectChat')}
-            message={t('dashboard.messages.chooseConversation')}
-            className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}
-          />
+          <div className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
+            <div className="text-center">
+              <FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />
+              <p className="text-lg">{t('dashboard.messages.selectChat')}</p>
+            </div>
+          </div>
         )}
       </div>
 
@@ -892,12 +868,12 @@ const Messages = () => {
             </form>
           </>
         ) : (
-          <EmptyState
-            icon={<FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
-            title={t('dashboard.messages.selectChat')}
-            message={t('dashboard.messages.chooseConversation')}
-            className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}
-          />
+          <div className={`flex-1 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-500'}`}>
+            <div className="text-center">
+              <FaComments className={`text-6xl mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />
+              <p className="text-lg">{t('dashboard.messages.selectChat')}</p>
+            </div>
+          </div>
         )}
       </div>
     </div>
