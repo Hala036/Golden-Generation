@@ -130,7 +130,7 @@
           "healthy": "עצמאי",
           "withCaregiver": " עם מטפל",
           "nursing": "סיעודי",
-          "nonMobile": "לא נייד"
+          "immobile": "לא נייד"
         }
       },
       "workBackground": {

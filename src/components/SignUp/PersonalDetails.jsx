@@ -834,7 +834,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                     { value: 'healthy', label: t('auth.signup.personalDetails.healthConditionOptions.healthy') },
                     { value: 'withCaregiver', label: t('auth.signup.personalDetails.healthConditionOptions.withCaregiver') },
                     { value: 'nursing', label: t('auth.signup.personalDetails.healthConditionOptions.nursing') },
-                    { value: 'nonMobile', label: t('auth.signup.personalDetails.healthConditionOptions.nonMobile') }
+                    { value: 'immobile', label: t('auth.signup.personalDetails.healthConditionOptions.immobile') }
                   ]}
                   value={formData.healthCondition}
                   onChange={handleInputChange}
