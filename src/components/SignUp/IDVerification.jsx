@@ -363,7 +363,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-12">
+        <form onSubmit={handleSubmit} className="space-y-12" noValidate>
           {/* ID & Personal Info Section */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 backdrop-blur-sm bg-white/95">
             <div className="flex items-center mb-6">
@@ -421,6 +421,7 @@ const IDVerification = ({ onComplete, editMode = false, data }) => {
                   }`}
                   id="idVerification-dateOfBirth"
                 />
+
                 {idVerificationData.dateOfBirth && !errors.dateOfBirth && (
                   <p className="text-sm text-gray-600 mt-1">
                     {t('auth.idVerification.form.ageLabel') || 'Age'}: {idVerificationData.age}
