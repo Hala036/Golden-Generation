@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
+import { useTranslation } from 'react-i18next';
 
 const mockAnnouncements = [
   { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
@@ -30,6 +31,7 @@ const mockAnnouncements = [
 
 const SettingsCards = () => {
   // Modal states
+  const { t } = useTranslation();
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showProfilePicture, setShowProfilePicture] = useState(false);
@@ -816,7 +818,7 @@ const SettingsCards = () => {
       )}
       {/* Font Size Modal */}
       {showFontSize && (
-        <Modal onClose={() => setShowFontSize(false)} title="Font Size">
+        <Modal onClose={() => setShowFontSize(false)} title={t('dashboard.fontSize.title')}>
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2">
               <button
@@ -856,9 +858,9 @@ const SettingsCards = () => {
             </div>
             <div className="flex flex-wrap gap-2 justify-center mt-2">
               {[
-                { label: "Small", size: 12 },
-                { label: "Medium", size: 16 },
-                { label: "Large", size: 20 }
+                { label: t('dashboard.fontSize.small'), size: 12 },
+                { label: t('dashboard.fontSize.medium'), size: 16 },
+                { label: t('dashboard.fontSize.large'), size: 20 }
               ].map(option => (
                 <button
                   key={option.label}
@@ -876,7 +878,7 @@ const SettingsCards = () => {
               ))}
             </div>
             <div className={`mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`} style={{ fontSize: fontSize }}>
-              Live preview: The quick brown fox jumps over the lazy dog.
+              {t('dashboard.fontSize.sampleText')}
             </div>
           </div>
         </Modal>

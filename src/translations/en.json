@@ -1218,6 +1218,13 @@
         "daysAgo": "{{count}} days ago",
         "invalidDate": "Invalid date"
       }
+    },
+    "fontSize": {
+      "title": "Font Size",
+      "sampleText": "The quick brown fox jumps over the lazy dog",
+      "large": "Large",
+      "medium": "Medium",
+      "small": "Small"
     }
   },
   "errors": {

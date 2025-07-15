@@ -243,7 +243,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
               >
                 &times;
               </button>
-              <h2 className="text-lg font-bold mb-4 text-yellow-600">Font Size</h2>
+              <h2 className="text-lg font-bold mb-4 text-yellow-600">{t('dashboard.fontSize.title')}</h2>
               <div className="flex flex-col items-center gap-4">
                 <div className="flex items-center gap-2">
                   <button
@@ -271,9 +271,9 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center mt-2">
                   {[
-                    { label: "Small", size: 12 },
-                    { label: "Medium", size: 16 },
-                    { label: "Large", size: 20 }
+                    { label: t('dashboard.fontSize.small'), size: 12 },
+                    { label: t('dashboard.fontSize.medium'), size: 16 },
+                    { label: t('dashboard.fontSize.large'), size: 20 }
                   ].map(option => (
                     <button
                       key={option.label}
@@ -289,7 +289,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
                   ))}
                 </div>
                 <div className="mt-4 text-gray-600" style={{ fontSize: fontSize }}>
-                  Live preview: The quick brown fox jumps over the lazy dog.
+                  {t('dashboard.fontSize.sampleText')}
                 </div>
               </div>
             </div>

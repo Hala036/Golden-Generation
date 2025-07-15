@@ -1228,6 +1228,13 @@
         "daysAgo": "לפני {{count}} ימים",
         "invalidDate": "תאריך לא תקין"
       }
+    },
+    "fontSize": {
+      "title": "גודל גופן",
+      "sampleText": "דוגמת טקסט",
+      "large": "גדול",
+      "medium": "בינוני",
+      "small": "קטן"
     }
   },
   "errors": {
