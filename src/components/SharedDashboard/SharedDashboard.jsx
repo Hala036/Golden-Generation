@@ -185,7 +185,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
             <div className="flex items-center gap-2 md:gap-3">
               <FaPlusCircle
                 className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800"
-                onClick={() => setSelected("add")}
+                onClick={() => setShowCreateModal("add")}
               />
               <FaBell
                 className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800"
