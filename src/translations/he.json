@@ -19,6 +19,8 @@
     "change": "שנה",
     "notAvailable": "לא זמין",
     "ok": "אישור"
+    "yes": "כן",
+    "no": "לא"
   },
   "auth": {
     "errors": {
@@ -81,7 +83,7 @@
           "title": "פרטי יצירת קשר",
           "description": "כיצד נוכל ליצור איתך קשר?"
         },
-        "phoneNumber": "מספר טלפון",
+        "phoneNumber": "מספר נייד",
         "maritalStatus": {
           "label": "מצב משפחתי",
           "placeholder": "בחר את מצבך המשפחתי",
@@ -97,6 +99,10 @@
           "description": "היכן אתה גר?"
         },
         "houseNumber": "מספר בית",
+        "floorNumber": "קומה",
+        "floorNumberPlaceholder": "הזן מספר קומה",
+        "postalCode": "מיקוד",
+        "postalCodePlaceholder": "הזן מיקוד",
         "streetName": "שם הרחוב",
         "additionalAddressDetails": "פרטי כתובת נוספים (אופציונלי)",
         "languageAndBackground": {
@@ -105,7 +111,7 @@
         },
         "nativeLanguage": "שפת אם",
         "hebrewLevel": {
-          "label": "רמת עברית",
+          "label": "רמת דיבור/ הבנה בעברית ",
           "placeholder": "בחר את רמת העברית שלך",
           "beginner": "מתחיל",
           "intermediate": "בינוני",
@@ -121,7 +127,7 @@
         },
         "healthCondition": "מצב בריאותי",
         "healthConditionPlaceholder": "אנא תאר כל מצב בריאותי...",
-        "militaryService": "שירות צבאי/לאומי",
+        "militaryService": "האם שירתת בצבא או בשירות לאומי?",
         "militaryOptions": {
           "none": "ללא",
           "military": "צבאי",
@@ -139,7 +145,14 @@
           "required": "שדה זה נדרש",
           "houseNumberFormat": "מספר בית חייב להיות מספרי (למשל 123 או 123א)",
           "phoneNumberFormat": "מספר הטלפון חייב להיות מספר ישראלי תקין (למשל 05XXXXXXXX)"
-        }
+        },
+        "healthConditionOptions": {
+          "healthy": "עצמאי",
+          "withCaregiver": " עם מטפל",
+          "nursing": "סיעודי",
+          "immobile": "לא נייד"
+        },
+        "quickQuestions": "שאלות קצרות"
       },
       "workBackground": {
         "title": "רקע תעסוקתי",
@@ -858,7 +871,7 @@
         "placeholder": "צור סיסמה",
         "required": "נדרשת סיסמה.",
         "minLength": "סיסמה חייבת להיות לפחות 8 תווים.",
-        "requirements": "הסיסמה חייבת להכיל לפחות אות גדולה אחת, אות קטנה אחת ומספר אחד."
+        "requirements": "הסיסמה חייבת להכיל לפחות 8 תווים, אות גדולה אחת, אות קטנה אחת ומספר אחד."
       },
       "confirmPassword": {
         "label": "אימות סיסמה",
@@ -1234,12 +1247,19 @@
         "daysAgo": "לפני {{count}} ימים",
         "invalidDate": "תאריך לא תקין"
       }
+    },
+    "fontSize": {
+      "title": "גודל גופן",
+      "sampleText": "דוגמת טקסט",
+      "large": "גדול",
+      "medium": "בינוני",
+      "small": "קטן"
     }
   },
   "errors": {
     "required": "שדה זה נדרש",
     "invalidEmail": "אנא הזן כתובת אימייל תקינה",
-    "invalidPhone": "אנא הזן מספר טלפון תקין",
+    "invalidPhone": "אנא הזן מספר נייד תקין",
     "invalidDate": "אנא הזן תאריך תקין",
     "passwordMismatch": "הסיסמאות לא תואמות",
     "passwordRequirements": "הסיסמה חייבת להכיל לפחות 8 תווים, אות גדולה אחת, אות קטנה אחת ומספר אחד",
@@ -1262,7 +1282,7 @@
       "retireeDetails": "פרטי ותיק",
       "retireeName": "שם",
       "retireeEmail": "אימייל",
-      "retireePhone": "מספר טלפון",
+      "retireePhone": "מספר נייד",
       "showingCount": "מציג {{filtered}} מתוך {{total}} ותיקים",
       "age": "גיל",
       "gender": "מין",

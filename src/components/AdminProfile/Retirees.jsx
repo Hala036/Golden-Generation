@@ -24,7 +24,13 @@ const fieldGroups = [
       "idVerification.phoneNumber",
       "idVerification.email",
       "personalDetails.maritalStatus",
-      "personalDetails.education"
+      "personalDetails.education",
+      "personalDetails.healthCondition",
+      "personalDetails.hasCar",
+      "personalDetails.livingAlone",
+      "personalDetails.familyInSettlement",
+      "personalDetails.hasWeapon",
+      "personalDetails.militaryService",
     ]
   },
   {
@@ -212,6 +218,42 @@ const Retirees = () => {
       type: "select",
       options: ["None", "Primary", "Secondary", "Tertiary", "Other"],
       path: ["personalDetails", "education"]
+    },
+    "personalDetails.healthCondition": {
+      label: "Health Condition",
+      type: "select",
+      options: ["healthy", "withCaregiver", "nursing", "immobile"],
+      path: ["personalDetails", "healthCondition"]
+    },
+    "personalDetails.hasCar": {
+      label: "Has Car",
+      type: "select",
+      options: ["Yes", "No"],
+      path: ["personalDetails", "hasCar"]
+    },
+    "personalDetails.livingAlone": {
+      label: "Living Alone",
+      type: "select",
+      options: ["Yes", "No"],
+      path: ["personalDetails", "livingAlone"]
+    },
+    "personalDetails.familyInSettlement": {
+      label: "Family in Settlement",
+      type: "select",
+      options: ["Yes", "No"],
+      path: ["personalDetails", "familyInSettlement"]
+    },
+    "personalDetails.hasWeapon": {
+      label: "Carries Weapon",
+      type: "select",
+      options: ["Yes", "No"],
+      path: ["personalDetails", "hasWeapon"]
+    },
+    "personalDetails.militaryService": {
+      label: "Military Service",
+      type: "select",
+      options: ["Yes", "No"],
+      path: ["personalDetails", "militaryService"]
     },
     "workBackground.customJobInfo.originalSelection.jobTitle": {
       label: "Job Title",

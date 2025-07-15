@@ -121,6 +121,15 @@ const Credentials = ({ onComplete }) => {
 
       if (!formIsValid) {
         toast.error(t('auth.credentials.validation.fix'), { id: 'credentials-check' });
+        // Focus the first error field
+        const firstErrorField = Object.keys(newErrors)[0];
+        if (firstErrorField) {
+          const element = document.querySelector(`[name="${firstErrorField}"]`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
+          }
+        }
         return;
       }
 
@@ -269,6 +278,9 @@ const Credentials = ({ onComplete }) => {
                   placeholder={t('auth.credentials.password.placeholder')}
                   required
                 />
+                <p className="mt-1 text-xs text-gray-500">
+                  {t('auth.credentials.password.requirements') || 'Password must be at least 8 characters and contain uppercase, lowercase, and a number.'}
+                </p>
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
                 )}

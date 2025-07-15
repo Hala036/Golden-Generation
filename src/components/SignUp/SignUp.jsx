@@ -120,6 +120,13 @@ const SignUp = () => {
       }
     } else {
       setCurrentStep(step + 1);
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        const firstInput = document.querySelector(
+          '.bg-white input:not([type=hidden]), .bg-white select, .bg-white textarea'
+        );
+        if (firstInput) firstInput.focus();
+      }, 0);
     }
   };
 

@@ -19,6 +19,9 @@
     "change":"change",
     "notAvailable": "Not Available",
     "ok": "OK"
+
+    "yes": "Yes",
+    "no": "No"
   },
   "auth": {
     "errors": {
@@ -106,12 +109,12 @@
         },
         "nativeLanguage": "Native Language",
       "hebrewLevel": {
-        "label": "Hebrew Level",
+        "label": "Hebrew Speaking/Comprehension Level ",
           "placeholder": "Select your Hebrew level",
           "beginner": "Beginner",
           "intermediate": "Intermediate",
           "advanced": "Advanced",
-          "native": "Native"
+          "native": "Native Speaker"
         },
         "isNewImmigrant": "I am a new immigrant to Israel",
         "arrivalDate": "Arrival Date",
@@ -122,7 +125,7 @@
         },
         "healthCondition": "Health Condition",
         "healthConditionPlaceholder": "Please describe any health conditions...",
-        "militaryService": "Military/National Service",
+        "militaryService": "Did you serve in the military or national service?",
         "militaryOptions": {
           "none": "None",
           "military": "Military",
@@ -140,7 +143,18 @@
           "required": "This field is required",
           "houseNumberFormat": "House number must be numeric (e.g., 123 or 123A)",
           "phoneNumberFormat": "Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)"
-      }
+      },
+        "floorNumber": "Floor Number",
+        "floorNumberPlaceholder": "Enter floor number",
+        "postalCode": "Postal Code",
+        "postalCodePlaceholder": "Enter postal code",
+        "healthConditionOptions": {
+          "healthy": "independent",
+          "withCaregiver": "With caregiver",
+          "nursing": "Nursing-dependent",
+          "immobile": "Non-mobile"
+        },
+        "quickQuestions": "Quick Questions"
     },
     "workBackground": {
       "title": "Work Background",
@@ -850,7 +864,8 @@
         "placeholder": "Create a password",
         "required": "Password is required.",
         "minLength": "Password must be at least 8 characters.",
-        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
+        "rules": "Password must be at least 8 characters and contain uppercase, loמwercase, and a number."
       },
       "confirmPassword": {
         "label": "Confirm Password",
@@ -1223,6 +1238,13 @@
         "daysAgo": "{{count}} days ago",
         "invalidDate": "Invalid date"
       }
+    },
+    "fontSize": {
+      "title": "Font Size",
+      "sampleText": "The quick brown fox jumps over the lazy dog",
+      "large": "Large",
+      "medium": "Medium",
+      "small": "Small"
     }
   },
   "errors": {
@@ -1310,7 +1332,7 @@
       "fetchCategoriesError": "Failed to fetch categories.",
       "eventCreatedSuccess": "Event created successfully!",
       "createEventError": "Failed to create event. Please try again.",
-      "submit": "Submit"
+      "submit": "Continue"
     },
     "pendingEvents": {
       "fetchEventsError": "Failed to fetch pending events.",
