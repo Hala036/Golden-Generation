@@ -34,7 +34,7 @@ const ConfirmDisableModal = ({ open, settlement, onCancel, onConfirm, loading = 
     >
       {/* Backdrop with animation */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+        className="absolute inset-0 backdrop-blur-sm bg-black/5 transition-opacity duration-300"
         onClick={onCancel}
         aria-hidden="true"
       />
@@ -62,10 +62,10 @@ const ConfirmDisableModal = ({ open, settlement, onCancel, onConfirm, loading = 
                 className="text-xl font-bold text-gray-900"
                 style={isRTL ? { fontFamily: 'Assistant, Rubik, Noto Sans Hebrew, Arial, sans-serif' } : {}}
               >
-                {t('auth.adminSettlements.modals.disable.title') || 'Confirm Disable'}
+                {t('settlementsManager.Confirm Disable')}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                {t('auth.adminSettlements.modals.disable.subtitle') || 'This action cannot be undone'}
+                {t('settlementsManager.This action cannot be undone')}
               </p>
             </div>
           </div>
@@ -91,14 +91,12 @@ const ConfirmDisableModal = ({ open, settlement, onCancel, onConfirm, loading = 
                     className="text-gray-700 leading-relaxed"
                     style={isRTL ? { fontFamily: 'Assistant, Rubik, Noto Sans Hebrew, Arial, sans-serif' } : {}}
                   >
-                    {t('auth.adminSettlements.modals.disable.message') || 
-                     `Are you sure you want to disable and remove`}
+                    {t('settlementsManager.Are you sure you want to disable and remove') }
                     <span className="font-bold text-gray-900 mx-1">{settlement}</span>
-                    {t('auth.adminSettlements.modals.disable.messageEnd') || '?'}
+                    {t('?')}
                   </p>
                   <p className="text-sm text-red-600 mt-2 font-medium">
-                    {t('auth.adminSettlements.modals.disable.warning') || 
-                     'This will remove the settlement from available settlements and delete all associated data.'}
+                    {t('settlementsManager.This will remove the settlement from available settlements and delete all associated data')}
                   </p>
                 </div>
               </div>
@@ -126,7 +124,7 @@ const ConfirmDisableModal = ({ open, settlement, onCancel, onConfirm, loading = 
               }}
               disabled={loading}
               className="flex-1 px-4 py-3 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-              aria-label={t('auth.adminSettlements.modals.disable.confirm') || 'Yes, Disable'}
+              aria-label={t('settlementsManager.Yes, Disable')}
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -135,7 +133,7 @@ const ConfirmDisableModal = ({ open, settlement, onCancel, onConfirm, loading = 
               )}
               {loading 
                 ? (t('common.processing') || 'Processing...') 
-                : (t('auth.adminSettlements.modals.disable.confirm') || 'Yes, Disable')
+                : t('settlementsManager.Yes, Disable')
               }
             </button>
           </div>

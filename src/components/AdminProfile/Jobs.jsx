@@ -9,7 +9,7 @@ import {
   matchSeniorsToJobRequest,
   inviteSeniorToJobRequest
 } from "../../jobRequestsService";
-import { getAvailableSettlements } from "../../firebase";
+import { getAvailableSettlements, auth } from "../../firebase";
 import MatchDetails from "./MatchDetails";
 import StatusHistory from "./StatusHistory";
 import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification function
@@ -217,7 +217,7 @@ const Jobs = () => {
         target: [seniorId], // Target specific senior
         type: "request", // Notification type
         link: `/jobs/${jobRequestId}`, // Link to job details
-        createdBy: currentUser.uid // Admin who invited
+        createdBy: auth.currentUser.uid // Admin who invited
       });
 
       toast.success("Senior invited successfully");
@@ -312,32 +312,32 @@ const Jobs = () => {
   };
 
   // Loading skeleton for job requests
-  const JobRequestsSkeleton = () => (
-    <div className="space-y-4">
+    const JobRequestsSkeleton = () => (
+    <div className="space-y-4 w-full">
       {[1, 2, 3].map((i) => (
         <div key={i} className="p-4 border rounded-lg bg-white shadow-sm">
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
               <div className="flex space-x-2 mb-1">
-                <div className="h-4 bg-gray-200 rounded w-20"></div>
-                <div className="h-4 bg-gray-200 rounded w-24"></div>
-                <div className="h-4 bg-gray-200 rounded w-16"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/5"></div>
               </div>
             </div>
             <div className="flex space-x-2">
-              <div className="h-6 bg-gray-200 rounded w-16"></div>
-              <div className="h-6 bg-gray-200 rounded w-6"></div>
-              <div className="h-6 bg-gray-200 rounded w-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/6"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/12"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/12"></div>
             </div>
           </div>
           <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
           <div className="flex justify-between items-center">
-            <div className="h-3 bg-gray-200 rounded w-32"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/3"></div>
             <div className="flex space-x-2">
-              <div className="h-6 bg-gray-200 rounded w-24"></div>
-              <div className="h-6 bg-gray-200 rounded w-16"></div>
-              <div className="h-6 bg-gray-200 rounded w-20"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/5"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/3"></div>
             </div>
           </div>
         </div>

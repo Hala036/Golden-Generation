@@ -77,17 +77,27 @@ const Credentials = ({ onComplete }) => {
     const newErrors = {};
     const { email, password, confirmPassword, username } = credentialsData;
 
+    // Explicit translation-based validation (added)
+    if (!email) {
+      newErrors.email = t('auth.credentials.email.required');
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      newErrors.email = t('auth.credentials.email.invalid');
+    }
+
+    // Username
+    const usernameError = validateUsername(username);
+    if (usernameError) newErrors.username = t(usernameError);
+
+    // Password
+    const passwordError = validatePassword(password);
+    if (passwordError) newErrors.password = t(passwordError);
+
+    // Confirm Password
+    const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
+    if (confirmPasswordError) newErrors.confirmPassword = t(confirmPasswordError);
+
     const emailError = validateEmail(email);
     if (emailError) newErrors.email = emailError;
-
-    const usernameError = validateUsername(username);
-    if (usernameError) newErrors.username = usernameError;
-
-    const passwordError = validatePassword(password);
-    if (passwordError) newErrors.password = passwordError;
-
-    const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
-    if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -111,6 +121,15 @@ const Credentials = ({ onComplete }) => {
 
       if (!formIsValid) {
         toast.error(t('auth.credentials.validation.fix'), { id: 'credentials-check' });
+        // Focus the first error field
+        const firstErrorField = Object.keys(newErrors)[0];
+        if (firstErrorField) {
+          const element = document.querySelector(`[name="${firstErrorField}"]`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
+          }
+        }
         return;
       }
 
@@ -259,6 +278,9 @@ const Credentials = ({ onComplete }) => {
                   placeholder={t('auth.credentials.password.placeholder')}
                   required
                 />
+                <p className="mt-1 text-xs text-gray-500">
+                  {t('auth.credentials.password.requirements') || 'Password must be at least 8 characters and contain uppercase, lowercase, and a number.'}
+                </p>
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
                 )}

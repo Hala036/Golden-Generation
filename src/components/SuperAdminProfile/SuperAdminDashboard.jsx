@@ -1,7 +1,9 @@
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags } from 'react-icons/fa';
+import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags, FaSync } from 'react-icons/fa';
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { toast } from "react-hot-toast";
 
 import AdminHomepage from "../SharedDashboard/MainPage";
 import Cards from "../SharedDashboard/Cards";
@@ -13,7 +15,7 @@ import ComprehensiveAnalytics from "../AdminProfile/Analytics/ComprehensiveAnaly
 import Settings from "../SharedDashboard/SettingsCards";
 import AddEvent from "../SharedDashboard/AddEvents";
 import Messages from "../SharedDashboard/Messages";
-import AdminCalendar from "../Calendar/AdminCalendar";
+import SuperAdminCalendar from "../Calendar/SuperAdminCalendar";
 import EventRequests from "../AdminProfile/PendingEvents";
 import SettlementsManager from "./SettlementsManager";
 import AdminSettlements from "../SignUp/AdminSettlements";
@@ -27,35 +29,65 @@ const RetireeDashboard = () => {
   console.debug('[SuperAdminDashboard] mounted');
   console.debug('[SuperAdminDashboard] selected:', selected);
 
+  // Function to manually update past events
+  const handleUpdatePastEvents = async () => {
+    try {
+      const functions = getFunctions();
+      const manualUpdatePastEvents = httpsCallable(functions, 'manualUpdatePastEvents');
+      
+      toast.loading('Updating past events...');
+      const result = await manualUpdatePastEvents();
+      
+      toast.dismiss();
+      if (result.data.success) {
+        toast.success(`Successfully updated ${result.data.updatedCount} past events to completed status`);
+      } else {
+        toast.error('Failed to update past events');
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error('Error updating past events:', error);
+      toast.error('Error updating past events: ' + error.message);
+    }
+  };
+
   const customIcons = [
-      { id: "main", label: t("dashboard.homePage"), icon: <FaHome /> },
-      { id: "upcoming", label: t("dashboard.events.upcomingEvents"), icon: <FaCalendarCheck /> },
-    { id: "categoryManagement", label: "Category Management", icon: <FaTags /> },
-    { id: "addSettlements", label: "Add Settlements", icon: <FaPlus /> },
-    { id: "admins", label: "Admin Management", icon: <FaUserShield /> },
-    { id: "retirees", label: t("dashboard.retirees"), icon: <FaUser /> },
-    { id: "jobs", label: t("dashboard.volunteerRequests"), icon: <FaBriefcase /> },
-    { id: "service", label: t("dashboard.serviceRequests"), icon: <FaHandsHelping /> },
-    { id: "analysis", label: t("dashboard.analytics"), icon: <FaChartBar /> },
+    { id: "main", label: t("sidebar.home"), icon: <FaHome /> },
+    { id: "upcoming", label: t("sidebar.upcomingEvents"), icon: <FaCalendarCheck /> },
+    { id: "categoryManagement", label: t("sidebar.categoryManagement"), icon: <FaTags /> },
+    { id: "addSettlements", label: t("sidebar.addSettlements"), icon: <FaPlus /> },
+    { id: "admins", label: t("sidebar.adminManagement"), icon: <FaUserShield /> },
+    { id: "retirees", label: t("sidebar.retirees"), icon: <FaUser /> },
+    { id: "jobs", label: t("sidebar.volunteerRequests"), icon: <FaBriefcase /> },
+    { id: "service", label: t("sidebar.serviceRequests"), icon: <FaHandsHelping /> },
+    { id: "analysis", label: t("sidebar.analytics"), icon: <FaChartBar /> },
     { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
   ];
 
 
-  const customButtons = [];
+  const customButtons = [
+    {
+      id: "updatePastEvents",
+      label: t("sidebar.updatePastEvents"),
+      icon: <FaSync />,
+      onClick: handleUpdatePastEvents,
+      className: "bg-blue-500 hover:bg-blue-600 text-white"
+    }
+  ];
 
   const componentsById = {
-    upcoming: <Cards />,
-    main: <AdminHomepage setSelected={setSelected} />, // Pass setSelected to AdminHomepage
+    upcoming: <Cards setSelected={setSelected} />,
+    main: <AdminHomepage setSelected={setSelected} />,
     settings: <Settings />,
-    calendar: <AdminCalendar />,
+    calendar: <SuperAdminCalendar />,
     messages: <Messages />,
     add: <AddEvent />,
     retirees: <Retirees />,
     jobs: <Jobs />,
-    service: <ServiceRequests />, // Link to ServiceRequests component
+    service: <ServiceRequests />,
     analysis: <Analysis />,
     eventRequests: <EventRequests />,
-    addSettlements: <AdminSettlements />,
+    addSettlements: <AdminSettlements setSelected={setSelected} />,
     admins: <AdminManagement />,
     categoryManagement: <CategoryManagement />,
   };

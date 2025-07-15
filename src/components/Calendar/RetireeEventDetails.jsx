@@ -56,29 +56,11 @@ const RetireeEventDetails = ({ event, onClose }) => {
         showParticipants={true}
         // Only show Join/Leave if the user is NOT the creator
         showJoinLeave={!isCreator}
-      >
-        {/* Show Edit/Delete controls only if the user IS the creator */}
-        {isCreator && (
-          <div className="flex gap-3">
-            <button
-              onClick={handleEdit}
-              className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-2"
-            >
-              <FaEdit /> Edit
-            </button>
-            <button
-              onClick={handleDeleteEvent}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded flex items-center gap-2"
-            >
-              <FaTrash /> Delete
-            </button>
-          </div>
-        )}
-      </BaseEventDetails>
+      />
 
       {/* Edit Modal */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full">
             <CreateEventForm
               onClose={() => setShowEditModal(false)}

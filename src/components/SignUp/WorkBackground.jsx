@@ -385,6 +385,94 @@ const WorkBackground = ({ onComplete }) => {
     });
   };
 
+  // Helper function to determine if selection is complete
+  const isSelectionComplete = () => {
+    if (!selectedJob) return false;
+    
+    // If job has subspecialties, we need a subspecialty selected
+    if (selectedJob.subspecialties && selectedJob.subspecialties.length > 0) {
+      return formData.subspecialty !== '';
+    }
+    
+    // If job has no subspecialties, just having the job is enough
+    return true;
+  };
+
+  // Helper function to get display title for selected job
+  const getDisplayTitle = () => {
+    if (formData.subspecialty === 'Other' && formData.otherJob) {
+      return formData.otherJob;
+    }
+    if (formData.jobTitle === 'Other' && formData.otherJob) {
+      return formData.otherJob;
+    }
+    return formData.subspecialty || selectedJob?.label || '';
+  };
+
+  const renderSelectedJobDisplay = () => {
+    if (!selectedJob) return null;
+
+    // Get the subspecialty icon if one is selected
+    const selectedSubspecialty = selectedJob.subspecialties?.find(sub => sub.label === formData.subspecialty);
+    const displayIcon = selectedSubspecialty ? selectedSubspecialty.icon : selectedJob.icon;
+    const displayTitle = getDisplayTitle();
+
+    return (
+      <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <span className="text-2xl mr-3">{displayIcon}</span>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">{displayTitle}</h3>
+              <p className="text-sm text-gray-600">{formData.category}</p>
+              {formData.subspecialty && formData.subspecialty !== 'Other' && (
+                <p className="text-sm text-yellow-700 font-medium">
+                  {t('auth.signup.workBackground.specialty')}: {selectedJob.label}
+                </p>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleChangeJob}
+            className="text-yellow-600 hover:text-yellow-700 font-medium text-sm px-3 py-1 rounded-md border border-yellow-300 hover:bg-yellow-200 transition-colors"
+          >
+            {t('auth.signup.workBackground.changeSelection')}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderOtherJobInput = () => {
+    const showInput = (formData.jobTitle === 'Other' && (!selectedJob?.subspecialties || selectedJob.subspecialties.length === 0)) || 
+                     (formData.subspecialty === 'Other');
+    
+    if (!showInput) return null;
+
+    const placeholderText = formData.subspecialty === 'Other' 
+      ? t('auth.signup.workBackground.enterCustomSpecialty') || 'Enter your specialty...'
+      : t('auth.signup.workBackground.enterCustomJob') || 'Enter your job title...';
+
+    return (
+      <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {formData.subspecialty === 'Other' 
+            ? t('auth.signup.workBackground.customSpecialty') || 'Custom Specialty'
+            : t('auth.signup.workBackground.customJobTitle') || 'Custom Job Title'
+          }
+        </label>
+        <input
+          type="text"
+          value={formData.otherJob || ''}
+          onChange={(e) => setFormData({ ...formData, otherJob: e.target.value })}
+          placeholder={placeholderText}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+        />
+      </div>
+    );
+  };
+
   const renderSubspecialties = () => {
     if (!selectedJob || !selectedJob.subspecialties || selectedJob.subspecialties.length === 0) {
       return null;
@@ -392,28 +480,24 @@ const WorkBackground = ({ onComplete }) => {
 
     return (
       <div className="mt-4">
-        <div className="flex justify-between items-center mb-2">
-          <h4 className="text-md font-medium text-gray-800">{t('auth.signup.workBackground.yourSelectedJob')}</h4>
-          <button 
-            type="button" 
-            onClick={handleBackToJobs}
-            className="text-sm bg-gray-100 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200 flex items-center"
-          >
-            <span className="mr-1">←</span> {t('auth.signup.workBackground.changeJob')}
-          </button>
-        </div>
+        <h4 className="text-md font-medium text-gray-800 mb-4">
+          {t('auth.signup.workBackground.selectSpecialty')}
+        </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {selectedJob.subspecialties.map((sub) => (
-            <div
+            <SelectionCard
               key={sub.label}
+              isSelected={formData.subspecialty === sub.label}
               onClick={() => handleSubspecialtySelect(sub)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.subspecialty === sub.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
-              <span className="text-xl mr-2">{sub.icon}</span>
-              <span className="text-sm font-medium">{sub.label}</span>
+              <div className="text-center">
+                <div className="text-2xl mb-2">{sub.icon}</div>
+                <div className="text-sm font-medium text-gray-800">{sub.label}</div>
             </div>
+            </SelectionCard>
           ))}
         </div>
+        {renderOtherJobInput()}
       </div>
     );
   };
@@ -435,25 +519,49 @@ const WorkBackground = ({ onComplete }) => {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {jobs.map((job) => (
-            <div
+            <SelectionCard
               key={job.label}
+              isSelected={formData.jobTitle === job.label}
               onClick={() => handleJobSelect(job, category)}
-              className={`cursor-pointer flex items-center justify-center p-4 rounded-lg border ${formData.jobTitle === job.label ? 'bg-yellow-300' : 'bg-white'} hover:bg-yellow-100 transition`}
             >
-              <span className="text-xl mr-2">{job.icon}</span>
-              <span className="text-sm font-medium">{job.label}</span>
+              <div className="text-center">
+                <div className="text-2xl mb-2">{job.icon}</div>
+                <div className="text-sm font-medium text-gray-800">{job.label}</div>
             </div>
+            </SelectionCard>
           ))}
         </div>
+        {/* Show input for 'Other' job selection when no subspecialties */}
+        {formData.jobTitle === 'Other' && (!selectedJob?.subspecialties || selectedJob.subspecialties.length === 0) && renderOtherJobInput()}
       </div>
     );
   };
 
   const renderJobSelection = () => {
-    if (selectedJob) {
-      return renderSubspecialties();
+    // If selection is complete, only show the final selection display
+    if (isSelectionComplete()) {
+      return renderSelectedJobDisplay();
     }
 
+    // Always show the selected job display if there's a selected job
+    const selectedJobDisplay = renderSelectedJobDisplay();
+
+    // If we have a selected job with subspecialties and no subspecialty selected yet, show subspecialty selection
+    if (selectedJob && selectedJob.subspecialties && selectedJob.subspecialties.length > 0 && !formData.subspecialty) {
+      return (
+        <div>
+          {selectedJobDisplay}
+          {renderSubspecialties()}
+        </div>
+      );
+    }
+
+    // If we have a selected job without subspecialties, just show the selected job
+    if (selectedJob) {
+      return selectedJobDisplay;
+    }
+
+    // Otherwise, show job/category selection
     if (searchTerm && filteredCategories.length > 0) {
       return filteredCategories.map(item => 
         renderJobsByCategory(item.category, item.jobs)
@@ -550,6 +658,37 @@ const WorkBackground = ({ onComplete }) => {
                 </SelectionCard>
               ))}
             </div>
+
+            {/* Retirement Date Field */}
+            {(formData.retirementStatus === 'partially' || formData.retirementStatus === 'fully') && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.signup.workBackground.retirementDateLabel') || 'When did you retire?'}
+                </label>
+                <input
+                  type="date"
+                  value={formData.retirementDate}
+                  onChange={(e) => setFormData({ ...formData, retirementDate: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Expected Retirement Date Field */}
+            {formData.retirementStatus === 'not_retired' && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('auth.signup.workBackground.expectedRetirementDateLabel') || 'Expected retirement date (optional)'}
+                </label>
+                <input
+                  type="date"
+                  value={formData.expectedRetirementDate}
+                  onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                />
+              </div>
+            )}
           </div>
 
           {/* Current Employment */}
@@ -563,17 +702,17 @@ const WorkBackground = ({ onComplete }) => {
               </div>
               
               <div className="mb-6">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.currentlyWorking}
-                    onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.currentlyWorking}
+                  onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
                     className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
+                />
                   <span className="text-gray-700">
                     {t('auth.signup.workBackground.currentEmployment.yes')}
                   </span>
-                </label>
+              </label>
               </div>
 
               {formData.currentlyWorking && (
@@ -581,12 +720,12 @@ const WorkBackground = ({ onComplete }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {t('auth.signup.expectedDischargeDate')}
                   </label>
-                  <input
-                    type="date"
-                    value={formData.dischargeDate}
-                    onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
+                <input
+                  type="date"
+                  value={formData.dischargeDate}
+                  onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                  />
+                />
                 </div>
               )}
             </div>
@@ -594,25 +733,27 @@ const WorkBackground = ({ onComplete }) => {
 
           {/* Job Selection */}
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center">
-                <Star className="text-yellow-500 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {selectedJob ? t('auth.signup.workBackground.yourSelectedJob') : t('auth.signup.workBackground.selectYourJob')}
-                </h2>
-              </div>
-              {selectedJob && (
-                <button
-                  type="button"
-                  onClick={handleChangeJob}
-                  className="text-yellow-600 hover:text-yellow-700 font-medium"
-                >
-                  {t('auth.signup.workBackground.changeSelection')}
-                </button>
-              )}
-            </div>
+            <div className="flex items-center mb-6">
+              <Star className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {isSelectionComplete() ? t('auth.signup.workBackground.yourSelectedJob') : t('auth.signup.workBackground.selectYourJob')}
+              </h2>
+          </div>
 
-            {renderJobSelection()}
+            {/* Search bar - only show when no job is selected */}
+            {!selectedJob && (
+              <div className="mb-6">
+                <input
+                  type="text"
+                  placeholder={t('auth.signup.searchForAJob')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                />
+              </div>
+            )}
+
+              {renderJobSelection()}
           </div>
 
           {/* Academic Degrees */}
@@ -637,7 +778,7 @@ const WorkBackground = ({ onComplete }) => {
                   </div>
                 </SelectionCard>
               ))}
-            </div>
+              </div>
           </div>
 
           {/* Submit Button */}
@@ -672,3 +813,4 @@ const WorkBackground = ({ onComplete }) => {
 
 
 export default WorkBackground;
+

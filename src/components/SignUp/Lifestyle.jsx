@@ -3,6 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import useSignupStore from '../../store/signupStore';
 import { Users, Star, Check } from 'lucide-react';
 import { useEffect } from 'react';
+import i18n from 'i18next';
 
 const Lifestyle = ({ onComplete, editMode, data }) => {
   const { t } = useLanguage();
@@ -110,7 +111,7 @@ const Lifestyle = ({ onComplete, editMode, data }) => {
       <div className="mt-2 flex items-center">
         <span className="text-xl mr-2">{getLevelEmoji(value)}</span>
         <span className="text-sm font-medium">
-          {t('auth.lifestyle.valueDisplay').replace('{{value}}', value.toFixed(1))}
+          {i18n.t('auth.lifestyle.valueDisplay').replace('{{value}}', value.toFixed(1))}
         </span>
       </div>
     </div>

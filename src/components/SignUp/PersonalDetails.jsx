@@ -159,7 +159,9 @@ const FormField = memo(
                 padding: '8px 12px',
                 fontWeight: state.isSelected ? 600 : 400,
               }),
+              menuPortal: base => ({ ...base, zIndex: 9999 })
             }}
+            menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
             // Add inputProps for autocomplete
             inputProps={{ autoComplete: autoCompleteAttr }}
           />
@@ -194,8 +196,6 @@ const FormField = memo(
                 '&:hover': { borderColor: '#FFD966' },
                 minHeight: 40,
               }),
-
-              
               option: (base, state) => ({
                 ...base,
                 backgroundColor: state.isSelected ? '#FFD96633' : state.isFocused ? '#FFD96611' : undefined,
@@ -203,7 +203,9 @@ const FormField = memo(
                 padding: '8px 12px',
                 fontWeight: state.isSelected ? 600 : 400,
               }),
+              menuPortal: base => ({ ...base, zIndex: 9999 })
             }}
+            menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
             inputProps={{ autoComplete: autoCompleteAttr }}
           />
         ) : type === 'select' ? (
@@ -305,24 +307,26 @@ const CheckboxField = memo(({ label, name, className = '', checked, onChange, id
 
 const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   const { personalData, updatePersonalData } = useSignupStore();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const formRef = useRef(null);
   const [formData, setFormData] = useState(personalData || {
     phoneNumber: '',
     maritalStatus: '',
     streetName: '',
     houseNumber: '',
+    floorNumber: '',
+    postalCode: '',
     address: '',
     nativeLanguage: '',
     hebrewLevel: '',
     arrivalDate: '',
     originCountry: '',
     healthCondition: '',
-    militaryService: '',
-    hasCar: false,
-    livingAlone: false,
-    familyInSettlement: false,
-    hasWeapon: false,
+    militaryService: undefined,
+    hasCar: undefined,
+    livingAlone: undefined,
+    familyInSettlement: undefined,
+    hasWeapon: undefined,
     isNewImmigrant: false, // Add this new field
   });
   const [errors, setErrors] = useState({});
@@ -341,7 +345,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const hebrewLevels = ['beginner', 'intermediate', 'advanced', 'native'];
+  const hebrewLevels = ['0', '1', '2', '3', '4', '5'];
   const militaryOptions = ['none', 'military', 'national'];
 
   const maritalStatusOptions = [
@@ -354,7 +358,14 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
   // Replace fetch languages useEffect:
   useEffect(() => {
     try {
-      setLanguages(Object.entries(languageList).map(([value, label]) => ({ value, label })));
+      // Only allow English, Hebrew, and Russian as native language options
+      const allowedLanguages = ['en', 'he', 'ru'];
+      setLanguages(
+        allowedLanguages.map((value) => ({
+          value,
+          label: t(`auth.signup.personalDetails.languageOptions.${value}`)
+        }))
+      );
       setCountries(Array.isArray(countryList) ? countryList.map((c) => ({ value: c.code || c.name, label: c.name })) : []);
       setLoading(prev => ({ ...prev, languages: false }));
     } catch (error) {
@@ -409,10 +420,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['streetName', 'houseNumber']; // Base required fields
-    if (formData.isNewImmigrant) {
-      requiredFields.push('arrivalDate', 'originCountry');
-    }
+    const requiredFields = ['phoneNumber', 'streetName', 'houseNumber', 'floorNumber', 'postalCode', 'arrivalDate', 'originCountry']; // Now phoneNumber is required
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
         let fieldKey = '';
@@ -426,12 +434,16 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
         newErrors[field] = t(fieldKey);
       }
     });
+    // Add format validation for house number
+    if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
+      newErrors.houseNumber = t('auth.signup.personalDetails.errors.houseNumberFormat');
+    }
+    // Add format validation for phone number
+    const phoneError = validatePhoneNumber(formData.phoneNumber);
+    if (phoneError) newErrors.phoneNumber = t(phoneError);
     // Validate house number
     const houseNumberError = validateHouseNumber(formData.houseNumber);
     if (houseNumberError) newErrors.houseNumber = houseNumberError;
-    // Validate Israeli phone number
-    const phoneError = validatePhoneNumber(formData.phoneNumber);
-    if (phoneError) newErrors.phoneNumber = phoneError;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData, t]);
@@ -456,6 +468,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
           const element = document.querySelector(`[name="${firstErrorField}"]`);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
           }
         }
       }
@@ -676,6 +689,36 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 getFieldIcon={() => getFieldIcon('streetName')}
               />
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <FormField
+                label={t('auth.signup.personalDetails.floorNumber')}
+                name="floorNumber"
+                id="personalDetails-floorNumber"
+                type="text"
+                autoComplete="address-level2"
+                placeholder={t('auth.signup.personalDetails.floorNumberPlaceholder')}
+                value={formData.floorNumber}
+                onChange={handleInputChange}
+                error={errors.floorNumber}
+                getFieldIcon={() => getFieldIcon('floorNumber')}
+                inputMode="text"
+                required={true}
+              />
+              <FormField
+                label={t('auth.signup.personalDetails.postalCode')}
+                name="postalCode"
+                id="personalDetails-postalCode"
+                type="text"
+                autoComplete="postal-code"
+                placeholder={t('auth.signup.personalDetails.postalCodePlaceholder')}
+                value={formData.postalCode}
+                onChange={handleInputChange}
+                error={errors.postalCode}
+                getFieldIcon={() => getFieldIcon('postalCode')}
+                inputMode="text"
+                required={true}
+              />
+            </div>
             <FormField
               label={t('auth.signup.personalDetails.additionalAddressDetails')}
               name="address"
@@ -727,25 +770,14 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 id="personalDetails-hebrewLevel"
                 type="select"
                 autoComplete="hebrew-level"
-                options={hebrewLevels.map(level => ({ value: level, label: t(`auth.signup.personalDetails.hebrewLevel.${level}`) }))}
+                options={hebrewLevels.map(level => ({ value: level, label: level }))}
                 value={formData.hebrewLevel}
                 onChange={handleInputChange}
                 error={errors.hebrewLevel}
                 getFieldIcon={() => getFieldIcon('hebrewLevel')}
+                placeholder={t('auth.signup.personalDetails.hebrewLevel.placeholder')}
               />
             </div>
-            {/* New Immigrant Question */}
-            <div className="mt-4">
-              <CheckboxField
-                label={t('auth.signup.personalDetails.isNewImmigrant')}
-                name="isNewImmigrant"
-                id="personalDetails-isNewImmigrant"
-                checked={formData.isNewImmigrant}
-                onChange={handleInputChange}
-              />
-            </div>
-            {/* Conditional fields for new immigrants */}
-            {formData.isNewImmigrant && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 rounded-lg p-4">
                 <FormField
                   label={t('auth.signup.personalDetails.arrivalDate')}
@@ -771,9 +803,14 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   onChange={handleInputChange}
                   error={errors.originCountry}
                   getFieldIcon={() => getFieldIcon('originCountry')}
+                selectProps={{
+                  menuPortalTarget: typeof window !== 'undefined' ? document.body : null,
+                  styles: {
+                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                  }
+                }}
                 />
               </div>
-            )}
           </div>
 
           {/* Additional Information */}
@@ -787,66 +824,176 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 <p className="text-gray-600 text-lg">{t('auth.signup.personalDetails.additionalInformation.description')}</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="space-y-4">
-                <FormField
-                  label={t('auth.signup.personalDetails.healthCondition')}
-                  name="healthCondition"
-                  id="personalDetails-healthCondition"
-                  type="textarea"
-                  autoComplete="health-condition"
-                  placeholder={t('auth.signup.personalDetails.healthConditionPlaceholder')}
-                  value={formData.healthCondition}
-                  onChange={handleInputChange}
-                  error={errors.healthCondition}
-                  getFieldIcon={() => getFieldIcon('healthCondition')}
-                />
-                <FormField
-                  label={t('auth.signup.personalDetails.militaryService')}
-                  name="militaryService"
-                  id="personalDetails-militaryService"
-                  type="select"
-                  autoComplete="military-service"
-                  options={militaryOptions.map((option) => ({
-                    value: option,
-                    label: t(`auth.signup.personalDetails.militaryOptions.${option}`),
-                  }))}
-                  value={formData.militaryService}
-                  onChange={handleInputChange}
-                  error={errors.militaryService}
-                  getFieldIcon={() => getFieldIcon('militaryService')}
-                />
+            {/* Unified Card for Health Condition and Yes/No Questions */}
+            <div className="p-6 space-y-6">
+              <FormField
+                label={t('auth.signup.personalDetails.healthCondition')}
+                name="healthCondition"
+                id="personalDetails-healthCondition"
+                type="select"
+                options={[
+                  { value: 'healthy', label: t('auth.signup.personalDetails.healthConditionOptions.healthy') },
+                  { value: 'withCaregiver', label: t('auth.signup.personalDetails.healthConditionOptions.withCaregiver') },
+                  { value: 'nursing', label: t('auth.signup.personalDetails.healthConditionOptions.nursing') },
+                  { value: 'immobile', label: t('auth.signup.personalDetails.healthConditionOptions.immobile') }
+                ]}
+                value={formData.healthCondition}
+                onChange={handleInputChange}
+                error={errors.healthCondition}
+                getFieldIcon={() => getFieldIcon('healthCondition')}
+                required
+              />
+              {/* Section Heading for Yes/No Group */}
+              <div className="mb-2 mt-4">
+                <h4 className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2">
+                  {t('auth.signup.personalDetails.quickQuestions') || 'Quick Questions'}
+                </h4>
               </div>
+              {/* Yes/No Questions Group */}
               <div className="space-y-3 sm:mt-0">
-                <div className="p-4 bg-gray-50 rounded-lg space-y-3">
-                  <CheckboxField
-                    label={t('auth.signup.personalDetails.hasCar')}
-                    name="hasCar"
-                    id="personalDetails-hasCar"
-                    checked={formData.hasCar}
-                    onChange={handleInputChange}
-                  />
-                  <CheckboxField
-                    label={t('auth.signup.personalDetails.livingAlone')}
-                    name="livingAlone"
-                    id="personalDetails-livingAlone"
-                    checked={formData.livingAlone}
-                    onChange={handleInputChange}
-                  />
-                  <CheckboxField
-                    label={t('auth.signup.personalDetails.familyInSettlement')}
-                    name="familyInSettlement"
-                    id="personalDetails-familyInSettlement"
-                    checked={formData.familyInSettlement}
-                    onChange={handleInputChange}
-                  />
-                  <CheckboxField
-                    label={t('auth.signup.personalDetails.hasWeapon')}
-                    name="hasWeapon"
-                    id="personalDetails-hasWeapon"
-                    checked={formData.hasWeapon}
-                    onChange={handleInputChange}
-                  />
+                <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+                  {/* Military Service Yes/No Radio Group */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>
+                      {t('auth.signup.personalDetails.militaryService')}
+                    </label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="militaryService"
+                          value="yes"
+                          checked={formData.militaryService === true}
+                          onChange={() => handleInputChange({ target: { name: 'militaryService', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="militaryService"
+                          value="no"
+                          checked={formData.militaryService === false}
+                          onChange={() => handleInputChange({ target: { name: 'militaryService', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
+                    </div>
+                  </div>
+                  {/* Has Car Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.hasCar')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasCar"
+                          value="yes"
+                          checked={formData.hasCar === true}
+                          onChange={() => handleInputChange({ target: { name: 'hasCar', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasCar"
+                          value="no"
+                          checked={formData.hasCar === false}
+                          onChange={() => handleInputChange({ target: { name: 'hasCar', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
+                    </div>
+                  </div>
+                  {/* Living Alone Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.livingAlone')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="livingAlone"
+                          value="yes"
+                          checked={formData.livingAlone === true}
+                          onChange={() => handleInputChange({ target: { name: 'livingAlone', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="livingAlone"
+                          value="no"
+                          checked={formData.livingAlone === false}
+                          onChange={() => handleInputChange({ target: { name: 'livingAlone', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
+                    </div>
+                  </div>
+                  {/* Family in Settlement Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.familyInSettlement')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="familyInSettlement"
+                          value="yes"
+                          checked={formData.familyInSettlement === true}
+                          onChange={() => handleInputChange({ target: { name: 'familyInSettlement', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="familyInSettlement"
+                          value="no"
+                          checked={formData.familyInSettlement === false}
+                          onChange={() => handleInputChange({ target: { name: 'familyInSettlement', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
+                    </div>
+                  </div>
+                  {/* Has Weapon Yes/No */}
+                  <div className="mb-2 flex items-center gap-4 justify-between">
+                    <label className={`block text-sm font-medium text-gray-700 mb-0 min-w-[160px] ${['he', 'ar'].includes(language) ? 'text-right' : 'text-left'}`}>{t('auth.signup.personalDetails.hasWeapon')}</label>
+                    <div className="flex gap-6 items-center">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasWeapon"
+                          value="yes"
+                          checked={formData.hasWeapon === true}
+                          onChange={() => handleInputChange({ target: { name: 'hasWeapon', value: true, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.yes')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hasWeapon"
+                          value="no"
+                          checked={formData.hasWeapon === false}
+                          onChange={() => handleInputChange({ target: { name: 'hasWeapon', value: false, type: 'radio' } })}
+                          className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                        />
+                        <span>{t('common.no')}</span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

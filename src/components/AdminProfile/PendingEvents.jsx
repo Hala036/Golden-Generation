@@ -24,14 +24,12 @@ const PendingEvents = () => {
         }
         
         const userData = userDoc.data();
-        console.log("PendingEvents - Admin data:", userData);
         
         // Try different possible locations for settlement
         const settlement = userData.idVerification?.settlement || 
                          userData.settlement || 
                          userData.credentials?.settlement;
         
-        console.log("PendingEvents - Found admin settlement:", settlement);
         setAdminSettlement(settlement || "");
       } catch (error) {
         console.error("Error fetching admin settlement:", error);

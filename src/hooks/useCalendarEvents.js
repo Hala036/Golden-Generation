@@ -19,7 +19,12 @@ export const useCalendarEvents = (userRole) => {
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
-          setUserSettlement(userDoc.data().idVerification?.settlement);
+          const data = userDoc.data();
+          setUserSettlement(
+            (data.idVerification && data.idVerification.settlement) ||
+            data.settlement ||
+            ""
+          );
         }
       } catch (error) {
         console.error('Error fetching user settlement:', error);
@@ -99,6 +104,8 @@ export const useCalendarEvents = (userRole) => {
 
     // Date-specific filtering
     if (date) {
+      // Always convert incoming date to DD-MM-YYYY for comparison
+      const filterDateStr = formatDateToDDMMYYYY(date);
       if (filter === 'upcoming') {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -124,15 +131,14 @@ export const useCalendarEvents = (userRole) => {
           return parsedDate >= today;
         });
       } else {
-        // Specific date filtering
-        const dateStr = formatDateToDDMMYYYY(date);
+        // Specific date filtering (fix: compare using DD-MM-YYYY)
         filteredEvents = filteredEvents.filter(event => {
-          if (!event.startDate && !event.date) return false;
-          const eventStart = event.startDate ? parseDDMMYYYY(event.startDate) : null;
-          const eventEnd = event.endDate ? parseDDMMYYYY(event.endDate) : eventStart;
-          const current = parseDDMMYYYY(dateStr);
-          if (!eventStart || !current) return false;
-          return current >= eventStart && current <= eventEnd;
+          // Use event.date, event.startDate, event.endDate all in DD-MM-YYYY
+          const eventStartStr = event.startDate ? formatDateToDDMMYYYY(event.startDate) : (event.date ? formatDateToDDMMYYYY(event.date) : null);
+          const eventEndStr = event.endDate ? formatDateToDDMMYYYY(event.endDate) : eventStartStr;
+          if (!eventStartStr || !filterDateStr) return false;
+          // Compare as strings
+          return filterDateStr >= eventStartStr && filterDateStr <= eventEndStr;
         });
       }
     }
@@ -171,6 +177,8 @@ export const useCalendarEvents = (userRole) => {
             return event.status === 'pending';
           case 'approved':
             return event.status === 'active' || event.status === 'open';
+          case 'completed':
+            return event.status === 'completed';
           case 'my-pending':
             return event.status === 'pending' && event.createdBy === auth.currentUser?.uid;
           case 'my-approved':
@@ -192,10 +200,10 @@ export const useCalendarEvents = (userRole) => {
       });
     }
 
-    // Settlement filtering (for admins)
-    if (settlementFilter !== 'all' && userRole === 'admin') {
+    // Settlement filtering (for admins and superadmin)
+    if (settlementFilter !== 'all' && (userRole === 'admin' || userRole === 'superadmin')) {
       filteredEvents = filteredEvents.filter(event => {
-        if (settlementFilter === 'my-settlement') {
+        if (userRole === 'admin' && settlementFilter === 'my-settlement') {
           return event.settlement === userSettlement;
         }
         return event.settlement === settlementFilter;

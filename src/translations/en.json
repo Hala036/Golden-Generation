@@ -5,7 +5,7 @@
     "success": "Success",
     "back": "Back",
     "continue": "Continue",
-    "submit": "Submit",
+    "submit": "Continue",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -16,8 +16,10 @@
     "step": "Step",
     "of": "of",
     "select": "Select",
-    "change":"change"
-
+    "change":"change",
+    "notAvailable": "Not Available",
+    "yes": "Yes",
+    "no": "No"
   },
   "auth": {
     "errors": {
@@ -88,12 +90,12 @@
         },
         "nativeLanguage": "Native Language",
       "hebrewLevel": {
-        "label": "Hebrew Level",
+        "label": "Hebrew Speaking/Comprehension Level ",
           "placeholder": "Select your Hebrew level",
           "beginner": "Beginner",
           "intermediate": "Intermediate",
           "advanced": "Advanced",
-          "native": "Native"
+          "native": "Native Speaker"
         },
         "isNewImmigrant": "I am a new immigrant to Israel",
         "arrivalDate": "Arrival Date",
@@ -104,7 +106,7 @@
         },
         "healthCondition": "Health Condition",
         "healthConditionPlaceholder": "Please describe any health conditions...",
-        "militaryService": "Military/National Service",
+        "militaryService": "Did you serve in the military or national service?",
         "militaryOptions": {
           "none": "None",
           "military": "Military",
@@ -122,11 +124,25 @@
           "required": "This field is required",
           "houseNumberFormat": "House number must be numeric (e.g., 123 or 123A)",
           "phoneNumberFormat": "Phone number must be a valid Israeli number (e.g., 05XXXXXXXX)"
-      }
+      },
+        "floorNumber": "Floor Number",
+        "floorNumberPlaceholder": "Enter floor number",
+        "postalCode": "Postal Code",
+        "postalCodePlaceholder": "Enter postal code",
+        "healthConditionOptions": {
+          "healthy": "independent",
+          "withCaregiver": "With caregiver",
+          "nursing": "Nursing-dependent",
+          "immobile": "Non-mobile"
+        },
+        "quickQuestions": "Quick Questions"
     },
     "workBackground": {
       "title": "Work Background",
       "subtitle": "Tell us about your professional experience",
+      "expectedRetirementDateLabel": "Expected retirement date",
+      "retirementDateLabel":"When did you retire?",
+
       "categories": {
         "healthcare": "Healthcare",
       "engineeringTechnology": "Engineering & Technology",
@@ -182,15 +198,15 @@
         "label": "Academic Degrees",
           "placeholder": "Enter your academic degrees",
           "highSchool": "High School",
-  "associateDegree": "Associate Degree",
-  "bachelorsDegree": "Bachelor's Degree",
-  "mastersDegree": "Master's Degree",
-  "phd": "PhD",
-  "postDoc": "Postdoctoral",
-  "professionalCert": "Professional Certificate",
-  "vocationalTraining": "Vocational Training",
-  "noFormalEducation": "No Formal Education",
-  "other": "Other"          
+    "associateDegree": "Associate Degree",
+    "bachelorsDegree": "Bachelor's Degree",
+    "mastersDegree": "Master's Degree",
+    "phd": "PhD",
+    "postDoc": "Postdoctoral",
+    "professionalCert": "Professional Certificate",
+    "vocationalTraining": "Vocational Training",
+    "noFormalEducation": "No Formal Education",
+    "other": "Other"          
         },
         "continue": "Continue",
         "jobCategories": "Job Categories",
@@ -534,10 +550,12 @@
         }
       }
     },
+
     "dashboard": {
       "welcome": "Welcome",
       "profile": "Profile",
       "settings": {
+        "title": "Settings",
         "options": {
           "editProfile": "Edit Profile",
           "editProfileDesc": "Update your name, username, phone, and email",
@@ -665,6 +683,10 @@
       "arrowOpen": "→",
       "events":{
         "upcomingEvents": "Upcoming Events",
+        "upcomingEventsDescription": "Discover and join exciting events happening soon",
+        "noUpcomingEvents": "No upcoming events",
+        "noUpcomingEventsFilter": "No upcoming events found",
+        "createdByMe": "Created by me",
         "addEvent": "Add Event",
         "addEvents": "Add Events",
         "events": "Events",
@@ -685,7 +707,9 @@
         "leave": "Leave Event",
         "moreDetails": "More Info",
         "participants": "Participants",
-        "noParticipants": "No participants yet"
+        "noParticipants": "No participants yet",
+        "joined": "Joined",
+        "noPastEvents": "No past events"
       },
       "expiryDate": {
         "label": "ID Expiry Date"
@@ -820,7 +844,8 @@
         "placeholder": "Create a password",
         "required": "Password is required.",
         "minLength": "Password must be at least 8 characters.",
-        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number."
+        "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
+        "rules": "Password must be at least 8 characters and contain uppercase, loמwercase, and a number."
       },
       "confirmPassword": {
         "label": "Confirm Password",
@@ -837,13 +862,61 @@
       }
     },
     "adminSettlements": {
+      "loading": "Loading settlements...",
       "manageAvailableSettlements": "Manage Available Settlements",
       "addNewSettlement": "Add New Settlement",
       "enterSettlementName": "Enter settlement name",
       "add": "Add",
       "loadError": "Failed to load settlements.",
       "updateError": "Failed to update settlement.",
-      "addError": "Failed to add settlement."
+      "addError": "Failed to add settlement.",
+      "showingSettlements": "Showing {{count}} settlements",
+      "deleteConfirmation": {
+        "title": "Delete Settlement",
+        "message": "Are you sure you want to delete \"{{settlementName}}\"? This action cannot be undone."
+      },
+      "editSettlement": {
+        "title": "Edit Settlement",
+        "name": "Name",
+        "englishName": "English Name",
+        "region": "Region",
+        "municipality": "Municipality",
+        "office": "Office",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "pagination": {
+        "previous": "← Previous",
+        "next": "Next →",
+        "pageInfo": "Page {{current}} of {{total}}"
+      },
+      "filters": {
+        "all": "All",
+        "available": "Available",
+        "disabled": "Disabled"
+      },
+      "search": {
+        "placeholder": "Search settlements..."
+      },
+      "upload": {
+        "replaceAll": "Replace all",
+        "replaceWarning": "This will delete all!",
+        "uploadButton": "Upload",
+        "uploading": "Uploading...",
+        "success": "Settlements uploaded successfully!",
+        "error": "Failed to upload settlements."
+      },
+      "actions": {
+        "enable": "Enable settlement",
+        "disable": "Disable settlement",
+        "addEdit": "Add/Edit",
+        "admins": "Admins"
+      },
+      "emptyState": {
+        "title": "No settlements found",
+        "message": "Try adjusting your search or filters.",
+        "clearSearch": "Clear Search"
+      }
     },
     "categoryManagement": {
       "title": "Category Management",
@@ -864,6 +937,7 @@
       "cleanup": "Cleanup",
       "cleanupOrphanedEvents": "Cleanup ({{count}})",
       "cleanupOrphanedEventsTitle": "Clean up {{count}} orphaned events",
+      "searchPlaceholder": "Search categories by name, translations, or color...",
       "tableHeaders": {
         "category": "Category",
         "color": "Color",
@@ -921,7 +995,15 @@
   "dashboard": {
     "welcome": "Welcome",
     "profile": "Profile",
+    "sidebar": {
+        "user": "User",
+        "noUserLoggedIn": "No user is logged in.",
+        "failedToLoadUser": "Failed to load user data.",
+        "failedToLogout": "Failed to logout. Please try again.",
+        "loggedOut": "Logged out successfully!"
+      },
     "settings": {
+      "title": "Settings",
       "options": {
         "editProfile": "Edit Profile",
         "editProfileDesc": "Update your name, username, phone, and email",
@@ -1011,6 +1093,10 @@
     "arrowOpen": "→",
     "events": {
       "upcomingEvents": "Upcoming Events",
+      "upcomingEventsDescription": "Discover and join exciting events happening soon",
+      "noUpcomingEvents": "No upcoming events",
+      "noUpcomingEventsFilter": "No upcoming events found",
+      "createdByMe": "Created by me",
       "addEvent": "Add Event",
       "addEvents": "Add Events",
       "events": "Events",
@@ -1031,10 +1117,16 @@
       "leave": "Leave Event",
       "moreDetails": "More Info",
       "participants": "Participants",
-      "noParticipants": "No participants yet"
+      "noParticipants": "No participants yet",
+      "joined": "Joined",
+      "noPastEvents": "No past events",
+      "pastEvents": "Past Events",
+      "allSettlements": "All Settlements"
     },
     "filter": {
       "allCategories": "All Categories",
+      "myEvents": "My Events",
+      "myEventsOnly": "My Events Only",
       "trip": "Trip",
       "vacation": "Vacation",
       "workshop": "Workshop",
@@ -1059,6 +1151,7 @@
     },
     "messages": {
       "title": "Messages",
+      "startConversation": "Start a conversation",
       "search": "Search for users...",
       "noMessages": "No messages yet.",
       "selectChat": "Select a chat to start messaging.",
@@ -1116,7 +1209,8 @@
         "completedVolunteerService": "{{username}} completed volunteer service",
         "newServiceRequest": "New service request: {{title}}",
         "eventFullyBooked": "Event '{{title}}' fully booked",
-        "volunteerMatchCreated": "Volunteer match created for '{{title}}'"
+        "volunteerMatchCreated": "Volunteer match created for '{{title}}'",
+        "placeholder": "Search recent activity, events, or community members..."
       },
       "time": {
         "minutesAgo": "{{count}} minutes ago",
@@ -1148,16 +1242,37 @@
       "viewRetiree": "View Retiree",
       "searchRetirees": "Search Retirees",
       "noRetireesFound": "No retirees found",
+      "noRetireesMessage": "Try adjusting your filters or add a new retiree.",
       "retireeDetails": "Retiree Details",
       "retireeName": "Name",
       "retireeEmail": "Email",
       "retireePhone": "Phone Number",
+      "showingCount": "Showing {{filtered}} of {{total}} retirees",
+      "age": "Age",
+      "settlement": "Settlement",
+      "job": "Job",
+      "gender": "Gender",
+      "profile": "Profile",
+      "sendMessage": "Send Message",
+      "backToProfile": "Back to Profile",
         "filters": {
-          "search": "Search by any feature...",
-          "addFilter": "Add Filter",
+          "selectField": "Select Field...",
+          "globalSearch": "Global Search",
+          "search": "Search across all fields...",
+          "addFilter": "+ Add Filter",
           "remove": "Remove",
           "select": "Select Feature",
-          "enterValue": "Enter Value"
+          "enterValue": "Enter Value",
+          "clearAll": "Clear All",
+          "saveFilters": "Save Filters",
+          "loadFilters": "Load Filters",
+          "loadFilterSet": "Load Filter Set",
+          "noFiltersLoad": "No saved filters to load",
+          "fields": {
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone Number"
+          }
         },
         "table": {
           "name": "Name",
@@ -1190,7 +1305,7 @@
       "fetchCategoriesError": "Failed to fetch categories.",
       "eventCreatedSuccess": "Event created successfully!",
       "createEventError": "Failed to create event. Please try again.",
-      "submit": "Submit"
+      "submit": "Continue"
     },
     "pendingEvents": {
       "fetchEventsError": "Failed to fetch pending events.",
@@ -1236,6 +1351,7 @@
       "sendFailed": "Failed to send the message."
     }
   },
+  
   "calendar": {
     "title": "Retiree Activity Calendar",
     "welcomeBack": "Welcome back, {{name}} ({{role}})",
@@ -1336,6 +1452,7 @@
       "status": {
         "pending": "Pending",
         "confirmed": "Confirmed",
+        "completed": "Completed",
         "other": "Other"
       },
       "approve": "Approve",
@@ -1428,6 +1545,9 @@
   "sidebar": {
     "home": "Home Page",
     "upcomingEvents": "Upcoming Events",
+    "categoryManagement": "Category Management",
+    "adminManagement": "Admin Management",
+    "adninManagement": "Admin Management",
     "retirees": "Retirees",
     "volunteerRequests": "Volunteer Requests",
     "serviceRequests": "Service Requests",
@@ -1438,7 +1558,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "updatePastEvents": "Update Past Events"
   },
   "volunteer": {
     "tabs": {
@@ -1564,7 +1685,17 @@
     "addCategory": "Add Category",
     "noCandidates": "No Candidates",
     "noCandidatesMessage": "No candidates have been registered yet.",
-    "addCandidate": "Add Candidate"
+    "addCandidate": "Add Candidate",
+    "noUpcomingEventsMessage": "Check back later for new events or browse past events in the calendar",
+    "noUpcomingEventsFilterMessage": "Try adjusting your search or filter criteria",
+    "noPastEventsMessage": "No events have ended yet.",
+    "noViewedRequests": "No Viewed Requests",
+    "noViewedRequestsMessage": "You haven't viewed any requests yet. Check back later or view all requests to see what's available.",
+    "noViewedRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available.",
+    "noViewedRequestsFilter": "No viewed requests found",
+    "noPendingRequests": "No Pending Requests",
+    "noPendingRequestsMessage": "There are no pending requests at the moment.",
+    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available."
   },
   "loading": {
     "messages": "Loading messages...",
@@ -1627,6 +1758,234 @@
       "title": "Analytics Error",
       "message": "Failed to load analytics data. Please try again.",
       "retry": "Retry"
+    }
+  },
+  "superadmin": {
+    "admins": {
+      "title": "Admin Management",
+      "settlement": "Settlement",
+      "email": "Email",
+      "phone": "Phone",
+      "retirees": "Registered Retirees",
+      "table": {
+        "name": "Admin Name",
+        "settlement": "Settlement",
+        "email": "Email",
+        "phone": "Phone",
+        "retirees": "Registered Retirees",
+        "actions": "Actions"
+      }
+    }
+  },
+  "settlementsManager": {
+    "title": "Settlement Manager",
+    "Yes, Disable": "Yes, Disable",
+    "This action cannot be undone": "This action cannot be undone.",
+    "Are you sure you want to disable and remove": "Are you sure you want to disable and remove \"{{settlement}}\"? This action cannot be undone.",
+    "uploadCSV": "Upload CSV",
+    "This will remove the settlement from available settlements and delete all associated data": "This will remove the settlement from available settlements and delete all associated data.",
+    "searchPlaceholder": "Search settlements...",
+    "assignAdminTitle": "Assign Admin to Settlement",
+    "selectExistingUser": "Select Existing User",
+    "createNewAdmin": "Create New Admin",
+    "selectSettlement": "Select Settlement",
+    "adminAssigned": " (Admin assigned)",
+    "emailPlaceholder": "Email",
+    "usernamePlaceholder": "Username",
+    "phonePlaceholder": "Phone",
+    "createAssign": "Create & Assign",
+    "settlementHasAdmin": "This settlement already has an admin.",
+    "selectUser": "Select User",
+    "assignAdmin": "Assign Admin",
+    "settlementsListTitle": "Settlements & Assigned Admins",
+    "available": "Available",
+    "disabled": "Disabled",
+    "Confirm Disable": "Confirm Disable",
+    "retirees": "retirees",
+    "edit": "Edit",
+    "remove": "Remove",
+    "addAdmin": "Add Admin",
+    "adminDetailsTitle": "Admin Details",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "settlement": "Settlement",
+    "registeredRetirees": "Registered Retirees",
+    "noSettlementsTitle": "No settlements found",
+    "noSettlementsMessage": "Try uploading a CSV or check your filters.",
+    "toggle": "Toggle",
+    "errors": {
+      "csvParse": "Error parsing settlements CSV: {{error}}",
+      "failedToLoad": "Failed to load settlements"
+    },
+    "toast": {
+      "toggleSuccess": "{{settlement}} availability toggled",
+      "toggleError": "Failed to toggle settlement",
+      "deleteSuccess": "Removed: {{settlement}}",
+      "deleteError": "Failed to remove settlement",
+      "csvUploadSuccess": "Settlements uploaded from CSV",
+      "csvUploadError": "CSV upload failed",
+      "selectBoth": "Please select both a settlement and a user.",
+      "assignSuccess": "Admin assigned successfully!",
+      "assignError": "Failed to assign admin.",
+      "fillAllFields": "Please fill all fields.",
+      "createAssignSuccess": "New admin created, assigned, and password reset email sent!",
+      "createAssignError": "Failed to create and assign admin: {{error}}"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to permanently delete \"{{settlement}}\"? This action cannot be undone."
+    }
+  },
+  "activityCalendar": {
+    "title": "Activity Calendar",
+    "createEvent": "Create Event",
+    "searchPlaceholder": "Search events...",
+    "advancedFilters": "Advanced Filters",
+    "clearFilters": "Clear Filters",
+    "showPastEvents": "Show Past Events",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "analytics": "Analytics",
+    "eventAnalytics": "Event Analytics",
+    "daily": "Daily",
+    "hourly": "Hourly",
+    "weekly": "Weekly",
+    "noEvents": "No events scheduled for this day",
+    "addEvent": "Add Event",
+    "eventColorGuide": "Event Color Guide",
+    "eventCategories": "Event Categories",
+    "general": "General",
+    "pastEvents": "Past events",
+    "fullCapacity": "Full capacity",
+    "specialEvents": "Special events",
+    "overlappingEvents": "Overlapping events",
+    "timelineLine": "Timeline line",
+    "currentTime": "Current time",
+    "status": "Status",
+    "allEvents": "All Events",
+    "createdByMe": "Created by Me",
+    "myEvents": "My Events",
+    "completedEvents": "Completed Events",
+    "pendingApproval": "Pending Approval",
+    "upcomingEvents": "Upcoming Events",
+    "pending": "Pending",
+    "approved": "Approved",
+    "myPending": "My Pending",
+    "myApproved": "My Approved",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "dateRange": "Date Range",
+    "allDates": "All Dates",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "nextWeek": "Next Week",
+    "thisMonth": "This Month",
+    "settlement": "Settlement",
+    "allSettlements": "All Settlements",
+    "mySettlement": "My Settlement",
+    "arrowPrev": "←",
+    "arrowNext": "→",
+    "tip": " Click on any event to view details. Past events are faded and cannot be interacted with.",
+    "tipTitle": "Tip:"
+  },
+  "eventDetails": {
+    "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled"
+    },
+    "creator": "Creator",
+    "noParticipants": "No participants yet.",
+    "participants": "Participants",
+    "date": "Date",
+    "time": "Time",
+    "from": "From",
+    "to": "To",
+    "location": "Location",
+    "description": "Description",
+    "noDescription": "No description provided.",
+    "notSpecified": "Not specified",
+    "createdByMe": "Created by me",
+    "editEvent": "Edit Event",
+    "deleteEvent": "Delete Event",
+    "joinEvent": "Join Event",
+    "leaveEvent": "Leave Event",
+    "processing": "Processing...",
+    "loading": "Loading upcoming details...",
+    "mySettlement": "My Settlement"
+  },
+  "viewProfile": {
+    "profileHeader": {
+      "age": "Age",
+      "gender": "Gender",
+      "settlement": "Settlement"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "idNumber": "ID Number",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "maritalStatus": "Marital Status",
+      "education": "Education",
+      "nativeLanguage": "Native Language",
+      "originCountry": "Origin Country"
+    },
+    "credentials": {
+      "title": "Credentials",
+      "username": "Username",
+      "email": "Email"
+    },
+    "workBackground": {
+      "title": "Work Background",
+      "jobTitle": "Job Title",
+      "industry": "Industry",
+      "yearsOfExperience": "Years of Experience",
+      "retired": "Retired",
+      "professionalBackground": "Professional Background"
+    },
+    "lifestyle": {
+      "title": "Lifestyle",
+      "hobbies": "Hobbies",
+      "interests": "Interests",
+      "languagesSpoken": "Languages Spoken",
+      "computerAbility": "Computer Ability",
+      "sportActivityLevel": "Sport Activity Level",
+      "weeklyScheduleOccupancy": "Weekly Schedule Occupancy"
+    },
+    "volunteering": {
+      "title": "Volunteering & Community",
+      "currentActivities": "Current Activities",
+      "notParticipatingReason": "Not Participating Reason",
+      "isVolunteer": "Is Volunteer",
+      "volunteerAreas": "Volunteer Areas",
+      "volunteerFrequency": "Volunteer Frequency",
+      "volunteerHours": "Volunteer Hours",
+      "volunteerDays": "Volunteer Days",
+      "additionalVolunteering": "Additional Volunteering",
+      "additionalVolunteerFields": "Additional Volunteer Fields",
+      "additionalVolunteerFrequency": "Additional Volunteer Frequency",
+      "additionalVolunteerHours": "Additional Volunteer Hours",
+      "additionalVolunteerDays": "Additional Volunteer Days",
+      "needsConsultation": "Needs Consultation",
+      "consultationFields": "Consultation Fields",
+      "communitySettlement": "Community Settlement",
+      "communityProfessionalBackground": "Community Professional Background"
+    },
+    "systemInfo": {
+      "title": "System Info",
+      "role": "Role",
+      "joined": "Joined",
+      "lastLogin": "Last Login"
+    },
+    "sendMessage": {
+      "title": "Send Message",
+      "placeholder": "Write a message to {{name}}",
+      "button": "Send",
+      "successMessage": "Message sent successfully!"
     }
   }
 }

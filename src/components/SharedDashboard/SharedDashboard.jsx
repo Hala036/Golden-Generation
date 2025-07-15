@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaBell, FaCog, FaPlusCircle, FaCalendarAlt, FaComments, FaCalendarCheck, FaSignOutAlt, FaHome, FaSearch } from "react-icons/fa";
 import { FiType } from "react-icons/fi";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -92,9 +92,17 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
 
         {/* Profile Section */}
         {isSidebarExpanded && (
-          <div className="p-6 border-b border-gray-200 flex flex-col items-center">
-            <img src={profile} alt="Profile" className="w-20 h-20 rounded-full mb-3" />
-            <span className="text-lg font-semibold">
+
+          <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
+              <DefaultProfilePic 
+                name={userData?.username || "User"}
+                size={80}
+                fontSize="2rem"
+                bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
+              />
+            </div>
+            <span className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center">
               {userData?.username || "User"}
             </span>
           </div>
@@ -158,10 +166,11 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen box-border p-4 relative">
         {/* Top Bar */}
-        <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-6 py-4 z-10 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-yellow-500">Golden Generation</h1>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
+        <div className="fixed top-0 left-0 right-0 bg-white shadow-md px-2 md:px-6 py-2 md:py-4 z-10 flex items-center justify-between">
+          <h1 className="text-lg md:text-xl font-bold text-yellow-500">{t('auth.dashboard.topbar.title')}</h1>
+          
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2 md:gap-3">
               <FaPlusCircle
                 className="text-gray-600 text-[1.4rem] cursor-pointer hover:text-gray-800"
                 onClick={() => setSelected("add")}
@@ -190,8 +199,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
               >
                 <Select.Option value="en">English</Select.Option>
                 <Select.Option value="he">עברית</Select.Option>
-                <Select.Option value="ru">Русский</Select.Option>
-                <Select.Option value="ar">العربية</Select.Option>
+                {/* <Select.Option value="ar">العربية</Select.Option> */}
               </Select>
             </div>
           </div>
@@ -204,7 +212,11 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
 
         {/* Notifications Popup */}
         {showNotificationsPopup && (
-          <div className="absolute top-20 right-10 bg-white rounded-lg shadow-lg p-6 w-96 z-50">
+          <div
+            className={`absolute top-20 ${
+              language === "he" || language === "ar" ? "left-10" : "right-10"
+            } bg-white rounded-lg shadow-lg p-6 w-96 z-50`}
+>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">Notifications</h3>
               <button
@@ -281,6 +293,15 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById }) => 
                 </div>
               </div>
             </div>
+          </div>
+        )}
+        {/* Create Event Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
+            <CreateEventForm
+              onClose={() => setShowCreateModal(false)}
+              userRole={userRole}
+            />
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import i18n from 'i18next';
 
 const SignUpProgress = ({ currentStep, stepValidation = {} }) => {
   const { t, language } = useLanguage();
@@ -18,7 +19,7 @@ const SignUpProgress = ({ currentStep, stepValidation = {} }) => {
       <div className="block sm:hidden mb-6">
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm font-medium text-gray-600">
-            {t('auth.signup.progress.stepOf', { current: currentStep + 1, total: steps.length })}
+            {i18n.t('auth.signup.progress.stepOf', { current: currentStep + 1, total: steps.length })}
           </span>
           <span className="text-sm font-medium text-[#FFD966]">{steps[currentStep]}</span>
         </div>

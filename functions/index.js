@@ -110,4 +110,171 @@ exports.deleteUserByUid = functions.https.onCall(async (data, context) => {
   }
 });
 
+// Cloud Function to automatically update past events to completed status
+exports.updatePastEvents = functions.pubsub.schedule('every 1 hours').onRun(async (context) => {
+  try {
+    console.log('Starting past events update check...');
+    
+    const now = new Date();
+    const eventsRef = db.collection('events');
+    
+    // Get all active and pending events
+    const activeEventsQuery = eventsRef.where('status', 'in', ['active', 'pending']);
+    const snapshot = await activeEventsQuery.get();
+    
+    let updatedCount = 0;
+    const batch = db.batch();
+    
+    snapshot.docs.forEach(doc => {
+      const event = doc.data();
+      let eventDate;
+      
+      // Parse event date (handle both DD-MM-YYYY and YYYY-MM-DD formats)
+      if (event.endDate && event.endDate.includes('-')) {
+        const parts = event.endDate.split('-');
+        if (parts.length === 3) {
+          if (parts[0].length === 2) {
+            // DD-MM-YYYY
+            const [day, month, year] = parts;
+            eventDate = new Date(year, month - 1, day);
+          } else {
+            // YYYY-MM-DD
+            const [year, month, day] = parts;
+            eventDate = new Date(year, month - 1, day);
+          }
+        }
+      }
+      
+      if (!eventDate || isNaN(eventDate.getTime())) {
+        console.log(`Skipping event ${doc.id}: Invalid date format`);
+        return;
+      }
+      
+      // Set event time (use timeTo if available, otherwise timeFrom, otherwise end of day)
+      if (event.timeTo) {
+        const [hours, minutes] = event.timeTo.split(':').map(Number);
+        eventDate.setHours(hours, minutes, 0, 0);
+      } else if (event.timeFrom) {
+        const [hours, minutes] = event.timeFrom.split(':').map(Number);
+        eventDate.setHours(hours, minutes, 0, 0);
+      } else {
+        eventDate.setHours(23, 59, 59, 999);
+      }
+      
+      // Check if event is in the past
+      if (eventDate < now) {
+        console.log(`Updating past event: ${doc.id} - ${event.title}`);
+        batch.update(doc.ref, { 
+          status: 'completed',
+          completedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        updatedCount++;
+      }
+    });
+    
+    if (updatedCount > 0) {
+      await batch.commit();
+      console.log(`Successfully updated ${updatedCount} past events to completed status`);
+    } else {
+      console.log('No past events found to update');
+    }
+    
+    return { success: true, updatedCount };
+  } catch (error) {
+    console.error('Error updating past events:', error);
+    throw error;
+  }
+});
+
+// Manual trigger function for updating past events (for testing)
+exports.manualUpdatePastEvents = functions.https.onCall(async (data, context) => {
+  // Security: Only allow admins and superadmins
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+  }
+  
+  try {
+    const userDoc = await db.collection('users').doc(context.auth.uid).get();
+    if (!userDoc.exists || !['admin', 'superadmin'].includes(userDoc.data().role)) {
+      throw new functions.https.HttpsError('permission-denied', 'Only admins and superadmins can manually update events.');
+    }
+  } catch (error) {
+    console.error('Error checking user permissions:', error);
+    throw new functions.https.HttpsError('permission-denied', 'Unable to verify user permissions.');
+  }
+  
+  try {
+    console.log('Manual past events update triggered...');
+    
+    const now = new Date();
+    const eventsRef = db.collection('events');
+    
+    // Get all active and pending events
+    const activeEventsQuery = eventsRef.where('status', 'in', ['active', 'pending']);
+    const snapshot = await activeEventsQuery.get();
+    
+    let updatedCount = 0;
+    const batch = db.batch();
+    
+    snapshot.docs.forEach(doc => {
+      const event = doc.data();
+      let eventDate;
+      
+      // Parse event date (handle both DD-MM-YYYY and YYYY-MM-DD formats)
+      if (event.endDate && event.endDate.includes('-')) {
+        const parts = event.endDate.split('-');
+        if (parts.length === 3) {
+          if (parts[0].length === 2) {
+            // DD-MM-YYYY
+            const [day, month, year] = parts;
+            eventDate = new Date(year, month - 1, day);
+          } else {
+            // YYYY-MM-DD
+            const [year, month, day] = parts;
+            eventDate = new Date(year, month - 1, day);
+          }
+        }
+      }
+      
+      if (!eventDate || isNaN(eventDate.getTime())) {
+        console.log(`Skipping event ${doc.id}: Invalid date format`);
+        return;
+      }
+      
+      // Set event time (use timeTo if available, otherwise timeFrom, otherwise end of day)
+      if (event.timeTo) {
+        const [hours, minutes] = event.timeTo.split(':').map(Number);
+        eventDate.setHours(hours, minutes, 0, 0);
+      } else if (event.timeFrom) {
+        const [hours, minutes] = event.timeFrom.split(':').map(Number);
+        eventDate.setHours(hours, minutes, 0, 0);
+      } else {
+        eventDate.setHours(23, 59, 59, 999);
+      }
+      
+      // Check if event is in the past
+      if (eventDate < now) {
+        console.log(`Updating past event: ${doc.id} - ${event.title}`);
+        batch.update(doc.ref, { 
+          status: 'completed',
+          completedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        updatedCount++;
+      }
+    });
+    
+    if (updatedCount > 0) {
+      await batch.commit();
+      console.log(`Successfully updated ${updatedCount} past events to completed status`);
+    } else {
+      console.log('No past events found to update');
+    }
+    
+    return { success: true, updatedCount };
+  } catch (error) {
+    console.error('Error updating past events:', error);
+    throw new functions.https.HttpsError('internal', 'Failed to update past events: ' + error.message);
+  }
+});
+
 // ... existing code ... 
