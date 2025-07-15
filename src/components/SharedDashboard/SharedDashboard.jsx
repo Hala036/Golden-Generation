@@ -24,6 +24,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
   const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFontSize, setShowFontSize] = useState(false);
+  const [fontSize, setFontSize] = useState(16);
 
   // Define colors for different user types
   const defaultColors = {
@@ -63,6 +64,13 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
     } catch (error) {
       toast.error(t('dashboard.sidebar.failedToLogout'));
     }
+  };
+
+  const handleFontSizeChange = (size) => {
+    if (size < 2) size = 2;
+    if (size > 40) size = 40;
+    setFontSize(size);
+    document.documentElement.style.fontSize = size + "px";
   };
 
   return (
