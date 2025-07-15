@@ -842,13 +842,36 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   getFieldIcon={() => getFieldIcon('healthCondition')}
                   required
                 />
-                <CheckboxField
-                  label={t('auth.signup.personalDetails.militaryService')}
-                  name="militaryService"
-                  id="personalDetails-militaryService"
-                  checked={!!formData.militaryService}
-                  onChange={handleInputChange}
-                />
+                {/* Military Service Yes/No Radio Group */}
+                <div className="mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('auth.signup.personalDetails.militaryService')}
+                  </label>
+                  <div className="flex gap-6 items-center">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="militaryService"
+                        value="yes"
+                        checked={formData.militaryService === true}
+                        onChange={() => handleInputChange({ target: { name: 'militaryService', value: true, type: 'radio' } })}
+                        className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                      />
+                      <span>{t('common.yes') || 'Yes'}</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="militaryService"
+                        value="no"
+                        checked={formData.militaryService === false}
+                        onChange={() => handleInputChange({ target: { name: 'militaryService', value: false, type: 'radio' } })}
+                        className="h-4 w-4 text-[#FFD966] focus:ring-[#FFD966] border-gray-300"
+                      />
+                      <span>{t('common.no') || 'No'}</span>
+                    </label>
+                  </div>
+                </div>
               </div>
               <div className="space-y-3 sm:mt-0">
                 <div className="p-4 bg-gray-50 rounded-lg space-y-3">

@@ -17,7 +17,9 @@
     "of": "of",
     "select": "Select",
     "change":"change",
-    "notAvailable": "Not Available"
+    "notAvailable": "Not Available",
+    "yes": "Yes",
+    "no": "No"
   },
   "auth": {
     "errors": {

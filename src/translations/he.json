@@ -17,7 +17,9 @@
     "of": "מתוך",
     "select": "בחר",
     "change": "שנה",
-    "notAvailable": "לא זמין"
+    "notAvailable": "לא זמין",
+    "yes": "כן",
+    "no": "לא"
   },
   "auth": {
     "errors": {
