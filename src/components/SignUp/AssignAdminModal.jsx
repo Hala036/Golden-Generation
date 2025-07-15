@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFieldValidation } from '../../hooks/useFieldValidation';
 import { validateEmail, validateUsername, validatePhoneNumber } from '../../utils/validation';
 import { FaInfoCircle, FaEnvelope, FaUser, FaPhone } from 'react-icons/fa';
+import { useLanguage } from '../../context/LanguageContext'; 
 
 const AssignAdminModal = ({
   open,
@@ -13,6 +14,7 @@ const AssignAdminModal = ({
   creatingAdmin,
 }) => {
   const [touched, setTouched] = useState({ email: false, username: false, phone: false });
+  const { t, language } = useLanguage();
 
   const emailField = useFieldValidation({
     validate: validateEmail,
@@ -88,17 +90,17 @@ const AssignAdminModal = ({
           id="create-admin-title"
           className="text-2xl font-bold mb-8 text-yellow-600 text-left"
         >
-          Create Admin for <span className="text-yellow-600">{selectedSettlement}</span>
+          {t('auth.adminSettlements.addAdmin.title')} <span className="text-yellow-600">{selectedSettlement}</span>
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="relative">
-            <label htmlFor="admin-email" className="text-sm font-medium">Email</label>
+            <label htmlFor="admin-email" className="text-sm font-medium">{t('auth.adminSettlements.addAdmin.email')}</label>
             <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
             <input
               id="admin-email"
               name="email"
               type="email"
-              placeholder="Email"
+              placeholder={t('auth.adminSettlements.addAdmin.email')}
               value={emailField.value}
               onChange={emailField.onChange}
               onBlur={() => handleBlur('email')}
@@ -110,7 +112,7 @@ const AssignAdminModal = ({
           </div>
           {touched.email && emailField.isChecking && (
             <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-              <FaInfoCircle className="flex-shrink-0" />Checking...
+              <FaInfoCircle className="flex-shrink-0" />{t('auth.adminSettlements.addAdmin.checking')}
             </span>
           )}
           {touched.email && emailField.error && (
@@ -121,13 +123,13 @@ const AssignAdminModal = ({
           )}
 
           <div className="relative">
-            <label htmlFor="admin-username" className="text-sm font-medium">Username</label>
+            <label htmlFor="admin-username" className="text-sm font-medium">{t('auth.adminSettlements.addAdmin.userName')}</label>
             <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
             <input
               id="admin-username"
               name="username"
               type="text"
-              placeholder="Username"
+              placeholder={t('auth.adminSettlements.addAdmin.userName')}
               value={usernameField.value}
               onChange={usernameField.onChange}
               onBlur={() => handleBlur('username')}
@@ -139,7 +141,7 @@ const AssignAdminModal = ({
           </div>
           {touched.username && usernameField.isChecking && (
             <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-              <FaInfoCircle className="flex-shrink-0" />Checking...
+              <FaInfoCircle className="flex-shrink-0" />{t('auth.adminSettlements.addAdmin.checking')}
             </span>
           )}
           {touched.username && usernameField.error && (
@@ -150,13 +152,13 @@ const AssignAdminModal = ({
           )}
 
           <div className="relative">
-            <label htmlFor="admin-phone" className="text-sm font-medium">Phone</label>
+            <label htmlFor="admin-phone" className="text-sm font-medium">{t('auth.adminSettlements.addAdmin.phone')}</label>
             <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
             <input
               id="admin-phone"
               name="phone"
               type="text"
-              placeholder="Phone"
+              placeholder={t('auth.adminSettlements.addAdmin.phone')}
               value={phoneField.value}
               onChange={phoneField.onChange}
               onBlur={() => handleBlur('phone')}
@@ -180,7 +182,7 @@ const AssignAdminModal = ({
               className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
               disabled={creatingAdmin}
             >
-              Cancel
+              {t('auth.adminSettlements.addAdmin.cancel')}
             </button>
             <button
               type="submit"
@@ -194,9 +196,9 @@ const AssignAdminModal = ({
             >
               {creatingAdmin ? (
                 <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4 mr-1 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Creating...
+                  <svg className="animate-spin h-4 w-4 mr-1 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>{t('auth.adminSettlements.addAdmin.creating')}
                 </span>
-              ) : 'Create'}
+              ) : t('auth.adminSettlements.addAdmin.create')}
             </button>
           </div>
         </form>
