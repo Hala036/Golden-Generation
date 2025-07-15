@@ -312,7 +312,7 @@ const AdminSettlements = ({ setSelected }) => {
     } catch (error) {
       console.error('[handleDisableSettlement] error:', error);
       showErrorToast(
-        t('auth.adminSettlements.toastMessages.settlementDisabledError', { error: error.message || 'Unknown error' })
+        i18n.t('auth.adminSettlements.toastMessages.settlementDisabledError', { error: error.message || 'Unknown error' })
       );
     } finally {
       setDisablingSettlement(false);
@@ -435,9 +435,9 @@ const AdminSettlements = ({ setSelected }) => {
           errors++;
         }
       }
-      toast.success(t('auth.adminSettlements.toastMessages.uploadSuccess', { added, duplicates, errors }));
+      toast.success(i18n.t('auth.adminSettlements.toastMessages.uploadSuccess', { added, duplicates, errors }));
     } catch (err) {
-      toast.error(t('auth.adminSettlements.toastMessages.uploadError', { error: err.message }));
+      toast.error(i18n.t('auth.adminSettlements.toastMessages.uploadError', { error: err.message }));
     } finally {
       setUploading(false);
       setShowConfirmModal(false);
