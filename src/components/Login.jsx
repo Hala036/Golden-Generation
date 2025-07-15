@@ -23,6 +23,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showRoleErrorModal, setShowRoleErrorModal] = useState(false);
   const [roleErrorMessage, setRoleErrorMessage] = useState('');
+  const [formError, setFormError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +36,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setFormError(""); // Clear previous error
     try {
       // Fetch user document by email first
       const usersRef = collection(db, 'users');
@@ -86,6 +88,7 @@ const LoginPage = () => {
         errorMessage = error.message || t('auth.login.errors.generic') || 'Failed to login. Please check your credentials.';
       }
       toast.error(errorMessage);
+      setFormError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +120,10 @@ const LoginPage = () => {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
               {t('auth.login.title')}
             </h2>
+            {/* Inline Error */}
+            {formError && (
+              <div className="text-red-500 text-sm text-center mb-2">{formError}</div>
+            )}
             {/* Role Switcher */}
             <div className="flex justify-center bg-white rounded-full w-fit mx-auto shadow-md">
               <button
