@@ -63,7 +63,7 @@
           "title": "פרטי יצירת קשר",
           "description": "כיצד נוכל ליצור איתך קשר?"
         },
-        "phoneNumber": "מספר טלפון",
+        "phoneNumber": "מספר נייד",
         "maritalStatus": {
           "label": "מצב משפחתי",
           "placeholder": "בחר את מצבך המשפחתי",
@@ -1220,7 +1220,7 @@
   "errors": {
     "required": "שדה זה נדרש",
     "invalidEmail": "אנא הזן כתובת אימייל תקינה",
-    "invalidPhone": "אנא הזן מספר טלפון תקין",
+    "invalidPhone": "אנא הזן מספר נייד תקין",
     "invalidDate": "אנא הזן תאריך תקין",
     "passwordMismatch": "הסיסמאות לא תואמות",
     "passwordRequirements": "הסיסמה חייבת להכיל לפחות 8 תווים, אות גדולה אחת, אות קטנה אחת ומספר אחד",
@@ -1243,7 +1243,7 @@
       "retireeDetails": "פרטי ותיק",
       "retireeName": "שם",
       "retireeEmail": "אימייל",
-      "retireePhone": "מספר טלפון",
+      "retireePhone": "מספר נייד",
       "showingCount": "מציג {{filtered}} מתוך {{total}} ותיקים",
       "age": "גיל",
       "gender": "מין",
