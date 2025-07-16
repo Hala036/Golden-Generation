@@ -3,6 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Star, Users, Check } from 'lucide-react';
 import useSignupStore from '../../store/signupStore';
 import Select from 'react-select';
+import jobsList from '../../data/jobs.json';
 
 // Comprehensive job categories with sub-specialties
 const categorizedJobs = (t) => ({
