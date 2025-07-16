@@ -133,15 +133,41 @@ const RetireeSearch = () => {
               <div className="text-gray-500">{t("retiree.search.noResults", "No retirees found matching your criteria.")}</div>
             ) : (
               <ul className="divide-y">
-                {filteredRetirees.map(r => (
-                  <li key={r.id} className="py-3">
-                    <div className="font-bold">{r.idVerification?.firstName} {r.idVerification?.lastName}</div>
-                    <div className="text-sm text-gray-600">{t("retiree.search.age", "Age")}: {r.idVerification?.age || t("common.notAvailable", "N/A")}</div>
-                    <div className="text-sm text-gray-600">{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender || t("common.notAvailable", "N/A")}</div>
-                    <div className="text-sm text-gray-600">{t("retiree.search.jobTitle", "Job Title")}: {r.workBackground?.customJobInfo?.originalSelection?.jobTitle || t("common.notAvailable", "N/A")}</div>
-                    <div className="text-sm text-gray-600">{t("retiree.search.interests", "Interests")}: {(r.lifestyle?.interests || []).join(", ")}</div>
-                  </li>
-                ))}
+                {filteredRetirees.map(r => {
+                  // Normalize helper
+                  const normalize = s => (s || "").toString().toLowerCase().trim();
+                  // Get all translations for a value (including itself)
+                  const getAllTranslations = (val, translationsMap) => {
+                    const normVal = normalize(val);
+                    const translations = translationsMap[val] || translationsMap[normVal] || [];
+                    return [val, ...translations];
+                  };
+                  // Prepare sets for highlighting
+                  const selectedInterestsAll = selectedInterests.flatMap(i => getAllTranslations(i, interestTranslations)).map(normalize);
+                  const selectedJobsAll = selectedJobs.flatMap(j => getAllTranslations(j, jobTitleTranslations)).map(normalize);
+                  // Retiree's data
+                  const retireeInterests = (r.lifestyle?.interests || []);
+                  const retireeJob = r.workBackground?.customJobInfo?.originalSelection?.jobTitle || "";
+                  // Highlight logic
+                  const highlightedInterests = retireeInterests.map(interest => {
+                    const isMatch = selectedInterestsAll.includes(normalize(interest));
+                    return (
+                      <span key={interest} className={isMatch ? "bg-yellow-200 rounded px-1 mx-0.5" : ""}>
+                        {isMatch ? '★ ' : ''}{interest}
+                      </span>
+                    );
+                  });
+                  const isJobMatch = selectedJobsAll.includes(normalize(retireeJob));
+                  return (
+                    <li key={r.id} className="py-3">
+                      <div className="font-bold">{r.idVerification?.firstName} {r.idVerification?.lastName}</div>
+                      <div className="text-sm text-gray-600">{t("retiree.search.age", "Age")}: {r.idVerification?.age || t("common.notAvailable", "N/A")}</div>
+                      <div className="text-sm text-gray-600">{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender || t("common.notAvailable", "N/A")}</div>
+                      <div className={`text-sm ${isJobMatch ? "bg-yellow-200 rounded px-1" : "text-gray-600"}`}>{t("retiree.search.jobTitle", "Job Title")}: {isJobMatch ? '★ ' : ''}{retireeJob || t("common.notAvailable", "N/A")}</div>
+                      <div className="text-sm text-gray-600">{t("retiree.search.interests", "Interests")}: {highlightedInterests}</div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
