@@ -68,23 +68,38 @@ const RetireeSearch = () => {
   // Filtering logic
   useEffect(() => {
     let filtered = retirees;
-    if (selectedInterests.length > 0) {
-      filtered = filtered.filter(r => {
-        const interests = r.lifestyle?.interests || [];
-        return selectedInterests.some(i => interests.includes(i));
+    // Helper to normalize strings for comparison
+    const normalize = s => (s || "").toString().toLowerCase().trim();
+    // If only hobbies are selected (and not interests or jobs), filter only by hobbies
+    if (selectedHobbies.length > 0 && selectedInterests.length === 0 && selectedJobs.length === 0) {
+      const selectedHobbiesNorm = selectedHobbies.map(normalize);
+      filtered = retirees.filter(r => {
+        const hobbies = (r.lifestyle?.hobbies || []).map(normalize);
+        return selectedHobbiesNorm.some(h => hobbies.includes(h));
       });
-    }
-    if (selectedHobbies.length > 0) {
-      filtered = filtered.filter(r => {
-        const hobbies = r.lifestyle?.hobbies || [];
-        return selectedHobbies.some(h => hobbies.includes(h));
-      });
-    }
-    if (selectedJobs.length > 0) {
-      filtered = filtered.filter(r => {
-        const job = r.workBackground?.customJobInfo?.originalSelection?.jobTitle || "";
-        return selectedJobs.includes(job);
-      });
+    } else {
+      // Otherwise, use the AND logic for all selected filters
+      if (selectedInterests.length > 0) {
+        const selectedInterestsNorm = selectedInterests.map(normalize);
+        filtered = filtered.filter(r => {
+          const interests = (r.lifestyle?.interests || []).map(normalize);
+          return selectedInterestsNorm.some(i => interests.includes(i));
+        });
+      }
+      if (selectedHobbies.length > 0) {
+        const selectedHobbiesNorm = selectedHobbies.map(normalize);
+        filtered = filtered.filter(r => {
+          const hobbies = (r.lifestyle?.hobbies || []).map(normalize);
+          return selectedHobbiesNorm.some(h => hobbies.includes(h));
+        });
+      }
+      if (selectedJobs.length > 0) {
+        const selectedJobsNorm = selectedJobs.map(normalize);
+        filtered = filtered.filter(r => {
+          const job = normalize(r.workBackground?.customJobInfo?.originalSelection?.jobTitle);
+          return selectedJobsNorm.includes(job);
+        });
+      }
     }
     setFilteredRetirees(filtered);
   }, [retirees, selectedInterests, selectedHobbies, selectedJobs]);

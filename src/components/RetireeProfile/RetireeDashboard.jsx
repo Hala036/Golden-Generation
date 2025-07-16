@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { FaHeadset, FaCalendarAlt, FaCog, FaHandsHelping, FaCalendarCheck } from "react-icons/fa";
+import { FaHeadset, FaCalendarAlt, FaCog, FaHandsHelping, FaCalendarCheck, FaSearch } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +13,7 @@ import RetireeCalendar from "../Calendar/RetireeCalendar";
 import Messages from "../SharedDashboard/Messages";
 import Notifications from "../SharedDashboard/Notifications";
 import CustomerSupport from "./Support";
+import RetireeSearch from "./RetireeSearch";
 
 const RetireeDashboard = () => {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ const RetireeDashboard = () => {
     { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
     { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaCalendarAlt /> },
     { id: "service", label: t('dashboard.service'), icon: <FaHandsHelping /> },
+    { id: "searchRetirees", label: t('sidebar.searchRetirees', 'Find Retirees'), icon: <FaSearch /> },
     { id: "settings", label: t('dashboard.settings.title'), icon: <FaCog /> },
   ];
 
@@ -43,6 +45,7 @@ const RetireeDashboard = () => {
     support: <CustomerSupport />,
     volunteer: <Volunteer />,
     service: <Services />, // Assuming service requests are handled in Messages
+    searchRetirees: <RetireeSearch />, // Add this line
   };
 
   return (
