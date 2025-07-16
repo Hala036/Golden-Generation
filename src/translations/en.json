@@ -1372,6 +1372,7 @@
         "name": "Name",
         "age": "Age",
         "gender": "Gender",
+        "settlement": "Settlement",
         "work": "Work Fields"
       },
       "fieldGroups": {
@@ -1878,19 +1879,26 @@
   },
   "superadmin": {
     "admins": {
-      "title": "Admin Management",
-      "settlement": "Settlement",
-      "email": "Email",
-      "phone": "Phone",
-      "retirees": "Registered Retirees",
+      "title": "Admins Management",
       "table": {
-        "name": "Admin Name",
+        "name": "Name",
         "settlement": "Settlement",
         "email": "Email",
         "phone": "Phone",
-        "retirees": "Registered Retirees",
+        "retirees": "Retirees",
         "actions": "Actions"
-      }
+      },
+      "addAdmin": "Add Admin",
+      "editAdmin": "Edit Admin",
+      "viewAdmin": "Admin Details",
+      "deleteAdmin": "Delete Admin",
+      "searchPlaceholder": "Search admins by name, email, settlement, or phone...",
+      "noAdmins": "No admins found",
+      "noAdminsMessage": "There are no admins to display. Add a new admin to get started.",
+      "clearSearch": "Clear Search",
+      "retireesCount": "{{count}} retirees",
+      "confirmDelete": "Are you sure you want to delete admin \"{{name}}\"?\n\nThis will also remove the settlement from available settlements.",
+      "loading": "Loading admins..."
     }
   },
   "settlementsManager": {

@@ -1380,6 +1380,7 @@
         "name": "שם",
         "age": "גיל",
         "gender": "מין",
+        "settlement": "יישוב",
         "work": "תחומי עיסוק"
       },
       "fieldGroups": {
@@ -1817,18 +1818,25 @@
   "superadmin": {
     "admins": {
       "title": "ניהול מנהלים",
-      "settlement": "יישוב",
-      "email": "אימייל",
-      "phone": "טלפון",
-      "retirees": "ותיקים רשומים",
       "table": {
-        "name": "שם מנהל",
+        "name": "שם",
         "settlement": "יישוב",
         "email": "אימייל",
         "phone": "טלפון",
-        "retirees": "ותיקים רשומים",
+        "retirees": "ותיקים",
         "actions": "פעולות"
-      }
+      },
+      "addAdmin": "הוסף מנהל",
+      "editAdmin": "ערוך מנהל",
+      "viewAdmin": "פרטי מנהל",
+      "deleteAdmin": "מחק מנהל",
+      "searchPlaceholder": "חפש מנהלים לפי שם, אימייל, יישוב או טלפון...",
+      "noAdmins": "לא נמצאו מנהלים",
+      "noAdminsMessage": "אין מנהלים להצגה. הוסף מנהל חדש כדי להתחיל.",
+      "clearSearch": "נקה חיפוש",
+      "retireesCount": "{{count}} ותיקים",
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנהל \"{{name}}\"?\n\nפעולה זו תסיר גם את היישוב מרשימת היישובים הזמינים.",
+      "loading": "טוען מנהלים..."
     }
   },
   "settlementsManager": {

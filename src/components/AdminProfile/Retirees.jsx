@@ -215,37 +215,37 @@ const Retirees = () => {
       path: ["personalDetails", "education"]
     },
     "personalDetails.healthCondition": {
-      label: "Health Condition",
+      label: t("admin.retirees.fields.personalDetails.healthCondition"),
       type: "select",
       options: ["healthy", "withCaregiver", "nursing", "immobile"],
       path: ["personalDetails", "healthCondition"]
     },
     "personalDetails.hasCar": {
-      label: "Has Car",
+      label: t("admin.retirees.fields.personalDetails.hasCar"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "hasCar"]
     },
     "personalDetails.livingAlone": {
-      label: "Living Alone",
+      label: t("admin.retirees.fields.personalDetails.livingAlone"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "livingAlone"]
     },
     "personalDetails.familyInSettlement": {
-      label: "Family in Settlement",
+      label: t("admin.retirees.fields.personalDetails.familyInSettlement"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "familyInSettlement"]
     },
     "personalDetails.hasWeapon": {
-      label: "Carries Weapon",
+      label: t("admin.retirees.fields.personalDetails.hasWeapon"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "hasWeapon"]
     },
     "personalDetails.militaryService": {
-      label: "Military Service",
+      label: t("admin.retirees.fields.personalDetails.militaryService"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "militaryService"]
@@ -975,7 +975,7 @@ const Retirees = () => {
 
     switch (fieldDef.type) {
       case "range":
-        return [{ value: "range", label: "Range" }];
+        return [{ value: "range", label: "Rangee" }];
       case "date":
         return [{ value: "date_range", label: "Date Range" }];
       case "select":
@@ -1168,19 +1168,39 @@ const Retirees = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.name")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.age")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.gender")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
-                    Settlement
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("admin.retirees.table.settlement")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.work")}
                   </th>
                 </tr>
