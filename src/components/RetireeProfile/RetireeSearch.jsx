@@ -7,6 +7,9 @@ import Select from "react-select";
 import interestsList from '../../data/interests.json';
 import hobbiesList from '../../data/hobbies.json';
 import jobsList from '../../data/jobs.json';
+import interestTranslations from '../../data/interestTranslations.json';
+import hobbyTranslations from '../../data/hobbyTranslations.json';
+import jobTitleTranslations from '../../data/jobTitleTranslations.json';
 
 const RetireeSearch = () => {
   const { t } = useTranslation();
@@ -68,36 +71,43 @@ const RetireeSearch = () => {
   // Filtering logic
   useEffect(() => {
     let filtered = retirees;
-    // Helper to normalize strings for comparison
     const normalize = s => (s || "").toString().toLowerCase().trim();
-    // If only hobbies are selected (and not interests or jobs), filter only by hobbies
+    // Helper to get all translations for a value (including itself)
+    const getAllTranslations = (val, translationsMap) => {
+      const normVal = normalize(val);
+      const translations = translationsMap[val] || translationsMap[normVal] || [];
+      return [val, ...translations];
+    };
+    // If only hobbies are selected (and not interests or jobs), filter only by hobbies (cross-language)
     if (selectedHobbies.length > 0 && selectedInterests.length === 0 && selectedJobs.length === 0) {
-      const selectedHobbiesNorm = selectedHobbies.map(normalize);
+      const selectedHobbiesAll = selectedHobbies.flatMap(h => getAllTranslations(h, hobbyTranslations)).map(normalize);
       filtered = retirees.filter(r => {
         const hobbies = (r.lifestyle?.hobbies || []).map(normalize);
-        return selectedHobbiesNorm.some(h => hobbies.includes(h));
+        return selectedHobbiesAll.some(h => hobbies.includes(h));
       });
     } else {
-      // Otherwise, use the AND logic for all selected filters
+      // Interests: cross-language matching
       if (selectedInterests.length > 0) {
-        const selectedInterestsNorm = selectedInterests.map(normalize);
+        const selectedInterestsAll = selectedInterests.flatMap(i => getAllTranslations(i, interestTranslations)).map(normalize);
         filtered = filtered.filter(r => {
           const interests = (r.lifestyle?.interests || []).map(normalize);
-          return selectedInterestsNorm.some(i => interests.includes(i));
+          return selectedInterestsAll.some(i => interests.includes(i));
         });
       }
+      // Hobbies: cross-language matching
       if (selectedHobbies.length > 0) {
-        const selectedHobbiesNorm = selectedHobbies.map(normalize);
+        const selectedHobbiesAll = selectedHobbies.flatMap(h => getAllTranslations(h, hobbyTranslations)).map(normalize);
         filtered = filtered.filter(r => {
           const hobbies = (r.lifestyle?.hobbies || []).map(normalize);
-          return selectedHobbiesNorm.some(h => hobbies.includes(h));
+          return selectedHobbiesAll.some(h => hobbies.includes(h));
         });
       }
+      // Job Titles: cross-language matching
       if (selectedJobs.length > 0) {
-        const selectedJobsNorm = selectedJobs.map(normalize);
+        const selectedJobsAll = selectedJobs.flatMap(j => getAllTranslations(j, jobTitleTranslations)).map(normalize);
         filtered = filtered.filter(r => {
           const job = normalize(r.workBackground?.customJobInfo?.originalSelection?.jobTitle);
-          return selectedJobsNorm.includes(job);
+          return selectedJobsAll.includes(job);
         });
       }
     }
