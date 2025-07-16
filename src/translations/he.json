@@ -1355,11 +1355,38 @@
       "sendMessage": "שלח הודעה",
       "backToProfile": "חזור לפרופיל שלי",
       "alert": "הזן שם עבור קבוצת מסננים זו:",
+      "minAge": "גיל מינימלי",
+      "maxAge": "גיל מקסימלי",
+      "select": "בחר",
+      "maritalStatus": {
+        "single": "רווק/רווקה",
+        "married": "נשוי/נשואה",
+        "divorced": "גרוש/גרושה",
+        "widowed": "אלמן/אלמנה"
+      },
+      "options": {
+        "maritalStatus": {
+          "single": "רווק/רווקה",
+          "married": "נשוי/נשואה",
+          "divorced": "גרוש/גרושה",
+          "widowed": "אלמן/אלמנה"
+        },
+        "education": {
+          "none": "ללא",
+          "primary": "יסודי",
+          "secondary": "תיכון",
+          "tertiary": "על תיכוני",
+          "other": "אחר"
+        }
+      },
       "defTypes": {
         "contains": "מכיל",
         "equals": "שווה ל",
         "startsWith": "מתחיל ב",
-        "endsWith": "נגמר ב"
+        "endsWith": "נגמר ב",
+        "range": "בטווח",
+        "dateRange": "בטווח תאריכים"
+
       },
       "filters": {
         "valueRequired": "ערך נדרש",

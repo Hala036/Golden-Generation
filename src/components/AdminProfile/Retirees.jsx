@@ -205,13 +205,24 @@ const Retirees = () => {
     "personalDetails.maritalStatus": {
       label: t("admin.retirees.fields.personalDetails.maritalStatus"),
       type: "select",
-      options: ["Single", "Married", "Divorced", "Widowed"],
-      path: ["personalDetails", "maritalStatus"]
+      options: [
+          t("admin.retirees.options.maritalStatus.single"),
+          t("admin.retirees.options.maritalStatus.married"),
+          t("admin.retirees.options.maritalStatus.divorced"),
+          t("admin.retirees.options.maritalStatus.widowed")
+        ],
+        path: ["personalDetails", "maritalStatus"]
     },
     "personalDetails.education": {
       label: t("admin.retirees.fields.personalDetails.education"),
       type: "select",
-      options: ["None", "Primary", "Secondary", "Tertiary", "Other"],
+      options: [
+        t("admin.retirees.options.education.none"),
+        t("admin.retirees.options.education.primary"),
+        t("admin.retirees.options.education.secondary"),
+        t("admin.retirees.options.education.tertiary"),
+        t("admin.retirees.options.education.other")
+      ],
       path: ["personalDetails", "education"]
     },
     "personalDetails.healthCondition": {
@@ -825,9 +836,13 @@ const Retirees = () => {
       );
     }
 
-    // Jobs field: use static list
+    // Jobs field: use static list with translations
     if (filter.field === 'workBackground.customJobInfo.originalSelection.jobTitle') {
-      const options = jobsList.map(i => ({ value: i, label: i }));
+      const options = jobsList.map((job) => ({
+        value: job,
+        label: t(`auth.signup.workBackground.jobs.${job}`), // Dynamically translate job labels
+      }));
+    
       return (
         <div className="min-w-[220px]">
           <Select
@@ -835,15 +850,17 @@ const Retirees = () => {
             options={options}
             value={
               Array.isArray(filter.value)
-                ? options.filter(opt => filter.value.includes(opt.value))
+                ? options.filter((opt) => filter.value.includes(opt.value))
                 : []
             }
-            onChange={selected => updateFilter(index, "value", selected ? selected.map(opt => opt.value) : [])}
+            onChange={(selected) =>
+              updateFilter(index, "value", selected ? selected.map((opt) => opt.value) : [])
+            }
             placeholder={`Select ${fieldDef.label}`}
             classNamePrefix="react-select"
-            formatOptionLabel={option => (
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: 8 }}>{jobEmojis[option.value] || ''}</span>
+            formatOptionLabel={(option) => (
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: 8 }}>{jobEmojis[option.value] || ""}</span>
                 <span>{option.label}</span>
               </span>
             )}
@@ -908,7 +925,7 @@ const Retirees = () => {
             value={filter.value}
             onChange={(e) => updateFilter(index, "value", e.target.value)}
           >
-            <option value="">Select {fieldDef.label}</option>
+            <option value="">{t("admin.retirees.select")} {fieldDef.label}</option>
             {fieldDef.options?.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -921,7 +938,7 @@ const Retirees = () => {
           <div className="flex space-x-2 flex-1">
             <input
               type="number"
-              placeholder="Min Age"
+              placeholder={t("admin.retirees.minAge")}
               min={0}
               className="p-2 border rounded flex-1"
               value={filter.value}
@@ -930,7 +947,7 @@ const Retirees = () => {
             <span className="self-center">to</span>
             <input
               type="number"
-              placeholder="Max Age"
+              placeholder={t("admin.retirees.maxAge")}
               min={0}
               className="p-2 border rounded flex-1"
               value={filter.value2}
@@ -975,20 +992,20 @@ const Retirees = () => {
 
     switch (fieldDef.type) {
       case "range":
-        return [{ value: "range", label: "Rangee" }];
+        return [{ value: "range", label: t("admin.retirees.defTypes.range") }];
       case "date":
-        return [{ value: "date_range", label: "Date Range" }];
+        return [{ value: "date_range", label: t("admin.retirees.defTypes.dateRange") }];
       case "select":
         return [
-          { value: "equals", label: "Equals" },
-          { value: "contains", label: "Contains" }
+          { value: "equals", label: t("admin.retirees.defTypes.equals") },
+          { value: "contains", label: t("admin.retirees.defTypes.contains") }
         ];
       default:
         return [
           { value: "contains", label: t("admin.retirees.defTypes.contains") },
           { value: "equals", label: t("admin.retirees.defTypes.equals") },
           { value: "starts_with", label: t("admin.retirees.defTypes.startsWith") },
-          { value: "ends_with", label: t("admin.retirees.defTypes.endsWith") },
+          { value: "ends_with", label: t("admin.retirees.defTypes.endsWith") }
         ];
     }
   };

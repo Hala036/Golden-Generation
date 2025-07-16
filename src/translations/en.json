@@ -1342,11 +1342,31 @@
       "sendMessage": "Send Message",
       "alert": "Enter a name for this filter set:",
       "backToProfile": "Back to Profile",
+      "minAge": "Minimum Age",
+      "maxAge": "Maximum Age",
+      "select": "Select",
+      "options": {
+        "maritalStatus": {
+          "single": "Single",
+          "married": "Married",
+          "divorced": "Divorced",
+          "widowed": "Widowed"
+        },
+        "education": {
+          "none": "None",
+          "primary": "Primary",
+          "secondary": "Secondary",
+          "tertiary": "Tertiary",
+          "other": "Other"
+        }
+      },
       "defTypes": {
         "contains": "Contains",
         "equals": "Equals",
         "startsWith": "Starts With",
-        "endsWith": "Ends With"
+        "endsWith": "Ends With",
+        "range": "Range",
+        "dateRange": "Date Range"
       },
       "filters": {
         "valueRequired": "Value is required",
