@@ -660,15 +660,15 @@ const Retirees = () => {
         const min = filter.value === '' ? -Infinity : parseFloat(filter.value);
         const max = filter.value2 === '' ? Infinity : parseFloat(filter.value2);
         if ((filter.value !== '' && isNaN(min)) || (filter.value2 !== '' && isNaN(max))) {
-          return "Min and Max must be numbers.";
+          return t('admin.retirees.ageNumbers');
         }
         if (min > max) {
-          return "Min must be less than or equal to Max.";
+          return t('admin.retirees.ageSize');
         }
         // Positive-only check (fix: both min and max must be > 0 if provided)
         if (positiveOnlyFields.includes(filter.field)) {
           if ((filter.value !== '' && min <= 0) || (filter.value2 !== '' && max <= 0)) {
-            return "Min and Max must be greater than 0.";
+            return t('admin.retirees.ageRequirement');
           }
         }
       }
@@ -678,10 +678,10 @@ const Retirees = () => {
         const start = filter.value === '' ? null : new Date(filter.value);
         const end = filter.value2 === '' ? null : new Date(filter.value2);
         if ((filter.value !== '' && isNaN(start.getTime())) || (filter.value2 !== '' && isNaN(end.getTime()))) {
-          return "Start and End must be valid dates.";
+          return t('admin.retirees.dateValid');
         }
         if (start && end && start > end) {
-          return "Start date must be before or equal to End date.";
+          return t('admin.retirees.dateRangeValid');
         }
       }
       // Required value for text/select/array
@@ -947,7 +947,7 @@ const Retirees = () => {
         );
       case "range":
         return (
-          <div className="flex space-x-2 flex-1">
+          <div className="flex flex-col sm:flex-row sm:space-x-2 flex-1">
             <input
               type="number"
               placeholder={t("admin.retirees.minAge")}
@@ -956,7 +956,7 @@ const Retirees = () => {
               value={filter.value}
               onChange={(e) => updateFilter(index, "value", e.target.value)}
             />
-            <span className="self-center">to</span>
+            <span className="self-center sm:self-center md:self-start">{t("admin.retirees.filters.to")}</span>
             <input
               type="number"
               placeholder={t("admin.retirees.maxAge")}
@@ -976,7 +976,7 @@ const Retirees = () => {
               value={filter.value}
               onChange={(e) => updateFilter(index, "value", e.target.value)}
             />
-            <span className="self-center">to</span>
+            <span className="self-center">{t("admin.retirees.filters.to")}</span>
             <input
               type="date"
               className="p-2 border rounded flex-1"
@@ -1130,7 +1130,7 @@ const Retirees = () => {
 
                 {/* Remove Button */}
                 <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg col-span-full"
                   onClick={() => removeFilter(index)}
                 >
                   {t("admin.retirees.filters.remove")}

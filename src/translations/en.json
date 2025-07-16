@@ -1345,6 +1345,12 @@
       "backToProfile": "Back to Profile",
       "minAge": "Minimum Age",
       "maxAge": "Maximum Age",
+      "ageRequirement": "Min and Max must be greater than 0",
+      "ageNumbers": "Min and Max must be numbers",
+      "ageSize": "Min must be less than or equal to Max",
+      "date": "Date",
+      "dateValid": "Start and End must be valid dates",
+      "dateRangeValid": "Start date must be before End date",
       "select": "Select",
       "options": {
         "maritalStatus": {
@@ -1371,6 +1377,7 @@
       },
       "filters": {
         "valueRequired": "Value is required",
+        "to": "to",
         "selectField": "Select Field...",
         "globalSearch": "Global Search",
         "search": "Search across all fields...",
