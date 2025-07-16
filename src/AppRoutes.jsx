@@ -30,10 +30,11 @@ const AppRoutes = () => {
   const location = useLocation();
   const isDashboard = location.pathname.startsWith("/dashboard");
   const isViewProfile = location.pathname.startsWith("/view-profile");
+  const isSignUp = location.pathname.startsWith("/signup");
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!isDashboard && !isViewProfile && (
+      {!isDashboard && !isViewProfile && !isSignUp && (
         <div className="fixed top-2 right-2 z-50">
           <LanguageSwitcher />
         </div>

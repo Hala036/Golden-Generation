@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../../firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, getDoc, updateDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaPaperPlane, FaSearch, FaEllipsisV, FaPhone, FaComments } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
@@ -397,38 +397,86 @@ const Messages = () => {
   // Modified startNewChat function
   const startNewChat = async (userId) => {
     try {
-      const isFriend = await areUsersFriends(auth.currentUser.uid, userId);
-      const hasPendingRequest = await checkExistingRequest(auth.currentUser.uid, userId);
-      
+      const currentUser = auth.currentUser;
+      const otherUser = users.find((u) => u.id === userId);
+  
+      if (!currentUser || !otherUser) {
+        toast.error('User not found');
+        return;
+      }
+  
+      // Fetch current user's role from Firestore
+      const currentUserDoc = await getDoc(doc(db, 'users', currentUser.uid));
+      const currentUserRole = currentUserDoc.exists() ? currentUserDoc.data().role : null;
+
+      // Fetch other user's role from Firestore
+      const otherUserDoc = await getDoc(doc(db, 'users', userId));
+      const otherUserRole = otherUserDoc.exists() ? otherUserDoc.data().role : null;
+
+      console.log('Current User Role:', currentUserRole);
+      console.log('Other User Role:', otherUserRole);
+
+      if (currentUserRole !== 'retiree' || otherUserRole !== 'retiree') {
+        // Directly create or find conversation without friend request
+        const existingConversation = conversations.find(
+          (conv) =>
+            conv.participants.length === 2 &&
+            conv.participants.includes(currentUser.uid) &&
+            conv.participants.includes(userId)
+        );
+  
+        if (existingConversation) {
+          setSelectedChat(existingConversation);
+          return;
+        }
+  
+        const conversationData = {
+          participants: [currentUser.uid, userId],
+          lastMessageTime: serverTimestamp(),
+          lastMessage: '',
+          createdAt: serverTimestamp(),
+        };
+  
+        const docRef = await addDoc(collection(db, 'conversations'), conversationData);
+        setSelectedChat({ id: docRef.id, ...conversationData });
+        return;
+      }
+  
+      // If both users are retirees, proceed with friend request logic
+      const isFriend = await areUsersFriends(currentUser.uid, userId);
+      const hasPendingRequest = await checkExistingRequest(currentUser.uid, userId);
+  
       if (!isFriend) {
         if (hasPendingRequest) {
           toast('A friend request is already pending');
           return;
         }
-        setSelectedUser(users.find(u => u.id === userId));
+        setSelectedUser(otherUser);
         setShowRequestModal(true);
         return;
       }
-
+  
       // If they are friends, find or create conversation
-      const existing = conversations.find(conv =>
-        conv.participants.length === 2 &&
-        conv.participants.includes(auth.currentUser.uid) &&
-        conv.participants.includes(userId)
+      const existing = conversations.find(
+        (conv) =>
+          conv.participants.length === 2 &&
+          conv.participants.includes(currentUser.uid) &&
+          conv.participants.includes(userId)
       );
-
+  
       if (existing) {
         setSelectedChat(existing);
         return;
       }
-
+  
       // Create new conversation if it doesn't exist
       const conversationData = {
-        participants: [auth.currentUser.uid, userId],
+        participants: [currentUser.uid, userId],
         lastMessageTime: serverTimestamp(),
         lastMessage: '',
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       };
+  
       const docRef = await addDoc(collection(db, 'conversations'), conversationData);
       setSelectedChat({ id: docRef.id, ...conversationData });
     } catch (error) {

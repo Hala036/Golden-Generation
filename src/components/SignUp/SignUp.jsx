@@ -10,14 +10,15 @@ import { toast } from 'react-hot-toast';
 import { auth, db, getUserData } from '../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import WorkBackground from './WorkBackground';
 import Lifestyle from './Lifestyle';
 import VeteransCommunity from './VeteransCommunity';
 import { triggerNotification } from '../SharedDashboard/TriggerNotifications'; // Import the triggerNotification function
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const SignUp = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { 
     currentStep, 
@@ -119,6 +120,13 @@ const SignUp = () => {
       }
     } else {
       setCurrentStep(step + 1);
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        const firstInput = document.querySelector(
+          '.bg-white input:not([type=hidden]), .bg-white select, .bg-white textarea'
+        );
+        if (firstInput) firstInput.focus();
+      }, 0);
     }
   };
 
@@ -126,7 +134,7 @@ const SignUp = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      navigate('/login');
+      navigate(-1); // Go back to previous page in history
     }
   };
 
@@ -151,11 +159,19 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* Logo */}
-      <div className="absolute top-4 left-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#FFD966]">
+      {/* Logo - Always Left Aligned */}
+      <div className="w-full flex pt-6 pl-8 justify-start">
+        <h1
+          className="text-4xl sm:text-5xl font-extrabold text-[#FFD966] text-left"
+          dir="ltr"
+        >
           {t('auth.signup.logo')}
         </h1>
+      </div>
+
+      {/* Language Switcher - Positioned by Language */}
+      <div className={`absolute top-4 ${language === 'he' ? 'left-4' : 'right-4'}`}>
+        <LanguageSwitcher />
       </div>
 
       {/* Main Content */}
@@ -178,10 +194,19 @@ const SignUp = () => {
             {/* Back Button */}
             <button
               onClick={handleBack}
-              className="absolute top-4 left-4 flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              className={`absolute top-4 ${language === 'he' ? 'right-4' : 'left-4'} flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200`}
             >
-              <FaArrowLeft className="mr-2" />
-              <span className="text-sm font-medium">{t('auth.signup.back')}</span>
+              {language === 'he' ? (
+                <>
+                  <FaArrowRight className="mr-2" />
+                  <span className="text-sm font-medium">{t('auth.signup.back')}</span>
+                </>
+              ) : (
+                <>
+                  <FaArrowLeft className="mr-2" />
+                  <span className="text-sm font-medium">{t('auth.signup.back')}</span>
+                </>
+              )}
             </button>
             {renderStep()}
           </div>
@@ -193,7 +218,8 @@ const SignUp = () => {
             {t('auth.signup.alreadyHaveAccount')}{' '}
             <button
               onClick={() => navigate('/login')}
-              className="text-[#FFD966] hover:text-[#FFB800] font-medium transition-colors duration-200"
+              className="font-semibold text-yellow-700 hover:text-yellow-800 transition duration-200"
+              style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
             >
               {t('auth.signup.signIn')}
             </button>
