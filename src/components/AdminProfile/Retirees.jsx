@@ -782,9 +782,13 @@ const Retirees = () => {
     const fieldDef = fieldDefinitions[filter.field];
     if (!fieldDef) return null;
 
-    // Interests field: use static list
+    // Interests field: use static list with translations
     if (filter.field === 'lifestyle.interests') {
-      const options = interestsList.map(i => ({ value: i, label: i }));
+      const options = interestsList.map((interest) => ({
+        value: interest,
+        label: t(`auth.lifestyle.${interest}`), // Dynamically translate interest labels
+      }));
+    
       return (
         <div className="min-w-[220px]">
           <Select
@@ -792,15 +796,17 @@ const Retirees = () => {
             options={options}
             value={
               Array.isArray(filter.value)
-                ? options.filter(opt => filter.value.includes(opt.value))
+                ? options.filter((opt) => filter.value.includes(opt.value))
                 : []
             }
-            onChange={selected => updateFilter(index, "value", selected ? selected.map(opt => opt.value) : [])}
+            onChange={(selected) =>
+              updateFilter(index, "value", selected ? selected.map((opt) => opt.value) : [])
+            }
             placeholder={`Select ${fieldDef.label}`}
             classNamePrefix="react-select"
-            formatOptionLabel={option => (
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: 8 }}>{interestEmojis[option.value] || ''}</span>
+            formatOptionLabel={(option) => (
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: 8 }}>{interestEmojis[option.value] || ""}</span>
                 <span>{option.label}</span>
               </span>
             )}
@@ -808,10 +814,14 @@ const Retirees = () => {
         </div>
       );
     }
-
-    // Hobbies field: use static list
+    
+    // Hobbies field: use static list with translations
     if (filter.field === 'lifestyle.hobbies') {
-      const options = hobbiesList.map(i => ({ value: i, label: i }));
+      const options = hobbiesList.map((hobby) => ({
+        value: hobby,
+        label: t(`auth.lifestyle.${hobby}`), // Dynamically translate hobby labels
+      }));
+    
       return (
         <div className="min-w-[220px]">
           <Select
@@ -819,15 +829,17 @@ const Retirees = () => {
             options={options}
             value={
               Array.isArray(filter.value)
-                ? options.filter(opt => filter.value.includes(opt.value))
+                ? options.filter((opt) => filter.value.includes(opt.value))
                 : []
             }
-            onChange={selected => updateFilter(index, "value", selected ? selected.map(opt => opt.value) : [])}
+            onChange={(selected) =>
+              updateFilter(index, "value", selected ? selected.map((opt) => opt.value) : [])
+            }
             placeholder={`Select ${fieldDef.label}`}
             classNamePrefix="react-select"
-            formatOptionLabel={option => (
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: 8 }}>{hobbyEmojis[option.value] || ''}</span>
+            formatOptionLabel={(option) => (
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: 8 }}>{hobbyEmojis[option.value] || ""}</span>
                 <span>{option.label}</span>
               </span>
             )}
