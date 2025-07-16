@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "טוען...",
+    "processing": "מעבד...",
     "error": "שגיאה",
     "success": "הצלחה",
     "back": "חזור",
@@ -904,19 +905,54 @@
       "updateError": "נכשל בעדכון היישוב.",
       "addError": "נכשל בהוספת היישוב.",
       "showingSettlements": "מציג {{count}} יישובים",
-      "deleteConfirmation": {
-        "title": "מחק יישוב",
-        "message": "האם אתה בטוח שברצונך למחוק את \"{{settlementName}}\"? פעולה זו אינה ניתנת לביטול."
+      "addAdmin": {
+        "title": "הוסף מנהל ל-",
+        "email": "אימייל המנהל",
+        "userName": "שם משתמש המנהל",
+        "create": "צור מנהל",
+        "phone": "מספר טלפון",
+        "checking": "בודק...",
+        "cancel": "בטל",
+        "creating": "יוצר מנהל...",
+        "error": "נכשל בהוספת המנהל: {{error}}"
       },
-      "editSettlement": {
-        "title": "ערוך יישוב",
-        "name": "שם",
-        "englishName": "שם באנגלית",
-        "region": "אזור",
-        "municipality": "מועצה",
-        "office": "לשכה",
+      "popup": {
+        "addSettlement": "הוסף יישוב",
+        "editSettlement": "ערוך יישוב",
+        "settlementName": "שם יישוב",
+        "searchPlaceholder": "הקלד כדי לחפש או להוסיף יישוב...",
         "save": "שמור",
-        "cancel": "בטל"
+        "cancel": "בטל",
+        "failedToAddSettlement": "Failed to add settlement. Please try again.",
+        "failedToEditSettlement": "Failed to edit settlement. Please try again.",
+        "nameRequired": "שם יישוב נדרש",
+        "englishNameRequired": "English name is required.",
+        "regionRequired": "Region is required.",
+        "municipalityRequired": "Municipality is required."
+      },
+      "confirmationModal": {
+        "title": "האם אתה בטוח?",
+        "message": "פעולה זו תמחק את כל היישובים הנוכחיים לפני העלאת הקובץ החדש. פעולה זו אינה ניתנת לביטול.",
+        "confirmButton": "כן, החלף הכל",
+        "cancelButton": "ביטול"
+      },
+      "editModal": {
+        "title": "ערוך יישוב",
+        "fields": {
+          "name": "שם",
+          "englishName": "שם באנגלית",
+          "region": "אזור",
+          "municipality": "מועצה",
+          "office": "משרד"
+        },
+        "saveButton": "שמור",
+        "cancelButton": "ביטול"
+      },
+      "deleteModal": {
+        "title": "מחק יישוב",
+        "message": "האם אתה בטוח שברצונך למחוק את \"{{settlementName}}\"? פעולה זו אינה ניתנת לביטול.",
+        "deleteButton": "מחק",
+        "cancelButton": "ביטול"
       },
       "pagination": {
         "previous": "הקודם ←",
@@ -949,6 +985,26 @@
         "title": "לא נמצאו יישובים",
         "message": "נסה להתאים את החיפוש או המסננים.",
         "clearSearch": "נקה חיפוש"
+      },
+      "toastMessages": {
+        "adminCreatedSuccess": "המנהל נוצר ודוא\"ל לאיפוס סיסמה נשלח!",
+        "adminCreatedError": "יצירת מנהל נכשלה: {{error}}",
+        "passwordResetSuccess": "דוא\"ל לאיפוס סיסמה נשלח למנהל: {{email}}",
+        "passwordResetError": "המנהל נוצר, אך שליחת דוא\"ל לאיפוס סיסמה נכשלה: {{error}}",
+        "settlementUpdatedSuccess": "היישוב עודכן בהצלחה!",
+        "settlementUpdatedError": "עדכון היישוב נכשל: {{error}}",
+        "settlementDeletedSuccess": "היישוב נמחק בהצלחה!",
+        "settlementDeletedError": "מחיקת היישוב נכשלה: {{error}}",
+        "settlementAddedSuccess": "היישוב \"{{name}}\" נוסף בהצלחה!",
+        "settlementAddedError": "הוספת היישוב נכשלה: {{error}}",
+        "settlementRenamedSuccess": "היישוב שונה מ-\"{{original}}\" ל-\"{{name}}\"",
+        "settlementRenamedError": "שינוי שם היישוב נכשל: {{error}}",
+        "settlementAlreadyExists": "היישוב \"{{name}}\" כבר קיים",
+        "settlementDisabledSuccess": "{{settlement}} הושבת בהצלחה. נמחקו {{adminCount}} מנהל(ים) ו-{{retireeCount}} ותיק(ים).",
+        "settlementDisabledError": "השבתת היישוב נכשלה: {{error}}",
+        "uploadSuccess": "✅ נוספו: {{added}}, כפילויות: {{duplicates}}, שגיאות: {{errors}}",
+        "uploadError": "❌ העלאה נכשלה: {{error}}",
+        "deleteAllSuccess": "כל היישובים הקודמים נמחקו."
       }
     },
     "categoryManagement": {
@@ -1285,7 +1341,7 @@
       "viewRetiree": "צפה בותיק",
       "searchRetirees": "חפש ותיקים",
       "noRetireesFound": "לא נמצאו ותיקים",
-      "noRetireesMessage": "נסה להתאים את המסננים שלך או להוסיף גמלאי חדש.",
+      "noRetireesMessage": "נסה להתאים את המסננים שלך או להוסיף ותיק חדש.",
       "retireeDetails": "פרטי ותיק",
       "retireeName": "שם",
       "retireeEmail": "אימייל",
@@ -1298,14 +1354,22 @@
       "profile": "פרופיל",
       "sendMessage": "שלח הודעה",
       "backToProfile": "חזור לפרופיל שלי",
+      "alert": "הזן שם עבור קבוצת מסננים זו:",
+      "defTypes": {
+        "contains": "מכיל",
+        "equals": "שווה ל",
+        "startsWith": "מתחיל ב",
+        "endsWith": "נגמר ב"
+      },
       "filters": {
+        "valueRequired": "ערך נדרש",
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
         "search": "חפש לפי כל מאפיין...",
         "addFilter": "+ הוסף מסנן",
         "remove": "הסר",
         "select": "בחר מאפיין",
-        "enterValue": "הזן ערך",
+        "enterValue": "הזן {{Value}}",
         "clearAll": "נקה הכל",
         "saveFilters": "שמור מסננים",
         "loadFilters": "טען מסננים",
@@ -1317,6 +1381,28 @@
         "age": "גיל",
         "gender": "מין",
         "work": "תחומי עיסוק"
+      },
+      "fieldGroups": {
+        "personalInfo": "מידע אישי",
+        "work": "עבודה",
+        "lifestyle": "אורח חיים",
+        "system": "מערכת"
+      },
+      "fields": {
+        "idVerification.firstName": "שם פרטי",
+        "idVerification.lastName": "שם משפחה",
+        "idVerification.age": "גיל",
+        "idVerification.gender": "מין",
+        "idVerification.settlement": "יישוב",
+        "idVerification.phoneNumber": "מספר טלפון",
+        "idVerification.email": "אימייל",
+        "personalDetails.maritalStatus": "מצב משפחתי",
+        "personalDetails.education": "השכלה",
+        "workBackground.customJobInfo.originalSelection.jobTitle": "תפקיד",
+        "workBackground.customJobInfo.originalSelection.industry": "תעשייה",
+        "lifestyle.interests": "תחומי עניין",
+        "lifestyle.hobbies": "תחביבים",
+        "createdAt": "נוצר בתאריך"
       }
     },
     "createEvent": {
@@ -1912,7 +1998,7 @@
       "jobTitle": "תפקיד",
       "industry": "תעשייה",
       "yearsOfExperience": "שנות ניסיון",
-      "retired": "גמלאי",
+      "retired": "ותיק",
       "professionalBackground": "רקע מקצועי"
     },
     "lifestyle": {
@@ -1955,6 +2041,33 @@
       "button": "שלח",
       "successMessage": "ההודעה נשלחה בהצלחה!"
     }
+  },
+  "createEventForm": {
+    "title": "כותרת האירוע",
+    "titlePlaceholder": "לדוגמה: מפגש יוגה בבוקר",
+    "category": "קטגוריה",
+    "categoryPlaceholder": "בחר קטגוריה",
+    "addCategory": "הוסף קטגוריה חדשה",
+    "timeDateSection": "זמן ותאריך",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "startTime": "שעת התחלה",
+    "endTime": "שעת סיום",
+    "additionalDetailsSection": "פרטים נוספים",
+    "description": "תיאור",
+    "descriptionPlaceholder": "ספק פרטים על האירוע...",
+    "location": "מיקום",
+    "locationPlaceholder": "לדוגמה: אולם קהילתי",
+    "maxParticipants": "מספר משתתפים מקסימלי",
+    "maxParticipantsPlaceholder": "לדוגמה: 10",
+    "eventImage": "תמונת האירוע",
+    "eventImageOptional": "(אופציונלי, JPG/PNG/GIF/WebP, עד 5MB)",
+    "settlement": "יישוב",
+    "settlementPlaceholder": "בחר יישוב",
+    "cancelButton": "ביטול",
+    "submitButtonCreate": "צור אירוע",
+    "submitButtonUpdate": "עדכן אירוע",
+    "submitting": "שולח..."
   },
   "countries": {
     "AF": "אפגניסטן",

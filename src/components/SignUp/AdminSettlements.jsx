@@ -20,6 +20,7 @@ import { UserContext as AppUserContext } from "../../context/UserContext";
 import { useTranslation } from "react-i18next";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import i18n from "i18next";
+import { Empty } from 'antd';
 
 const AdminSettlements = ({ setSelected }) => {
   console.debug('[AdminSettlements] mounted');
@@ -184,16 +185,14 @@ const AdminSettlements = ({ setSelected }) => {
       }
       
       const newUserId = result.localId;
-      console.log('Admin created successfully:', newUserId);
       
       // 2. Send password reset email
       try {
         await sendPasswordResetEmail(auth, email);
-        console.log('Password reset email sent to:', email);
-        toast.success('Password reset email sent to admin: ' + email);
+        toast.success(i18n.t('auth.adminSettlements.toastMessages.passwordResetSuccess', { email }));
       } catch (err) {
         console.error('Failed to send password reset email:', err);
-        toast.error('Admin created, but failed to send password reset email: ' + (err.message || 'Unknown error'));
+        toast.error(i18n.t('auth.adminSettlements.toastMessages.passwordResetError', { error: err.message || 'Unknown error' }));
       }
       
       // 3. Create user in Firestore
@@ -229,7 +228,7 @@ const AdminSettlements = ({ setSelected }) => {
         ...prev,
         [selectedSettlement]: { email, username, phone },
       }));
-      toast.success('Admin created and password reset email sent!');
+      toast.success(t('auth.adminSettlements.toastMessages.adminCreatedSuccess'));
       setShowAdminForm(false);
       setSelectedSettlement('');
       
@@ -296,17 +295,11 @@ const AdminSettlements = ({ setSelected }) => {
 
       // Show success toast with details
       showSuccessToast(
-        t('auth.adminSettlements.messages.disabledSuccess') || 
-        `${settlement} has been disabled successfully. Removed ${adminCount} admin(s) and ${retireeCount} retiree(s).`,
-        t('auth.adminSettlements.messages.disabledTitle') || 'Settlement Disabled',
-        {
-          duration: 6000,
-          action: () => {
-            // Option to undo (could be implemented later)
-            showInfoToast('Undo functionality coming soon...', 'Feature Preview');
-          },
-          actionLabel: t('common.undo') || 'Undo'
-        }
+        i18n.t('auth.adminSettlements.toastMessages.settlementDisabledSuccess', {
+          settlement: settlement,
+          adminCount: adminCount,
+          retireeCount: retireeCount
+        })
       );
 
       // Update local state
@@ -319,16 +312,7 @@ const AdminSettlements = ({ setSelected }) => {
     } catch (error) {
       console.error('[handleDisableSettlement] error:', error);
       showErrorToast(
-        t('auth.adminSettlements.messages.disableError') || 'Failed to disable settlement. Please try again.',
-        t('auth.adminSettlements.messages.errorTitle') || 'Error',
-        {
-          duration: 8000,
-          action: () => {
-            // Retry functionality
-            handleDisableSettlement(settlement);
-          },
-          actionLabel: t('common.retry') || 'Retry'
-        }
+        i18n.t('auth.adminSettlements.toastMessages.settlementDisabledError', { error: error.message || 'Unknown error' })
       );
     } finally {
       setDisablingSettlement(false);
@@ -340,9 +324,8 @@ const AdminSettlements = ({ setSelected }) => {
     const name = settlementForm.name.trim();
     console.debug('[handleSaveSettlement] name:', name, 'form:', settlementForm);
     if (!name) {
-      showErrorToast(
-        t('auth.adminSettlements.messages.emptyName') || 'Settlement name cannot be empty',
-        t('auth.adminSettlements.messages.validationError') || 'Validation Error'
+      toast.error(
+        t('auth.adminSettlements.popup.nameRequired') || 'Settlement name cannot be empty',
       );
       return;
     }
@@ -358,29 +341,24 @@ const AdminSettlements = ({ setSelected }) => {
         if (docToUpdate) {
           await updateDoc(doc(db, 'settlements', docToUpdate.id), { name });
           showSuccessToast(
-            t('auth.adminSettlements.messages.renamedSuccess') || `Settlement renamed from "${settlementForm.original}" to "${name}"`,
-            t('auth.adminSettlements.messages.renamedTitle') || 'Settlement Renamed'
+            i18n.t('auth.adminSettlements.toastMessages.settlementRenamedSuccess', { original: settlementForm.original, name })
           );
           console.debug('[handleSaveSettlement] renamed:', settlementForm.original, 'to', name);
         } else {
           showErrorToast(
-            t('auth.adminSettlements.messages.originalNotFound') || 'Original settlement not found',
-            t('auth.adminSettlements.messages.errorTitle') || 'Error'
+            i18n.t('auth.adminSettlements.toastMessages.settlementRenamedError', { name: settlementForm.original })
           );
         }
       } else if (!existing) {
         // Add new
         await setDoc(doc(settlementsRef), { name });
         showSuccessToast(
-          t('auth.adminSettlements.messages.addedSuccess') || `Settlement "${name}" added successfully`,
-          t('auth.adminSettlements.messages.addedTitle') || 'Settlement Added'
+          i18n.t('auth.adminSettlements.toastMessages.settlementAddedSuccess', { name }) || `Settlement "${name}" added successfully`,
         );
         console.debug('[handleSaveSettlement] added:', name);
       } else {
         showWarningToast(
-          t('auth.adminSettlements.messages.alreadyExists') || `Settlement "${name}" already exists`,
-          t('auth.adminSettlements.messages.warningTitle') || 'Warning'
-        );
+          i18n.t('auth.adminSettlements.toastMessages.settlementAlreadyExists', { name })        );
         return;
       }
       setShowSettlementModal(false);
@@ -388,8 +366,7 @@ const AdminSettlements = ({ setSelected }) => {
     } catch (err) {
       console.error('[handleSaveSettlement] error:', err);
       showErrorToast(
-        t('auth.adminSettlements.messages.saveError') || 'Failed to save settlement. Please try again.',
-        t('auth.adminSettlements.messages.errorTitle') || 'Error'
+        i18n.t('auth.adminSettlements.toastMessages.settlementAddedError', { error: err.message }) || `Failed to add settlement: ${err.message}`,
       );
     }
   };
@@ -458,9 +435,9 @@ const AdminSettlements = ({ setSelected }) => {
           errors++;
         }
       }
-      toast.success(`✅ Added: ${added}, Duplicates: ${duplicates}, Errors: ${errors}`);
+      toast.success(i18n.t('auth.adminSettlements.toastMessages.uploadSuccess', { added, duplicates, errors }));
     } catch (err) {
-      toast.error('❌ Failed to upload: ' + err.message);
+      toast.error(i18n.t('auth.adminSettlements.toastMessages.uploadError', { error: err.message }));
     } finally {
       setUploading(false);
       setShowConfirmModal(false);
@@ -499,11 +476,11 @@ const AdminSettlements = ({ setSelected }) => {
       const docToUpdate = docs.docs.find(doc => doc.data().name === editModal.settlement.name);
       if (docToUpdate) {
         await setDoc(docToUpdate.ref, editForm);
-        toast.success('Settlement updated!');
+        toast.success(t('auth.adminSettlements.toastMessages.settlementUpdatedSuccess'));
       }
       setEditModal({ open: false, settlement: null });
     } catch (err) {
-      toast.error('Failed to update settlement: ' + err.message);
+      toast.error(i18n.t('auth.adminSettlements.toastMessages.settlementUpdatedError', { error: err.message }));
     }
   };
   // Delete settlement logic
@@ -517,12 +494,12 @@ const AdminSettlements = ({ setSelected }) => {
       const docToDelete = docs.docs.find(doc => doc.data().name === deleteModal.settlement.name);
       if (docToDelete) {
         await deleteDoc(docToDelete.ref);
-        toast.success('Settlement deleted!');
+        toast.success(t('auth.adminSettlements.toastMessages.settlementDeletedSuccess'));
         
       }
       setDeleteModal({ open: false, settlement: null });
     } catch (err) {
-      toast.error('Failed to delete settlement: ' + err.message);
+      toast.error(i18n.t('auth.adminSettlements.toastMessages.settlementDeletedError', { error: err.message }));
     }
   };
 
@@ -772,6 +749,32 @@ const AdminSettlements = ({ setSelected }) => {
                           <FaPlus />
                         </button>
                       )}
+                      {enabled ? (
+                        <element></element>
+                      ):(
+                      <button
+                        onClick={async () => {
+                          try {
+                            const settlementDoc = await getDocs(collection(db, 'settlements'));
+                            const docToDelete = settlementDoc.docs.find(doc => doc.data().name === settlement.name);
+                            if (docToDelete) {
+                              await deleteDoc(docToDelete.ref);
+                              toast.success(t('auth.adminSettlements.toastMessages.settlementDeletedSuccess'));
+                              setAllSettlements(prev => prev.filter(s => s.name !== settlement.name));
+                            } else {
+                              toast.error(t('auth.adminSettlements.toastMessages.settlementDeletedError', { error: 'Settlement not found' }));
+                            }
+                          } catch (err) {
+                            console.error('Failed to delete settlement:', err);
+                            toast.error(t('auth.adminSettlements.toastMessages.settlementDeletedError', { error: err.message }));
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                        title="Delete settlement"
+                      >
+                        <FaTrash />
+                      </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -822,12 +825,10 @@ const AdminSettlements = ({ setSelected }) => {
         open={showConfirmModal}
         settlement={settlementToDisable}
         onCancel={() => {
-          console.log('Modal cancelled');
           setShowConfirmModal(false);
           setSettlementToDisable(null);
         }}
         onConfirm={async () => {
-          console.log('Modal confirmed for settlement:', settlementToDisable);
           await handleDisableSettlement(settlementToDisable);
           setShowConfirmModal(false);
           setSettlementToDisable(null);
@@ -838,9 +839,9 @@ const AdminSettlements = ({ setSelected }) => {
       {showSettlementModal && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">{settlementForm.isEdit ? 'Edit Settlement' : 'Add Settlement'}</h2>
+            <h2 className="text-xl font-bold mb-4">{settlementForm.isEdit ? t('auth.adminSettlements.popup.editSettlement') : t('auth.adminSettlements.popup.addSettlement')}</h2>
             <div className="mb-4 relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Settlement Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('auth.adminSettlements.popup.settlementName')}</label>
               <input
                 type="text"
                 className="border px-3 py-2 rounded-md w-full"
@@ -851,7 +852,7 @@ const AdminSettlements = ({ setSelected }) => {
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                placeholder="Type to search or add..."
+                placeholder={t('auth.adminSettlements.popup.searchPlaceholder')}
                 autoComplete="off"
               />
               {/* Suggestions dropdown */}
@@ -886,13 +887,13 @@ const AdminSettlements = ({ setSelected }) => {
                 }}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
               >
-                Cancel
+                {t('auth.adminSettlements.popup.cancel')}
               </button>
               <button
                 onClick={handleSaveSettlement}
                 className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
-                Save
+                {t('auth.adminSettlements.popup.save')}
               </button>
             </div>
           </div>
@@ -903,8 +904,10 @@ const AdminSettlements = ({ setSelected }) => {
         <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg flex flex-col items-center">
             <FaExclamationTriangle className="text-4xl text-red-500 mb-4" />
-            <h2 className="text-xl font-bold mb-2 text-center">Are you sure?</h2>
-            <p className="text-center mb-6">This will <span className="text-red-600 font-semibold">delete all current settlements</span> before uploading the new file. This action cannot be undone.</p>
+            <h2 className="text-xl font-bold mb-2 text-center">{t('auth.adminSettlements.confirmationModal.title')}</h2>
+            <p className="text-center mb-6">
+              {t('auth.adminSettlements.confirmationModal.message')}
+            </p>
             <div className="flex gap-4">
               <button
                 onClick={async () => {
@@ -913,7 +916,7 @@ const AdminSettlements = ({ setSelected }) => {
                 }}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-bold"
               >
-                Yes, Replace All
+                {t('auth.adminSettlements.confirmationModal.confirmButton')}
               </button>
               <button
                 onClick={() => {
@@ -922,7 +925,7 @@ const AdminSettlements = ({ setSelected }) => {
                 }}
                 className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded font-bold"
               >
-                Cancel
+                {t('auth.adminSettlements.confirmationModal.cancelButton')}
               </button>
             </div>
           </div>
@@ -932,21 +935,21 @@ const AdminSettlements = ({ setSelected }) => {
       {editModal.open && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Edit Settlement</h2>
+            <h2 className="text-xl font-bold mb-4">{t('auth.adminSettlements.editModal.title')}</h2>
             <div className="mb-4 grid grid-cols-1 gap-2">
-              <label className="text-sm font-medium">Name
+              <label className="text-sm font-medium">{t('auth.adminSettlements.editModal.fields.name')}
                 <input name="name" value={editForm.name} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" />
               </label>
-              <label className="text-sm font-medium">English Name
+              <label className="text-sm font-medium">{t('auth.adminSettlements.editModal.fields.englishName')}
                 <input name="english_name" value={editForm.english_name} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" />
               </label>
-              <label className="text-sm font-medium">Region
+              <label className="text-sm font-medium">{t('auth.adminSettlements.editModal.fields.region')}
                 <input name="shem_napa" value={editForm.shem_napa} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" />
               </label>
-              <label className="text-sm font-medium">Municipality
+              <label className="text-sm font-medium">{t('auth.adminSettlements.editModal.fields.municipality')}
                 <input name="shem_moaatza" value={editForm.shem_moaatza} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" />
               </label>
-              <label className="text-sm font-medium">Office
+              <label className="text-sm font-medium">{t('auth.adminSettlements.editModal.fields.office')}
                 <input name="lishka" value={editForm.lishka} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" />
               </label>
             </div>
@@ -955,13 +958,13 @@ const AdminSettlements = ({ setSelected }) => {
                 onClick={() => setEditModal({ open: false, settlement: null })}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
               >
-                Cancel
+                {t('auth.adminSettlements.editModal.cancelButton')}
               </button>
               <button
                 onClick={handleEditSave}
                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
               >
-                Save
+                {t('auth.adminSettlements.editModal.saveButton')}
               </button>
             </div>
           </div>
@@ -971,20 +974,22 @@ const AdminSettlements = ({ setSelected }) => {
       {deleteModal.open && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/5 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-center text-red-600">Delete Settlement</h2>
-            <p className="mb-6 text-center">Are you sure you want to delete <span className="font-bold">{deleteModal.settlement.name}</span>? This action cannot be undone.</p>
+            <h2 className="text-xl font-bold mb-4 text-center text-red-600">{t('auth.adminSettlements.deleteModal.title')}</h2>
+            <p className="mb-6 text-center">
+              {i18n.t('auth.adminSettlements.deleteModal.message', { settlementName: deleteModal.settlement.name })}
+            </p>
             <div className="flex justify-end gap-2 mt-6">
               <button
                 onClick={() => setDeleteModal({ open: false, settlement: null })}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
               >
-                Cancel
+                {t('auth.adminSettlements.deleteModal.cancelButton')}
               </button>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
               >
-                Delete
+                {t('auth.adminSettlements.deleteModal.deleteButton')}
               </button>
             </div>
           </div>
