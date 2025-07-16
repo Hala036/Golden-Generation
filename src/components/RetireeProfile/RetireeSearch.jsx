@@ -5,10 +5,8 @@ import { db } from "../../firebase";
 import { getAuth } from "firebase/auth";
 import Select from "react-select";
 import interestsList from '../../data/interests.json';
-import hobbiesList from '../../data/hobbies.json';
 import jobsList from '../../data/jobs.json';
 import interestTranslations from '../../data/interestTranslations.json';
-import hobbyTranslations from '../../data/hobbyTranslations.json';
 import jobTitleTranslations from '../../data/jobTitleTranslations.json';
 
 const RetireeSearch = () => {
@@ -19,7 +17,6 @@ const RetireeSearch = () => {
   const [myUid, setMyUid] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedInterests, setSelectedInterests] = useState([]);
-  const [selectedHobbies, setSelectedHobbies] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
 
   // Fetch current retiree's settlement
@@ -78,41 +75,24 @@ const RetireeSearch = () => {
       const translations = translationsMap[val] || translationsMap[normVal] || [];
       return [val, ...translations];
     };
-    // If only hobbies are selected (and not interests or jobs), filter only by hobbies (cross-language)
-    if (selectedHobbies.length > 0 && selectedInterests.length === 0 && selectedJobs.length === 0) {
-      const selectedHobbiesAll = selectedHobbies.flatMap(h => getAllTranslations(h, hobbyTranslations)).map(normalize);
-      filtered = retirees.filter(r => {
-        const hobbies = (r.lifestyle?.hobbies || []).map(normalize);
-        return selectedHobbiesAll.some(h => hobbies.includes(h));
+    // Interests: cross-language matching
+    if (selectedInterests.length > 0) {
+      const selectedInterestsAll = selectedInterests.flatMap(i => getAllTranslations(i, interestTranslations)).map(normalize);
+      filtered = filtered.filter(r => {
+        const interests = (r.lifestyle?.interests || []).map(normalize);
+        return selectedInterestsAll.some(i => interests.includes(i));
       });
-    } else {
-      // Interests: cross-language matching
-      if (selectedInterests.length > 0) {
-        const selectedInterestsAll = selectedInterests.flatMap(i => getAllTranslations(i, interestTranslations)).map(normalize);
-        filtered = filtered.filter(r => {
-          const interests = (r.lifestyle?.interests || []).map(normalize);
-          return selectedInterestsAll.some(i => interests.includes(i));
-        });
-      }
-      // Hobbies: cross-language matching
-      if (selectedHobbies.length > 0) {
-        const selectedHobbiesAll = selectedHobbies.flatMap(h => getAllTranslations(h, hobbyTranslations)).map(normalize);
-        filtered = filtered.filter(r => {
-          const hobbies = (r.lifestyle?.hobbies || []).map(normalize);
-          return selectedHobbiesAll.some(h => hobbies.includes(h));
-        });
-      }
-      // Job Titles: cross-language matching
-      if (selectedJobs.length > 0) {
-        const selectedJobsAll = selectedJobs.flatMap(j => getAllTranslations(j, jobTitleTranslations)).map(normalize);
-        filtered = filtered.filter(r => {
-          const job = normalize(r.workBackground?.customJobInfo?.originalSelection?.jobTitle);
-          return selectedJobsAll.includes(job);
-        });
-      }
+    }
+    // Job Titles: cross-language matching
+    if (selectedJobs.length > 0) {
+      const selectedJobsAll = selectedJobs.flatMap(j => getAllTranslations(j, jobTitleTranslations)).map(normalize);
+      filtered = filtered.filter(r => {
+        const job = normalize(r.workBackground?.customJobInfo?.originalSelection?.jobTitle);
+        return selectedJobsAll.includes(job);
+      });
     }
     setFilteredRetirees(filtered);
-  }, [retirees, selectedInterests, selectedHobbies, selectedJobs]);
+  }, [retirees, selectedInterests, selectedJobs]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -132,17 +112,6 @@ const RetireeSearch = () => {
                 value={selectedInterests.map(i => ({ value: i, label: i }))}
                 onChange={opts => setSelectedInterests(opts ? opts.map(o => o.value) : [])}
                 placeholder={t("retiree.search.selectInterests", "Select interests")}
-                classNamePrefix="react-select"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block font-medium mb-1">{t("retiree.search.hobbies", "Hobbies")}</label>
-              <Select
-                isMulti
-                options={hobbiesList.map(i => ({ value: i, label: i }))}
-                value={selectedHobbies.map(i => ({ value: i, label: i }))}
-                onChange={opts => setSelectedHobbies(opts ? opts.map(o => o.value) : [])}
-                placeholder={t("retiree.search.selectHobbies", "Select hobbies")}
                 classNamePrefix="react-select"
               />
             </div>
@@ -171,7 +140,6 @@ const RetireeSearch = () => {
                     <div className="text-sm text-gray-600">{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender || t("common.notAvailable", "N/A")}</div>
                     <div className="text-sm text-gray-600">{t("retiree.search.jobTitle", "Job Title")}: {r.workBackground?.customJobInfo?.originalSelection?.jobTitle || t("common.notAvailable", "N/A")}</div>
                     <div className="text-sm text-gray-600">{t("retiree.search.interests", "Interests")}: {(r.lifestyle?.interests || []).join(", ")}</div>
-                    <div className="text-sm text-gray-600">{t("retiree.search.hobbies", "Hobbies")}: {(r.lifestyle?.hobbies || []).join(", ")}</div>
                   </li>
                 ))}
               </ul>
