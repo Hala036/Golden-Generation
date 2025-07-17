@@ -5,7 +5,6 @@ import { toast } from 'react-hot-toast';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import profile from '../assets/profile.jpeg';
 import useAuth from '../hooks/useAuth';
-import { FaPhone, FaPhoneSlash, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash } from 'react-icons/fa';
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3';
@@ -131,6 +130,8 @@ function useCallSignaling({ currentUser }) {
       where('status', 'in', ['calling', 'ringing', 'active'])
     );
     const unsubscribe = onSnapshot(q, async (snapshot) => {
+      // DEBUG LOG
+      console.log('[CallContext] useCallSignaling listener fired:', { currentUser, docs: snapshot.docs.map(doc => doc.data()) });
       if (!snapshot.empty) {
         const callDoc = snapshot.docs[0];
         const data = callDoc.data();
@@ -214,7 +215,8 @@ export const CallProvider = ({ children }) => {
   const [isSpeaker, setIsSpeaker] = useState(false);
   const callTimerRef = useRef(null);
   const ringtoneRef = useRef(null);
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth();
+  const currentUser = auth.currentUser; // Use Firebase's currentUser directly
 
   // Agora call functionality
   const {
@@ -233,6 +235,40 @@ export const CallProvider = ({ children }) => {
     rejectCall: rejectSignalingCall,
     endCall: endSignalingCall
   } = useCallSignaling({ currentUser });
+
+  // --- ADDED: initiateCall function to create Firestore call doc ---
+  const initiateCall = async (calleeUser) => {
+    if (!currentUser || !calleeUser) {
+      // DEBUG LOG
+      console.error('[CallContext] initiateCall: missing user', { currentUser, calleeUser });
+      if (!currentUser) toast.error('No current user in call context!');
+      if (!calleeUser) toast.error('No callee user provided!');
+      return;
+    }
+    const channelName = [currentUser.uid, calleeUser.id].sort().join('_');
+    const callDoc = {
+      participants: [currentUser.uid, calleeUser.id],
+      caller: {
+        uid: currentUser.uid,
+        username: currentUser.displayName || currentUser.email,
+        avatarUrl: currentUser.photoURL || '',
+      },
+      callee: {
+        uid: calleeUser.id,
+        username: calleeUser.username,
+        avatarUrl: calleeUser.avatarUrl || '',
+      },
+      channelName,
+      status: 'calling',
+      startedAt: serverTimestamp(),
+      acceptedAt: null,
+      endedAt: null,
+    };
+    // DEBUG LOG
+    console.log('[CallContext] initiateCall: creating call doc', { currentUser, calleeUser, callDoc });
+    await addDoc(collection(db, 'calls'), callDoc);
+  };
+  // --- END ADDED ---
 
   // Start/stop call timer
   useEffect(() => {
@@ -312,7 +348,8 @@ export const CallProvider = ({ children }) => {
     rejectCall: rejectSignalingCall,
     endCall: endSignalingCall,
     toggleMute: agoraToggleMute,
-    handleToggleSpeaker
+    handleToggleSpeaker,
+    startCall: initiateCall // <-- Expose initiateCall as startCall
   };
 
   return (
