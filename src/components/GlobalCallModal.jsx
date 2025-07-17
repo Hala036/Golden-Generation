@@ -8,7 +8,7 @@ import profile from '../assets/profile.jpeg';
 
 const GlobalCallModal = () => {
   const { user } = useAuth();
-  const { callState, endCall, toggleMute, toggleVideo } = useCall();
+  const { callState, endCall, toggleMute, toggleVideo, acceptCall, rejectCall, callDuration, formatDuration, isMuted, isSpeaker, handleToggleSpeaker, callError } = useCall();
   const { theme } = useTheme();
   const [isMinimized, setIsMinimized] = useState(false);
 
