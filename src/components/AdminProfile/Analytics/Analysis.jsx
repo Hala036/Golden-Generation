@@ -24,9 +24,8 @@ import EmptyState from '../../EmptyState';
 import { useLanguage } from '../../../context/LanguageContext';
 
 const Analysis = () => {
+  const { t } = useLanguage();
   const { users, jobs, events } = useFetchAnalysisData();
-  const { language } = useLanguage();
-  // Real-time retiree counts for available settlements
   const [retireeCounts, setRetireeCounts] = useState({});
   const [availableSettlements, setAvailableSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +40,7 @@ const Analysis = () => {
       setAvailableSettlements(settlements);
       setLoading(false);
     }, (err) => {
-      setError('Failed to load settlements');
+      setError(t("analysis.errors.loadSettlements"));
       setLoading(false);
     });
     return () => unsubSettlements();
@@ -70,8 +69,12 @@ const Analysis = () => {
   useEffect(() => {
     // Fetch categories for mapping category IDs to names
     const fetchCategories = async () => {
-      const snapshot = await getDocs(collection(db, 'categories'));
-      setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      try {
+        const snapshot = await getDocs(collection(db, 'categories'));
+        setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch {
+        setError(t("analysis.errors.loadCategories"));
+      }
     };
     fetchCategories();
   }, []);
@@ -103,37 +106,64 @@ const Analysis = () => {
     events || []
   );
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesRef = collection(db, "categories");
+        const snapshot = await getDocs(categoriesRef);
+        const categoriesData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+
   // Helper to get category name by id
   const getCategoryName = (id) => {
-    if (!id || id === "undefined") return 'Unknown';
-    const cat = categories.find(c => c.id === id);
-    if (!cat) return 'Unknown';
-    return cat.translations?.[language] || cat.translations?.en || cat.name || 'Unknown';
+    if (!id || typeof id !== "string") {
+      console.warn("Invalid category ID:", id);
+      return t("unknown");
+    }
+  
+    const cat = categories.find((c) => c.id === id);
+  
+    if (!cat) {
+      console.warn("Category not found for ID:", id);
+      return t("unknown");
+    }
+  
+    return cat.translations?.[language] || cat.translations?.en || cat.name || t("unknown");
   };
 
   // Helper to get readable role name
   const getRoleName = (role) => {
-    if (!role || role === "undefined") return 'Unknown';
+    if (!role || role === "undefined") return t("unknown");
     const map = {
-      admin: 'Admin',
-      superadmin: 'Super Admin',
-      retiree: 'Retiree',
-      volunteer: 'Volunteer',
+      admin: t('analysis.admin'),
+      superadmin: t('analysis.superadmin'),
+      retiree: t('analysis.retiree'),
+      volunteer: t('analysis.volunteer'),
     };
     return map[role.toLowerCase()] || role.charAt(0).toUpperCase() + role.slice(1);
   };
   // Helper to get readable job status
   const getStatusName = (status) => {
-    if (!status || status === "undefined") return 'Unknown';
+    if (!status || status === "undefined") return t("unknown");
     const map = {
-      active: 'Active',
-      pending: 'Pending',
-      completed: 'Completed',
-      open: 'Open',
-      closed: 'Closed',
-      approved: 'Approved',
-      rejected: 'Rejected',
-      unknown: 'Unknown',
+      active: t('analysis.status.active'),
+      pending: t('analysis.status.pending'),
+      completed: t('analysis.status.completed'),
+      open: t('analysis.status.open'),
+      closed: t('analysis.status.closed'),
+      approved: t('analysis.status.approved'),
+      rejected: t('analysis.status.rejected'),
+      unknown: t('analysis.status.unknown'),
     };
     return map[status.toLowerCase()] || status.charAt(0).toUpperCase() + status.slice(1);
   };
@@ -201,39 +231,39 @@ const Analysis = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-4 sm:mb-8 px-1">
-          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">System Analysis Dashboard</h1>
-          <p className="text-gray-600 text-xs sm:text-base">Comprehensive insights into your platform's performance and user engagement</p>
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">{t("analysis.title")}</h1>
+          <p className="text-gray-600 text-xs sm:text-base">{t("analysis.subtitle")}</p>
         </div>
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
           <StatCard
-            title="Total Users"
+            title={t("analysis.statCards.totalUsers.title")}
             value={totalUsers.toLocaleString()}
             icon="👥"
             color="from-blue-500 to-blue-600"
-            subtitle="All registered users"
+            subtitle={t("analysis.statCards.totalUsers.subtitle")}
           />
           <StatCard
-            title="Volunteers"
+            title={t("analysis.statCards.volunteers.title")}
             value={totalVolunteers.toLocaleString()}
             icon="🤝"
             color="from-green-500 to-green-600"
-            subtitle="Active volunteers"
+            subtitle={t("analysis.statCards.volunteers.subtitle")}
           />
           <StatCard
-            title="Retirees"
+            title={t("analysis.statCards.retirees.title")}
             value={users.filter(u => u.role === "retiree").length.toLocaleString()}
             icon="👴"
             color="from-purple-500 to-purple-600"
-            subtitle="Senior members"
+            subtitle={t("analysis.statCards.retirees.subtitle")}
           />
           <StatCard
-            title="Avg. Completion"
-            value={averageJobCompletionTime > 0 ? `${averageJobCompletionTime} days` : "N/A"}
+            title={t("analysis.statCards.avgCompletion.title")}
+            value={averageJobCompletionTime > 0 ? `${averageJobCompletionTime} ${t("days")}` : "N/A"}
             icon="⏱️"
             color="from-orange-500 to-orange-600"
-            subtitle="Job completion time"
+            subtitle={t("analysis.statCards.avgCompletion.subtitle")}
           />
         </div>
 
@@ -242,14 +272,14 @@ const Analysis = () => {
           {/* Retirees by Town */}
           <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
-              <span className="mr-2">🏘️</span>
-              Retirees by Town
+              <span className="mr-2 ml-2">🏘️</span>
+              {t("analysis.charts.retireesByTown.title")}
             </h3>
             {townChartData.length === 0 ? (
               <EmptyState
                 icon={<span role="img" aria-label="chart">📊</span>}
-                title="No town data available"
-                message="Try selecting a different time range or settlement."
+                title={t("analysis.emptyStates.noTownData.title")}
+                message={t("analysis.emptyStates.noTownData.message")}
               />
             ) : (
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
@@ -277,8 +307,8 @@ const Analysis = () => {
           {/* Job Requests Over Time */}
           <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
-              <span className="mr-2">📈</span>
-              Job Requests Over Time
+              <span className="mr-2 ml-2">📈</span>
+              {t("analysis.charts.jobRequestsOverTime.title")}
             </h3>
             {jobByMonthData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
@@ -301,7 +331,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-3xl sm:text-4xl mb-2">📈</div>
-                  <p className="text-xs sm:text-base">No time series data available</p>
+                  <p className="text-xs sm:text-base">{t("analysis.charts.jobRequestsOverTime.noData")}</p>
                 </div>
               </div>
             )}
@@ -310,8 +340,8 @@ const Analysis = () => {
           {/* Job Requests by Status */}
           <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
-              <span className="mr-2">📋</span>
-              Job Requests by Status
+              <span className="mr-2 ml-2">📋</span>
+              {t("analysis.charts.jobRequestsByStatus.title")}
             </h3>
             {jobRequestsByStatus.length > 0 ? (
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
@@ -337,7 +367,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-3xl sm:text-4xl mb-2">📋</div>
-                  <p className="text-xs sm:text-base">No status data available</p>
+                  <p className="text-xs sm:text-base">{t("analysis.charts.jobRequestsByStatus.noData")}</p>
                 </div>
               </div>
             )}
@@ -346,8 +376,8 @@ const Analysis = () => {
           {/* Users by Role Distribution */}
           <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
-              <span className="mr-2">👥</span>
-              Users by Role
+              <span className="mr-2 ml-2">👥</span>
+              {t("analysis.charts.usersByRole.title")}
             </h3>
             {usersByRoleDistribution.length > 0 ? (
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
@@ -373,7 +403,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-3xl sm:text-4xl mb-2">👥</div>
-                  <p className="text-xs sm:text-base">No role data available</p>
+                  <p className="text-xs sm:text-base">{t("analysis.charts.usersByRole.noData")}</p>
                 </div>
               </div>
             )}
@@ -384,8 +414,8 @@ const Analysis = () => {
           {/* Events by Category */}
           <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
-              <span className="mr-2">🎉</span>
-              Events by Category
+              <span className="mr-2 ml-2">🎉</span>
+              {t("analysis.charts.eventsByCategory.title")}
             </h3>
             {eventsByCategoryData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
@@ -411,7 +441,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-3xl sm:text-4xl mb-2">🎉</div>
-                  <p className="text-xs sm:text-base">No event category data available</p>
+                  <p className="text-xs sm:text-base">{t("analysis.charts.eventsByCategory.noData")}</p>
                 </div>
               </div>
             )}
@@ -420,8 +450,8 @@ const Analysis = () => {
           {/* Events Over Time */}
           <div className="bg-white rounded-xl shadow-lg p-2 sm:p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-base sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4 flex items-center">
-              <span className="mr-2">🗓️</span>
-              Events Over Time
+              <span className="mr-2 ml-2">🗓️</span>
+              {t("analysis.charts.eventsOverTime.title")}
             </h3>
             {eventsByMonthData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220} minHeight={180}>
@@ -444,7 +474,7 @@ const Analysis = () => {
               <div className="flex items-center justify-center h-40 sm:h-64 text-gray-500">
                 <div className="text-center">
                   <div className="text-3xl sm:text-4xl mb-2">🗓️</div>
-                  <p className="text-xs sm:text-base">No event time series data available</p>
+                  <p className="text-xs sm:text-base">{t("analysis.charts.eventsOverTime.noData")}</p>
                 </div>
               </div>
             )}
@@ -453,7 +483,7 @@ const Analysis = () => {
 
         {/* Footer */}
         <div className="text-center text-gray-500 text-xs sm:text-sm">
-          <p>Dashboard last updated: {new Date().toLocaleString()}</p>
+          <p>{t("analysis.footer.lastUpdated")}: {new Date().toLocaleString()}</p>
         </div>
       </div>
     </div>

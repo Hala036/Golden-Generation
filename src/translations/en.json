@@ -428,6 +428,7 @@
       "cooking": "Cooking",
       "trips": "Trips",
       "photography": "Photography",
+      "reading": "Reading",
       "sport": "Sport",
       "study": "Study",
       "gardening": "Gardening",
@@ -1342,14 +1343,41 @@
       "sendMessage": "Send Message",
       "alert": "Enter a name for this filter set:",
       "backToProfile": "Back to Profile",
+      "minAge": "Minimum Age",
+      "maxAge": "Maximum Age",
+      "ageRequirement": "Min and Max must be greater than 0",
+      "ageNumbers": "Min and Max must be numbers",
+      "ageSize": "Min must be less than or equal to Max",
+      "date": "Date",
+      "dateValid": "Start and End must be valid dates",
+      "dateRangeValid": "Start date must be before End date",
+      "select": "Select",
+      "options": {
+        "maritalStatus": {
+          "single": "Single",
+          "married": "Married",
+          "divorced": "Divorced",
+          "widowed": "Widowed"
+        },
+        "education": {
+          "none": "None",
+          "primary": "Primary",
+          "secondary": "Secondary",
+          "tertiary": "Tertiary",
+          "other": "Other"
+        }
+      },
       "defTypes": {
         "contains": "Contains",
         "equals": "Equals",
         "startsWith": "Starts With",
-        "endsWith": "Ends With"
+        "endsWith": "Ends With",
+        "range": "Range",
+        "dateRange": "Date Range"
       },
       "filters": {
         "valueRequired": "Value is required",
+        "to": "to",
         "selectField": "Select Field...",
         "globalSearch": "Global Search",
         "search": "Search across all fields...",
@@ -1372,6 +1400,7 @@
         "name": "Name",
         "age": "Age",
         "gender": "Gender",
+        "settlement": "Settlement",
         "work": "Work Fields"
       },
       "fieldGroups": {
@@ -1427,6 +1456,98 @@
       "fetchEventsError": "Failed to fetch pending events.",
       "eventApprovedSuccess": "Event approved successfully!",
       "failedToApproveEvent": "Failed to approve event."
+    },
+    "jobs": {
+      "title": "Voluntary Requests",
+      "addRequest": "Add Request",
+      "cancel": "Cancel",
+      "createRequest": "Create New Voluntary Request",
+      "editRequest": "Edit Voluntary Request",
+      "saving": "Saving...",
+      "updateRequest": "Update Voluntary Request",
+      "deleteConfirmation": "Are you sure you want to delete this voluntary request?",
+      "deleteSuccess": "Voluntary request deleted successfully",
+      "deleteFailure": "Failed to delete voluntary request",
+      "createSuccess": "Voluntary request created successfully",
+      "createFailure": "Failed to create voluntary request",
+      "updateSuccess": "Voluntary request updated successfully",
+      "updateFailure": "Failed to update voluntary request",
+      "matchResults": "Match Results",
+      "location": "Location",
+      "volunteerField": "Volunteer Field",
+      "professionalBackground": "Professional Background",
+      "timing": "Timing",
+      "description": "Description",
+      "matchingSeniors": "Matching Seniors",
+      "reRunMatching": "Re-run Matching",
+      "assignedSeniors": "Assigned Seniors",
+      "assignedAt": "Assigned At",
+      "responseAt": "Response At",
+      "close": "Close",
+      "notSpecified": "Not specified",
+      "table": {
+        "title": "Title",
+        "location": "Location",
+        "field": "Field",
+        "timing": "Timing",
+        "status": "Status",
+        "actions": "Actions",
+        "created": "Created",
+        "volunteerField": "Volunteer Field",
+        "professionalBackground": "Professional Background",
+        "frequency": "Frequency",
+        "days": "Days",
+        "description": "Description"
+      },
+      "fields": {
+        "title": "Title",
+        "location": "Location",
+        "volunteerField": "Volunteer Field",
+        "professionalBackground": "Professional Background (Optional)",
+        "frequency": "Frequency",
+        "timing": "Timing",
+        "days": "Select Days",
+        "description": "Description"
+      },
+      "placeholders": {
+        "title": "e.g. Medical Escort Needed",
+        "location": "Select Location",
+        "volunteerField": "Select Field",
+        "professionalBackground": "e.g. Healthcare, Education",
+        "frequency": "Select frequency",
+        "timing": "Select Timing",
+        "description": "Describe the voluntary request in detail"
+      },
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday"
+      },
+      "status": {
+        "title": "Status",
+        "active": "Active",
+        "inProgress": "In Progress",
+        "fulfilled": "Fulfilled",
+        "archived": "Archived",
+        "history": "Status History",
+        "noHistory": "No status history available",
+        "changed": "Changed by"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "matches": "Matches",
+        "history": "History",
+        "rematch": "Re-match"
+      },
+      "emptyStates": {
+        "noVoluntaryRequests": "No voluntary requests found",
+        "noVoluntaryRequestsMessage": "Try creating a new voluntary request to get started.",
+        "createNewRequest": "Create New Request"
+      }
     }
   },
   "retiree": {
@@ -1811,7 +1932,12 @@
     "noViewedRequestsFilter": "No viewed requests found",
     "noPendingRequests": "No Pending Requests",
     "noPendingRequestsMessage": "There are no pending requests at the moment.",
-    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available."
+    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available.",
+    "noMatchingSeniors": "No Matching Seniors",
+    "noMatchingSeniorsMessage": "No seniors match the criteria for this job request.",
+    "rerunMatching": "Re-run Matching",
+    "noSeniorsAssigned": "No Seniors Assigned",
+    "noSeniorsAssignedMessage": "No seniors have been assigned to this job request yet."
   },
   "loading": {
     "messages": "Loading messages...",
@@ -1836,61 +1962,99 @@
     "toggleTheme": "Toggle theme",
     "openMenu": "Open theme menu"
   },
-  "analytics": {
-    "comprehensive": {
-      "title": "Comprehensive Analytics",
-      "subtitle": "Deep insights into platform performance and user engagement"
+  "analysis": {
+    "title": "System Analysis Dashboard",
+    "subtitle": "Comprehensive insights into your platform's performance and user engagement",
+    "admin": "Admin",
+    "superadmin": "Super Admin",
+    "retiree": "Retiree",
+    "volunteer": "Volunteer",
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "completed": "Completed",
+      "open": "Open",
+      "closed": "Closed",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
     },
-    "timeRanges": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days",
-      "1y": "Last year"
-    },
-    "filters": {
-      "allSettlements": "All Settlements",
-      "allCategories": "All Categories"
-    },
-    "metrics": {
-      "totalUsers": "Total Users",
-      "activeEvents": "Active Events",
-      "engagementRate": "Engagement Rate",
-      "avgSessionTime": "Avg Session Time"
+    "statCards": {
+      "totalUsers": {
+        "title": "Total Users",
+        "subtitle": "All registered users"
+      },
+      "volunteers": {
+        "title": "Volunteers",
+        "subtitle": "Active volunteers"
+      },
+      "retirees": {
+        "title": "Retirees",
+        "subtitle": "Senior members"
+      },
+      "avgCompletion": {
+        "title": "Avg. Completion",
+        "subtitle": "Job completion time"
+      }
     },
     "charts": {
-      "userGrowth": "User Growth",
-      "eventCategories": "Event Categories",
-      "comingSoon": "Chart coming soon..."
+      "retireesByTown": {
+        "title": "Retirees by Town",
+        "noData": "No town data available",
+        "message": "Try selecting a different time range or settlement."
+      },
+      "jobRequestsOverTime": {
+        "title": "Job Requests Over Time",
+        "noData": "No time series data available"
+      },
+      "jobRequestsByStatus": {
+        "title": "Job Requests by Status",
+        "noData": "No status data available"
+      },
+      "usersByRole": {
+        "title": "Users by Role",
+        "noData": "No role data available"
+      },
+      "eventsByCategory": {
+        "title": "Events by Category",
+        "noData": "No event category data available"
+      },
+      "eventsOverTime": {
+        "title": "Events Over Time",
+        "noData": "No event time series data available"
+      }
     },
-    "topPerformers": {
-      "title": "Top Performers",
-      "settlements": "Top Settlements",
-      "events": "Top Events",
-      "users": "Top Users"
+    "footer": {
+      "lastUpdated": "Dashboard last updated: {date}"
     },
-    "export": "Export Data",
-    "exporting": "Exporting...",
-    "error": {
-      "title": "Analytics Error",
-      "message": "Failed to load analytics data. Please try again.",
-      "retry": "Retry"
+    "errors": {
+      "loadSettlements": "Failed to load settlements.",
+      "loadRetirees": "Failed to load retiree data.",
+      "loadCategories": "Failed to load categories."
     }
   },
   "superadmin": {
     "admins": {
-      "title": "Admin Management",
-      "settlement": "Settlement",
-      "email": "Email",
-      "phone": "Phone",
-      "retirees": "Registered Retirees",
+      "title": "Admins Management",
       "table": {
-        "name": "Admin Name",
+        "name": "Name",
         "settlement": "Settlement",
         "email": "Email",
         "phone": "Phone",
-        "retirees": "Registered Retirees",
+        "retirees": "Retirees",
         "actions": "Actions"
-      }
+      },
+      "addAdmin": "Add Admin",
+      "editAdmin": "Edit Admin",
+      "viewAdmin": "Admin Details",
+      "deleteAdmin": "Delete Admin",
+      "searchPlaceholder": "Search admins by name, email, settlement, or phone...",
+      "noAdmins": "No admins found",
+      "noAdminsMessage": "There are no admins to display. Add a new admin to get started.",
+      "clearSearch": "Clear Search",
+      "retireesCount": "{{count}} retirees",
+      "confirmDelete": "Are you sure you want to delete admin \"{{name}}\"?\n\nThis will also remove the settlement from available settlements.",
+      "loading": "Loading admins..."
     }
   },
   "settlementsManager": {
@@ -2130,6 +2294,28 @@
     "submitButtonCreate": "Create Event",
     "submitButtonUpdate": "Update Event",
     "submitting": "Submitting..."
+  },
+  "serviceRequests": {
+    "title": "Service Requests",
+    "pendingRequests": "Pending Requests",
+    "viewedRequests": "Viewed Requests",
+    "description": "Description",
+    "location": "Location",
+    "volunteerField": "Volunteer Field",
+    "professionalBackground": "Professional Background",
+    "timing": "Timing",
+    "frequency": "Frequency",
+    "days": "Days",
+    "findMatch": "Find Match",
+    "notSpecified": "Not specified",
+    "errors": {
+      "fetchAdminSettlement": "Failed to fetch admin settlement.",
+      "fetchServiceRequests": "Failed to fetch service requests.",
+      "createVoluntaryRequest": "Failed to create voluntary request.",
+      "mustBeLoggedIn": "You must be logged in.",
+      "userDocumentNotFound": "User document not found.",
+      "noSettlementFound": "No settlement found for admin user."
+    }
   },
   "countries": {
     "AF": "Afghanistan",

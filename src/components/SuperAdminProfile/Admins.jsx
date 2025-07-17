@@ -5,6 +5,7 @@ import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, setDoc, o
 import { toast } from 'react-hot-toast';
 import EmptyState from '../EmptyState';
 import { useLanguage } from '../../context/LanguageContext';
+import i18n from '../../i18n';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { validatePhoneNumber } from '../../utils/validation';
@@ -430,7 +431,7 @@ const AdminManagement = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading admins...</div>
+        <div className="text-lg">{t('superadmin.admins.loading')}</div>
       </div>
     );
   }
@@ -450,161 +451,136 @@ const AdminManagement = () => {
         <input
           type="text"
           className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500"
-          placeholder="Search admins by name, email, settlement, or phone..."
+          placeholder={t("superadmin.admins.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
       {/* Admins Content */}
-        {filteredAdmins.length === 0 ? (
-          <EmptyState
-            icon={<FaUserShield className="text-6xl text-gray-300" />}
-            title={searchQuery ? "No matching admins found" : t("emptyStates.noAdmins")}
-            message={searchQuery ? `No admins found matching "${searchQuery}". Try adjusting your search terms.` : t("emptyStates.noAdminsMessage")}
-            actionLabel={searchQuery ? "Clear Search" : t("emptyStates.addAdmin")}
-            onAction={searchQuery ? () => setSearchQuery('') : openAddModal}
-            className="p-8"
-          />
-        ) : (
-          <>
-            {/* Cards for Small Screens */}
-            <div className="block sm:hidden space-y-4">
-              {filteredAdmins.map((admin) => (
-                <div
-                  key={admin.id}
-                  className="bg-white rounded-lg shadow p-2 flex flex-col w-full max-w-xs sm:max-w-sm"
-                  style={{ minWidth: '220px' }}
-                >
-                  <div className="flex items-center gap-3">
-                    <FaUserShield className="text-xl text-gray-400" />
-                    <div className="font-medium text-gray-900 text-base flex-1 truncate">
-                      {admin.credentials?.username || admin.idVerification?.firstName || t("common.notAvailable")}
-                    </div>
-                  </div>
-                  <div>
-                    <p>
-                      <strong>{t("superadmin.admins.settlement")}:</strong> {admin.idVerification?.settlement || admin.settlement || t("common.notAvailable")}
-                    </p>
-                    <p>
-                      <strong>{t("superadmin.admins.email")}:</strong> {admin.credentials?.email || t("common.notAvailable")}
-                    </p>
-                    <p>
-                      <strong>{t("superadmin.admins.phone")}:</strong> {admin.credentials?.phone || admin.idVerification?.phone || t("common.notAvailable")}
-                    </p>
-                    <p>
-                      <strong>{t("superadmin.admins.retirees")}:</strong> {retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0}
-                    </p>
-                  </div>
-                  <div className="flex space-x-2 mt-2">
-                    <button
-                      onClick={() => openViewModal(admin)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title={t("common.view")}
-                    >
-                      <FaEye />
-                    </button>
-                    <button
-                      onClick={() => openEditModal(admin)}
-                      className="text-yellow-600 hover:text-yellow-900"
-                      title={t("common.edit")}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAdmin(admin)}
-                      className="text-red-600 hover:text-red-900"
-                      title={t("common.delete")}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Table for Larger Screens */}
-            <div className="hidden sm:block">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("superadmin.admins.table.name")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("superadmin.admins.table.settlement")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("superadmin.admins.table.email")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("superadmin.admins.table.phone")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("superadmin.admins.table.retirees")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("superadmin.admins.table.actions")}
-                    </th>
+      {filteredAdmins.length === 0 ? (
+        <EmptyState
+          icon={<FaUserShield className="text-6xl text-gray-300" />}
+          title={searchQuery ? t("superadmin.admins.noAdmins") : t("superadmin.admins.noAdmins")}
+          message={
+            searchQuery
+              ? t("superadmin.admins.noAdminsMessage", { searchQuery })
+              : t("superadmin.admins.noAdminsMessage")
+          }
+          actionLabel={searchQuery ? t("superadmin.admins.clearSearch") : t("superadmin.admins.addAdmin")}
+          onAction={searchQuery ? () => setSearchQuery('') : openAddModal}
+          className="p-8"
+        />
+      ) : (
+        <>
+          {/* Table for Larger Screens */}
+          <div className="hidden sm:block">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("superadmin.admins.table.name")}
+                  </th>
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("superadmin.admins.table.settlement")}
+                  </th>
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("superadmin.admins.table.email")}
+                  </th>
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("superadmin.admins.table.phone")}
+                  </th>
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("superadmin.admins.table.retirees")}
+                  </th>
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("superadmin.admins.table.actions")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredAdmins.map((admin) => (
+                  <tr key={admin.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {admin.credentials?.username || admin.idVerification?.firstName || t("common.notAvailable")}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {admin.idVerification?.settlement || admin.settlement || t("common.notAvailable")}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {admin.credentials?.email || t("common.notAvailable")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {admin.credentials?.phone || admin.idVerification?.phone || t("common.notAvailable")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <FaUsers className="mr-1 ml-1" />
+                        {i18n.t("superadmin.admins.retireesCount", {
+                          count: retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => openViewModal(admin)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title={t("common.view")}
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => openEditModal(admin)}
+                          className="text-yellow-600 hover:text-yellow-900"
+                          title={t("common.edit")}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAdmin(admin)}
+                          className="text-red-600 hover:text-red-900"
+                          title={t("common.delete")}
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredAdmins.map((admin) => (
-                    <tr key={admin.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {admin.credentials?.username || admin.idVerification?.firstName || t("common.notAvailable")}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {admin.idVerification?.settlement || admin.settlement || t("common.notAvailable")}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {admin.credentials?.email || t("common.notAvailable")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {admin.credentials?.phone || admin.idVerification?.phone || t("common.notAvailable")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          <FaUsers className="mr-1" />
-                          {retireeCounts[admin.idVerification?.settlement] || retireeCounts[admin.settlement] || 0}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => openViewModal(admin)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title={t("common.view")}
-                          >
-                            <FaEye />
-                          </button>
-                          <button
-                            onClick={() => openEditModal(admin)}
-                            className="text-yellow-600 hover:text-yellow-900"
-                            title={t("common.edit")}
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAdmin(admin)}
-                            className="text-red-600 hover:text-red-900"
-                            title={t("common.delete")}
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {/* Add Admin Modal */}
       <Modal

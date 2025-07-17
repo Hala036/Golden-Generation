@@ -430,6 +430,7 @@
       "trips": "טיולים",
       "photography": "צילום",
       "sport": "ספורט",
+      "reading": "קריאה",
       "study": "לימודים",
       "gardening": "גינון",
       "computer": "מחשבים",
@@ -1355,14 +1356,48 @@
       "sendMessage": "שלח הודעה",
       "backToProfile": "חזור לפרופיל שלי",
       "alert": "הזן שם עבור קבוצת מסננים זו:",
+      "minAge": "גיל מינימלי",
+      "maxAge": "גיל מקסימלי",
+      "ageRequirement": "מינימום ומקסימום חייבים להיות גדולים מ-0",
+      "ageNumbers": "גיל חייב להיות מספר",
+      "ageSize": "מינימום חייב להיות קטן או שווה למקסימום",
+      "date": "תאריך",
+      "dateValid": "תאריך חייב להיות תקין",
+      "dateRangeValid": "טווח תאריכים חייב להיות תקין",
+      "select": "בחר",
+      "maritalStatus": {
+        "single": "רווק/רווקה",
+        "married": "נשוי/נשואה",
+        "divorced": "גרוש/גרושה",
+        "widowed": "אלמן/אלמנה"
+      },
+      "options": {
+        "maritalStatus": {
+          "single": "רווק/רווקה",
+          "married": "נשוי/נשואה",
+          "divorced": "גרוש/גרושה",
+          "widowed": "אלמן/אלמנה"
+        },
+        "education": {
+          "none": "ללא",
+          "primary": "יסודי",
+          "secondary": "תיכון",
+          "tertiary": "על תיכוני",
+          "other": "אחר"
+        }
+      },
       "defTypes": {
         "contains": "מכיל",
         "equals": "שווה ל",
         "startsWith": "מתחיל ב",
-        "endsWith": "נגמר ב"
+        "endsWith": "נגמר ב",
+        "range": "בטווח",
+        "dateRange": "בטווח תאריכים"
+
       },
       "filters": {
         "valueRequired": "ערך נדרש",
+        "to":"עד",
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
         "search": "חפש לפי כל מאפיין...",
@@ -1380,6 +1415,7 @@
         "name": "שם",
         "age": "גיל",
         "gender": "מין",
+        "settlement": "יישוב",
         "work": "תחומי עיסוק"
       },
       "fieldGroups": {
@@ -1430,6 +1466,98 @@
       "eventCreatedSuccess": "האירוע נוצר בהצלחה!",
       "createEventError": "נכשל ביצירת האירוע. אנא נסה שוב.",
       "submit": "שלח"
+    },
+    "jobs": {
+      "title": "בקשות התנדבות",
+      "addRequest": "הוסף בקשה",
+      "cancel": "ביטול",
+      "createRequest": "צור בקשת התנדבות חדשה",
+      "editRequest": "ערוך בקשת התנדבות",
+      "saving": "שומר...",
+      "updateRequest": "עדכן בקשת התנדבות",
+      "deleteConfirmation": "האם אתה בטוח שברצונך למחוק את בקשת ההתנדבות הזו?",
+      "deleteSuccess": "בקשת ההתנדבות נמחקה בהצלחה",
+      "deleteFailure": "נכשל במחיקת בקשת ההתנדבות",
+      "createSuccess": "בקשת ההתנדבות נוצרה בהצלחה",
+      "createFailure": "נכשל ביצירת בקשת ההתנדבות",
+      "updateSuccess": "בקשת ההתנדבות עודכנה בהצלחה",
+      "updateFailure": "נכשל בעדכון בקשת ההתנדבות",
+      "matchResults": "תוצאות התאמה",
+      "location": "מיקום",
+      "volunteerField": "תחום התנדבות",
+      "professionalBackground": "רקע מקצועי",
+      "timing": "זמן",
+      "description": "תיאור",
+      "matchingSeniors": "התאמת ותיקים",
+      "reRunMatching": "הרץ התאמה מחדש",
+      "assignedSeniors": "ותיקים שהוקצו",
+      "assignedAt": "הוקצה בתאריך",
+      "responseAt": "תגובה בתאריך",
+      "close": "סגור",
+      "notSpecified": "לא צוין",
+      "table": {
+        "title": "כותרת",
+        "location": "מיקום",
+        "field": "תחום התנדבות",
+        "timing": "זמן",
+        "status": "סטטוס",
+        "actions": "פעולות",
+        "created": "נוצר בתאריך",
+        "volunteerField": "תחום התנדבות",
+        "professionalBackground": "רקע מקצועי",
+        "frequency": "תדירות",
+        "days": "ימים",
+        "description": "תיאור"
+      },
+      "fields": {
+        "title": "כותרת",
+        "location": "מיקום",
+        "volunteerField": "תחום התנדבות",
+        "professionalBackground": "רקע מקצועי (אופציונלי)",
+        "frequency": "תדירות",
+        "timing": "זמן",
+        "days": "בחר ימים",
+        "description": "תיאור"
+      },
+      "placeholders": {
+        "title": "לדוגמה: נדרש ליווי רפואי",
+        "location": "בחר מיקום",
+        "volunteerField": "בחר תחום",
+        "professionalBackground": "לדוגמה: בריאות, חינוך",
+        "frequency": "בחר תדירות",
+        "timing": "בחר זמן",
+        "description": "תאר את בקשת ההתנדבות בפירוט"
+      },
+      "days": {
+        "sunday": "ראשון",
+        "monday": "שני",
+        "tuesday": "שלישי",
+        "wednesday": "רביעי",
+        "thursday": "חמישי",
+        "friday": "שישי"
+      },
+      "status": {
+        "title": "סטטוס",
+        "active": "פעיל",
+        "inProgress": "בתהליך",
+        "fulfilled": "הושלם",
+        "archived": "ארכיון",
+        "history": "היסטוריית סטטוס",
+        "noHistory": "אין היסטוריית סטטוס לבקשה זו",
+        "changed": "שונה על ידי"
+      },
+      "actions": {
+        "edit": "ערוך",
+        "delete": "מחק",
+        "matches": "התאמות",
+        "history": "היסטוריה",
+        "rematch": "התאמה מחדש"
+      },
+      "emptyStates": {
+        "noVoluntaryRequests": "לא נמצאו בקשות התנדבות",
+        "noVoluntaryRequestsMessage": "נסה ליצור בקשת התנדבות חדשה כדי להתחיל.",
+        "createNewRequest": "צור בקשה חדשה"
+      }
     }
   },
   "retiree": {
@@ -1812,23 +1940,35 @@
     "noViewedRequestsFilter": "אין בקשות שנצפו",
     "noPendingRequests": "אין בקשות ממתינות",
     "noPendingRequestsMessage": "אין כרגע בקשות ממתינות.",
-    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון"
+    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noMatchingSeniors": "אין ותיקים מתאימים",
+    "noMatchingSeniorsMessage": "אין ותיקים שמתאימים לקריטריונים של בקשת העבודה הזו.",
+    "rerunMatching": "הרץ התאמה מחדש",
+    "noSeniorsAssigned": "אין ותיקים שהוקצו",
+    "noSeniorsAssignedMessage": "עדיין לא הוקצו ותיקים לבקשת העבודה הזו."
   },
   "superadmin": {
     "admins": {
       "title": "ניהול מנהלים",
-      "settlement": "יישוב",
-      "email": "אימייל",
-      "phone": "טלפון",
-      "retirees": "ותיקים רשומים",
       "table": {
-        "name": "שם מנהל",
+        "name": "שם",
         "settlement": "יישוב",
         "email": "אימייל",
         "phone": "טלפון",
-        "retirees": "ותיקים רשומים",
+        "retirees": "ותיקים",
         "actions": "פעולות"
-      }
+      },
+      "addAdmin": "הוסף מנהל",
+      "editAdmin": "ערוך מנהל",
+      "viewAdmin": "פרטי מנהל",
+      "deleteAdmin": "מחק מנהל",
+      "searchPlaceholder": "חפש מנהלים לפי שם, אימייל, יישוב או טלפון...",
+      "noAdmins": "לא נמצאו מנהלים",
+      "noAdminsMessage": "אין מנהלים להצגה. הוסף מנהל חדש כדי להתחיל.",
+      "clearSearch": "נקה חיפוש",
+      "retireesCount": "{{count}} ותיקים",
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנהל \"{{name}}\"?\n\nפעולה זו תסיר גם את היישוב מרשימת היישובים הזמינים.",
+      "loading": "טוען מנהלים..."
     }
   },
   "settlementsManager": {
@@ -2068,6 +2208,99 @@
     "submitButtonCreate": "צור אירוע",
     "submitButtonUpdate": "עדכן אירוע",
     "submitting": "שולח..."
+  },
+  "serviceRequests": {
+    "title": "בקשות שירות",
+    "pendingRequests": "בקשות ממתינות",
+    "viewedRequests": "בקשות שנצפו",
+    "description": "תיאור",
+    "location": "מיקום",
+    "volunteerField": "תחום התנדבות",
+    "professionalBackground": "רקע מקצועי",
+    "timing": "זמן",
+    "frequency": "תדירות",
+    "days": "ימים",
+    "findMatch": "מצא התאמה",
+    "notSpecified": "לא צוין",
+    "errors": {
+      "fetchAdminSettlement": "נכשל באחזור היישוב של המנהל.",
+      "fetchServiceRequests": "נכשל באחזור בקשות השירות.",
+      "createVoluntaryRequest": "נכשל ביצירת בקשת התנדבות.",
+      "mustBeLoggedIn": "עליך להיות מחובר.",
+      "userDocumentNotFound": "מסמך המשתמש לא נמצא.",
+      "noSettlementFound": "לא נמצא יישוב עבור משתמש המנהל."
+    }
+  },
+  "analysis": {
+    "title": "לוח מחוונים לניתוח המערכת",
+    "subtitle": "תובנות מקיפות על ביצועי הפלטפורמה ומעורבות המשתמשים",
+    "admin": "מנהל",
+    "superadmin": "מנהל על",
+    "retiree": "ותיק",
+    "volunteer": "מתנדב",
+    "status": {
+      "active": "פעיל",
+      "pending": "ממתין",
+      "completed": "הושלם",
+      "open": "פתוח",
+      "closed": "סגור",
+      "approved": "מאושר",
+      "rejected": "נדחה",
+      "unknown": "לא ידוע"
+    },
+    "statCards": {
+      "totalUsers": {
+        "title": "סה\"כ משתמשים",
+        "subtitle": "כל המשתמשים הרשומים"
+      },
+      "volunteers": {
+        "title": "מתנדבים",
+        "subtitle": "מתנדבים פעילים"
+      },
+      "retirees": {
+        "title": "ותיקים",
+        "subtitle": "חברי ותיקים"
+      },
+      "avgCompletion": {
+        "title": "זמן ממוצע להשלמה",
+        "subtitle": "זמן להשלמת בקשות עבודה"
+      }
+    },
+    "charts": {
+      "retireesByTown": {
+        "title": "ותיקים לפי יישוב",
+        "noData": "אין נתונים על יישובים",
+        "message": "נסה לבחור טווח זמן או יישוב אחר."
+      },
+      "jobRequestsOverTime": {
+        "title": "בקשות עבודה לאורך זמן",
+        "noData": "אין נתוני סדרת זמן זמינים"
+      },
+      "jobRequestsByStatus": {
+        "title": "בקשות עבודה לפי סטטוס",
+        "noData": "אין נתונים על סטטוסים"
+      },
+      "usersByRole": {
+        "title": "משתמשים לפי תפקיד",
+        "noData": "אין נתונים על תפקידים"
+      },
+      "eventsByCategory": {
+        "title": "אירועים לפי קטגוריה",
+        "noData": "אין נתונים על קטגוריות אירועים"
+      },
+      "eventsOverTime": {
+        "title": "אירועים לאורך זמן",
+        "noData": "אין נתוני סדרת זמן על אירועים"
+      }
+    },
+    "footer": {
+      "lastUpdated": "עדכון אחרון של לוח המחוונים: {date}"
+    },
+    "errors": {
+      "loadSettlements": "נכשל בטעינת יישובים.",
+      "loadRetirees": "נכשל בטעינת נתוני ותיקים.",
+      "loadCategories": "נכשל בטעינת קטגוריות."
+    }
   },
   "countries": {
     "AF": "אפגניסטן",
