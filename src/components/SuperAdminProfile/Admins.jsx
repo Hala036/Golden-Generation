@@ -431,7 +431,7 @@ const AdminManagement = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading admins...</div>
+        <div className="text-lg">{t('superadmin.admins.loading')}</div>
       </div>
     );
   }

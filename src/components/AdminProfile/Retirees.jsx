@@ -1023,7 +1023,11 @@ const Retirees = () => {
   };
 
   if (loading) {
-    return <div>{t("common.loading")}</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">{t("common.loading")}</div>
+      </div>
+      )
   }
 
   return (
