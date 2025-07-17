@@ -12,6 +12,7 @@ import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 import i18n from 'i18next';
 import { useLocation } from 'react-router-dom';
+import { useCall } from '../../context/callContext'; // Import global call context
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -177,6 +178,7 @@ const Messages = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [typing, setTyping] = useState(false);
   const location = useLocation();
+  const { startCall } = useCall(); // Get startCall from context
 
   // Fetch friend requests
   useEffect(() => {
@@ -509,9 +511,18 @@ const Messages = () => {
 
   // Handle initiating a call
   const handleInitiateCall = async () => {
-    if (!otherUser) return;
+    // DEBUG LOG
+    console.log('[Messages] handleInitiateCall:', { otherUser, startCall });
+    if (!otherUser) {
+      toast.error('No other user found for call.');
+      return;
+    }
+    if (!startCall) {
+      toast.error('Call function not available.');
+      return;
+    }
     try {
-      await initiateCall(auth.currentUser, otherUser);
+      await startCall(otherUser); // Use context's startCall to create Firestore call doc
     } catch (error) {
       console.error('Error initiating call:', error);
       toast.error('Failed to initiate call');
@@ -587,7 +598,6 @@ const Messages = () => {
                 <div className="flex items-center space-x-3">
                   <div className="relative">
                     <img src={sender?.avatarUrl || profile} alt={sender?.username} className="w-12 h-12 rounded-full object-cover border-2 border-orange-500" />
-                    {/* <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div> */}
                   </div>
                   <div>
                     <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{sender?.username}</p>
@@ -681,7 +691,7 @@ const Messages = () => {
         <div className={`w-full md:w-1/3 lg:w-1/4 border-r border-l ${isMediumScreen ? 'block' : 'md:block hidden'} ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'bg-gray-50'}`}>
           {/* Search Bar */}
           <div 
-            className={`p-4 border-b sticky top-0 z-10 'bg-white`}
+            className={`p-4 border-b sticky top-0 z-10 bg-white`}
             style={{ height: '70px' }}
           >
             <div className="relative">
@@ -804,7 +814,6 @@ const Messages = () => {
               <div className={`flex-1 overflow-y-auto p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
                 {loadingMessages ? (
                   <div className={`flex items-center justify-center h-full ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>{t('dashboard.messages.loadingMessages')}</div>
-
                 ) : messages.length === 0 ? (
                   <EmptyState
                     icon={<FaComments className={`text-6xl ${theme === 'dark' ? 'text-gray-500' : 'text-gray-300'}`} />}
@@ -917,7 +926,7 @@ const Messages = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <button className={`p-2 transition-colors 'text-gray-600 hover:text-orange-500`} onClick={handleInitiateCall} title="Start Audio Call">
+                <button className={`p-2 transition-colors text-gray-600 hover:text-orange-500`} onClick={handleInitiateCall} title="Start Audio Call">
                   <FaPhone />
                 </button>
               </div>
@@ -1037,7 +1046,6 @@ const Messages = () => {
                     >
                       <div className="relative">
                         <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
-                        {/* <span className="absolute bottom-0 right-4 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className={`font-semibold truncate ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>{otherUser?.username}</h3>
@@ -1054,5 +1062,4 @@ const Messages = () => {
     </div>
   );
 };
-
 export default Messages;
