@@ -1962,44 +1962,75 @@
     "toggleTheme": "Toggle theme",
     "openMenu": "Open theme menu"
   },
-  "analytics": {
-    "comprehensive": {
-      "title": "Comprehensive Analytics",
-      "subtitle": "Deep insights into platform performance and user engagement"
+  "analysis": {
+    "title": "System Analysis Dashboard",
+    "subtitle": "Comprehensive insights into your platform's performance and user engagement",
+    "admin": "Admin",
+    "superadmin": "Super Admin",
+    "retiree": "Retiree",
+    "volunteer": "Volunteer",
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "completed": "Completed",
+      "open": "Open",
+      "closed": "Closed",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
     },
-    "timeRanges": {
-      "7d": "Last 7 days",
-      "30d": "Last 30 days",
-      "90d": "Last 90 days",
-      "1y": "Last year"
-    },
-    "filters": {
-      "allSettlements": "All Settlements",
-      "allCategories": "All Categories"
-    },
-    "metrics": {
-      "totalUsers": "Total Users",
-      "activeEvents": "Active Events",
-      "engagementRate": "Engagement Rate",
-      "avgSessionTime": "Avg Session Time"
+    "statCards": {
+      "totalUsers": {
+        "title": "Total Users",
+        "subtitle": "All registered users"
+      },
+      "volunteers": {
+        "title": "Volunteers",
+        "subtitle": "Active volunteers"
+      },
+      "retirees": {
+        "title": "Retirees",
+        "subtitle": "Senior members"
+      },
+      "avgCompletion": {
+        "title": "Avg. Completion",
+        "subtitle": "Job completion time"
+      }
     },
     "charts": {
-      "userGrowth": "User Growth",
-      "eventCategories": "Event Categories",
-      "comingSoon": "Chart coming soon..."
+      "retireesByTown": {
+        "title": "Retirees by Town",
+        "noData": "No town data available",
+        "message": "Try selecting a different time range or settlement."
+      },
+      "jobRequestsOverTime": {
+        "title": "Job Requests Over Time",
+        "noData": "No time series data available"
+      },
+      "jobRequestsByStatus": {
+        "title": "Job Requests by Status",
+        "noData": "No status data available"
+      },
+      "usersByRole": {
+        "title": "Users by Role",
+        "noData": "No role data available"
+      },
+      "eventsByCategory": {
+        "title": "Events by Category",
+        "noData": "No event category data available"
+      },
+      "eventsOverTime": {
+        "title": "Events Over Time",
+        "noData": "No event time series data available"
+      }
     },
-    "topPerformers": {
-      "title": "Top Performers",
-      "settlements": "Top Settlements",
-      "events": "Top Events",
-      "users": "Top Users"
+    "footer": {
+      "lastUpdated": "Dashboard last updated: {date}"
     },
-    "export": "Export Data",
-    "exporting": "Exporting...",
-    "error": {
-      "title": "Analytics Error",
-      "message": "Failed to load analytics data. Please try again.",
-      "retry": "Retry"
+    "errors": {
+      "loadSettlements": "Failed to load settlements.",
+      "loadRetirees": "Failed to load retiree data.",
+      "loadCategories": "Failed to load categories."
     }
   },
   "superadmin": {

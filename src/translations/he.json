@@ -2231,6 +2231,77 @@
       "noSettlementFound": "לא נמצא יישוב עבור משתמש המנהל."
     }
   },
+  "analysis": {
+    "title": "לוח מחוונים לניתוח המערכת",
+    "subtitle": "תובנות מקיפות על ביצועי הפלטפורמה ומעורבות המשתמשים",
+    "admin": "מנהל",
+    "superadmin": "מנהל על",
+    "retiree": "ותיק",
+    "volunteer": "מתנדב",
+    "status": {
+      "active": "פעיל",
+      "pending": "ממתין",
+      "completed": "הושלם",
+      "open": "פתוח",
+      "closed": "סגור",
+      "approved": "מאושר",
+      "rejected": "נדחה",
+      "unknown": "לא ידוע"
+    },
+    "statCards": {
+      "totalUsers": {
+        "title": "סה\"כ משתמשים",
+        "subtitle": "כל המשתמשים הרשומים"
+      },
+      "volunteers": {
+        "title": "מתנדבים",
+        "subtitle": "מתנדבים פעילים"
+      },
+      "retirees": {
+        "title": "ותיקים",
+        "subtitle": "חברי ותיקים"
+      },
+      "avgCompletion": {
+        "title": "זמן ממוצע להשלמה",
+        "subtitle": "זמן להשלמת בקשות עבודה"
+      }
+    },
+    "charts": {
+      "retireesByTown": {
+        "title": "ותיקים לפי יישוב",
+        "noData": "אין נתונים על יישובים",
+        "message": "נסה לבחור טווח זמן או יישוב אחר."
+      },
+      "jobRequestsOverTime": {
+        "title": "בקשות עבודה לאורך זמן",
+        "noData": "אין נתוני סדרת זמן זמינים"
+      },
+      "jobRequestsByStatus": {
+        "title": "בקשות עבודה לפי סטטוס",
+        "noData": "אין נתונים על סטטוסים"
+      },
+      "usersByRole": {
+        "title": "משתמשים לפי תפקיד",
+        "noData": "אין נתונים על תפקידים"
+      },
+      "eventsByCategory": {
+        "title": "אירועים לפי קטגוריה",
+        "noData": "אין נתונים על קטגוריות אירועים"
+      },
+      "eventsOverTime": {
+        "title": "אירועים לאורך זמן",
+        "noData": "אין נתוני סדרת זמן על אירועים"
+      }
+    },
+    "footer": {
+      "lastUpdated": "עדכון אחרון של לוח המחוונים: {date}"
+    },
+    "errors": {
+      "loadSettlements": "נכשל בטעינת יישובים.",
+      "loadRetirees": "נכשל בטעינת נתוני ותיקים.",
+      "loadCategories": "נכשל בטעינת קטגוריות."
+    }
+  },
   "countries": {
     "AF": "אפגניסטן",
     "AL": "אלבניה",
