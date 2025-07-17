@@ -11,6 +11,7 @@ import EmptyState from '../EmptyState'; // Import EmptyState component
 import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
 import i18n from 'i18next';
+import { useLocation } from 'react-router-dom';
 
 // Ringtone audio URL
 const RINGTONE_URL = '/ringtone.mp3'; // Ensure this file is in your public folder
@@ -175,6 +176,7 @@ const Messages = () => {
   const { theme } = useTheme();
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [typing, setTyping] = useState(false);
+  const location = useLocation();
 
   // Fetch friend requests
   useEffect(() => {
@@ -355,6 +357,18 @@ const Messages = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (location.state && location.state.openMessagesWith && users.length > 0) {
+      const userExists = users.some(u => u.id === location.state.openMessagesWith);
+      if (userExists) {
+        startNewChat(location.state.openMessagesWith);
+      } else {
+        toast.error('User not found for chat.');
+      }
+    }
+    // eslint-disable-next-line
+  }, [location.state && location.state.openMessagesWith, users]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();

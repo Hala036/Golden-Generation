@@ -8,6 +8,7 @@ import interestsList from '../../data/interests.json';
 import jobsList from '../../data/jobs.json';
 import interestTranslations from '../../data/interestTranslations.json';
 import jobTitleTranslations from '../../data/jobTitleTranslations.json';
+import { useNavigate } from "react-router-dom";
 
 const RetireeSearch = () => {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ const RetireeSearch = () => {
   const [loading, setLoading] = useState(true);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [selectedJobs, setSelectedJobs] = useState([]);
+  const navigate = useNavigate();
 
   // Fetch current retiree's settlement
   useEffect(() => {
@@ -165,6 +167,16 @@ const RetireeSearch = () => {
                       <div className="text-sm text-gray-600">{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender || t("common.notAvailable", "N/A")}</div>
                       <div className={`text-sm ${isJobMatch ? "bg-yellow-200 rounded px-1" : "text-gray-600"}`}>{t("retiree.search.jobTitle", "Job Title")}: {isJobMatch ? '★ ' : ''}{retireeJob || t("common.notAvailable", "N/A")}</div>
                       <div className="text-sm text-gray-600">{t("retiree.search.interests", "Interests")}: {highlightedInterests}</div>
+                      {/* Quick Actions */}
+                      <div className="mt-2 flex gap-2">
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          onClick={() => navigate('/view-profile', { state: { retireeData: r } })}
+                          aria-label={t('retiree.search.viewProfile', 'View Profile')}
+                        >
+                          {t('retiree.search.viewProfile', 'View Profile')}
+                        </button>
+                      </div>
                     </li>
                   );
                 })}
