@@ -7,7 +7,7 @@ import profile from "../../assets/profile.jpeg";
 import { useLanguage } from '../../context/LanguageContext';
 import { Select } from 'antd';
 import ProfileDetails from "./ProfileDetails";
-import Messages from "./SendMessage";
+import Messages from "../SharedDashboard/Messages";
 import DefaultProfilePic from '../DefaultProfilePic';
 import { useTranslation } from 'react-i18next';
 
@@ -22,6 +22,7 @@ const ViewProfileDashboard = () => {
   const location = useLocation();
   const retireeData = location.state?.retireeData;
   const retireeIdNumber = retireeData?.idVerification?.idNumber;
+  const retireeId = retireeData?.id;
 
   // Redirect to a fallback page if retireeIdNumber is not available
   useEffect(() => {
@@ -35,6 +36,13 @@ const ViewProfileDashboard = () => {
     { id: "profile", label: t('admin.retirees.profile'), icon: <FaUser /> },
     { id: "messages", label: t('admin.retirees.sendMessage'), icon: <FaComments /> }
   ];
+
+  const handleTabSelect = (id) => {
+    setSelected(id);
+    if (id === "messages" && retireeId) {
+      navigate("/view-profile", { state: { retireeData, openMessagesWith: retireeId } });
+    }
+  };
 
   const handleBackToProfile = () => {
     navigate("/dashboard"); // Adjust this based on the user's role
@@ -84,10 +92,7 @@ const ViewProfileDashboard = () => {
             .map(({ id, label, icon }) => (
               <div
                 key={id}
-                onClick={() => {
-                  console.debug('[Sidebar] setSelected called with:', id);
-                  setSelected(id);
-                }}
+                onClick={() => handleTabSelect(id)}
                 className={`flex items-center ${
                   isSidebarExpanded ? "space-x-2 md:space-x-3 px-3 md:px-6" : "justify-center"
                 } py-2 md:py-3 cursor-pointer transition duration-200 ml-1 md:ml-2 ${
@@ -161,7 +166,9 @@ const ViewProfileDashboard = () => {
         {/* Scrollable Content */}
       <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative overflow-y-auto mt-8 md:mt-12">
           {selected === "profile" && <ProfileDetails retireeData={retireeData} />}
-          {selected === "messages" && <Messages retireeData={retireeData} />}
+          {selected === "messages" && (
+            <Messages />
+          )}
         </div>
       </div>
     </div>

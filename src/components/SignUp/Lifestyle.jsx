@@ -4,6 +4,7 @@ import useSignupStore from '../../store/signupStore';
 import { Users, Star, Check } from 'lucide-react';
 import { useEffect } from 'react';
 import i18n from 'i18next';
+import interestsList from '../../data/interests.json';
 
 const Lifestyle = ({ onComplete, editMode, data }) => {
   const { t } = useLanguage();
@@ -19,13 +20,8 @@ const Lifestyle = ({ onComplete, editMode, data }) => {
     }
   );
 
-  const interestOptions = [
-    t('auth.lifestyle.safetyReadBooks'), t('auth.lifestyle.culture'), t('auth.lifestyle.cooking'), t('auth.lifestyle.trips'), t('auth.lifestyle.photography'), t('auth.lifestyle.sport'),
-    t('auth.lifestyle.study'), t('auth.lifestyle.gardening'), t('auth.lifestyle.computer'), t('auth.lifestyle.craftsmanship'), t('auth.lifestyle.music'), t('auth.lifestyle.art'), t('auth.lifestyle.dancing'),
-    t('auth.lifestyle.hiking'), t('auth.lifestyle.meditation'), t('auth.lifestyle.yoga'), t('auth.lifestyle.gaming'), t('auth.lifestyle.writing'), t('auth.lifestyle.volunteering'), t('auth.lifestyle.podcasts'),
-    t('auth.lifestyle.movies'), t('auth.lifestyle.fashion'), t('auth.lifestyle.languages'), t('auth.lifestyle.astronomy'), t('auth.lifestyle.history'), t('auth.lifestyle.science'), t('auth.lifestyle.technology'),
-    t('auth.lifestyle.baking'), t('auth.lifestyle.dontHave'), t('auth.lifestyle.other')
-  ];
+  // Remove the hardcoded interestOptions array
+  // Use interestsList for the options
 
   const interestEmojis = {
     [t('auth.lifestyle.safetyReadBooks')]: '📚',
@@ -210,7 +206,7 @@ const Lifestyle = ({ onComplete, editMode, data }) => {
               {t('auth.lifestyle.interestsLabel')}
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl mx-auto">
-              {interestOptions.map((interest) => (
+              {interestsList.map((interest) => (
                 <SelectionCard
                   key={interest}
                   interest={interest}
