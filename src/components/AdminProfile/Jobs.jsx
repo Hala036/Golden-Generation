@@ -56,21 +56,48 @@ const Jobs = () => {
 
   // Volunteer field options
   const volunteerFields = [
-    "Healthcare", "Education", "Technology", "Arts", "Social Services", "Administration",
-    "Consulting", "Mentoring", "Home Assistance", "Transportation", 'publicity', 'health',
-    'eater', 'teaching', 'High tech', 'tourism', 'safety', 'funds', 'A special treat',
-    'craftsmanship', 'Aaliyah', 'culture'
+    t("service.fields.healthcare"),
+    t("service.fields.education"),
+    t("service.fields.technology"),
+    t("service.fields.arts"),
+    t("service.fields.socialServices"),
+    t("service.fields.administration"),
+    t("service.fields.consulting"),
+    t("service.fields.mentoring"),
+    t("service.fields.homeAssistance"),
+    t("service.fields.transportation"),
+    t("service.fields.publicity"),
+    t("service.fields.health"),
+    t("service.fields.teaching"),
+    t("service.fields.highTech"),
+    t("service.fields.tourism"),
+    t("service.fields.safety"),
+    t("service.fields.funds"),
+    t("service.fields.craftsmanship"),
+    t("service.fields.culture"),
   ];
 
   // Timing options
   const timingOptions = [
-    "once a month", "once every two weeks", "once a week", "twice a week", "Weekends", "Flexible"
+    t("service.timing.onceMonth"),
+    t("service.timing.onceTwoWeeks"),
+    t("service.timing.onceWeek"),
+    t("service.timing.twiceWeek"),
+    t("service.timing.weekends"),
+    t("service.timing.flexible"),
   ];
-  const timeOptions = ['morning hours', 'noon hours', 'evening hours'];
+  const timeOptions = [
+    t("service.time.morning"),
+    t("service.time.noon"),
+    t("service.time.evening"),
+  ];
 
   // Status options
   const statusOptions = [
-    "Active", "In Progress", "Fulfilled", "Archived"
+    t("admin.jobs.status.active"),
+    t("admin.jobs.status.inProgress"),
+    t("admin.jobs.status.fulfilled"),
+    t("admin.jobs.status.archived"),
   ];
 
   // Fetch job requests and settlements on component mount
@@ -371,7 +398,7 @@ const Jobs = () => {
     return (
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Voluntary Requests</h1>
+          <h1 className="text-3xl font-bold">{t('admin.jobs.title')}</h1>
           <div className="flex space-x-4">
             <div className="h-10 bg-gray-200 rounded w-40"></div>
           </div>
@@ -395,7 +422,7 @@ const Jobs = () => {
   return (
     <div className="p-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Voluntary Requests</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t("admin.jobs.title")}</h1>
         <div className="flex space-x-2">
           <button
             onClick={() => {
@@ -406,7 +433,7 @@ const Jobs = () => {
             style={{ minWidth: 0 }}
           >
             <FaPlus className="text-xs" />
-            <span>{showForm ? "Cancel" : "Add Request"}</span>
+            <span>{showForm ? t("admin.jobs.cancel") : t("admin.jobs.addRequest")}</span>
           </button>
         </div>
       </div>
@@ -416,25 +443,28 @@ const Jobs = () => {
         <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-[95vw] max-w-md sm:max-w-lg mx-auto">
             <h3 className="text-xl font-bold mb-4">
-              {editMode ? "Edit Voluntary Request" : "Create New Voluntary Request"}
+              {editMode ? t("admin.jobs.editRequest") : t("admin.jobs.createRequest")}
             </h3>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {/* ...existing code for form fields... */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("admin.jobs.fields.title")}
+                  </label>
                   <input
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
-                    placeholder="e.g. Medical Escort Needed"
+                    placeholder={t("admin.jobs.placeholders.title")}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("admin.jobs.fields.location")}
+                  </label>
                   <select
                     name="location"
                     value={formData.location}
@@ -442,7 +472,7 @@ const Jobs = () => {
                     className="w-full p-2 border rounded"
                     required
                   >
-                    <option value="">Select Location</option>
+                    <option value="">{t("admin.jobs.placeholders.location")}</option>
                     {settlements.map((settlement) => (
                       <option key={settlement.id} value={settlement.name}>
                         {settlement.name}
@@ -451,7 +481,9 @@ const Jobs = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Field</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("admin.jobs.fields.volunteerField")}
+                  </label>
                   <select
                     name="volunteerField"
                     value={formData.volunteerField}
@@ -459,9 +491,9 @@ const Jobs = () => {
                     className="w-full p-2 border rounded"
                     required
                   >
-                    <option value="">Select Field</option>
-                    {volunteerFields.map((field) => (
-                      <option key={field} value={field}>
+                    <option value="">{t("admin.jobs.placeholders.volunteerField")}</option>
+                    {volunteerFields.map((field, index) => (
+                      <option key={index} value={field}>
                         {field}
                       </option>
                     ))}
@@ -469,7 +501,7 @@ const Jobs = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Professional Background (Optional)
+                    {t("admin.jobs.fields.professionalBackground")}
                   </label>
                   <input
                     type="text"
@@ -477,85 +509,56 @@ const Jobs = () => {
                     value={formData.professionalBackground}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
-                    placeholder="e.g. Healthcare, Education"
+                    placeholder={t("admin.jobs.placeholders.professionalBackground")}
                   />
                 </div>
-                {/* Frequency */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("admin.jobs.fields.frequency")}
+                  </label>
                   <select
                     name="frequency"
                     value={formData.frequency || ""}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
                   >
-                    <option value="">Select frequency</option>
-                    {timingOptions.map((option) => (
-                      <option key={option} value={option}>
+                    <option value="">{t("admin.jobs.placeholders.frequency")}</option>
+                    {timingOptions.map((option, index) => (
+                      <option key={index} value={option}>
                         {option}
                       </option>
                     ))}
                   </select>
                 </div>
-                {/* Timing */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Timing</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("admin.jobs.fields.timing")}
+                  </label>
                   <select
                     name="timing"
                     value={formData.timing}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
                   >
-                    <option value="">Select Timing</option>
-                    {timeOptions.map((option) => (
-                      <option key={option} value={option}>
+                    <option value="">{t("admin.jobs.placeholders.timing")}</option>
+                    {timeOptions.map((option, index) => (
+                      <option key={index} value={option}>
                         {option}
                       </option>
                     ))}
                   </select>
                 </div>
-                {/* Days selection - like gender but for days */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Select Days <span className="text-red-500">*</span>
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
-                      <div
-                        key={day}
-                        onClick={() =>
-                          setFormData((prev) => {
-                            const selectedDays = prev.days || [];
-                            return {
-                              ...prev,
-                              days: selectedDays.includes(day)
-                                ? selectedDays.filter(d => d !== day)
-                                : [...selectedDays, day]
-                            };
-                          })
-                        }
-                        className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 hover:shadow-md ${
-                          (formData.days || []).includes(day)
-                            ? 'border-[#FFD966] bg-[#FFD966] bg-opacity-20'
-                            : 'border-gray-300 hover:border-[#FFD966] hover:bg-gray-50'
-                        }`}
-                      >
-                        <span className={`text-sm font-medium ${(formData.days || []).includes(day) ? 'text-gray-900 font-bold' : 'text-gray-600'}`}>
-                          {day}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t("admin.jobs.fields.description")}
+                  </label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
                     rows="3"
-                    placeholder="Describe the voluntary request in detail"
+                    placeholder={t("admin.jobs.placeholders.description")}
                     required
                   ></textarea>
                 </div>
@@ -566,14 +569,14 @@ const Jobs = () => {
                   onClick={resetForm}
                   className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
                 >
-                  Cancel
+                  {t("admin.jobs.cancel")}
                 </button>
                 <button
                   type="submit"
                   className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
                   disabled={loading}
                 >
-                  {loading ? "Saving..." : editMode ? "Update" : "Create Voluntary Request"}
+                  {loading ? t("admin.jobs.saving") : editMode ? t("admin.jobs.updateRequest") : t("admin.jobs.createRequest")}
                 </button>
               </div>
             </form>
@@ -592,7 +595,7 @@ const Jobs = () => {
             <div className="bg-white rounded-lg shadow-lg p-2 sm:p-4 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-4 gap-2">
                 <h3 className="text-lg sm:text-xl font-bold">
-                  Match Results: {selectedJobRequest.title}
+                  {t("admin.jobs.matchResults")}: {selectedJobRequest.title}
                 </h3>
                 <button
                   onClick={closeMatchDetails}
@@ -603,29 +606,29 @@ const Jobs = () => {
               </div>
               <div className="mb-2 sm:mb-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <p className="text-gray-600 text-sm">
-                  <strong>Location:</strong> {selectedJobRequest.location}
+                  <strong>{t("admin.jobs.location")}:</strong> {selectedJobRequest.location}
                 </p>
                 <p className="text-gray-600 text-sm">
-                  <strong>Volunteer Field:</strong> {selectedJobRequest.volunteerField}
+                  <strong>{t("admin.jobs.volunteerField")}:</strong> {selectedJobRequest.volunteerField}
                 </p>
                 <p className="text-gray-600 text-sm">
-                  <strong>Professional Background:</strong> {selectedJobRequest.professionalBackground || "Not specified"}
+                  <strong>{t("admin.jobs.professionalBackground")}:</strong> {selectedJobRequest.professionalBackground || t("admin.jobs.notSpecified")}
                 </p>
                 <p className="text-gray-600 text-sm">
-                  <strong>Timing:</strong> {selectedJobRequest.timing}
+                  <strong>{t("admin.jobs.timing")}:</strong> {selectedJobRequest.timing}
                 </p>
                 <p className="text-gray-600 text-sm col-span-1 sm:col-span-2">
-                  <strong>Description:</strong> {selectedJobRequest.description}
+                  <strong>{t("admin.jobs.description")}:</strong> {selectedJobRequest.description}
                 </p>
               </div>
               <div className="mb-2 sm:mb-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
-                  <h4 className="text-base sm:text-lg font-semibold">Matching Seniors</h4>
+                  <h4 className="text-base sm:text-lg font-semibold">{t("admin.jobs.matchingSeniors")}</h4>
                   <button
                     onClick={() => handleRerunMatching(selectedJobRequest.id)}
                     className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm py-1 px-2 sm:px-3 rounded"
                   >
-                    Re-run Matching
+                    {t("admin.jobs.reRunMatching")}
                   </button>
                 </div>
                 {/* Responsive: Table for md+, cards for mobile */}
@@ -635,13 +638,13 @@ const Jobs = () => {
                       <table className="min-w-full bg-white border border-gray-200 text-sm">
                         <thead>
                           <tr className="bg-gray-100">
-                            <th className="py-2 px-2 border-b text-left">Name</th>
-                            <th className="py-2 px-2 border-b text-left">Location</th>
-                            <th className="py-2 px-2 border-b text-left">Background</th>
-                            <th className="py-2 px-2 border-b text-left">Interests</th>
-                            <th className="py-2 px-2 border-b text-center">Match Score</th>
-                            <th className="py-2 px-2 border-b text-center">Status</th>
-                            <th className="py-2 px-2 border-b text-center">Actions</th>
+                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.table.name")}</th>
+                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.location")}</th>
+                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.professionalBackground")}</th>
+                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.table.interests")}</th>
+                            <th className="py-2 px-2 border-b text-center">{t("admin.jobs.table.matchScore")}</th>
+                            <th className="py-2 px-2 border-b text-center">{t("admin.jobs.status.title")}</th>
+                            <th className="py-2 px-2 border-b text-center">{t("admin.jobs.table.actions")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -657,17 +660,17 @@ const Jobs = () => {
                               : null;
                             return (
                               <tr key={match.seniorId} className="hover:bg-gray-50">
-                                <td className="py-2 px-2 border-b">{match.seniorName}</td>
+                                <td className="py-2 px-2 border-b font-semibold">{match.seniorName}</td>
                                 <td className="py-2 px-2 border-b">{match.seniorLocation}</td>
                                 <td className="py-2 px-2 border-b">
                                   {match.seniorBackground && match.seniorBackground.length > 0
                                     ? match.seniorBackground
-                                    : "Not specified"}
+                                    : t("admin.jobs.notSpecified")}
                                 </td>
                                 <td className="py-2 px-2 border-b">
                                   {match.seniorInterests && match.seniorInterests.length > 0
                                     ? match.seniorInterests.join(", ")
-                                    : "Not specified"}
+                                    : t("admin.jobs.notSpecified")}
                                 </td>
                                 <td className="py-2 px-2 border-b text-center">
                                   <span
@@ -697,7 +700,7 @@ const Jobs = () => {
                                     </span>
                                   ) : (
                                     <span className="inline-block rounded-full px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800">
-                                      Not Invited
+                                      {t("admin.jobs.notSpecified")}
                                     </span>
                                   )}
                                 </td>
@@ -706,7 +709,7 @@ const Jobs = () => {
                                     <button
                                       onClick={() => viewSeniorMatchDetails(selectedJobRequest, match.seniorId)}
                                       className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-2 rounded flex items-center"
-                                      title="View detailed match"
+                                      title={t("admin.jobs.table.viewDetails")}
                                     >
                                       <FaInfoCircle />
                                     </button>
@@ -714,7 +717,7 @@ const Jobs = () => {
                                       <button
                                         onClick={() => handleInviteSenior(selectedJobRequest.id, match.seniorId)}
                                         className="bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-2 rounded flex items-center"
-                                        title="Invite senior"
+                                        title={t("admin.jobs.table.invite")}
                                       >
                                         <FaUserPlus />
                                       </button>
@@ -730,95 +733,9 @@ const Jobs = () => {
                   ) : (
                     <EmptyState
                       icon={<FaUserPlus className="text-4xl text-gray-300" />}
-                      title={t('emptyStates.noMatchingSeniors')}
-                      message={t('emptyStates.noMatchingSeniorsMessage')}
-                      actionLabel={t('emptyStates.rerunMatching')}
-                      onAction={() => handleRerunMatching(selectedJobRequest.id)}
-                      className="p-4"
-                    />
-                  )}
-                </div>
-                {/* Mobile: Card layout */}
-                <div className="block md:hidden space-y-2">
-                  {selectedJobRequest.matchResults && selectedJobRequest.matchResults.length > 0 ? (
-                    selectedJobRequest.matchResults.map((match) => {
-                      const isInvited = selectedJobRequest.assignedSeniors &&
-                        selectedJobRequest.assignedSeniors.some(
-                          (assignment) => assignment.seniorId === match.seniorId
-                        );
-                      const assignmentStatus = isInvited
-                        ? selectedJobRequest.assignedSeniors.find(
-                            (assignment) => assignment.seniorId === match.seniorId
-                          ).status
-                        : null;
-                      return (
-                        <div key={match.seniorId} className="border rounded-lg p-2 bg-gray-50 flex flex-col gap-1">
-                          <div className="flex justify-between items-center">
-                            <div className="font-semibold text-base">{match.seniorName}</div>
-                            <span className={`inline-block rounded-full px-2 py-1 text-xs font-semibold ${
-                              match.score >= 70
-                                ? "bg-green-100 text-green-800"
-                                : match.score >= 50
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}>
-                              {match.score}%
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-600">
-                            <span>{match.seniorLocation}</span>
-                            <span>•</span>
-                            <span>{match.seniorBackground && match.seniorBackground.length > 0 ? match.seniorBackground : "Not specified"}</span>
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            <strong>Interests:</strong> {match.seniorInterests && match.seniorInterests.length > 0 ? match.seniorInterests.join(", ") : "Not specified"}
-                          </div>
-                          <div className="flex justify-between items-center mt-1">
-                            <div>
-                              {isInvited ? (
-                                <span className={`inline-block rounded-full px-2 py-1 text-xs font-semibold ${
-                                  assignmentStatus === "Accepted"
-                                    ? "bg-green-100 text-green-800"
-                                    : assignmentStatus === "Declined"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-blue-100 text-blue-800"
-                                }`}>
-                                  {assignmentStatus}
-                                </span>
-                              ) : (
-                                <span className="inline-block rounded-full px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800">
-                                  Not Invited
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex space-x-1">
-                              <button
-                                onClick={() => viewSeniorMatchDetails(selectedJobRequest, match.seniorId)}
-                                className="bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-2 rounded flex items-center"
-                                title="View detailed match"
-                              >
-                                <FaInfoCircle />
-                              </button>
-                              {!isInvited && (
-                                <button
-                                  onClick={() => handleInviteSenior(selectedJobRequest.id, match.seniorId)}
-                                  className="bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-2 rounded flex items-center"
-                                  title="Invite senior"
-                                >
-                                  <FaUserPlus />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <EmptyState
-                      icon={<FaUserPlus className="text-4xl text-gray-300" />}
-                      title={t('emptyStates.noMatchingSeniors')}
-                      message={t('emptyStates.noMatchingSeniorsMessage')}
-                      actionLabel={t('emptyStates.rerunMatching')}
+                      title={t("emptyStates.noMatchingSeniors")}
+                      message={t("emptyStates.noMatchingSeniorsMessage")}
+                      actionLabel={t("emptyStates.rerunMatching")}
                       onAction={() => handleRerunMatching(selectedJobRequest.id)}
                       className="p-4"
                     />
@@ -931,7 +848,7 @@ const Jobs = () => {
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">
-                Status History: {selectedJobRequest.title}
+                {t('admin.jobs.status.history')}: {selectedJobRequest.title}
               </h3>
               <button
                 onClick={closeStatusHistory}
@@ -948,7 +865,7 @@ const Jobs = () => {
       {/* Job Requests List - Responsive (Table for md+, Card for mobile) */}
       <div className="bg-white rounded shadow overflow-hidden">
         <h3 className="text-xl font-bold p-4 border-b">
-          Voluntary Requests ({jobRequests.length})
+          {t('admin.jobs.title')} ({jobRequests.length})
         </h3>
         {jobRequests.length === 0 ? (
           <EmptyState
@@ -969,13 +886,48 @@ const Jobs = () => {
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="py-2 px-4 border-b text-left">Title</th>
-                    <th className="py-2 px-4 border-b text-left">Location</th>
-                    <th className="py-2 px-4 border-b text-left">Field</th>
-                    <th className="py-2 px-4 border-b text-left">Timing</th>
-                    <th className="py-2 px-4 border-b text-left">Status</th>
-                    <th className="py-2 px-4 border-b text-left">Created</th>
-                    <th className="py-2 px-4 border-b text-left">Actions</th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.title')}
+                    </th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.location')}
+                    </th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.field')}
+                    </th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.timing')}
+                    </th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.status')}
+                    </th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.created')}
+                    </th>
+                    <th 
+                      className={`py-2 px-4 border-b ${
+                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}>
+                      {t('admin.jobs.table.actions')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1024,21 +976,21 @@ const Jobs = () => {
                             className="flex items-center space-x-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs py-1 px-2 rounded"
                           >
                             <FaSearch className="text-xs" />
-                            <span>Matches ({jobRequest.matchResults ? jobRequest.matchResults.length : 0})</span>
+                            <span>{t('admin.jobs.actions.matches')} ({jobRequest.matchResults ? jobRequest.matchResults.length : 0})</span>
                           </button>
                           <button
                             onClick={() => viewStatusHistory(jobRequest)}
                             className="flex items-center space-x-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs py-1 px-2 rounded"
                           >
                             <FaHistory className="text-xs" />
-                            <span>History</span>
+                            <span>{t('admin.jobs.actions.history')}</span>
                           </button>
                           <button
                             onClick={() => handleRerunMatching(jobRequest.id)}
                             className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs py-1 px-2 rounded"
                           >
                             <FaHistory className="text-xs" />
-                            <span>Re-match</span>
+                            <span>{t('admin.jobs.actions.rematch')}</span>
                           </button>
                         </div>
                       </td>
@@ -1106,21 +1058,21 @@ const Jobs = () => {
                           className="flex items-center space-x-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs py-1 px-2 rounded"
                         >
                           <FaSearch className="text-xs" />
-                          <span>Matches</span>
+                          <span>{t('admin.jobs.actions.matches')}</span>
                         </button>
                         <button
                           onClick={() => viewStatusHistory(jobRequest)}
                           className="flex items-center space-x-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs py-1 px-2 rounded"
                         >
                           <FaHistory className="text-xs" />
-                          <span>History</span>
+                          <span>{t('admin.jobs.actions.history')}</span>
                         </button>
                         <button
                           onClick={() => handleRerunMatching(jobRequest.id)}
                           className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs py-1 px-2 rounded"
                         >
                           <FaHistory className="text-xs" />
-                          <span>Re-match</span>
+                          <span>{t('admin.jobs.actions.rematch')}</span>
                         </button>
                       </div>
                     </div>

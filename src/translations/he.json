@@ -1466,6 +1466,98 @@
       "eventCreatedSuccess": "האירוע נוצר בהצלחה!",
       "createEventError": "נכשל ביצירת האירוע. אנא נסה שוב.",
       "submit": "שלח"
+    },
+    "jobs": {
+      "title": "בקשות התנדבות",
+      "addRequest": "הוסף בקשה",
+      "cancel": "ביטול",
+      "createRequest": "צור בקשת התנדבות חדשה",
+      "editRequest": "ערוך בקשת התנדבות",
+      "saving": "שומר...",
+      "updateRequest": "עדכן בקשת התנדבות",
+      "deleteConfirmation": "האם אתה בטוח שברצונך למחוק את בקשת ההתנדבות הזו?",
+      "deleteSuccess": "בקשת ההתנדבות נמחקה בהצלחה",
+      "deleteFailure": "נכשל במחיקת בקשת ההתנדבות",
+      "createSuccess": "בקשת ההתנדבות נוצרה בהצלחה",
+      "createFailure": "נכשל ביצירת בקשת ההתנדבות",
+      "updateSuccess": "בקשת ההתנדבות עודכנה בהצלחה",
+      "updateFailure": "נכשל בעדכון בקשת ההתנדבות",
+      "matchResults": "תוצאות התאמה",
+      "location": "מיקום",
+      "volunteerField": "תחום התנדבות",
+      "professionalBackground": "רקע מקצועי",
+      "timing": "זמן",
+      "description": "תיאור",
+      "matchingSeniors": "התאמת ותיקים",
+      "reRunMatching": "הרץ התאמה מחדש",
+      "assignedSeniors": "ותיקים שהוקצו",
+      "assignedAt": "הוקצה בתאריך",
+      "responseAt": "תגובה בתאריך",
+      "close": "סגור",
+      "notSpecified": "לא צוין",
+      "table": {
+        "title": "כותרת",
+        "location": "מיקום",
+        "field": "תחום התנדבות",
+        "timing": "זמן",
+        "status": "סטטוס",
+        "actions": "פעולות",
+        "created": "נוצר בתאריך",
+        "volunteerField": "תחום התנדבות",
+        "professionalBackground": "רקע מקצועי",
+        "frequency": "תדירות",
+        "days": "ימים",
+        "description": "תיאור"
+      },
+      "fields": {
+        "title": "כותרת",
+        "location": "מיקום",
+        "volunteerField": "תחום התנדבות",
+        "professionalBackground": "רקע מקצועי (אופציונלי)",
+        "frequency": "תדירות",
+        "timing": "זמן",
+        "days": "בחר ימים",
+        "description": "תיאור"
+      },
+      "placeholders": {
+        "title": "לדוגמה: נדרש ליווי רפואי",
+        "location": "בחר מיקום",
+        "volunteerField": "בחר תחום",
+        "professionalBackground": "לדוגמה: בריאות, חינוך",
+        "frequency": "בחר תדירות",
+        "timing": "בחר זמן",
+        "description": "תאר את בקשת ההתנדבות בפירוט"
+      },
+      "days": {
+        "sunday": "ראשון",
+        "monday": "שני",
+        "tuesday": "שלישי",
+        "wednesday": "רביעי",
+        "thursday": "חמישי",
+        "friday": "שישי"
+      },
+      "status": {
+        "title": "סטטוס",
+        "active": "פעיל",
+        "inProgress": "בתהליך",
+        "fulfilled": "הושלם",
+        "archived": "ארכיון",
+        "history": "היסטוריית סטטוס",
+        "noHistory": "אין היסטוריית סטטוס לבקשה זו",
+        "changed": "שונה על ידי"
+      },
+      "actions": {
+        "edit": "ערוך",
+        "delete": "מחק",
+        "matches": "התאמות",
+        "history": "היסטוריה",
+        "rematch": "התאמה מחדש"
+      },
+      "emptyStates": {
+        "noVoluntaryRequests": "לא נמצאו בקשות התנדבות",
+        "noVoluntaryRequestsMessage": "נסה ליצור בקשת התנדבות חדשה כדי להתחיל.",
+        "createNewRequest": "צור בקשה חדשה"
+      }
     }
   },
   "retiree": {
@@ -1848,7 +1940,12 @@
     "noViewedRequestsFilter": "אין בקשות שנצפו",
     "noPendingRequests": "אין בקשות ממתינות",
     "noPendingRequestsMessage": "אין כרגע בקשות ממתינות.",
-    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון"
+    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noMatchingSeniors": "אין ותיקים מתאימים",
+    "noMatchingSeniorsMessage": "אין ותיקים שמתאימים לקריטריונים של בקשת העבודה הזו.",
+    "rerunMatching": "הרץ התאמה מחדש",
+    "noSeniorsAssigned": "אין ותיקים שהוקצו",
+    "noSeniorsAssignedMessage": "עדיין לא הוקצו ותיקים לבקשת העבודה הזו."
   },
   "superadmin": {
     "admins": {

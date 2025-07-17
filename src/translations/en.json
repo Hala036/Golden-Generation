@@ -1456,6 +1456,98 @@
       "fetchEventsError": "Failed to fetch pending events.",
       "eventApprovedSuccess": "Event approved successfully!",
       "failedToApproveEvent": "Failed to approve event."
+    },
+    "jobs": {
+      "title": "Voluntary Requests",
+      "addRequest": "Add Request",
+      "cancel": "Cancel",
+      "createRequest": "Create New Voluntary Request",
+      "editRequest": "Edit Voluntary Request",
+      "saving": "Saving...",
+      "updateRequest": "Update Voluntary Request",
+      "deleteConfirmation": "Are you sure you want to delete this voluntary request?",
+      "deleteSuccess": "Voluntary request deleted successfully",
+      "deleteFailure": "Failed to delete voluntary request",
+      "createSuccess": "Voluntary request created successfully",
+      "createFailure": "Failed to create voluntary request",
+      "updateSuccess": "Voluntary request updated successfully",
+      "updateFailure": "Failed to update voluntary request",
+      "matchResults": "Match Results",
+      "location": "Location",
+      "volunteerField": "Volunteer Field",
+      "professionalBackground": "Professional Background",
+      "timing": "Timing",
+      "description": "Description",
+      "matchingSeniors": "Matching Seniors",
+      "reRunMatching": "Re-run Matching",
+      "assignedSeniors": "Assigned Seniors",
+      "assignedAt": "Assigned At",
+      "responseAt": "Response At",
+      "close": "Close",
+      "notSpecified": "Not specified",
+      "table": {
+        "title": "Title",
+        "location": "Location",
+        "field": "Field",
+        "timing": "Timing",
+        "status": "Status",
+        "actions": "Actions",
+        "created": "Created",
+        "volunteerField": "Volunteer Field",
+        "professionalBackground": "Professional Background",
+        "frequency": "Frequency",
+        "days": "Days",
+        "description": "Description"
+      },
+      "fields": {
+        "title": "Title",
+        "location": "Location",
+        "volunteerField": "Volunteer Field",
+        "professionalBackground": "Professional Background (Optional)",
+        "frequency": "Frequency",
+        "timing": "Timing",
+        "days": "Select Days",
+        "description": "Description"
+      },
+      "placeholders": {
+        "title": "e.g. Medical Escort Needed",
+        "location": "Select Location",
+        "volunteerField": "Select Field",
+        "professionalBackground": "e.g. Healthcare, Education",
+        "frequency": "Select frequency",
+        "timing": "Select Timing",
+        "description": "Describe the voluntary request in detail"
+      },
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday"
+      },
+      "status": {
+        "title": "Status",
+        "active": "Active",
+        "inProgress": "In Progress",
+        "fulfilled": "Fulfilled",
+        "archived": "Archived",
+        "history": "Status History",
+        "noHistory": "No status history available",
+        "changed": "Changed by"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "matches": "Matches",
+        "history": "History",
+        "rematch": "Re-match"
+      },
+      "emptyStates": {
+        "noVoluntaryRequests": "No voluntary requests found",
+        "noVoluntaryRequestsMessage": "Try creating a new voluntary request to get started.",
+        "createNewRequest": "Create New Request"
+      }
     }
   },
   "retiree": {
@@ -1840,7 +1932,12 @@
     "noViewedRequestsFilter": "No viewed requests found",
     "noPendingRequests": "No Pending Requests",
     "noPendingRequestsMessage": "There are no pending requests at the moment.",
-    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available."
+    "noPendingRequestsFilterMessage": "Try adjusting your filters or view all requests to see what's available.",
+    "noMatchingSeniors": "No Matching Seniors",
+    "noMatchingSeniorsMessage": "No seniors match the criteria for this job request.",
+    "rerunMatching": "Re-run Matching",
+    "noSeniorsAssigned": "No Seniors Assigned",
+    "noSeniorsAssignedMessage": "No seniors have been assigned to this job request yet."
   },
   "loading": {
     "messages": "Loading messages...",
