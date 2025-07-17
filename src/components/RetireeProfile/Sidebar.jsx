@@ -19,7 +19,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ activeKey = "home", onNavigate }) => {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+  const [showOverlay, setShowOverlay] = useState(false);
   const navigate = useNavigate();
 
   const navItems = [
@@ -42,42 +43,96 @@ const Sidebar = ({ activeKey = "home", onNavigate }) => {
   ];
 
   return (
-    <div className={`fixed top-16 left-0 h-full bg-white shadow-lg p-4 transition-all duration-300 z-40 ${isOpen ? "w-56" : "w-16"}`}>
-      {/* Toggle Button */}
+    <>
+      {/* Hamburger button for mobile */}
       <button
-        className="absolute top-4 right-[-12px] bg-gray-800 text-white rounded-full p-1 focus:outline-none"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? t('sidebar.collapse') : t('sidebar.expand')}
+        className="fixed top-4 left-4 z-50 md:hidden bg-gray-800 text-white rounded-full p-2 focus:outline-none"
+        onClick={() => { setIsOpen(true); setShowOverlay(true); }}
+        aria-label={t('sidebar.expand')}
+        style={{ display: isOpen ? 'none' : 'block' }}
       >
         ☰
       </button>
-      <nav className="flex flex-col gap-2 mt-8">
-        {navItems.map((section, idx) => (
-          <React.Fragment key={idx}>
-            {section.section && (
-              <div className="text-xs text-gray-400 pl-2 mb-1 mt-4 uppercase tracking-wider">{section.section}</div>
-            )}
-            {section.items.map(item => (
-              <SidebarItem
-                key={item.key}
-                icon={item.icon}
-                text={item.text}
-                isOpen={isOpen}
-                active={activeKey === item.key}
-                onClick={() => {
-                  if (item.key === 'searchRetirees') {
-                    navigate('/retiree/search');
-                  } else if (onNavigate) {
-                    onNavigate(item.key);
-                  }
-                }}
-              />
-            ))}
-            {idx < navItems.length - 1 && <div className="my-2 border-t" />}
-          </React.Fragment>
-        ))}
-      </nav>
-    </div>
+      {/* Overlay and sidebar for mobile */}
+      {isOpen && showOverlay && (
+        <>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+            onClick={() => { setIsOpen(false); setShowOverlay(false); }}
+            aria-label="Close sidebar overlay"
+          />
+          <div
+            className="fixed top-0 left-0 h-full w-56 bg-white shadow-lg p-4 transition-all duration-300 z-50 md:hidden"
+          >
+            <nav className="flex flex-col gap-2 mt-8">
+              {navItems.map((section, idx) => (
+                <React.Fragment key={idx}>
+                  {section.section && (
+                    <div className="text-xs text-gray-400 pl-2 mb-1 mt-4 uppercase tracking-wider">{section.section}</div>
+                  )}
+                  {section.items.map(item => (
+                    <SidebarItem
+                      key={item.key}
+                      icon={item.icon}
+                      text={item.text}
+                      isOpen={isOpen}
+                      active={activeKey === item.key}
+                      onClick={() => {
+                        setIsOpen(false); setShowOverlay(false);
+                        if (item.key === 'searchRetirees') {
+                          navigate('/retiree/search');
+                        } else if (onNavigate) {
+                          onNavigate(item.key);
+                        }
+                      }}
+                    />
+                  ))}
+                  {idx < navItems.length - 1 && <div className="my-2 border-t" />}
+                </React.Fragment>
+              ))}
+            </nav>
+          </div>
+        </>
+      )}
+      {/* Sidebar for desktop/tablet */}
+      <div
+        className={`fixed top-16 left-0 h-full bg-white shadow-lg p-4 transition-all duration-300 z-50 w-56 hidden md:block`}
+      >
+        <button
+          className="absolute top-4 right-[-12px] bg-gray-800 text-white rounded-full p-1 focus:outline-none hidden md:block"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? t('sidebar.collapse') : t('sidebar.expand')}
+        >
+          ☰
+        </button>
+        <nav className="flex flex-col gap-2 mt-8">
+          {navItems.map((section, idx) => (
+            <React.Fragment key={idx}>
+              {section.section && (
+                <div className="text-xs text-gray-400 pl-2 mb-1 mt-4 uppercase tracking-wider">{section.section}</div>
+              )}
+              {section.items.map(item => (
+                <SidebarItem
+                  key={item.key}
+                  icon={item.icon}
+                  text={item.text}
+                  isOpen={isOpen}
+                  active={activeKey === item.key}
+                  onClick={() => {
+                    if (item.key === 'searchRetirees') {
+                      navigate('/retiree/search');
+                    } else if (onNavigate) {
+                      onNavigate(item.key);
+                    }
+                  }}
+                />
+              ))}
+              {idx < navItems.length - 1 && <div className="my-2 border-t" />}
+            </React.Fragment>
+          ))}
+        </nav>
+      </div>
+    </>
   );
 };
 

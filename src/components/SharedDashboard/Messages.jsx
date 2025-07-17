@@ -709,11 +709,12 @@ const Messages = () => {
                 <div
                   key={user.id}
                   onClick={() => startNewChat(user.id)}
-                  className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+                  className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b min-h-[44px] w-full text-left ${
                     theme === 'dark' 
                       ? 'hover:bg-gray-700 border-gray-700' 
                       : 'hover:bg-gray-100 border-gray-100'
                   }`}
+                  style={{ minHeight: 44 }}
                 >
                   <div className="relative">
                     <img src={profile} alt={user.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
@@ -734,7 +735,7 @@ const Messages = () => {
                   <div
                     key={conv.id}
                     onClick={() => setSelectedChat(conv)}
-                    className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+                    className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b min-h-[44px] w-full text-left ${
                       theme === 'dark' 
                         ? 'border-gray-700 hover:bg-gray-700' 
                         : 'border-gray-100 hover:bg-gray-100'
@@ -743,6 +744,7 @@ const Messages = () => {
                         ? (theme === 'dark' ? 'bg-gray-700' : 'bg-orange-50') 
                         : ''
                     }`}
+                    style={{ minHeight: 44 }}
                   >
                     <div className="relative">
                       <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
@@ -850,24 +852,26 @@ const Messages = () => {
               </div>
 
               {/* Message Input */}
-              <form onSubmit={handleSendMessage} className={`p-4 border-t ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : 'bg-white'}`}>
-                <div className="flex items-center space-x-2">
+              <form onSubmit={handleSendMessage} className={`p-4 border-t ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : 'bg-white'} w-full`}>
+                <div className="flex items-center space-x-2 w-full">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder={t('dashboard.messages.typeMessage')}
-                    className={`flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
+                    className={`flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all min-h-[44px] w-full ${
                       theme === 'dark' 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-[#FFD966]' 
                         : 'border-gray-300 bg-white placeholder-gray-500 focus:border-orange-500'
                     }`}
                     disabled={isSending}
+                    style={{ minHeight: 44 }}
                   />
                   <button
                     type="submit"
-                    className={`p-3 rounded-full transition-colors ${isSending ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}
+                    className={`p-3 rounded-full transition-colors min-h-[44px] w-14 ${isSending ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}
                     disabled={isSending}
+                    style={{ minHeight: 44 }}
                   >
                     <FaPaperPlane className={isSending ? 'animate-pulse' : ''} />
                   </button>
@@ -951,17 +955,19 @@ const Messages = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={t('dashboard.messages.typeMessage')}
-                  className={`flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
+                  className={`flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all min-h-[44px] w-full ${
                     theme === 'dark' 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-[#FFD966]' 
                       : 'border-gray-300 bg-white placeholder-gray-500 focus:border-orange-500'
                   }`}
                   disabled={isSending}
+                  style={{ minHeight: 44 }}
                 />
                 <button
                   type="submit"
-                  className={`p-3 rounded-full transition-colors ${isSending ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}
+                  className={`p-3 rounded-full transition-colors min-h-[44px] w-14 ${isSending ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}
                   disabled={isSending}
+                  style={{ minHeight: 44 }}
                 >
                   <FaPaperPlane className={isSending ? 'animate-pulse' : ''} />
                 </button>
@@ -978,11 +984,12 @@ const Messages = () => {
                   placeholder={t('dashboard.messages.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all ${
+                  className={`w-full pl-10 pr-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all min-h-[44px] w-full ${
                     theme === 'dark' 
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-[#FFD966]' 
                       : 'border-gray-300 bg-white placeholder-gray-500 focus:border-orange-500'
                   }`}
+                  style={{ minHeight: 44 }}
                 />
                 <FaSearch className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
@@ -995,11 +1002,12 @@ const Messages = () => {
                   <div
                     key={user.id}
                     onClick={() => startNewChat(user.id)}
-                    className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+                    className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b min-h-[44px] w-full text-left ${
                       theme === 'dark' 
                         ? 'hover:bg-gray-700 border-gray-700' 
                         : 'hover:bg-gray-100 border-gray-100'
                     }`}
+                    style={{ minHeight: 44 }}
                   >
                     <div className="relative">
                       <img src={profile} alt={user.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
@@ -1020,11 +1028,12 @@ const Messages = () => {
                     <div
                       key={conv.id}
                       onClick={() => setSelectedChat(conv)}
-                      className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b ${
+                      className={`flex items-center p-4 cursor-pointer transition-colors duration-200 border-b min-h-[44px] w-full text-left ${
                         theme === 'dark' 
                           ? 'border-gray-700 hover:bg-gray-700' 
                           : 'border-gray-100 hover:bg-gray-100'
                       }`}
+                      style={{ minHeight: 44 }}
                     >
                       <div className="relative">
                         <img src={profile} alt={otherUser?.username} className="w-12 h-12 rounded-full mr-4 ml-4 object-cover border-2 border-orange-500" />
