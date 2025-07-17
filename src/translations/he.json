@@ -2209,6 +2209,28 @@
     "submitButtonUpdate": "עדכן אירוע",
     "submitting": "שולח..."
   },
+  "serviceRequests": {
+    "title": "בקשות שירות",
+    "pendingRequests": "בקשות ממתינות",
+    "viewedRequests": "בקשות שנצפו",
+    "description": "תיאור",
+    "location": "מיקום",
+    "volunteerField": "תחום התנדבות",
+    "professionalBackground": "רקע מקצועי",
+    "timing": "זמן",
+    "frequency": "תדירות",
+    "days": "ימים",
+    "findMatch": "מצא התאמה",
+    "notSpecified": "לא צוין",
+    "errors": {
+      "fetchAdminSettlement": "נכשל באחזור היישוב של המנהל.",
+      "fetchServiceRequests": "נכשל באחזור בקשות השירות.",
+      "createVoluntaryRequest": "נכשל ביצירת בקשת התנדבות.",
+      "mustBeLoggedIn": "עליך להיות מחובר.",
+      "userDocumentNotFound": "מסמך המשתמש לא נמצא.",
+      "noSettlementFound": "לא נמצא יישוב עבור משתמש המנהל."
+    }
+  },
   "countries": {
     "AF": "אפגניסטן",
     "AL": "אלבניה",

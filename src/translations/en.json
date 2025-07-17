@@ -2264,6 +2264,28 @@
     "submitButtonUpdate": "Update Event",
     "submitting": "Submitting..."
   },
+  "serviceRequests": {
+    "title": "Service Requests",
+    "pendingRequests": "Pending Requests",
+    "viewedRequests": "Viewed Requests",
+    "description": "Description",
+    "location": "Location",
+    "volunteerField": "Volunteer Field",
+    "professionalBackground": "Professional Background",
+    "timing": "Timing",
+    "frequency": "Frequency",
+    "days": "Days",
+    "findMatch": "Find Match",
+    "notSpecified": "Not specified",
+    "errors": {
+      "fetchAdminSettlement": "Failed to fetch admin settlement.",
+      "fetchServiceRequests": "Failed to fetch service requests.",
+      "createVoluntaryRequest": "Failed to create voluntary request.",
+      "mustBeLoggedIn": "You must be logged in.",
+      "userDocumentNotFound": "User document not found.",
+      "noSettlementFound": "No settlement found for admin user."
+    }
+  },
   "countries": {
     "AF": "Afghanistan",
     "AL": "Albania",
