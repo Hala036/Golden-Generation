@@ -555,7 +555,9 @@ const Cards = ({ setSelected }) => {
                       {/* Category chip */}
                       <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs shadow">{categoryName}</span>
                       {/* Status indicator */}
-                      <span className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold shadow ${statusColor}`}>{event.status}</span>
+                      <span className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold shadow ${statusColor}`}>
+                        {t(`eventDetails.status.${event.status}`)}
+                      </span>
                       {/* Gradient overlay */}
                       <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
                     </div>
@@ -577,7 +579,7 @@ const Cards = ({ setSelected }) => {
                           </h3>
                           {event.status === 'pending' && event.createdBy === currentUser?.uid && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                              {t('pendingApproval')}
+                              {t('dashboard.filter.pendingApproval')}
                             </span>
                           )}
                         </div>
