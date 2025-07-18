@@ -1894,6 +1894,7 @@
   "sidebar": {
     "home": "דף הבית",
     "upcomingEvents": "אירועים קרובים",
+    "pendingEventRequests": "בקשות אירועים ממתינות",
     "categoryManagement": "ניהול קטגוריות",
     "adminManagement": "ניהול מנהלים",
     "retirees": "ותיקים",

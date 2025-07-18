@@ -788,5 +788,24 @@
         "message": "فشل في تحميل بيانات التحليلات. يرجى المحاولة مرة أخرى.",
         "retry": "إعادة المحاولة"
       }
+    },
+    "sidebar": {
+      "home": "الصفحة الرئيسية",
+      "upcomingEvents": "الأحداث القادمة",
+      "pendingEventRequests": "طلبات الأحداث المعلقة",
+      "categoryManagement": "إدارة الفئات",
+      "adminManagement": "إدارة المسؤولين",
+      "retirees": "المتقاعدون",
+      "volunteerRequests": "طلبات المتطوعين",
+      "serviceRequests": "طلبات الخدمة",
+      "management": "الإدارة",
+      "analytics": "التحليلات",
+      "addSettlements": "إضافة مستوطنات",
+      "settingsSection": "الإعدادات",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج",
+      "collapse": "طي الشريط الجانبي",
+      "expand": "توسيع الشريط الجانبي",
+      "updatePastEvents": "تحديث الأحداث السابقة"
     }
   } 

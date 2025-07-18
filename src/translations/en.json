@@ -1939,6 +1939,7 @@
   "sidebar": {
     "home": "Home Page",
     "upcomingEvents": "Upcoming Events",
+    "pendingEventRequests": "Pending Event Requests",
     "categoryManagement": "Category Management",
     "adminManagement": "Admin Management",
     "adninManagement": "Admin Management",

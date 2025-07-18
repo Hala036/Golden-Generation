@@ -1,7 +1,7 @@
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags, FaSync } from 'react-icons/fa';
+import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags, FaSync, FaClock } from 'react-icons/fa';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { toast } from "react-hot-toast";
 
@@ -54,6 +54,7 @@ const RetireeDashboard = () => {
   const customIcons = [
     { id: "main", label: t("sidebar.home"), icon: <FaHome /> },
     { id: "upcoming", label: t("sidebar.upcomingEvents"), icon: <FaCalendarCheck /> },
+    { id: "eventRequests", label: t("sidebar.pendingEventRequests"), icon: <FaClock /> },
     { id: "categoryManagement", label: t("sidebar.categoryManagement"), icon: <FaTags /> },
     { id: "addSettlements", label: t("sidebar.addSettlements"), icon: <FaPlus /> },
     { id: "admins", label: t("sidebar.adminManagement"), icon: <FaUserShield /> },
