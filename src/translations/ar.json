@@ -553,7 +553,8 @@
         "noParticipants": "لا يوجد مشاركون"
       },
       "filter": {
-        "allCategories": "جميع الفئات"
+        "allCategories": "جميع الفئات",
+        "pendingApproval": "في انتظار الموافقة"
       },
       "search": {
         "searchCategories": "البحث حسب الفئات",

@@ -280,7 +280,7 @@ const Cards = ({ setSelected }) => {
       // Unsubscribe from listeners when component unmounts
       unsubscribeEvents();
     };
-  }, [userRole]);
+  }, [userRole, currentUser]);
 
   // Apply filters (category, search, my events, settlement)
   useEffect(() => {
@@ -571,7 +571,16 @@ const Cards = ({ setSelected }) => {
                             <span className="text-xs text-gray-500">{event.organizerName}</span>
                           </div>
                         )}
-                        <h3 className="text-lg font-bold mb-1 line-clamp-1" title={event.title}>{event.title}</h3>
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="text-lg font-semibold text-gray-800 truncate">
+                            {event.title}
+                          </h3>
+                          {event.status === 'pending' && event.createdBy === currentUser?.uid && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                              {t('pendingApproval')}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center text-sm text-gray-500 mb-1">
                           <FaCalendarAlt className="mr-1 text-yellow-400" /> {event.startDate}{event.endDate ? ` - ${event.endDate}` : ''}
                         </div>
