@@ -21,7 +21,12 @@
     "notAvailable": "לא זמין",
     "ok": "אישור",
     "yes": "כן",
-    "no": "לא"
+    "no": "לא",
+    "gender": {
+      "male": "זכר",
+      "female": "נקבה",
+      "other": "אחר"
+    }
   },
   "auth": {
     "errors": {
@@ -430,6 +435,7 @@
       "trips": "טיולים",
       "photography": "צילום",
       "sport": "ספורט",
+      "reading": "קריאה",
       "study": "לימודים",
       "gardening": "גינון",
       "computer": "מחשבים",
@@ -601,8 +607,21 @@
           "deleteAccount": "מחק חשבון",
           "deleteAccountDesc": "מחק את החשבון שלך לצמיתות",
           "editUserInfo": "ערוך פרטי משתמש",
-          "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה"
-        },
+          "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה",
+          "autoSaveEnabled": "שמירה אוטומטית מופעלת",
+          "checking": "בודק..."},
+          "toast": {
+            "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
+            "profilePictureUpdatedSuccessfully": "תמונת הפרופיל עודכנה בהצלחה",
+            "fileSizeTooLarge": "גודל הקובץ חייב להיות קטן מ-5MB",
+            "pleaseSelectPicture": "אנא בחר תמונה",
+            "accountDeletedSuccessfully": "החשבון נמחק בהצלחה",
+            "notificationPreferenceUpdated": "העדפת ההתראות עודכנה",
+            "fontSizeUpdated": "גודל הגופן עודכן בהצלחה",
+            "pleaseLogOutAndLogInAgain": "אנא התנתק והתחבר שוב לפני מחיקת החשבון שלך",
+            "profileAndEmailUpdated": "הפרופיל והאימייל עודכנו",
+            "reAuthenticationFailed": "האימות מחדש נכשל"
+          },
         "profilePicture": {
           "currentProfile": "פרופיל נוכחי",
           "clickToUpload": "לחץ להעלאה",
@@ -667,7 +686,7 @@
           "deleteConfirm": "הקלד DELETE לאישור",
           "enterPassword": "הזן את הסיסמה שלך"
         },
-        "deleteAccountWarning": "פעולה זו בלתי הפיכה. הקלד <b>DELETE</b> לאישור."
+        "deleteAccountWarning": "פעולה זו בלתי הפיכה. הקלד מחק לאישור."
       },
       "toast": {
         "failedToLoadProfile": "נכשל בטעינת הפרופיל",
@@ -1047,14 +1066,18 @@
         "updateCategory": "עדכן קטגוריה"
       },
       "form": {
-        "englishTranslation": "תרגום באנגלית (מפתח)",
-        "englishPlaceholder": "למשל, טיול",
-        "hebrewTranslation": "תרגום בעברית",
-        "hebrewPlaceholder": "למשל, טיול",
-        "arabicTranslation": "תרגום בערבית (אופציונלי)",
-        "arabicPlaceholder": "למשל, رحلة",
-        "categoryColor": "צבע הקטגוריה"
-      },
+    "englishTranslation": "תרגום באנגלית (מפתח)",
+    "englishPlaceholder": "למשל, טיול",
+    "hebrewTranslation": "תרגום בעברית",
+    "hebrewPlaceholder": "למשל, טיול",
+    "categoryColor": "צבע הקטגוריה",
+    "requiredAsterisk": "*",
+    "warm": "חם",
+    "cool": "קר",
+    "nature": "טבע",
+    "neutral": "נייטרלי",
+    "customColor": "צבע מותאם אישית"
+  },
       "details": {
         "categoryId": "מזהה קטגוריה",
         "englishTranslation": "תרגום באנגלית",
@@ -1077,7 +1100,25 @@
         "adding": "מוסיף...",
         "addCategory": "הוסף קטגוריה",
         "failedToAddCategory": "נכשל בהוספת הקטגוריה. אנא נסה שוב."
-      }
+      },
+      "addCategoryModal": {
+        "eyedropperNotSupported": "ממשק בחירת צבע לא נתמך בדפדפן זה.",
+        "eyedropperFailed": "בחירת הצבע בוטלה או נכשלה.",
+        "copied": "הועתק!",
+        "contrastWarning": "אזהרה: ייתכן שלצבע זה יש ניגודיות נמוכה על רקע בהיר.",
+        "selectColor": "בחר צבע",
+        "suggestedFor": "צבע מוצע",
+        "smartSuggestion": "הצעה חכמה",
+        "customColor": "צבע מותאם אישית",
+        "pickColorFromScreen": "בחר צבע מהמסך",
+        "eyedropperIcon": "🖌️",
+        "hexPlaceholder": "#RRGGBB"
+      },
+      "noMatchingCategories": "לא נמצאו קטגוריות תואמות",
+      "noCategories": "אין קטגוריות זמינות",
+      "noCategoriesFound": "לא נמצאו קטגוריות התואמות ל- '{{search}}'. נסה לשנות את מונחי החיפוש.",
+      "getStarted": "התחל על ידי הוספת הקטגוריה הראשונה שלך.",
+      "clearSearch": "נקה חיפוש"
     },
     "pendingEvents": {
       "fetchEventsError": "נכשל בטעינת האירועים הממתינים.",
@@ -1115,7 +1156,19 @@
         "deleteAccount": "מחק חשבון",
         "deleteAccountDesc": "מחק את החשבון שלך לצמיתות",
         "editUserInfo": "ערוך פרטי משתמש",
-        "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה"
+        "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה",
+        "autoSaveEnabled": "שמירה אוטומטית מופעלת",
+        "checking": "בודק...",
+        "toast": {
+          "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
+          "profilePictureUpdatedSuccessfully": "תמונת הפרופיל עודכנה בהצלחה",
+          "fileSizeTooLarge": "גודל הקובץ חייב להיות קטן מ-5MB",
+          "pleaseSelectPicture": "אנא בחר תמונה",
+          "accountDeletedSuccessfully": "החשבון נמחק בהצלחה",
+          "pleaseLogOutAndLogInAgain": "אנא התנתק והתחבר שוב לפני מחיקת החשבון שלך",
+          "profileAndEmailUpdated": "הפרופיל והאימייל עודכנו",
+          "reAuthenticationFailed": "האימות מחדש נכשל"
+        }
       },
       "modals": {
         "editProfile": "ערוך פרופיל",
@@ -1355,14 +1408,48 @@
       "sendMessage": "שלח הודעה",
       "backToProfile": "חזור לפרופיל שלי",
       "alert": "הזן שם עבור קבוצת מסננים זו:",
+      "minAge": "גיל מינימלי",
+      "maxAge": "גיל מקסימלי",
+      "ageRequirement": "מינימום ומקסימום חייבים להיות גדולים מ-0",
+      "ageNumbers": "גיל חייב להיות מספר",
+      "ageSize": "מינימום חייב להיות קטן או שווה למקסימום",
+      "date": "תאריך",
+      "dateValid": "תאריך חייב להיות תקין",
+      "dateRangeValid": "טווח תאריכים חייב להיות תקין",
+      "select": "בחר",
+      "maritalStatus": {
+        "single": "רווק/רווקה",
+        "married": "נשוי/נשואה",
+        "divorced": "גרוש/גרושה",
+        "widowed": "אלמן/אלמנה"
+      },
+      "options": {
+        "maritalStatus": {
+          "single": "רווק/רווקה",
+          "married": "נשוי/נשואה",
+          "divorced": "גרוש/גרושה",
+          "widowed": "אלמן/אלמנה"
+        },
+        "education": {
+          "none": "ללא",
+          "primary": "יסודי",
+          "secondary": "תיכון",
+          "tertiary": "על תיכוני",
+          "other": "אחר"
+        }
+      },
       "defTypes": {
         "contains": "מכיל",
         "equals": "שווה ל",
         "startsWith": "מתחיל ב",
-        "endsWith": "נגמר ב"
+        "endsWith": "נגמר ב",
+        "range": "בטווח",
+        "dateRange": "בטווח תאריכים"
+
       },
       "filters": {
         "valueRequired": "ערך נדרש",
+        "to":"עד",
         "selectField": "בחר שדה...",
         "globalSearch": "חיפוש גלובלי ",
         "search": "חפש לפי כל מאפיין...",
@@ -1380,6 +1467,7 @@
         "name": "שם",
         "age": "גיל",
         "gender": "מין",
+        "settlement": "יישוב",
         "work": "תחומי עיסוק"
       },
       "fieldGroups": {
@@ -1430,6 +1518,118 @@
       "eventCreatedSuccess": "האירוע נוצר בהצלחה!",
       "createEventError": "נכשל ביצירת האירוע. אנא נסה שוב.",
       "submit": "שלח"
+    },
+    "jobs": {
+      "title": "בקשות התנדבות",
+      "addRequest": "הוסף בקשה",
+      "cancel": "ביטול",
+      "createRequest": "צור בקשת התנדבות חדשה",
+      "editRequest": "ערוך בקשת התנדבות",
+      "saving": "שומר...",
+      "updateRequest": "עדכן בקשת התנדבות",
+      "deleteConfirmation": "האם אתה בטוח שברצונך למחוק את בקשת ההתנדבות הזו?",
+      "deleteSuccess": "בקשת ההתנדבות נמחקה בהצלחה",
+      "deleteFailure": "נכשל במחיקת בקשת ההתנדבות",
+      "createSuccess": "בקשת ההתנדבות נוצרה בהצלחה",
+      "createFailure": "נכשל ביצירת בקשת ההתנדבות",
+      "updateSuccess": "בקשת ההתנדבות עודכנה בהצלחה",
+      "updateFailure": "נכשל בעדכון בקשת ההתנדבות",
+      "matchResults": "תוצאות התאמה",
+      "location": "מיקום",
+      "volunteerField": "תחום התנדבות",
+      "professionalBackground": "רקע מקצועי",
+      "timing": "זמן",
+      "description": "תיאור",
+      "matchingSeniors": "התאמת ותיקים",
+      "reRunMatching": "הרץ התאמה מחדש",
+      "assignedSeniors": "ותיקים שהוקצו",
+      "assignedAt": "הוקצה בתאריך",
+      "responseAt": "תגובה בתאריך",
+      "close": "סגור",
+      "notSpecified": "לא צוין",
+      "table": {
+        "title": "כותרת",
+        "name": "שם",
+        "interests": "תחומי עיסוק",
+        "matchScore": "ציון התאמה",
+        "location": "מיקום",
+        "field": "תחום התנדבות",
+        "timing": "זמן",
+        "status": "סטטוס",
+        "actions": "פעולות",
+        "created": "נוצר בתאריך",
+        "volunteerField": "תחום התנדבות",
+        "professionalBackground": "רקע מקצועי",
+        "frequency": "תדירות",
+        "days": "ימים",
+        "description": "תיאור"
+      },
+      "fields": {
+        "title": "כותרת",
+        "location": "מיקום",
+        "volunteerField": "תחום התנדבות",
+        "professionalBackground": "רקע מקצועי (אופציונלי)",
+        "frequency": "תדירות",
+        "timing": "זמן",
+        "days": "בחר ימים",
+        "description": "תיאור"
+      },
+      "placeholders": {
+        "title": "לדוגמה: נדרש ליווי רפואי",
+        "location": "בחר מיקום",
+        "volunteerField": "בחר תחום",
+        "professionalBackground": "לדוגמה: בריאות, חינוך",
+        "frequency": "בחר תדירות",
+        "timing": "בחר זמן",
+        "description": "תאר את בקשת ההתנדבות בפירוט"
+      },
+      "days": {
+        "sunday": "ראשון",
+        "monday": "יום שני",
+        "tuesday": "שלישי",
+        "wednesday": "רביעי",
+        "thursday": "חמישי",
+        "friday": "שישי"
+      },
+      "status": {
+        "title": "סטטוס",
+        "active": "פעיל",
+        "inProgress": "בתהליך",
+        "fulfilled": "הושלם",
+        "archived": "ארכיון",
+        "history": "היסטוריית סטטוס",
+        "noHistory": "אין היסטוריית סטטוס לבקשה זו",
+        "changed": "שונה על ידי"
+      },
+      "actions": {
+        "edit": "ערוך",
+        "delete": "מחק",
+        "matches": "התאמות",
+        "history": "היסטוריה",
+        "rematch": "התאמה מחדש"
+      },
+      "emptyStates": {
+        "noVoluntaryRequests": "לא נמצאו בקשות התנדבות",
+        "noVoluntaryRequestsMessage": "נסה ליצור בקשת התנדבות חדשה כדי להתחיל.",
+        "createNewRequest": "צור בקשה חדשה"
+      },
+      "notes": {
+        "jobRequestCreated": "בקשת עבודה נוצרה"
+      },
+      "toasts": {
+        "createSuccess": "בקשת ההתנדבות נוצרה בהצלחה",
+        "createFailed": "נכשל ביצירת בקשת ההתנדבות",
+        "updateSuccess": "בקשת ההתנדבות עודכנה בהצלחה",
+        "updateFailed": "נכשל בעדכון בקשת ההתנדבות",
+        "deleteSuccess": "בקשת ההתנדבות נמחקה בהצלחה",
+        "deleteFailed": "נכשל במחיקת בקשת ההתנדבות",
+        "matchSuccess": "האלגוריתם להרצת התאמות הופעל בהצלחה",
+        "matchFailed": "נכשל בהרצת האלגוריתם להתאמות",
+        "statusUpdateSuccess": "הסטטוס עודכן בהצלחה",
+        "statusUpdateFailed": "נכשל בעדכון הסטטוס",
+        "dataLoadFailed": "נכשל בטעינת הנתונים",
+        "seniorInvited": "המתנדב הוזמן בהצלחה"
+      }
     }
   },
   "retiree": {
@@ -1468,7 +1668,31 @@
     "toast": {
       "missingInfo": "לא ניתן לשלוח הודעה. מידע על המנהל או המשתמש חסר.",
       "sendFailed": "נכשל בשליחת ההודעה."
+    },
+    "search": {
+      "title": "חיפוש גמלאים ביישוב שלך",
+      "noSettlement": "לא משויך יישוב. אנא פנה למנהל המערכת.",
+      "interests": "תחומי עניין",
+      "selectInterests": "בחר תחומי עניין",
+      "jobTitle": "מקצוע",
+      "selectJobs": "בחר מקצועות",
+      "results": "גמלאים תואמים",
+      "noResults": "לא נמצאו גמלאים התואמים לקריטריונים שלך.",
+      "age": "גיל",
+      "gender": "מגדר",
+      "viewProfile": "צפה בפרופיל",
+      "prompt": "אנא בחר לפחות תחום עניין אחד או מקצוע אחד כדי לחפש גמלאים."
     }
+  },
+  "interests": {
+    "Reading": "קריאה",
+    "Traveling": "טיולים",
+    "Gardening": "גינון"
+  },
+  "jobs": {
+    "Teacher": "מורה",
+    "Engineer": "מהנדס",
+    "Nurse": "אחות"
   },
   "calendar": {
     "title": "לוח שנה לפעילות ותיקים",
@@ -1504,13 +1728,13 @@
       "december": "דצמבר"
     },
     "days": {
-      "sun": "א'",
-      "mon": "ב'",
-      "tue": "ג'",
-      "wed": "ד'",
-      "thu": "ה'",
-      "fri": "ו'",
-      "sat": "ש'"
+      "sun": "א׳",
+      "mon": "ב׳",
+      "tue": "ג׳",
+      "wed": "ד׳",
+      "thu": "ה׳",
+      "fri": "ו׳",
+      "sat": "ש׳"
     },
     "more": "עוד",
     "legend": {
@@ -1556,27 +1780,32 @@
       }
     },
     "eventDetails": {
-      "close": "סגור",
+      "status": {
+        "pending": "ממתין",
+        "active": "פעיל",
+        "completed": "הושלם",
+        "confirmed": "מאושר"
+      },
+      "createdByMe": "נוצר על ידי",
+      "creator": "יוצר האירוע",
+      "editEvent": "ערוך אירוע",
+      "deleteEvent": "מחק אירוע",
+      "joinEvent": "הצטרף לאירוע",
+      "leaveEvent": "עזוב אירוע",
+      "processing": "מעבד...",
+      "noParticipants": "אין משתתפים עדיין.",
+      "noDescription": "לא הוזן תיאור.",
+      "participants": "משתתפים",
+      "participant": "משתתף",
       "date": "תאריך",
       "time": "שעה",
       "from": "מ-",
       "to": "עד",
       "notSpecified": "לא צוין",
       "location": "מיקום",
-      "notAvailable": "לא זמין",
       "description": "תיאור",
-      "noDescription": "לא סופק תיאור.",
-      "participants": "משתתפים",
-      "status": {
-        "pending": "ממתין",
-        "confirmed": "מאושר",
-        "completed": "הושלם",
-        "other": "אחר"
-      },
-      "approve": "אשר",
-      "reject": "דחה",
-      "noParticipants": "עדיין אין משתתפים",
-      "joinedCount": "{{count}} משתתפ{{count, plural, one {} other {ים}} הצטרפו."
+      "deleteConfirm": "האם אתה בטוח שברצונך למחוק את האירוע? פעולה זו אינה ניתנת לביטול.",
+      "deleteFailed": "נכשל במחיקת האירוע."
     },
     "toast": {
       "failedToLoadEvents": "נכשל בטעינת האירועים"
@@ -1712,7 +1941,7 @@
       "health": "בריאות",
       "catering": "קייטרינג",
       "teaching": "הוראה",
-      "highTech": "היי-טק",
+      "highTech": "הייטק",
       "tourism": "תיירות",
       "safety": "בטיחות",
       "fundraising": "גיוס כספים",
@@ -1739,12 +1968,12 @@
       "wednesday": "יום רביעי",
       "thursday": "יום חמישי",
       "friday": "יום שישי",
-      "sun": "א'",
-      "mon": "ב'",
-      "tue": "ג'",
-      "wed": "ד'",
-      "thu": "ה'",
-      "fri": "ו'"
+      "sun": "א׳",
+      "mon": "ב׳",
+      "tue": "ג׳",
+      "wed": "ד׳",
+      "thu": "ה׳",
+      "fri": "ו׳"
     },
     "placeholder": {
       "selectFrequency": "בחר תדירות",
@@ -1812,23 +2041,35 @@
     "noViewedRequestsFilter": "אין בקשות שנצפו",
     "noPendingRequests": "אין בקשות ממתינות",
     "noPendingRequestsMessage": "אין כרגע בקשות ממתינות.",
-    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון"
+    "noPendingRequestsFilterMessage": "נסה להתאים את החיפוש או הקריטריונים לסינון",
+    "noMatchingSeniors": "אין ותיקים מתאימים",
+    "noMatchingSeniorsMessage": "אין ותיקים שמתאימים לקריטריונים של בקשת העבודה הזו.",
+    "rerunMatching": "הרץ התאמה מחדש",
+    "noSeniorsAssigned": "אין ותיקים שהוקצו",
+    "noSeniorsAssignedMessage": "עדיין לא הוקצו ותיקים לבקשת העבודה הזו."
   },
   "superadmin": {
     "admins": {
       "title": "ניהול מנהלים",
-      "settlement": "יישוב",
-      "email": "אימייל",
-      "phone": "טלפון",
-      "retirees": "ותיקים רשומים",
       "table": {
-        "name": "שם מנהל",
+        "name": "שם",
         "settlement": "יישוב",
         "email": "אימייל",
         "phone": "טלפון",
-        "retirees": "ותיקים רשומים",
+        "retirees": "ותיקים",
         "actions": "פעולות"
-      }
+      },
+      "addAdmin": "הוסף מנהל",
+      "editAdmin": "ערוך מנהל",
+      "viewAdmin": "פרטי מנהל",
+      "deleteAdmin": "מחק מנהל",
+      "searchPlaceholder": "חפש מנהלים לפי שם, אימייל, יישוב או טלפון...",
+      "noAdmins": "לא נמצאו מנהלים",
+      "noAdminsMessage": "אין מנהלים להצגה. הוסף מנהל חדש כדי להתחיל.",
+      "clearSearch": "נקה חיפוש",
+      "retireesCount": "{{count}} ותיקים",
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנהל \"{{name}}\"?\n\nפעולה זו תסיר גם את היישוב מרשימת היישובים הזמינים.",
+      "loading": "טוען מנהלים..."
     }
   },
   "settlementsManager": {
@@ -1949,7 +2190,8 @@
     "status": {
         "pending": "ממתין",
         "confirmed": "מאושר",
-        "cancelled": "בוטל"
+        "cancelled": "בוטל",
+        "active":"פעיל"
     },
     "creator": "יוצר",
     "noParticipants": "אין משתתפים עדיין.",
@@ -1996,9 +2238,9 @@
     "workBackground": {
       "title": "רקע מקצועי",
       "jobTitle": "תפקיד",
-      "industry": "תעשייה",
+      "industry": "תחום",
       "yearsOfExperience": "שנות ניסיון",
-      "retired": "ותיק",
+      "retired": "פנסיונר",
       "professionalBackground": "רקע מקצועי"
     },
     "lifestyle": {
@@ -2013,7 +2255,7 @@
     "volunteering": {
       "title": "התנדבות וקהילה",
       "currentActivities": "פעילויות נוכחיות",
-      "notParticipatingReason": "סיבת אי השתתפות",
+      "notParticipatingReason": "סיבה לאי השתתפות",
       "isVolunteer": "מתנדב",
       "volunteerAreas": "תחומי התנדבות",
       "volunteerFrequency": "תדירות התנדבות",
@@ -2067,7 +2309,124 @@
     "cancelButton": "ביטול",
     "submitButtonCreate": "צור אירוע",
     "submitButtonUpdate": "עדכן אירוע",
-    "submitting": "שולח..."
+    "submitting": "שולח...",
+    "errors": {
+      "required": "{{field}} הינו שדה חובה.",
+      "minLength": "{{field}} חייב להכיל לפחות {{min}} תווים.",
+      "maxLength": "{{field}} לא יכול להכיל יותר מ-{{max}} תווים.",
+      "min": "{{field}} חייב להיות לפחות {{min}}.",
+      "max": "{{field}} לא יכול להיות יותר מ-{{max}}.",
+      "endDateBeforeStart": "תאריך הסיום לא יכול להיות לפני תאריך ההתחלה.",
+      "minDuration": "אירוע חייב להיות לפחות 30 דקות.",
+      "endTimeAfterStart": "שעת הסיום חייבת להיות אחרי שעת ההתחלה לאירועים באותו יום.",
+      "startDateInPast": "תאריך ההתחלה לא יכול להיות בעבר.",
+      "imageSize": "גודל קובץ התמונה חייב להיות קטן מ-5MB.",
+      "imageType": "התמונה חייבת להיות בפורמט JPEG, PNG, GIF או WebP."
+    },
+    "capacity": "מספר משתתפים",
+    "timeTo": "שעת סיום",
+    "timeFrom": "שעת התחלה",
+    "toasts": {
+      "validationError": "אנא תקן את שגיאות האימות לפני שליחה.",
+      "submitting": "אנא המתן, הטופס נשלח...",
+      "notLoggedIn": "עליך להיות מחובר כדי ליצור אירוע.",
+      "created": "האירוע נוצר בהצלחה.",
+      "updated": "האירוע עודכן בהצלחה.",
+      "failed": "נכשל ביצירת/עדכון האירוע."
+    }
+  },
+  "serviceRequests": {
+    "title": "בקשות שירות",
+    "pendingRequests": "בקשות ממתינות",
+    "viewedRequests": "בקשות שנצפו",
+    "description": "תיאור",
+    "location": "מיקום",
+    "volunteerField": "תחום התנדבות",
+    "professionalBackground": "רקע מקצועי",
+    "timing": "זמן",
+    "frequency": "תדירות",
+    "days": "ימים",
+    "findMatch": "מצא התאמה",
+    "notSpecified": "לא צוין",
+    "errors": {
+      "fetchAdminSettlement": "נכשל באחזור היישוב של המנהל.",
+      "fetchServiceRequests": "נכשל באחזור בקשות השירות.",
+      "createVoluntaryRequest": "נכשל ביצירת בקשת התנדבות.",
+      "mustBeLoggedIn": "עליך להיות מחובר.",
+      "userDocumentNotFound": "מסמך המשתמש לא נמצא.",
+      "noSettlementFound": "לא נמצא יישוב עבור משתמש המנהל."
+    }
+  },
+  "analysis": {
+    "title": "לוח מחוונים לניתוח המערכת",
+    "subtitle": "תובנות מקיפות על ביצועי הפלטפורמה ומעורבות המשתמשים",
+    "admin": "מנהל",
+    "superadmin": "מנהל על",
+    "retiree": "ותיק",
+    "volunteer": "מתנדב",
+    "status": {
+      "active": "פעיל",
+      "pending": "ממתין",
+      "completed": "הושלם",
+      "open": "פתוח",
+      "closed": "סגור",
+      "approved": "מאושר",
+      "rejected": "נדחה",
+      "unknown": "לא ידוע"
+    },
+    "statCards": {
+      "totalUsers": {
+        "title": "סה\"כ משתמשים",
+        "subtitle": "כל המשתמשים הרשומים"
+      },
+      "volunteers": {
+        "title": "מתנדבים",
+        "subtitle": "מתנדבים פעילים"
+      },
+      "retirees": {
+        "title": "ותיקים",
+        "subtitle": "חברי ותיקים"
+      },
+      "avgCompletion": {
+        "title": "זמן ממוצע להשלמה",
+        "subtitle": "זמן להשלמת בקשות עבודה"
+      }
+    },
+    "charts": {
+      "retireesByTown": {
+        "title": "ותיקים לפי יישוב",
+        "noData": "אין נתונים על יישובים",
+        "message": "נסה לבחור טווח זמן או יישוב אחר."
+      },
+      "jobRequestsOverTime": {
+        "title": "בקשות עבודה לאורך זמן",
+        "noData": "אין נתוני סדרת זמן זמינים"
+      },
+      "jobRequestsByStatus": {
+        "title": "בקשות עבודה לפי סטטוס",
+        "noData": "אין נתונים על סטטוסים"
+      },
+      "usersByRole": {
+        "title": "משתמשים לפי תפקיד",
+        "noData": "אין נתונים על תפקידים"
+      },
+      "eventsByCategory": {
+        "title": "אירועים לפי קטגוריה",
+        "noData": "אין נתונים על קטגוריות אירועים"
+      },
+      "eventsOverTime": {
+        "title": "אירועים לאורך זמן",
+        "noData": "אין נתוני סדרת זמן על אירועים"
+      }
+    },
+    "footer": {
+      "lastUpdated": "עדכון אחרון של לוח המחוונים"
+    },
+    "errors": {
+      "loadSettlements": "נכשל בטעינת יישובים.",
+      "loadRetirees": "נכשל בטעינת נתוני ותיקים.",
+      "loadCategories": "נכשל בטעינת קטגוריות."
+    }
   },
   "countries": {
     "AF": "אפגניסטן",
@@ -2280,5 +2639,80 @@
     "YE": "תימן",
     "ZM": "זמביה",
     "ZW": "זימבבואה"
+  },
+  "calendar": {
+    "months": {
+      "january": "ינואר",
+      "february": "פברואר",
+      "march": "מרץ",
+      "april": "אפריל",
+      "may": "מאי",
+      "june": "יוני",
+      "july": "יולי",
+      "august": "אוגוסט",
+      "september": "ספטמבר",
+      "october": "אוקטובר",
+      "november": "נובמבר",
+      "december": "דצמבר"
+    },
+    "days": {
+      "sun": "א׳",
+      "mon": "ב׳",
+      "tue": "ג׳",
+      "wed": "ד׳",
+      "thu": "ה׳",
+      "fri": "ו׳",
+      "sat": "ש׳"
+    },
+    "day": {
+      "hourLabel": "{{hour}}",
+      "noEvents": "אין אירועים מתוכננים ליום זה",
+      "addPrompt": "לחץ על \"צור אירוע\" כדי להוסיף פעילות",
+      "addEvent": "הוסף אירוע"
+    }
+  },
+  "matchDetails": {
+    "loading": "טוען פרטי התאמה...",
+    "failedToLoad": "נכשל בטעינת פרטי ההתאמה",
+    "error": "שגיאה",
+    "close": "סגור",
+    "noDetails": "לא נמצאו פרטי התאמה",
+    "title": "פרטי התאמה",
+    "jobRequest": "בקשת עבודה",
+    "titleLabel": "כותרת",
+    "location": "מיקום",
+    "volunteerField": "תחום התנדבות",
+    "professionalBackground": "רקע מקצועי",
+    "timing": "תזמון",
+    "description": "תיאור",
+    "senior": "גמלאי",
+    "name": "שם",
+    "unknown": "לא ידוע",
+    "interests": "תחומי עניין",
+    "notSpecified": "לא צוין",
+    "availability": "זמינות",
+    "scoreBreakdown": "פירוט ניקוד התאמה",
+    "locationMatch": "התאמת מיקום",
+    "interestsMatch": "התאמת תחומי עניין",
+    "backgroundMatch": "התאמת רקע",
+    "availabilityMatch": "התאמת זמינות",
+    "totalScore": "ניקוד התאמה כולל"
+  },
+  "addCategoryModal": {
+    "eyedropperNotSupported": "ממשק בחירת צבע לא נתמך בדפדפן זה.",
+    "eyedropperFailed": "בחירת הצבע בוטלה או נכשלה.",
+    "copied": "הועתק!",
+    "contrastWarning": "אזהרה: ייתכן שלצבע זה יש ניגודיות נמוכה על רקע בהיר.",
+    "selectColor": "בחר צבע",
+    "suggestedFor": "צבע מוצע",
+    "smartSuggestion": "הצעה חכמה",
+    "customColor": "צבע מותאם אישית",
+    "pickColorFromScreen": "בחר צבע מהמסך",
+    "eyedropperIcon": "🖌️",
+    "hexPlaceholder": "#RRGGBB",
+    "englishRequired": "נדרש תרגום לאנגלית",
+    "hebrewRequired": "נדרש תרגום לעברית",
+    "colorRequired": "אנא בחר צבע"
   }
+  
 }

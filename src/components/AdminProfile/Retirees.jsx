@@ -183,7 +183,7 @@ const Retirees = () => {
     "idVerification.gender": {
       label: t("admin.retirees.fields.idVerification.gender"),
       type: "select",
-      options: ["Male", "Female", "Other"],
+      options: [t("common.gender.male"), t("common.gender.female"), t("common.gender.other")],
       path: ["idVerification", "gender"]
     },
     "idVerification.settlement": {
@@ -205,47 +205,58 @@ const Retirees = () => {
     "personalDetails.maritalStatus": {
       label: t("admin.retirees.fields.personalDetails.maritalStatus"),
       type: "select",
-      options: ["Single", "Married", "Divorced", "Widowed"],
-      path: ["personalDetails", "maritalStatus"]
+      options: [
+          t("admin.retirees.options.maritalStatus.single"),
+          t("admin.retirees.options.maritalStatus.married"),
+          t("admin.retirees.options.maritalStatus.divorced"),
+          t("admin.retirees.options.maritalStatus.widowed")
+        ],
+        path: ["personalDetails", "maritalStatus"]
     },
     "personalDetails.education": {
       label: t("admin.retirees.fields.personalDetails.education"),
       type: "select",
-      options: ["None", "Primary", "Secondary", "Tertiary", "Other"],
+      options: [
+        t("admin.retirees.options.education.none"),
+        t("admin.retirees.options.education.primary"),
+        t("admin.retirees.options.education.secondary"),
+        t("admin.retirees.options.education.tertiary"),
+        t("admin.retirees.options.education.other")
+      ],
       path: ["personalDetails", "education"]
     },
     "personalDetails.healthCondition": {
-      label: "Health Condition",
+      label: t("admin.retirees.fields.personalDetails.healthCondition"),
       type: "select",
       options: ["healthy", "withCaregiver", "nursing", "immobile"],
       path: ["personalDetails", "healthCondition"]
     },
     "personalDetails.hasCar": {
-      label: "Has Car",
+      label: t("admin.retirees.fields.personalDetails.hasCar"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "hasCar"]
     },
     "personalDetails.livingAlone": {
-      label: "Living Alone",
+      label: t("admin.retirees.fields.personalDetails.livingAlone"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "livingAlone"]
     },
     "personalDetails.familyInSettlement": {
-      label: "Family in Settlement",
+      label: t("admin.retirees.fields.personalDetails.familyInSettlement"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "familyInSettlement"]
     },
     "personalDetails.hasWeapon": {
-      label: "Carries Weapon",
+      label: t("admin.retirees.fields.personalDetails.hasWeapon"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "hasWeapon"]
     },
     "personalDetails.militaryService": {
-      label: "Military Service",
+      label: t("admin.retirees.fields.personalDetails.militaryService"),
       type: "select",
       options: ["Yes", "No"],
       path: ["personalDetails", "militaryService"]
@@ -649,15 +660,15 @@ const Retirees = () => {
         const min = filter.value === '' ? -Infinity : parseFloat(filter.value);
         const max = filter.value2 === '' ? Infinity : parseFloat(filter.value2);
         if ((filter.value !== '' && isNaN(min)) || (filter.value2 !== '' && isNaN(max))) {
-          return "Min and Max must be numbers.";
+          return t('admin.retirees.ageNumbers');
         }
         if (min > max) {
-          return "Min must be less than or equal to Max.";
+          return t('admin.retirees.ageSize');
         }
         // Positive-only check (fix: both min and max must be > 0 if provided)
         if (positiveOnlyFields.includes(filter.field)) {
           if ((filter.value !== '' && min <= 0) || (filter.value2 !== '' && max <= 0)) {
-            return "Min and Max must be greater than 0.";
+            return t('admin.retirees.ageRequirement');
           }
         }
       }
@@ -667,10 +678,10 @@ const Retirees = () => {
         const start = filter.value === '' ? null : new Date(filter.value);
         const end = filter.value2 === '' ? null : new Date(filter.value2);
         if ((filter.value !== '' && isNaN(start.getTime())) || (filter.value2 !== '' && isNaN(end.getTime()))) {
-          return "Start and End must be valid dates.";
+          return t('admin.retirees.dateValid');
         }
         if (start && end && start > end) {
-          return "Start date must be before or equal to End date.";
+          return t('admin.retirees.dateRangeValid');
         }
       }
       // Required value for text/select/array
@@ -771,9 +782,13 @@ const Retirees = () => {
     const fieldDef = fieldDefinitions[filter.field];
     if (!fieldDef) return null;
 
-    // Interests field: use static list
+    // Interests field: use static list with translations
     if (filter.field === 'lifestyle.interests') {
-      const options = interestsList.map(i => ({ value: i, label: i }));
+      const options = interestsList.map((interest) => ({
+        value: interest,
+        label: t(`auth.lifestyle.${interest}`), // Dynamically translate interest labels
+      }));
+    
       return (
         <div className="min-w-[220px]">
           <Select
@@ -781,15 +796,17 @@ const Retirees = () => {
             options={options}
             value={
               Array.isArray(filter.value)
-                ? options.filter(opt => filter.value.includes(opt.value))
+                ? options.filter((opt) => filter.value.includes(opt.value))
                 : []
             }
-            onChange={selected => updateFilter(index, "value", selected ? selected.map(opt => opt.value) : [])}
+            onChange={(selected) =>
+              updateFilter(index, "value", selected ? selected.map((opt) => opt.value) : [])
+            }
             placeholder={`Select ${fieldDef.label}`}
             classNamePrefix="react-select"
-            formatOptionLabel={option => (
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: 8 }}>{interestEmojis[option.value] || ''}</span>
+            formatOptionLabel={(option) => (
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: 8 }}>{interestEmojis[option.value] || ""}</span>
                 <span>{option.label}</span>
               </span>
             )}
@@ -797,10 +814,14 @@ const Retirees = () => {
         </div>
       );
     }
-
-    // Hobbies field: use static list
+    
+    // Hobbies field: use static list with translations
     if (filter.field === 'lifestyle.hobbies') {
-      const options = hobbiesList.map(i => ({ value: i, label: i }));
+      const options = hobbiesList.map((hobby) => ({
+        value: hobby,
+        label: t(`auth.lifestyle.${hobby}`), // Dynamically translate hobby labels
+      }));
+    
       return (
         <div className="min-w-[220px]">
           <Select
@@ -808,15 +829,17 @@ const Retirees = () => {
             options={options}
             value={
               Array.isArray(filter.value)
-                ? options.filter(opt => filter.value.includes(opt.value))
+                ? options.filter((opt) => filter.value.includes(opt.value))
                 : []
             }
-            onChange={selected => updateFilter(index, "value", selected ? selected.map(opt => opt.value) : [])}
+            onChange={(selected) =>
+              updateFilter(index, "value", selected ? selected.map((opt) => opt.value) : [])
+            }
             placeholder={`Select ${fieldDef.label}`}
             classNamePrefix="react-select"
-            formatOptionLabel={option => (
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: 8 }}>{hobbyEmojis[option.value] || ''}</span>
+            formatOptionLabel={(option) => (
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: 8 }}>{hobbyEmojis[option.value] || ""}</span>
                 <span>{option.label}</span>
               </span>
             )}
@@ -825,9 +848,13 @@ const Retirees = () => {
       );
     }
 
-    // Jobs field: use static list
+    // Jobs field: use static list with translations
     if (filter.field === 'workBackground.customJobInfo.originalSelection.jobTitle') {
-      const options = jobsList.map(i => ({ value: i, label: i }));
+      const options = jobsList.map((job) => ({
+        value: job,
+        label: t(`auth.signup.workBackground.jobs.${job}`), // Dynamically translate job labels
+      }));
+    
       return (
         <div className="min-w-[220px]">
           <Select
@@ -835,15 +862,17 @@ const Retirees = () => {
             options={options}
             value={
               Array.isArray(filter.value)
-                ? options.filter(opt => filter.value.includes(opt.value))
+                ? options.filter((opt) => filter.value.includes(opt.value))
                 : []
             }
-            onChange={selected => updateFilter(index, "value", selected ? selected.map(opt => opt.value) : [])}
+            onChange={(selected) =>
+              updateFilter(index, "value", selected ? selected.map((opt) => opt.value) : [])
+            }
             placeholder={`Select ${fieldDef.label}`}
             classNamePrefix="react-select"
-            formatOptionLabel={option => (
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{ marginRight: 8 }}>{jobEmojis[option.value] || ''}</span>
+            formatOptionLabel={(option) => (
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ marginRight: 8 }}>{jobEmojis[option.value] || ""}</span>
                 <span>{option.label}</span>
               </span>
             )}
@@ -908,7 +937,7 @@ const Retirees = () => {
             value={filter.value}
             onChange={(e) => updateFilter(index, "value", e.target.value)}
           >
-            <option value="">Select {fieldDef.label}</option>
+            <option value="">{t("admin.retirees.select")} {fieldDef.label}</option>
             {fieldDef.options?.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -918,19 +947,19 @@ const Retirees = () => {
         );
       case "range":
         return (
-          <div className="flex space-x-2 flex-1">
+          <div className="flex flex-col sm:flex-row sm:space-x-2 flex-1">
             <input
               type="number"
-              placeholder="Min Age"
+              placeholder={t("admin.retirees.minAge")}
               min={0}
               className="p-2 border rounded flex-1"
               value={filter.value}
               onChange={(e) => updateFilter(index, "value", e.target.value)}
             />
-            <span className="self-center">to</span>
+            <span className="self-center sm:self-center md:self-start">{t("admin.retirees.filters.to")}</span>
             <input
               type="number"
-              placeholder="Max Age"
+              placeholder={t("admin.retirees.maxAge")}
               min={0}
               className="p-2 border rounded flex-1"
               value={filter.value2}
@@ -947,7 +976,7 @@ const Retirees = () => {
               value={filter.value}
               onChange={(e) => updateFilter(index, "value", e.target.value)}
             />
-            <span className="self-center">to</span>
+            <span className="self-center">{t("admin.retirees.filters.to")}</span>
             <input
               type="date"
               className="p-2 border rounded flex-1"
@@ -975,26 +1004,30 @@ const Retirees = () => {
 
     switch (fieldDef.type) {
       case "range":
-        return [{ value: "range", label: "Range" }];
+        return [{ value: "range", label: t("admin.retirees.defTypes.range") }];
       case "date":
-        return [{ value: "date_range", label: "Date Range" }];
+        return [{ value: "date_range", label: t("admin.retirees.defTypes.dateRange") }];
       case "select":
         return [
-          { value: "equals", label: "Equals" },
-          { value: "contains", label: "Contains" }
+          { value: "equals", label: t("admin.retirees.defTypes.equals") },
+          { value: "contains", label: t("admin.retirees.defTypes.contains") }
         ];
       default:
         return [
           { value: "contains", label: t("admin.retirees.defTypes.contains") },
           { value: "equals", label: t("admin.retirees.defTypes.equals") },
           { value: "starts_with", label: t("admin.retirees.defTypes.startsWith") },
-          { value: "ends_with", label: t("admin.retirees.defTypes.endsWith") },
+          { value: "ends_with", label: t("admin.retirees.defTypes.endsWith") }
         ];
     }
   };
 
   if (loading) {
-    return <div>{t("common.loading")}</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">{t("common.loading")}</div>
+      </div>
+      )
   }
 
   return (
@@ -1101,7 +1134,7 @@ const Retirees = () => {
 
                 {/* Remove Button */}
                 <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg col-span-full"
                   onClick={() => removeFilter(index)}
                 >
                   {t("admin.retirees.filters.remove")}
@@ -1149,7 +1182,7 @@ const Retirees = () => {
                     <span className="font-semibold text-gray-700">{t("admin.retirees.age")}:</span> {retiree.idVerification?.age || t("common.notAvailable")}
                   </div>
                   <div>
-                    <span className="font-semibold text-gray-700">{t("admin.retirees.gender")}:</span> {retiree.idVerification?.gender || t("common.notAvailable")}
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.gender")}:</span> {retiree.idVerification?.gender ? t('common.gender.' + retiree.idVerification.gender.toLowerCase()) : t("common.notAvailable")}
                   </div>
                   <div>
                     <span className="font-semibold text-gray-700">{t("admin.retirees.settlement")}:</span> {retiree.idVerification?.settlement || t("common.notAvailable")}
@@ -1168,19 +1201,39 @@ const Retirees = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.name")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.age")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.gender")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
-                    Settlement
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {t("admin.retirees.table.settlement")}
                   </th>
-                  <th className="px-6 py-3 text-xs font-medium text-right text-gray-500 uppercase tracking-wider">
+                  <th
+                    className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
+                    }`}
+                  >
                     {t("admin.retirees.table.work")}
                   </th>
                 </tr>
@@ -1195,7 +1248,7 @@ const Retirees = () => {
                       {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender ? t('common.gender.' + retiree.idVerification.gender.toLowerCase()) : "N/A"}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.settlement || "N/A"}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}

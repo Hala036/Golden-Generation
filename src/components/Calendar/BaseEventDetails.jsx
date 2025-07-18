@@ -129,7 +129,7 @@ const BaseEventDetails = ({
   };
 
   const handleDeleteEvent = async () => {
-    if (!window.confirm('Are you sure you want to delete this event? This cannot be undone.')) return;
+    if (!window.confirm(t('calendar.eventDetails.deleteConfirm'))) return;
     try {
       const eventRef = doc(db, 'events', event.id);
       // Batch delete participants subcollection and the event itself
@@ -143,7 +143,7 @@ const BaseEventDetails = ({
       onClose();
     } catch (error) {
       console.error('Error deleting event:', error);
-      alert('Failed to delete event.');
+      alert(t('eventDetails.deleteFailed'));
     }
   };
 
@@ -156,10 +156,10 @@ const BaseEventDetails = ({
         const userData = { id: uid, ...userDoc.data() };
         navigate('/view-profile', { state: { retireeData: userData } });
       } else {
-        alert('User profile not found.');
+        alert(t('eventDetails.profileNotFound'));
       }
     } catch (err) {
-      alert('Failed to load user profile.');
+      alert(t('eventDetails.profileLoadFailed'));
     } finally {
       setLoadingProfileUid(null);
     }
@@ -171,12 +171,12 @@ const BaseEventDetails = ({
         {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 text-xs font-bold rounded-full capitalize ${statusColor} mr-2`} aria-label={`Status: ${event.status}`}>{event.status}</span>
+            <span className={`px-3 py-1 text-xs font-bold rounded-full capitalize ${statusColor} mr-2`} aria-label={`Status: ${event.status}`}>{t('eventDetails.status.' + event.status)}</span>
             {isCreator && (
               <span className="flex items-center px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800 border border-blue-300 mr-2 relative group cursor-pointer" tabIndex={0} aria-label="You are the creator of this event">
                 <FaStar className="mr-1 text-yellow-400" />
-                Created by me
-                <span className="absolute left-0 top-full mt-1 w-max bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">You are the creator of this event</span>
+                {t('eventDetails.createdByMe')}
+                <span className="absolute left-0 top-full mt-1 w-max bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">{t('eventDetails.createdByMe')}</span>
               </span>
             )}
             <h2 className="text-3xl font-bold text-gray-800">{event.title}</h2>
@@ -228,7 +228,7 @@ const BaseEventDetails = ({
                 <span className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-700 mr-3"><FaMapPin size={20}/></span>
                 <div>
                   <h3 className="font-semibold text-gray-700">{t('eventDetails.location')}</h3>
-                  <p className="text-gray-600">{event.location || 'N/A'}</p>
+                  <p className="text-gray-600">{event.location || t('eventDetails.notSpecified')}</p>
                 </div>
               </div>
 
@@ -267,7 +267,7 @@ const BaseEventDetails = ({
                               onClick={() => handleParticipantClick(p.uid)}
                               disabled={loadingProfileUid === p.uid}
                             >
-                              {loadingProfileUid === p.uid ? 'Loading...' : (
+                              {loadingProfileUid === p.uid ? t('eventDetails.loadingProfile') : (
                                 p.firstName && p.lastName
                                   ? `${p.firstName} ${p.lastName}`
                                   : p.firstName
@@ -282,11 +282,11 @@ const BaseEventDetails = ({
                                 ? p.firstName
                                 : p.username || p.uid}</>
                           )}
-                          {p.uid === currentUser?.uid ? ` (${t("eventDetails.createdByMe")})` : ''}
+                          {p.uid === currentUser?.uid ? ` (${t('eventDetails.createdByMe')})` : ''}
                         </span>
                         {p.isCreator && (
-                          <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300" title={t("eventDetails.creator")}>
-                            {t("eventDetails.creator")}
+                          <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300" title={t('eventDetails.creator')}>
+                            {t('eventDetails.creator')}
                           </span>
                         )}
                         <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${
@@ -298,14 +298,14 @@ const BaseEventDetails = ({
                         </span>
                       </li>
                     )) : (
-                      <p className="text-center text-gray-500 italic p-4">{t("eventDetails.noParticipants")}</p>
+                      <p className="text-center text-gray-500 italic p-4">{t('eventDetails.noParticipants')}</p>
                     )}
                   </ul>
                 ) : (
                   <div>
                     <p className="flex items-center gap-2 text-gray-600 mt-2">
                       <FaUsers />
-                      {participants.length} participant{participants.length !== 1 ? 's' : ''} have joined.
+                      {participants.length} {t('eventDetails.participant', { count: participants.length })}
                     </p>
                   </div>
                 )}

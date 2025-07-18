@@ -1,11 +1,14 @@
 import React from "react";
 import { FaHistory, FaCheck, FaHourglass, FaUserClock, FaArchive } from "react-icons/fa";
+import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from 'react-i18next';
 
 function StatusHistory({ statusHistory }) {
+  const { t } = useTranslation();
   if (!statusHistory || statusHistory.length === 0) {
     return (
       <div className="p-4 text-center">
-        <p className="text-gray-500 italic">No status history available.</p>
+        <p className="text-gray-500 italic">{t('admin.jobs.status.noHistory')}</p>
       </div>
     );
   }
@@ -68,7 +71,7 @@ function StatusHistory({ statusHistory }) {
   return (
     <div className="p-4">
       <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <FaHistory className="mr-2" /> Status History
+        <FaHistory className="mr-2 ml-2" /> {t('admin.jobs.status.history')}
       </h3>
 
       <div className="relative">
@@ -90,17 +93,17 @@ function StatusHistory({ statusHistory }) {
               <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                 <div className="flex items-center mb-2">
                   {getStatusIcon(item.status)}
-                  <span className="font-semibold ml-2">{item.status}</span>
+                  <span className="font-semibold ml-2">{item.status ? t('admin.jobs.status.' + item.status.toLowerCase().replace(/ /g, '')) : ''}</span>
                   <span className="text-gray-500 text-sm ml-auto">
                     {formatStatusDate(item.timestamp)}
                   </span>
                 </div>
 
-                {item.notes && <p className="text-gray-600">{item.notes}</p>}
+                {item.notes && <p className="text-gray-600">{item.notes === 'Job request created' ? t('admin.jobs.notes.jobRequestCreated') : item.notes}</p>}
 
                 {item.changedBy && (
                   <p className="text-gray-500 text-sm mt-2">
-                    Changed by: {item.changedBy}
+                    {t('admin.jobs.status.changed')} {item.changedBy}
                   </p>
                 )}
               </div>

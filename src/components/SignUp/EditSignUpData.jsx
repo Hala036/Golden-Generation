@@ -235,7 +235,7 @@ const EditSignUpData = () => {
     <div className="min-h-screen flex bg-gradient-to-br from-yellow-50 via-white to-blue-50">
       {/* Sidebar on the left (fixed) */}
       <div className="w-72 min-w-60 max-w-80 border-r bg-white/90 p-8 flex flex-col gap-4 shadow-2xl z-20 fixed left-0 top-0 h-full">
-        <h3 className="text-xl font-bold mb-6 text-yellow-600 tracking-wide">Sign-Up Sections</h3>
+        {/* Removed sidebar title */}
         {SECTIONS.map((section, idx) => (
           <button
             key={section.key}
@@ -246,26 +246,41 @@ const EditSignUpData = () => {
             }`}
             onClick={() => handleSectionChange(section.key)}
           >
-            {section.label}
+            {/* Hebrew translations for sidebar labels */}
+            {section.key === "idVerification" && "אימות זהות"}
+            {section.key === "credentials" && "פרטי התחברות"}
+            {section.key === "personalDetails" && "פרטים אישיים"}
+            {section.key === "workBackground" && "רקע תעסוקתי"}
+            {section.key === "lifestyle" && "אורח חיים"}
+            {section.key === "veteransCommunity" && "קהילת ותיקים"}
           </button>
         ))}
         <button
           className="mt-auto px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 text-gray-700 font-medium border border-gray-200 shadow-sm"
           onClick={handleBack}
         >
-          Back
+          חזרה
         </button>
       </div>
       {/* Main Area */}
       <div className="flex-1 flex justify-center items-center py-12 px-4 ml-72">
         <div className="w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl p-10 border border-gray-100">
           <h2 className="text-3xl font-extrabold mb-6 text-center text-yellow-600 drop-shadow-sm">
-            Edit {SECTIONS[currentStep]?.label}
+            {/* Hebrew translation for section title */}
+            {`עריכת ${
+              sectionKey === "idVerification" ? "אימות זהות" :
+              sectionKey === "credentials" ? "פרטי התחברות" :
+              sectionKey === "personalDetails" ? "פרטים אישיים" :
+              sectionKey === "workBackground" ? "רקע תעסוקתי" :
+              sectionKey === "lifestyle" ? "אורח חיים" :
+              sectionKey === "veteransCommunity" ? "קהילת ותיקים" :
+              ""
+            }`}
           </h2>
           {/* Password note for credentials page */}
           {sectionKey === 'credentials' && (
             <div className="mb-4 text-center text-sm text-gray-500">
-              Leave the password fields blank to keep your current password unchanged.
+              השאר את שדות הסיסמה ריקים כדי לשמור על הסיסמה הנוכחית שלך ללא שינוי.
             </div>
           )}
           <div className="mb-8">
@@ -285,7 +300,7 @@ const EditSignUpData = () => {
                       disabled={saving}
                       type="button"
                     >
-                      Continue
+                      המשך
                     </button>
                   </div>
                 )}
@@ -297,7 +312,7 @@ const EditSignUpData = () => {
                       disabled={saving}
                       type="button"
                     >
-                      {saving ? "Saving..." : "Save Changes"}
+                      {saving ? "שומר..." : "שמור שינויים"}
                     </button>
                   </div>
                 )}
