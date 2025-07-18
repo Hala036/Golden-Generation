@@ -145,16 +145,21 @@ export const useCalendarEvents = (userRole) => {
 
     // Role-based visibility filtering
     filteredEvents = filteredEvents.filter(event => {
-      // Admin: see all events in their settlement
+      // SuperAdmin: see all events
+      if (userRole === 'superadmin') {
+        return true;
+      }
+      
+      // Admin: see all events in their settlement, plus pending events from their settlement
       if (userRole === 'admin') {
         if (event.status === 'pending') {
-          // Only show pending retiree events in this admin's settlement
-          return (!event.settlement || event.settlement === userSettlement);
+          // Only show pending events from this admin's settlement
+          return event.settlement === userSettlement;
         }
         return true;
       }
       
-      // Retiree: see only their own events and events they joined
+      // Retiree: see only their own events (including pending) and events they joined
       if (userRole === 'retiree') {
         return (
           event.createdBy === auth.currentUser?.uid ||
@@ -176,7 +181,16 @@ export const useCalendarEvents = (userRole) => {
       filteredEvents = filteredEvents.filter(event => {
         switch (statusFilter) {
           case 'pending':
-            return event.status === 'pending';
+            // Only show pending events to the creator, admin of settlement, or superadmin
+            if (userRole === 'superadmin') return event.status === 'pending';
+            if (userRole === 'admin') return event.status === 'pending' && event.settlement === userSettlement;
+            if (userRole === 'retiree') return event.status === 'pending' && event.createdBy === auth.currentUser?.uid;
+            return false;
+          case 'pending-approval':
+            // Same logic as pending for admin/superadmin
+            if (userRole === 'superadmin') return event.status === 'pending';
+            if (userRole === 'admin') return event.status === 'pending' && event.settlement === userSettlement;
+            return false;
           case 'approved':
             return event.status === 'active' || event.status === 'open';
           case 'completed':
@@ -269,7 +283,11 @@ export const useCalendarEvents = (userRole) => {
           case 'joined':
             return event.participants?.includes(auth.currentUser?.uid);
           case 'pending':
-            return event.status === 'pending';
+            // Only show pending events to the creator, admin of settlement, or superadmin
+            if (userRole === 'superadmin') return event.status === 'pending';
+            if (userRole === 'admin') return event.status === 'pending' && event.settlement === userSettlement;
+            if (userRole === 'retiree') return event.status === 'pending' && event.createdBy === auth.currentUser?.uid;
+            return false;
           default:
             // Category-based filtering (legacy support)
             return event.category?.name?.toLowerCase() === filter.toLowerCase();

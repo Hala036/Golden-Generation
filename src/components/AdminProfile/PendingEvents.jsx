@@ -25,6 +25,12 @@ const PendingEvents = () => {
         
         const userData = userDoc.data();
         
+        // Check if user is superadmin
+        if (userData.role === 'superadmin') {
+          setAdminSettlement("__ALL__"); // Special value for superadmin
+          return;
+        }
+        
         // Try different possible locations for settlement
         const settlement = userData.idVerification?.settlement || 
                          userData.settlement || 
@@ -43,7 +49,16 @@ const PendingEvents = () => {
     const fetchPendingEvents = async () => {
       try {
         const eventsRef = collection(db, "events");
-        const q = query(eventsRef, where("status", "==", "pending"), where("settlement", "==", adminSettlement));
+        let q;
+        
+        if (adminSettlement === "__ALL__") {
+          // Superadmin: get all pending events
+          q = query(eventsRef, where("status", "==", "pending"));
+        } else {
+          // Admin: get pending events from their settlement
+          q = query(eventsRef, where("status", "==", "pending"), where("settlement", "==", adminSettlement));
+        }
+        
         const snapshot = await getDocs(q);
         const events = snapshot.docs.map((doc) => ({
           id: doc.id,

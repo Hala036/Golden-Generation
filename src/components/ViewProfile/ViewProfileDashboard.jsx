@@ -10,6 +10,7 @@ import ProfileDetails from "./ProfileDetails";
 import Messages from "../SharedDashboard/Messages";
 import DefaultProfilePic from '../DefaultProfilePic';
 import { useTranslation } from 'react-i18next';
+import { auth } from "../../firebase";
 
 const ViewProfileDashboard = () => {
   const { t } = useTranslation();
@@ -23,6 +24,11 @@ const ViewProfileDashboard = () => {
   const retireeData = location.state?.retireeData;
   const retireeIdNumber = retireeData?.idVerification?.idNumber;
   const retireeId = retireeData?.id;
+  const currentUserId = auth.currentUser?.uid;
+  const userRole = retireeData?.role;
+
+  // Check if user is viewing their own profile
+  const isOwnProfile = retireeId === currentUserId;
 
   // Function to get the full name (first and last name)
   const getFullName = (userData) => {
@@ -60,17 +66,19 @@ const ViewProfileDashboard = () => {
     return "User";
   };
 
-  // Redirect to a fallback page if retireeIdNumber is not available
+  // Redirect to a fallback page if retireeIdNumber is not available (only for retirees)
   useEffect(() => {
-    if (!retireeIdNumber) {
+    // Only check for ID number if the user is a retiree
+    if (userRole === 'retiree' && !retireeIdNumber) {
       toast.error("No retiree ID number available.");
       navigate("/dashboard");
     }
-  }, [retireeIdNumber, navigate]);
+  }, [retireeIdNumber, navigate, userRole]);
 
   const icons = [
     { id: "profile", label: t('admin.retirees.profile'), icon: <FaUser /> },
-    { id: "messages", label: t('admin.retirees.sendMessage'), icon: <FaComments /> }
+    // Only show messages option if not viewing own profile
+    ...(isOwnProfile ? [] : [{ id: "messages", label: t('admin.retirees.sendMessage'), icon: <FaComments /> }])
   ];
 
   const handleTabSelect = (id) => {
@@ -159,20 +167,6 @@ const ViewProfileDashboard = () => {
 
         {/* Bottom Section (Pinned) */}
         <div className="border-t border-gray-200 bg-gray-100 p-2 md:p-4">
-          {/* Custom Buttons *
-          {customButtons.map(({ id, label, onClick, icon }) => (
-            <button
-              key={id}
-              onClick={() => setSelected(id)}
-            className={`flex items-center ${
-              isSidebarExpanded ? "space-x-1 md:space-x-2" : "justify-center"
-            } text-gray-600 hover:text-gray-800 w-full py-1 md:py-2`}
-            >
-              <span className="text-xl">{icon}</span>
-              {isSidebarExpanded && <span className="text-sm">{label}</span>}
-            </button>
-          ))}
-
           {/* back to profile Button */}
           <button
             onClick={handleBackToProfile}
@@ -214,7 +208,7 @@ const ViewProfileDashboard = () => {
         </div>
 
         {/* Scrollable Content */}
-      <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative overflow-y-auto mt-8 md:mt-12">
+        <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative overflow-y-auto mt-8 md:mt-12">
           {selected === "profile" && <ProfileDetails retireeData={retireeData} />}
           {selected === "messages" && (
             <Messages />

@@ -256,9 +256,25 @@ const Cards = ({ setSelected }) => {
             const eventsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
                         
             // Filter events based on role (do NOT filter by isEventUpcoming here)
-            const roleBasedEvents = userRole === 'admin' || userRole === 'superadmin'
+            const roleBasedEvents = userRole === 'superadmin'
                 ? eventsData.filter(event => (event.status === 'active' || event.status === 'pending' || event.status === 'completed'))
-                : eventsData.filter(event => (event.status === 'active' || event.status === 'completed' || (event.status === 'pending' && event.createdBy === (currentUser && currentUser.uid))));
+                : userRole === 'admin'
+                ? eventsData.filter(event => {
+                    if (event.status === 'pending') {
+                      // Only show pending events from this admin's settlement
+                      return event.settlement === userSettlement;
+                    }
+                    return (event.status === 'active' || event.status === 'completed');
+                  })
+                : eventsData.filter(event => {
+                    // Retirees: see their own events (including pending) and events they joined
+                    if (event.status === 'pending') {
+                      return event.createdBy === (currentUser && currentUser.uid);
+                    }
+                    return (event.status === 'active' || event.status === 'completed' || 
+                           event.createdBy === (currentUser && currentUser.uid) ||
+                           (Array.isArray(event.participants) && event.participants.includes(currentUser && currentUser.uid)));
+                  });
                         
             // Sort events by date (upcoming first)
             const sortedEvents = sortEventsByDate(roleBasedEvents);
@@ -280,7 +296,7 @@ const Cards = ({ setSelected }) => {
       // Unsubscribe from listeners when component unmounts
       unsubscribeEvents();
     };
-  }, [userRole, currentUser]);
+  }, [userRole, currentUser, userSettlement]);
 
   // Apply filters (category, search, my events, settlement)
   useEffect(() => {
