@@ -288,7 +288,10 @@ const Cards = ({ setSelected }) => {
 
     // Filter by "My Events Only" if enabled
     if (showMyEventsOnly && currentUser) {
-      filtered = filtered.filter(event => isEventCreatedByMe(event));
+      filtered = filtered.filter(event =>
+        event.createdBy === currentUser.uid ||
+        (Array.isArray(event.participants) && event.participants.includes(currentUser.uid))
+      );
     }
 
     // Filter by category
