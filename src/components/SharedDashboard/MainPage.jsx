@@ -165,11 +165,21 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     const fetchVolunteerMatchesCount = async () => {
       try {
         const uid = user?.uid || null;
-        const volunteerMatchesQuery = query(
-          collection(db, "jobRequests"),
-          where("status", "==", "Active"), // Query for active job requests
-          where("createdBy", "==", uid) // Filter by current user's UID
-        );
+        const role = userRole?.toLowerCase() || 'unknown';
+        let volunteerMatchesQuery;
+        if (role === 'admin') {
+          volunteerMatchesQuery = query(
+            collection(db, "jobRequests"),
+            where("status", "==", "Active"), // Query for active job requests
+            where("createdBy", "==", uid) // Filter by current user's UID
+          );
+        }
+        else {
+          volunteerMatchesQuery = query(
+            collection(db, "jobRequests"),
+            where("status", "==", "Active") // Query for active job requests
+          );
+        }
 
         const querySnapshot = await getDocs(volunteerMatchesQuery);
 

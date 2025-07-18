@@ -2744,5 +2744,20 @@
     "backgroundMatch": "Background Match",
     "availabilityMatch": "Availability Match",
     "totalScore": "Total Match Score"
+  },
+  "pendingEvents": {
+    "title": "Pending Events",
+    "empty": "No pending events to review.",
+    "eventTitle": "Title",
+    "location": "Location",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "accept": "Accept",
+    "reject": "Reject",
+    "approveSuccess": "Event approved successfully!",
+    "approveError": "Failed to approve event.",
+    "rejectSuccess": "Event rejected successfully!",
+    "rejectError": "Failed to reject event.",
+    "fetchError": "Failed to fetch pending events."
   }
 }

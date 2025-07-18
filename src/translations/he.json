@@ -2686,6 +2686,20 @@
     "englishRequired": "נדרש תרגום לאנגלית",
     "hebrewRequired": "נדרש תרגום לעברית",
     "colorRequired": "אנא בחר צבע"
+  },
+  "pendingEvents": {
+    "title": "אירועים ממתינים",
+    "empty": "אין אירועים ממתינים לבדיקה.",
+    "eventTitle": "כותרת",
+    "location": "מיקום",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "accept": "אישור",
+    "reject": "דחייה",
+    "approveSuccess": "האירוע אושר בהצלחה!",
+    "approveError": "אירעה שגיאה באישור האירוע.",
+    "rejectSuccess": "האירוע נדחה בהצלחה!",
+    "rejectError": "אירעה שגיאה בדחיית האירוע.",
+    "fetchError": "אירעה שגיאה בקבלת האירועים הממתינים."
   }
-  
 }
