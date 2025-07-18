@@ -23,11 +23,7 @@ import profile from "../../assets/profile.jpeg";
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../Modal';
 import { useTranslation } from 'react-i18next';
-
-const mockAnnouncements = [
-  { id: 1, title: "Welcome to Golden Generation!", date: "2024-06-01", content: "We are excited to have you on board." },
-  { id: 2, title: "New Feature: Dark Mode", date: "2024-06-10", content: "You can now switch between light and dark themes in your settings." },
-];
+import { FaEnvelope, FaUser, FaPhone, FaInfoCircle } from 'react-icons/fa';
 
 const SettingsCards = () => {
   // Modal states
@@ -62,6 +58,12 @@ const SettingsCards = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const { theme, setTheme } = useTheme();
+
+  // Move mockAnnouncements here so t is in scope
+  const mockAnnouncements = [
+    { id: 1, title: t('auth.dashboard.settings.announcements.welcome.title'), date: "2024-06-01", content: t('auth.dashboard.settings.announcements.welcome.content') },
+    { id: 2, title: t('auth.dashboard.settings.announcements.darkMode.title'), date: "2024-06-10", content: t('auth.dashboard.settings.announcements.darkMode.content') },
+  ];
 
   // Fetch preferences on mount
   useEffect(() => {
@@ -130,7 +132,7 @@ const SettingsCards = () => {
       });
       setShowEditProfile(true);
     } catch (err) {
-      toast.error("Failed to load profile");
+      toast.error(t('auth.dashboard.settings.toast.failedToLoadProfile'));
     } finally {
       setLoadingProfile(false);
     }
@@ -139,7 +141,7 @@ const SettingsCards = () => {
   const handleProfileSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
+    if (!user) return toast.error(t('auth.dashboard.settings.toast.notLoggedIn'));
     try {
       // If email changed, require re-auth
       if (profileData.email !== user.email) {
@@ -148,19 +150,19 @@ const SettingsCards = () => {
         return;
       }
       await updateFirestoreProfile(user.uid, profileData);
-      toast.success("Profile updated");
+      toast.success(t('auth.dashboard.settings.toast.profileUpdated'));
       setShowEditProfile(false);
     } catch (err) {
-      toast.error(err.message || "Failed to update profile");
+      toast.error(err.message || t('auth.dashboard.settings.toast.failedToUpdateProfile'));
     }
   };
 
   const handlePasswordSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
+    if (!user) return toast.error(t('auth.dashboard.settings.toast.notLoggedIn'));
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t('auth.dashboard.settings.toast.passwordsDoNotMatch'));
       return;
     }
     try {
@@ -168,11 +170,11 @@ const SettingsCards = () => {
       const cred = EmailAuthProvider.credential(user.email, passwordData.currentPassword);
       await reauthenticateWithCredential(user, cred);
       await updatePassword(user, passwordData.newPassword);
-      toast.success("Password updated successfully");
+      toast.success(t('auth.dashboard.settings.toast.passwordUpdatedSuccessfully'));
       setShowChangePassword(false);
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      toast.error(err.message || "Failed to update password");
+      toast.error(err.message || t('auth.dashboard.settings.toast.failedToUpdatePassword'));
     }
   };
   const handleProfilePicChange = (e) => {
@@ -182,14 +184,14 @@ const SettingsCards = () => {
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Please upload a valid image file (JPG, JPEG, PNG, or GIF)');
+      toast.error(t('auth.dashboard.settings.toast.invalidImageFile'));
       return;
     }
 
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
+      toast.error(t('auth.dashboard.settings.toast.fileSizeTooLarge'));
       return;
     }
 
@@ -213,7 +215,7 @@ const SettingsCards = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error(t('auth.dashboard.settings.profilePicture.uploadFailed'));
       }
 
       const data = await response.json();
@@ -227,8 +229,8 @@ const SettingsCards = () => {
   const handleProfilePicSave = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
-    if (!profilePic) return toast.error("Please select a picture");
+    if (!user) return toast.error(t('auth.dashboard.settings.toast.notLoggedIn'));
+    if (!profilePic) return toast.error(t('auth.dashboard.settings.toast.pleaseSelectPicture'));
 
     setUploadingProfilePic(true);
     setUploadProgress(0);
@@ -249,13 +251,13 @@ const SettingsCards = () => {
 
       // Update local state
       setCurrentProfilePic(imageUrl);
-      toast.success("Profile picture updated successfully");
+      toast.success(t('auth.dashboard.settings.toast.profilePictureUpdatedSuccessfully'));
       setShowProfilePicture(false);
       setProfilePic(null);
       setProfilePicPreview(null);
     } catch (err) {
       console.error("Error updating profile picture:", err);
-      toast.error(err.message || "Failed to update profile picture");
+      toast.error(err.message || t('auth.dashboard.settings.toast.failedToUpdateProfilePicture'));
     } finally {
       setUploadingProfilePic(false);
       setUploadProgress(0);
@@ -266,26 +268,26 @@ const SettingsCards = () => {
     if (size > 40) size = 40;
     setFontSize(size);
     updatePreference("fontSize", size);
-    toast.success("Font size updated");
+    toast.success(t('auth.dashboard.settings.toast.fontSizeUpdated'));
   };
   const handleThemeChange = (mode) => {
     setTheme(mode);
     updatePreference("theme", mode);
-    toast.success(`Theme set to ${mode}`);
+    toast.success(t('auth.dashboard.settings.toast.themeSetTo', { mode: mode }));
     setShowTheme(false);
   };
   const handleNotificationsChange = (field) => {
     const newNotifications = { ...notifications, [field]: !notifications[field] };
     setNotifications(newNotifications);
     updatePreference("notifications", newNotifications);
-    toast.success("Notification preference updated");
+    toast.success(t('auth.dashboard.settings.toast.notificationPreferenceUpdated'));
   };
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
-    if (deleteConfirm !== "DELETE") return toast.error("Type DELETE to confirm");
-    if (!deletePassword) return toast.error("Enter your password");
+    if (!user) return toast.error(t('auth.dashboard.settings.toast.notLoggedIn'));
+    if (deleteConfirm !== "DELETE") return toast.error(t('auth.dashboard.settings.toast.typeDeleteToConfirm'));
+    if (!deletePassword) return toast.error(t('auth.dashboard.settings.toast.enterPassword'));
     try {
       // Re-authenticate
       const cred = EmailAuthProvider.credential(user.email, deletePassword);
@@ -297,7 +299,7 @@ const SettingsCards = () => {
       // Delete Auth user
       await deleteUser(user);
       
-      toast.success("Account deleted successfully");
+      toast.success(t('auth.dashboard.settings.toast.accountDeletedSuccessfully'));
       setShowDeleteAccount(false);
       setDeleteConfirm("");
       setDeletePassword("");
@@ -305,9 +307,9 @@ const SettingsCards = () => {
     } catch (err) {
       console.error("Error deleting account:", err);
       if (err.code === 'auth/requires-recent-login') {
-        toast.error("Please log out and log in again before deleting your account");
+        toast.error(t('auth.dashboard.settings.toast.pleaseLogOutAndLogInAgain'));
       } else {
-        toast.error(err.message || "Failed to delete account");
+        toast.error(err.message || t('auth.dashboard.settings.toast.failedToDeleteAccount'));
       }
     }
   };
@@ -333,25 +335,25 @@ const SettingsCards = () => {
       await reauthenticateWithCredential(user, cred);
       await updateEmail(user, pendingProfileData.email);
       await updateFirestoreProfile(user.uid, pendingProfileData);
-      toast.success("Profile and email updated");
+      toast.success(t('auth.dashboard.settings.toast.profileAndEmailUpdated'));
       setShowReauth(false);
       setShowEditProfile(false);
       setPendingProfileData(null);
       setReauthPassword("");
     } catch (err) {
-      toast.error(err.message || "Re-authentication failed");
+      toast.error(err.message || t('auth.dashboard.settings.toast.reAuthenticationFailed'));
     }
   };
 
   // Helper to update preferences in Firestore
   const updatePreference = async (field, value) => {
     const user = auth.currentUser;
-    if (!user) return toast.error("Not logged in");
+    if (!user) return toast.error(t('auth.dashboard.settings.toast.notLoggedIn'));
     try {
       const userRef = doc(db, "users", user.uid);
       await updateDoc(userRef, { [`preferences.${field}`]: value });
     } catch (err) {
-      toast.error("Failed to save preference");
+      toast.error(t('auth.dashboard.settings.toast.failedToSavePreference'));
     }
   };
 
@@ -373,56 +375,56 @@ const SettingsCards = () => {
   // Move settingsOptions array here, after all handler functions
   const settingsOptions = [
     {
-      label: "Edit Profile",
-      description: "Update your name, username, phone, and email",
+      label: t('auth.dashboard.settings.options.editProfile'),
+      description: t('auth.dashboard.settings.options.editProfileDesc'),
       icon: <FiUser className="text-2xl" />,
       onClick: handleOpenEditProfile,
     },
     {
-      label: "Change Password",
-      description: "Update your account password",
+      label: t('auth.dashboard.settings.options.changePassword'),
+      description: t('auth.dashboard.settings.options.changePasswordDesc'),
       icon: <FiKey className="text-2xl" />,
       onClick: () => setShowChangePassword(true),
     },
     {
-      label: "Profile Picture",
-      description: "Update your profile picture",
+      label: t('auth.dashboard.settings.options.profilePicture'),
+      description: t('auth.dashboard.settings.options.profilePictureDesc'),
       icon: <FiImage className="text-2xl" />,
       onClick: () => setShowProfilePicture(true),
     },
     {
-      label: "Font Size",
-      description: "Adjust the text size (Normal / Large / Extra large)",
+      label: t('auth.dashboard.settings.options.fontSize'),
+      description: t('auth.dashboard.settings.options.fontSizeDesc'),
       icon: <FiType className="text-2xl" />,
       onClick: () => setShowFontSize(true),
     },
     {
-      label: "System Announcements",
-      description: "View important system updates and announcements",
+      label: t('auth.dashboard.settings.options.systemAnnouncements'),
+      description: t('auth.dashboard.settings.options.systemAnnouncementsDesc'),
       icon: <FiAlertCircle className="text-2xl" />,
       onClick: handleOpenAnnouncements,
     },
     {
-      label: "Notifications",
-      description: "Manage your notification preferences",
+      label: t('auth.dashboard.settings.options.notifications'),
+      description: t('auth.dashboard.settings.options.notificationsDesc'),
       icon: <FiBell className="text-2xl" />,
       onClick: () => setShowNotifications(true),
     },
     {
-      label: "Theme",
-      description: "Switch between light and dark mode",
+      label: t('auth.dashboard.settings.options.theme'),
+      description: t('auth.dashboard.settings.options.themeDesc'),
       icon: <FiMoon className="text-2xl" />,
       onClick: () => setShowTheme(true),
     },
     {
-      label: "Delete Account",
-      description: "Permanently delete your account",
+      label: t('auth.dashboard.settings.options.deleteAccount'),
+      description: t('auth.dashboard.settings.options.deleteAccountDesc'),
       icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
       onClick: () => setShowDeleteAccount(true),
     },
     {
-      label: "Edit Sign-Up Data",
-      description: "Edit all information entered during sign-up",
+      label: t('auth.dashboard.settings.options.editUserInfo'),
+      description: t('auth.dashboard.settings.options.editUserInfoDesc'),
       icon: <FiSettings className="text-2xl" />,
       onClick: () => navigate("/edit-signup-data"),
     },
@@ -475,7 +477,7 @@ const SettingsCards = () => {
             <button
               className="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-600"
               onClick={() => setShowEditProfile(false)}
-              aria-label="Close"
+              aria-label={t('common.close')}
             >
               &times;
             </button>
@@ -483,7 +485,7 @@ const SettingsCards = () => {
               id="edit-profile-title"
               className="text-2xl font-bold mb-8 text-yellow-600 text-left"
             >
-              Edit Profile
+              {t('auth.dashboard.settings.modals.editProfile')}
             </h2>
             
             {loadingProfile && (
@@ -495,13 +497,13 @@ const SettingsCards = () => {
             {showReauth && (
               <form onSubmit={handleReauthAndSave} className="flex flex-col gap-4">
                 <div className="relative">
-                  <label htmlFor="reauth-password" className="text-sm font-medium">Current Password</label>
+                  <label htmlFor="reauth-password" className="text-sm font-medium">{t('auth.dashboard.settings.placeholders.currentPassword')}</label>
                   <PasswordInput
                     id="reauth-password"
                     value={reauthPassword}
                     onChange={e => setReauthPassword(e.target.value)}
                     className="w-full pl-3 pr-3 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
-                    placeholder="Re-authenticate with current password"
+                    placeholder={t('auth.dashboard.settings.placeholders.reauthPassword')}
                     autoComplete="current-password"
                     required
                   />
@@ -512,13 +514,13 @@ const SettingsCards = () => {
                     onClick={() => setShowReauth(false)}
                     className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     className="bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-600"
                   >
-                    Re-authenticate
+                    {t('auth.dashboard.settings.buttons.reauthenticate')}
                   </button>
                 </div>
               </form>
@@ -528,25 +530,26 @@ const SettingsCards = () => {
               <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
                 {/* Auto-save status indicator */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                  <span>Auto-save enabled</span>
+                  <span>{t('auth.dashboard.settings.autoSaveEnabled')}</span>
                   <div className="flex items-center gap-2">
-                    {autoSaving && (
+                    {/* autoSaving and lastSaved are not defined in this component, so this block will be removed or commented out */}
+                    {/* {autoSaving && (
                       <div className="flex items-center gap-1">
                         <div className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
                         <span>Saving...</span>
                       </div>
-                    )}
-                    {lastSaved && !autoSaving && (
+                    )} */}
+                    {/* {lastSaved && !autoSaving && (
                       <div className="flex items-center gap-1 text-green-600">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <span>Saved {lastSaved.toLocaleTimeString()}</span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
 
                 <div className="relative">
-                  <label htmlFor="profile-email" className="text-sm font-medium">Email</label>
+                  <label htmlFor="profile-email" className="text-sm font-medium">{t('auth.dashboard.settings.placeholders.email')}</label>
                   <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
                     id="profile-email"
@@ -563,7 +566,7 @@ const SettingsCards = () => {
                 </div>
                 {touched.email && emailField.isChecking && (
                   <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                    <FaInfoCircle className="flex-shrink-0" />{t('auth.dashboard.settings.checking')}
                   </span>
                 )}
                 {touched.email && emailField.error && (
@@ -574,7 +577,7 @@ const SettingsCards = () => {
                 )}
 
                 <div className="relative">
-                  <label htmlFor="profile-username" className="text-sm font-medium">Username</label>
+                  <label htmlFor="profile-username" className="text-sm font-medium">{t('auth.dashboard.settings.placeholders.username')}</label>
                   <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
                     id="profile-username"
@@ -591,7 +594,7 @@ const SettingsCards = () => {
                 </div>
                 {touched.username && usernameField.isChecking && (
                   <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                    <FaInfoCircle className="flex-shrink-0" />Checking...
+                    <FaInfoCircle className="flex-shrink-0" />{t('auth.dashboard.settings.checking')}
                   </span>
                 )}
                 {touched.username && usernameField.error && (
@@ -602,7 +605,7 @@ const SettingsCards = () => {
                 )}
 
                 <div className="relative">
-                  <label htmlFor="profile-phone" className="text-sm font-medium">Phone</label>
+                  <label htmlFor="profile-phone" className="text-sm font-medium">{t('auth.dashboard.settings.placeholders.phone')}</label>
                   <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
                     id="profile-phone"
@@ -630,7 +633,7 @@ const SettingsCards = () => {
                     onClick={() => setShowEditProfile(false)}
                     className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
@@ -641,7 +644,7 @@ const SettingsCards = () => {
                       !isValid
                     }
                   >
-                    Save Changes
+                    {t('auth.dashboard.settings.buttons.saveChanges')}
                   </button>
                 </div>
               </form>
@@ -651,7 +654,7 @@ const SettingsCards = () => {
       )}
       {/* Change Password Modal */}
       {showChangePassword && (
-        <Modal onClose={() => setShowChangePassword(false)} title="Change Password">
+        <Modal onClose={() => setShowChangePassword(false)} title={t('auth.dashboard.settings.modals.changePassword')}>
           <form onSubmit={handlePasswordSave} className="space-y-4">
             <input 
               type="password" 
@@ -660,7 +663,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Current Password" 
+              placeholder={t('auth.dashboard.settings.placeholders.currentPassword')} 
               value={passwordData.currentPassword} 
               onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} 
               required 
@@ -672,7 +675,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="New Password" 
+              placeholder={t('auth.dashboard.settings.placeholders.newPassword')} 
               value={passwordData.newPassword} 
               onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} 
               required 
@@ -684,7 +687,7 @@ const SettingsCards = () => {
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white border-gray-300'
               }`}
-              placeholder="Confirm New Password" 
+              placeholder={t('auth.dashboard.settings.placeholders.confirmNewPassword')} 
               value={passwordData.confirmPassword} 
               onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} 
               required 
@@ -699,13 +702,13 @@ const SettingsCards = () => {
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 
                 className="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
               >
-                Change
+                {t('auth.dashboard.settings.buttons.saveChanges')}
               </button>
             </div>
           </form>
@@ -713,22 +716,21 @@ const SettingsCards = () => {
       )}
       {/* Profile Picture Modal */}
       {showProfilePicture && (
-        <Modal onClose={() => setShowProfilePicture(false)} title="Update Profile Picture">
+        <Modal onClose={() => setShowProfilePicture(false)} title={t('auth.dashboard.settings.modals.profilePicture')}>
           <form onSubmit={handleProfilePicSave} className="space-y-6">
             {/* Current Profile Picture */}
             <div className="flex flex-col items-center">
               <div className="relative w-32 h-32 mb-4">
                 <img 
                   src={currentProfilePic || profile} 
-                  alt="Current Profile" 
+                  alt={t('auth.dashboard.settings.profilePicture.currentProfile')} 
                   className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
                 />
               </div>
               <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                Current Profile Picture
+                {t('auth.dashboard.settings.profilePicture.currentProfile')}
               </p>
             </div>
-
             {/* File Upload Section */}
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center w-full">
@@ -740,10 +742,10 @@ const SettingsCards = () => {
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <FiImage className={`w-8 h-8 mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
                     <p className={`mb-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      <span className="font-semibold">Click to upload</span> or drag and drop
+                      <span className="font-semibold">{t('auth.dashboard.settings.profilePicture.clickToUpload')}</span> {t('auth.dashboard.settings.profilePicture.orDragAndDrop')}
                     </p>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      PNG, JPG, JPEG or GIF (MAX. 5MB)
+                      {t('auth.dashboard.settings.profilePicture.fileTypes')}
                     </p>
                   </div>
                   <input 
@@ -754,7 +756,6 @@ const SettingsCards = () => {
                   />
                 </label>
               </div>
-
               {/* Upload Progress */}
               {uploadingProfilePic && (
                 <div className={`w-full rounded-full h-2.5 ${
@@ -766,24 +767,22 @@ const SettingsCards = () => {
                   ></div>
                 </div>
               )}
-
               {/* Preview Section */}
               {profilePicPreview && (
                 <div className="flex flex-col items-center">
                   <div className="relative w-32 h-32">
                     <img 
                       src={profilePicPreview} 
-                      alt="Preview" 
+                      alt={t('auth.dashboard.settings.profilePicture.preview')} 
                       className="w-full h-full rounded-full object-cover border-2 border-yellow-500"
                     />
                   </div>
                   <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    New Profile Picture Preview
+                    {t('auth.dashboard.settings.profilePicture.newProfilePicturePreview')}
                   </p>
                 </div>
               )}
             </div>
-
             {/* Action Buttons */}
             <div className="flex justify-end gap-2">
               <button 
@@ -796,7 +795,7 @@ const SettingsCards = () => {
                 }`}
                 disabled={uploadingProfilePic}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 
@@ -806,10 +805,10 @@ const SettingsCards = () => {
                 {uploadingProfilePic ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Uploading...
+                    {t('auth.dashboard.settings.profilePicture.uploading')}
                   </>
                 ) : (
-                  'Save Changes'
+                  t('auth.dashboard.settings.buttons.saveChanges')
                 )}
               </button>
             </div>
@@ -818,7 +817,7 @@ const SettingsCards = () => {
       )}
       {/* Font Size Modal */}
       {showFontSize && (
-        <Modal onClose={() => setShowFontSize(false)} title={t('dashboard.fontSize.title')}>
+        <Modal onClose={() => setShowFontSize(false)} title={t('auth.dashboard.settings.modals.fontSize')}>
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2">
               <button
@@ -878,14 +877,14 @@ const SettingsCards = () => {
               ))}
             </div>
             <div className={`mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`} style={{ fontSize: fontSize }}>
-              {t('dashboard.fontSize.sampleText')}
+              {t('auth.dashboard.settings.fontSize.sampleText')}
             </div>
           </div>
         </Modal>
       )}
       {/* Announcements Modal */}
       {showAnnouncements && (
-        <Modal onClose={() => setShowAnnouncements(false)} title="System Announcements">
+        <Modal onClose={() => setShowAnnouncements(false)} title={t('auth.dashboard.settings.modals.announcements')}>
           {loadingAnnouncements ? (
             <div className="flex justify-center items-center mb-4">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-500"></div>
@@ -911,7 +910,7 @@ const SettingsCards = () => {
       )}
       {/* Notifications Modal */}
       {showNotifications && (
-        <Modal onClose={() => setShowNotifications(false)} title="Notifications">
+        <Modal onClose={() => setShowNotifications(false)} title={t('auth.dashboard.settings.modals.notifications')}>
           <div className="space-y-4">
             <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
               <input 
@@ -920,7 +919,7 @@ const SettingsCards = () => {
                 onChange={() => handleNotificationsChange("email")} 
                 className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
               />
-              Email Notifications
+              {t('auth.dashboard.settings.notifications.emailNotifications')}
             </label>
             <label className={`flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
               <input 
@@ -929,14 +928,14 @@ const SettingsCards = () => {
                 onChange={() => handleNotificationsChange("push")} 
                 className={theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}
               />
-              Push Notifications
+              {t('auth.dashboard.settings.notifications.pushNotifications')}
             </label>
           </div>
         </Modal>
       )}
       {/* Theme Modal */}
       {showTheme && (
-        <Modal onClose={() => setShowTheme(false)} title="Theme">
+        <Modal onClose={() => setShowTheme(false)} title={t('auth.dashboard.settings.modals.theme')}>
           <div className="space-y-3">
             <button 
               onClick={() => handleThemeChange("light")} 
@@ -948,7 +947,7 @@ const SettingsCards = () => {
                     : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              Light
+              {t('auth.dashboard.settings.theme.light')}
             </button>
             <button 
               onClick={() => handleThemeChange("dark")} 
@@ -960,22 +959,22 @@ const SettingsCards = () => {
                     : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              Dark
+              {t('auth.dashboard.settings.theme.dark')}
             </button>
           </div>
         </Modal>
       )}
       {/* Delete Account Modal */}
       {showDeleteAccount && (
-        <Modal onClose={() => setShowDeleteAccount(false)} title="Delete Account">
+        <Modal onClose={() => setShowDeleteAccount(false)} title={t('auth.dashboard.settings.modals.deleteAccount')}>
           <form onSubmit={handleDeleteAccount} className="space-y-4">
             <div className={`text-red-600 font-semibold ${theme === 'dark' ? 'text-red-400' : ''}`}>
-              This action is irreversible. Type <b>DELETE</b> to confirm.
+              {t('auth.dashboard.settings.deleteAccountWarning')}
             </div>
             <input 
               type="text"
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Type DELETE to confirm"
+              placeholder={t('auth.dashboard.settings.placeholders.deleteConfirm')}
               value={deleteConfirm}
               onChange={e => setDeleteConfirm(e.target.value)}
               required
@@ -983,7 +982,7 @@ const SettingsCards = () => {
             <input 
               type="password" 
               className={`w-full p-2 border rounded ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your password" 
+              placeholder={t('auth.dashboard.settings.placeholders.enterPassword')} 
               value={deletePassword} 
               onChange={e => setDeletePassword(e.target.value)} 
             />
@@ -997,13 +996,13 @@ const SettingsCards = () => {
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 type="submit" 
                 className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
               >
-                Delete
+                {t('auth.dashboard.settings.options.deleteAccount')}
               </button>
             </div>
           </form>

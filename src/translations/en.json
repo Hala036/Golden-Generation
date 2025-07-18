@@ -603,7 +603,19 @@
           "deleteAccount": "Delete Account",
           "deleteAccountDesc": "Permanently delete your account",
           "editUserInfo": "Edit User Information",
-          "editUserInfoDesc": "Edit all information entered during sign-up"
+          "editUserInfoDesc": "Edit all information entered during sign-up",
+          "autoSaveEnabled": "Auto-save enabled",
+          "checking": "Checking...",
+          "toast": {
+            "passwordUpdatedSuccessfully": "Password updated successfully",
+            "profilePictureUpdatedSuccessfully": "Profile picture updated successfully",
+            "fileSizeTooLarge": "File size must be less than 5MB",
+            "pleaseSelectPicture": "Please select a picture",
+            "accountDeletedSuccessfully": "Account deleted successfully",
+            "pleaseLogOutAndLogInAgain": "Please log out and log in again before deleting your account",
+            "profileAndEmailUpdated": "Profile and email updated",
+            "reAuthenticationFailed": "Re-authentication failed"
+          }
         },
         "profilePicture":{
           "currentProfile":"Current Profile",
@@ -669,7 +681,7 @@
           "deleteConfirm": "Type DELETE to confirm",
           "enterPassword": "Enter your password"
         },
-        "deleteAccountWarning": "This action is irreversible. Type <b>DELETE</b> to confirm.",
+        "deleteAccountWarning": "This action is irreversible. Press DELETE to confirm.",
         "toast": {
           "failedToLoadProfile": "Failed to load profile",
           "notLoggedIn": "You are not logged in",
@@ -1102,7 +1114,19 @@
         "deleteAccount": "Delete Account",
         "deleteAccountDesc": "Permanently delete your account",
         "editUserInfo": "Edit User Information",
-        "editUserInfoDesc": "Edit all information entered during sign-up"
+        "editUserInfoDesc": "Edit all information entered during sign-up",
+        "autoSaveEnabled": "Auto-save enabled",
+        "checking": "Checking...",
+        "toast": {
+          "passwordUpdatedSuccessfully": "Password updated successfully",
+          "profilePictureUpdatedSuccessfully": "Profile picture updated successfully",
+          "fileSizeTooLarge": "File size must be less than 5MB",
+          "pleaseSelectPicture": "Please select a picture",
+          "accountDeletedSuccessfully": "Account deleted successfully",
+          "pleaseLogOutAndLogInAgain": "Please log out and log in again before deleting your account",
+          "profileAndEmailUpdated": "Profile and email updated",
+          "reAuthenticationFailed": "Re-authentication failed"
+        }
       },
       "modals": {
         "editProfile": "Edit Profile",

@@ -602,8 +602,21 @@
           "deleteAccount": "מחק חשבון",
           "deleteAccountDesc": "מחק את החשבון שלך לצמיתות",
           "editUserInfo": "ערוך פרטי משתמש",
-          "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה"
-        },
+          "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה",
+          "autoSaveEnabled": "שמירה אוטומטית מופעלת",
+          "checking": "בודק..."},
+          "toast": {
+            "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
+            "profilePictureUpdatedSuccessfully": "תמונת הפרופיל עודכנה בהצלחה",
+            "fileSizeTooLarge": "גודל הקובץ חייב להיות קטן מ-5MB",
+            "pleaseSelectPicture": "אנא בחר תמונה",
+            "accountDeletedSuccessfully": "החשבון נמחק בהצלחה",
+            "notificationPreferenceUpdated": "העדפת ההתראות עודכנה",
+            "fontSizeUpdated": "גודל הגופן עודכן בהצלחה",
+            "pleaseLogOutAndLogInAgain": "אנא התנתק והתחבר שוב לפני מחיקת החשבון שלך",
+            "profileAndEmailUpdated": "הפרופיל והאימייל עודכנו",
+            "reAuthenticationFailed": "האימות מחדש נכשל"
+          },
         "profilePicture": {
           "currentProfile": "פרופיל נוכחי",
           "clickToUpload": "לחץ להעלאה",
@@ -668,7 +681,7 @@
           "deleteConfirm": "הקלד DELETE לאישור",
           "enterPassword": "הזן את הסיסמה שלך"
         },
-        "deleteAccountWarning": "פעולה זו בלתי הפיכה. הקלד <b>DELETE</b> לאישור."
+        "deleteAccountWarning": "פעולה זו בלתי הפיכה. הקלד מחק לאישור."
       },
       "toast": {
         "failedToLoadProfile": "נכשל בטעינת הפרופיל",
@@ -1116,7 +1129,19 @@
         "deleteAccount": "מחק חשבון",
         "deleteAccountDesc": "מחק את החשבון שלך לצמיתות",
         "editUserInfo": "ערוך פרטי משתמש",
-        "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה"
+        "editUserInfoDesc": "ערוך את כל המידע שהוזן במהלך ההרשמה",
+        "autoSaveEnabled": "שמירה אוטומטית מופעלת",
+        "checking": "בודק...",
+        "toast": {
+          "passwordUpdatedSuccessfully": "הסיסמה עודכנה בהצלחה",
+          "profilePictureUpdatedSuccessfully": "תמונת הפרופיל עודכנה בהצלחה",
+          "fileSizeTooLarge": "גודל הקובץ חייב להיות קטן מ-5MB",
+          "pleaseSelectPicture": "אנא בחר תמונה",
+          "accountDeletedSuccessfully": "החשבון נמחק בהצלחה",
+          "pleaseLogOutAndLogInAgain": "אנא התנתק והתחבר שוב לפני מחיקת החשבון שלך",
+          "profileAndEmailUpdated": "הפרופיל והאימייל עודכנו",
+          "reAuthenticationFailed": "האימות מחדש נכשל"
+        }
       },
       "modals": {
         "editProfile": "ערוך פרופיל",
