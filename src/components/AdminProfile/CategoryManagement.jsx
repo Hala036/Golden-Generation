@@ -103,10 +103,10 @@ const CategoryManagement = () => {
         setFormData(prev => ({ ...prev, color: result.sRGBHex }));
         setHexInput(result.sRGBHex);
       } catch (e) {
-        toast.error("Eyedropper cancelled or failed");
+        toast.error(t('auth.categoryManagement.addCategoryModal.eyedropperFailed'));
       }
     } else {
-      toast.error("Eyedropper API not supported in this browser");
+      toast.error(t('auth.categoryManagement.addCategoryModal.eyedropperNotSupported'));
     }
   };
 
@@ -203,12 +203,12 @@ const CategoryManagement = () => {
     
     // Validate translations
     if (!formData.translations.en || formData.translations.en.trim() === "") {
-      setTranslationErrors(prev => ({ ...prev, en: "English translation is required" }));
+      setTranslationErrors(prev => ({ ...prev, en: t("englishRequired") }));
       hasErrors = true;
     }
     
     if (!formData.translations.he || formData.translations.he.trim() === "") {
-      setTranslationErrors(prev => ({ ...prev, he: "Hebrew translation is required" }));
+      setTranslationErrors(prev => ({ ...prev, he: t("hebrewRequired") }));
       hasErrors = true;
     }
 
@@ -218,7 +218,7 @@ const CategoryManagement = () => {
 
     // Validate color selection
     if (!formData.color || formData.color === "#CCCCCC" || formData.color === "") {
-      setColorError(t("auth.categoryManagement.colorRequired") || "Please select a color");
+      setColorError(t("colorRequired") || t("auth.categoryManagement.colorRequired") || "Please select a color");
       return;
     }
 
@@ -552,12 +552,12 @@ const CategoryManagement = () => {
             <FaEye className="mx-auto h-12 w-12" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {searchQuery ? "No matching categories found" : "No categories available"}
+            {searchQuery ? t('auth.categoryManagement.noMatchingCategories') : t('auth.categoryManagement.noCategories')}
           </h3>
           <p className="text-gray-500 mb-4">
             {searchQuery 
-              ? `No categories found matching "${searchQuery}". Try adjusting your search terms.`
-              : "Get started by adding your first category."
+              ? t('auth.categoryManagement.noCategoriesFound', { search: searchQuery })
+              : t('auth.categoryManagement.getStarted')
             }
           </p>
           {searchQuery ? (
@@ -565,7 +565,7 @@ const CategoryManagement = () => {
               onClick={() => setSearchQuery('')}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md"
             >
-              Clear Search
+              {t('auth.categoryManagement.clearSearch')}
             </button>
           ) : (
             <button
@@ -573,7 +573,7 @@ const CategoryManagement = () => {
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center gap-2 mx-auto"
             >
               <FaPlus />
-              Add Category
+              {t('auth.categoryManagement.addCategory')}
             </button>
           )}
         </div>
@@ -739,7 +739,7 @@ const CategoryManagement = () => {
           <div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.englishTranslation")} <span className="text-red-500">*</span>
+                {t("auth.categoryManagement.form.englishTranslation")} <span className="text-red-500">{t("auth.categoryManagement.form.requiredAsterisk")}</span>
               </label>
               <input
                 type="text"
@@ -762,7 +762,7 @@ const CategoryManagement = () => {
             
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.hebrewTranslation")} <span className="text-red-500">*</span>
+                {t("auth.categoryManagement.form.hebrewTranslation")} <span className="text-red-500">{t("auth.categoryManagement.form.requiredAsterisk")}</span>
               </label>
               <input
                 type="text"
@@ -805,7 +805,7 @@ const CategoryManagement = () => {
           {/* Right Column - Color Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("auth.categoryManagement.form.categoryColor")} <span className="text-red-500">*</span>
+              {t("auth.categoryManagement.form.categoryColor")} <span className="text-red-500">{t("auth.categoryManagement.form.requiredAsterisk")}</span>
             </label>
             
             {/* Color Preview */}
@@ -842,7 +842,7 @@ const CategoryManagement = () => {
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {category}
+                    {t(`auth.categoryManagement.form.${category.toLowerCase()}`)}
                   </button>
                 ))}
               </div>
@@ -897,7 +897,7 @@ const CategoryManagement = () => {
             )}
             {/* Custom Color Picker */}
             <div className="mb-4 flex flex-col gap-2">
-              <label className="block text-xs text-gray-600 mb-2">Custom Color:</label>
+              <label className="block text-xs text-gray-600 mb-2">{t("auth.categoryManagement.form.customColor")}</label>
               <div className="flex items-center gap-2">
                 <HexColorPicker
                   color={formData.color || "#CCCCCC"}
@@ -1112,7 +1112,7 @@ const CategoryManagement = () => {
             )}
             {/* Custom Color Picker */}
             <div className="mb-4 flex flex-col gap-2">
-              <label className="block text-xs text-gray-600 mb-2">Custom Color:</label>
+              <label className="block text-xs text-gray-600 mb-2">{t("auth.categoryManagement.form.customColor")}</label>
               <div className="flex items-center gap-2">
                 <HexColorPicker
                   color={formData.color || "#CCCCCC"}

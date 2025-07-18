@@ -304,6 +304,8 @@ const BaseCalendar = ({
   const hasActiveFilters = filter !== 'all' || statusFilter !== 'all' || categoryFilter !== 'all' || 
                           dateRangeFilter !== 'all' || settlementFilter !== 'all' || searchTerm;
 
+  const weekDayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
   return (
     <Tooltip.Provider delayDuration={200}>
       <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6 flex flex-col w-full min-w-0">
@@ -559,7 +561,7 @@ const BaseCalendar = ({
               {t('activityCalendar.arrowPrev')}
             </button>
             <h2 className="text-xl font-semibold">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+              {t('calendar.months.' + monthNames[currentDate.getMonth()].toLowerCase())} {currentDate.getFullYear()}
             </h2>
             <button 
               onClick={() => navigateMonth(1)}
@@ -657,11 +659,14 @@ const BaseCalendar = ({
             <>
               {/* Day Headers */}
               <div className="grid grid-cols-7 bg-gray-100 w-full min-w-0">
-                {dayNames.map(day => (
-                  <div key={day} className="p-2 sm:p-3 md:p-4 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                    {day}
-                  </div>
-                ))}
+                {dayNames.map(day => {
+                  const dayKey = day.toLowerCase().slice(0, 3); // 'Sun' -> 'sun'
+                  return (
+                    <div key={day} className="p-2 sm:p-3 md:p-4 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                      {t('calendar.days.' + dayKey)}
+                    </div>
+                  );
+                })}
               </div>
               {/* Calendar Days */}
               <div className="grid grid-cols-7 w-full min-w-0 flex-1">
@@ -743,7 +748,7 @@ const BaseCalendar = ({
               <div className="grid grid-cols-7 bg-gray-100 w-full min-w-0">
                 {weekDays.map(date => (
                   <div key={date.toISOString()} className="p-2 sm:p-3 md:p-4 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                    {dayNames[date.getDay()]} {date.getDate()}
+                    {t('calendar.days.' + weekDayKeys[date.getDay()])} {date.getDate()}
                   </div>
                 ))}
               </div>
@@ -818,7 +823,7 @@ const BaseCalendar = ({
               <div className="absolute left-0 top-0 w-10 sm:w-14 md:w-16 h-full">
                 {dayHours.map((hour, index) => (
                   <div key={index} className="h-[60px] text-right pr-1 sm:pr-2 -mt-2.5 text-xs text-gray-500 relative">
-                    <span className="absolute right-1 sm:right-2">{hour}</span>
+                    <span className="absolute right-1 sm:right-2">{t('calendar.day.hourLabel', { hour })}</span>
                   </div>
                 ))}
               </div>
@@ -955,8 +960,8 @@ const BaseCalendar = ({
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center text-gray-500">
                       <Calendar size={48} className="mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">No events scheduled for this day</p>
-                      <p className="text-xs opacity-70 mb-4">Click "Create Event" to add an activity</p>
+                      <p className="text-sm">{t('calendar.day.noEvents')}</p>
+                      <p className="text-xs opacity-70 mb-4">{t('calendar.day.addPrompt')}</p>
                       {/* Add Event Button for day view */}
                       {showCreateButton && onCreateEvent && (() => {
                         const today = new Date();
@@ -975,7 +980,7 @@ const BaseCalendar = ({
                           title="Add event for today"
                         >
                           <span className="text-lg font-bold">+</span>
-                          Add Event
+                          {t('calendar.day.addEvent')}
                         </button>
                       )}
                     </div>

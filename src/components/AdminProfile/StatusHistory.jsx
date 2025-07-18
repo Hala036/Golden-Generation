@@ -1,9 +1,10 @@
 import React from "react";
 import { FaHistory, FaCheck, FaHourglass, FaUserClock, FaArchive } from "react-icons/fa";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTranslation } from 'react-i18next';
 
 function StatusHistory({ statusHistory }) {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   if (!statusHistory || statusHistory.length === 0) {
     return (
       <div className="p-4 text-center">
@@ -92,13 +93,13 @@ function StatusHistory({ statusHistory }) {
               <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                 <div className="flex items-center mb-2">
                   {getStatusIcon(item.status)}
-                  <span className="font-semibold ml-2">{item.status}</span>
+                  <span className="font-semibold ml-2">{item.status ? t('admin.jobs.status.' + item.status.toLowerCase().replace(/ /g, '')) : ''}</span>
                   <span className="text-gray-500 text-sm ml-auto">
                     {formatStatusDate(item.timestamp)}
                   </span>
                 </div>
 
-                {item.notes && <p className="text-gray-600">{item.notes}</p>}
+                {item.notes && <p className="text-gray-600">{item.notes === 'Job request created' ? t('admin.jobs.notes.jobRequestCreated') : item.notes}</p>}
 
                 {item.changedBy && (
                   <p className="text-gray-500 text-sm mt-2">
