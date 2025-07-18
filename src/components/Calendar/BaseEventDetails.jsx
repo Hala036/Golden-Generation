@@ -6,6 +6,7 @@ import { FaTimes, FaUsers, FaUser, FaCheck, FaCalendarAlt, FaClock, FaMapPin, Fa
 import { format } from 'date-fns';
 import CreateEventForm from './CreateEventForm';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const getInitials = (user) => {
   // Try to use first and last name for initials
@@ -38,6 +39,8 @@ const BaseEventDetails = ({
   const currentUser = auth.currentUser;
   const [showEditModal, setShowEditModal] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const navigate = useNavigate();
+  const [loadingProfileUid, setLoadingProfileUid] = useState(null);
 
   const isJoined = participants.some(p => p.uid === currentUser?.uid);
   const isCreator = event.createdBy === currentUser?.uid;
@@ -144,6 +147,24 @@ const BaseEventDetails = ({
     }
   };
 
+  // Handler to fetch full user data and navigate
+  const handleParticipantClick = async (uid) => {
+    setLoadingProfileUid(uid);
+    try {
+      const userDoc = await getDoc(doc(db, 'users', uid));
+      if (userDoc.exists()) {
+        const userData = { id: uid, ...userDoc.data() };
+        navigate('/view-profile', { state: { retireeData: userData } });
+      } else {
+        alert('User profile not found.');
+      }
+    } catch (err) {
+      alert('Failed to load user profile.');
+    } finally {
+      setLoadingProfileUid(null);
+    }
+  };
+
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
       <div className="bg-white p-6 rounded-2xl shadow-xl max-w-3xl w-full max-h-[95vh] flex flex-col focus:outline-none" tabIndex={0}>
@@ -239,11 +260,28 @@ const BaseEventDetails = ({
                         </div>
                         <span className="font-medium text-gray-700">
                           {/* Prefer full name, fallback to username or uid */}
-                          {p.firstName && p.lastName
-                            ? `${p.firstName} ${p.lastName}`
-                            : p.firstName
-                            ? p.firstName
-                            : p.username || p.uid}
+                          {p.uid !== currentUser?.uid ? (
+                            <button
+                              className="hover:underline text-blue-700 bg-transparent border-none p-0 m-0 cursor-pointer font-medium"
+                              style={{ background: 'none' }}
+                              onClick={() => handleParticipantClick(p.uid)}
+                              disabled={loadingProfileUid === p.uid}
+                            >
+                              {loadingProfileUid === p.uid ? 'Loading...' : (
+                                p.firstName && p.lastName
+                                  ? `${p.firstName} ${p.lastName}`
+                                  : p.firstName
+                                  ? p.firstName
+                                  : p.username || p.uid
+                              )}
+                            </button>
+                          ) : (
+                            <>{p.firstName && p.lastName
+                                ? `${p.firstName} ${p.lastName}`
+                                : p.firstName
+                                ? p.firstName
+                                : p.username || p.uid}</>
+                          )}
                           {p.uid === currentUser?.uid ? ` (${t("eventDetails.createdByMe")})` : ''}
                         </span>
                         {p.isCreator && (
