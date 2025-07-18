@@ -19,6 +19,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const [userData, setUserData] = useState(null);
+  const [fullUserData, setFullUserData] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [showNotificationsPopup, setShowNotificationsPopup] = useState(false);
@@ -32,6 +33,42 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
     superadmin: '#DC2626', // Red
     retiree: '#059669', // Green
     default: '#6B7280', // Gray
+  };
+
+  // Function to get the full name (first and last name)
+  const getFullName = (userData) => {
+    if (!userData) return "User";
+    
+    const firstName = userData.idVerification?.firstName || '';
+    const lastName = userData.idVerification?.lastName || '';
+    
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (userData.credentials?.username) {
+      return userData.credentials.username;
+    }
+    
+    return "User";
+  };
+
+  // Function to get display name for profile pic
+  const getDisplayName = (userData) => {
+    if (!userData) return "User";
+    
+    const firstName = userData.idVerification?.firstName || '';
+    const lastName = userData.idVerification?.lastName || '';
+    
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (userData.credentials?.username) {
+      return userData.credentials.username;
+    }
+    
+    return "User";
   };
 
   useEffect(() => {
@@ -48,6 +85,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
           return;
         }
         setUserData(data.credentials);
+        setFullUserData(data); // Store the full user data
         setUserRole(data.role); // Set the user role
       } catch (error) {
         toast.error(t('dashboard.sidebar.failedToLoadUser'));
@@ -95,14 +133,14 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
               <DefaultProfilePic 
-                name={userData?.username || "User"}
+                name={getDisplayName(fullUserData)}
                 size={80}
                 fontSize="2rem"
                 bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
               />
             </div>
             <span className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center">
-              {userData?.username || "User"}
+              {getFullName(fullUserData)}
             </span>
           </div>
         )}
