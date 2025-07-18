@@ -107,10 +107,10 @@ const AddCategoryModal = ({ onClose }) => {
         setColor(result.sRGBHex);
         setHexInput(result.sRGBHex);
       } catch (e) {
-        toast.error("Eyedropper cancelled or failed");
+        toast.error(t('auth.categoryManagement.addCategoryModal.eyedropperFailed'));
       }
     } else {
-      toast.error("Eyedropper API not supported in this browser");
+      toast.error(t('auth.categoryManagement.addCategoryModal.eyedropperNotSupported'));
     }
   };
 
@@ -267,7 +267,7 @@ const AddCategoryModal = ({ onClose }) => {
                   <span
                     className="text-xs text-white underline cursor-pointer select-all"
                     title="Click to copy"
-                    onClick={() => {navigator.clipboard.writeText(color); toast.success('Copied!')}}
+                    onClick={() => {navigator.clipboard.writeText(color); toast.success(t('auth.categoryManagement.addCategoryModal.copied'))}}
                   >
                     {color}
                   </span>
@@ -276,7 +276,7 @@ const AddCategoryModal = ({ onClose }) => {
             )}
             {/* Contrast warning */}
             {color && getContrastRatio(color) === "Poor" && (
-              <div className="mb-2 text-xs text-red-600 font-semibold">Warning: This color may have poor contrast on light backgrounds.</div>
+              <div className="mb-2 text-xs text-red-600 font-semibold">{t("auth.categoryManagement.addCategoryModal.contrastWarning")}</div>
             )}
             {/* Color Categories */}
             <div className="mb-4">
@@ -310,7 +310,7 @@ const AddCategoryModal = ({ onClose }) => {
                       setColor(colorOption);
                       if (colorError) setColorError("");
                     }}
-                    title={`Select ${colorNames[colorOption] || colorOption}`}
+                    title={`${t('auth.categoryManagement.addCategoryModal.selectColor')}: ${colorNames[colorOption] || colorOption}`}
                   >
                     {color === colorOption && (
                       <span className="absolute top-1 right-1 text-white text-lg font-bold pointer-events-none" style={{textShadow: '0 0 2px #000'}}>✓</span>
@@ -322,7 +322,7 @@ const AddCategoryModal = ({ onClose }) => {
             {/* Quick Suggestions */}
             {translations.en && (
               <div className="mb-4">
-                <p className="text-xs text-gray-600 mb-2">Suggested for "{translations.en}":</p>
+                <p className="text-xs text-gray-600 mb-2">{t("auth.categoryManagement.addCategoryModal.suggestedFor")}:</p>
                 <div className="flex gap-2">
                   {(() => {
                     const suggestedColor = getColorSuggestion(translations.en);
@@ -336,7 +336,7 @@ const AddCategoryModal = ({ onClose }) => {
                             setColor(suggestedColor);
                             if (colorError) setColorError("");
                           }}
-                          title="Smart suggestion"
+                          title={t("auth.categoryManagement.addCategoryModal.smartSuggestion")}
                         />
                       );
                     }
@@ -347,7 +347,7 @@ const AddCategoryModal = ({ onClose }) => {
             )}
             {/* Custom Color Picker */}
             <div className="mb-4 flex flex-col gap-2">
-              <label className="block text-xs text-gray-600 mb-2">Custom Color:</label>
+              <label className="block text-xs text-gray-600 mb-2">{t("auth.categoryManagement.addCategoryModal.customColor")}:</label>
               <div className="flex items-center gap-2">
                 <HexColorPicker
                   color={color || "#CCCCCC"}
@@ -361,11 +361,11 @@ const AddCategoryModal = ({ onClose }) => {
                 <button
                   type="button"
                   onClick={handleEyedropper}
-                  title={window.EyeDropper ? "Pick color from screen" : "Eyedropper not supported"}
+                  title={window.EyeDropper ? t("auth.categoryManagement.addCategoryModal.pickColorFromScreen") : t("auth.categoryManagement.addCategoryModal.eyedropperNotSupported")}
                   className="ml-2 p-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100 shadow text-xl flex items-center justify-center"
                   style={{ height: '40px', width: '40px' }}
                 >
-                  <span role="img" aria-label="Eyedropper">🖌️</span>
+                  <span role="img" aria-label="Eyedropper">{t("auth.categoryManagement.addCategoryModal.eyedropperIcon")}</span>
                 </button>
               </div>
               {/* Hex input field */}
@@ -381,7 +381,7 @@ const AddCategoryModal = ({ onClose }) => {
                   if (/^#[0-9A-Fa-f]{6}$/.test(val)) setColor(val);
                 }}
                 maxLength={7}
-                placeholder="#RRGGBB"
+                placeholder={t("auth.categoryManagement.addCategoryModal.hexPlaceholder")}
               />
               {colorError && (
                 <p className="text-red-500 text-xs mt-1">{colorError}</p>

@@ -59,6 +59,28 @@ const SettingsCards = () => {
 
   const { theme, setTheme } = useTheme();
 
+  // Add field objects for form fields to prevent ReferenceError
+  const emailField = {
+    value: profileData.email || '',
+    error: '',
+    isChecking: false,
+    onChange: () => {},
+  };
+  const usernameField = {
+    value: profileData.username || '',
+    error: '',
+    isChecking: false,
+    onChange: () => {},
+  };
+  const phoneField = {
+    value: profileData.phone || '',
+    error: '',
+    isChecking: false,
+    onChange: () => {},
+  };
+  // Add a simple isValid check for required fields
+  const isValid = !!(profileData.email && profileData.username && profileData.phone && profileData.name);
+
   // Move mockAnnouncements here so t is in scope
   const mockAnnouncements = [
     { id: 1, title: t('auth.dashboard.settings.announcements.welcome.title'), date: "2024-06-01", content: t('auth.dashboard.settings.announcements.welcome.content') },
@@ -530,7 +552,7 @@ const SettingsCards = () => {
               <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
                 {/* Auto-save status indicator */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                  <span>{t('auth.dashboard.settings.autoSaveEnabled')}</span>
+                  <span>{t('auth.dashboard.settings.options.autoSaveEnabled')}</span>
                   <div className="flex items-center gap-2">
                     {/* autoSaving and lastSaved are not defined in this component, so this block will be removed or commented out */}
                     {/* {autoSaving && (
@@ -557,19 +579,19 @@ const SettingsCards = () => {
                     type="email"
                     placeholder="Email"
                     value={emailField.value}
-                    onChange={(e) => handleFieldChange('email', e.target.value, emailField.onChange)}
-                    onBlur={() => handleBlur('email')}
+                    onChange={(e) => emailField.onChange(e.target.value)}
+                    onBlur={() => {}}
                     className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.email && emailField.error ? 'border-red-500' : touched.email && !emailField.error && emailField.value ? 'border-green-500' : 'border-gray-300'}`}
+                      ${emailField.error ? 'border-red-500' : emailField.value ? 'border-green-500' : 'border-gray-300'}`}
                     aria-label="Profile Email"
                   />
                 </div>
-                {touched.email && emailField.isChecking && (
+                {emailField.isChecking && (
                   <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                     <FaInfoCircle className="flex-shrink-0" />{t('auth.dashboard.settings.checking')}
                   </span>
                 )}
-                {touched.email && emailField.error && (
+                {emailField.error && (
                   <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
                     <FaInfoCircle className="flex-shrink-0" />
                     {emailField.error}
@@ -585,19 +607,19 @@ const SettingsCards = () => {
                     type="text"
                     placeholder="Username"
                     value={usernameField.value}
-                    onChange={(e) => handleFieldChange('username', e.target.value, usernameField.onChange)}
-                    onBlur={() => handleBlur('username')}
+                    onChange={(e) => usernameField.onChange(e.target.value)}
+                    onBlur={() => {}}
                     className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.username && usernameField.error ? 'border-red-500' : touched.username && !usernameField.error && usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
+                      ${usernameField.error ? 'border-red-500' : usernameField.value ? 'border-green-500' : 'border-gray-300'}`}
                     aria-label="Profile Username"
                   />
                 </div>
-                {touched.username && usernameField.isChecking && (
+                {usernameField.isChecking && (
                   <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                     <FaInfoCircle className="flex-shrink-0" />{t('auth.dashboard.settings.checking')}
                   </span>
                 )}
-                {touched.username && usernameField.error && (
+                {usernameField.error && (
                   <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
                     <FaInfoCircle className="flex-shrink-0" />
                     {usernameField.error}
@@ -613,14 +635,14 @@ const SettingsCards = () => {
                     type="tel"
                     placeholder="Phone"
                     value={phoneField.value}
-                    onChange={(e) => handleFieldChange('phone', e.target.value, phoneField.onChange)}
-                    onBlur={() => handleBlur('phone')}
+                    onChange={(e) => phoneField.onChange(e.target.value)}
+                    onBlur={() => {}}
                     className={`pl-11 pr-3 py-3 rounded-lg border border-gray-300 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition
-                      ${touched.phone && phoneField.error ? 'border-red-500' : touched.phone && !phoneField.error && phoneField.value ? 'border-green-500' : 'border-gray-300'}`}
+                      ${phoneField.error ? 'border-red-500' : phoneField.value ? 'border-green-500' : 'border-gray-300'}`}
                     aria-label="Profile Phone"
                   />
                 </div>
-                {touched.phone && phoneField.error && (
+                {phoneField.error && (
                   <span className="text-red-500 text-xs flex items-center gap-1 mt-1">
                     <FaInfoCircle className="flex-shrink-0" />
                     {phoneField.error}

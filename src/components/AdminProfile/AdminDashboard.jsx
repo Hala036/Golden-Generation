@@ -46,7 +46,7 @@ const AdminDashboard = () => {
   };
 
   const customIcons = [
-    { id: "main", label: t("sidebar.homePage"), icon: <FaHome /> },
+    { id: "main", label: t("auth.dashboard.homePage"), icon: <FaHome /> },
     { id: "upcoming", label: t("sidebar.upcomingEvents"), icon: <FaCalendarCheck /> },
     { id: "categoryManagement", label: t("dashboard.categoryManagement"), icon: <FaTags /> },
     { id: "retirees", label: t("sidebar.retirees"), icon: <FaUser /> },

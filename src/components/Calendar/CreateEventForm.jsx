@@ -102,24 +102,24 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
     // Required validation
     if (rules.required && (!value || value.trim() === '')) {
-      return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+      return t('createEventForm.errors.required', { field: t('createEventForm.' + name) });
     }
 
     if (value && value.trim() !== '') {
       // Length validations
       if (rules.minLength && value.length < rules.minLength) {
-        return `${name.charAt(0).toUpperCase() + name.slice(1)} must be at least ${rules.minLength} characters`;
+        return t('createEventForm.errors.minLength', { field: t('createEventForm.' + name), min: rules.minLength });
       }
       if (rules.maxLength && value.length > rules.maxLength) {
-        return `${name.charAt(0).toUpperCase() + name.slice(1)} must be no more than ${rules.maxLength} characters`;
+        return t('createEventForm.errors.maxLength', { field: t('createEventForm.' + name), max: rules.maxLength });
       }
 
       // Number range validation
       if (rules.min !== undefined && Number(value) < rules.min) {
-        return `${name.charAt(0).toUpperCase() + name.slice(1)} must be at least ${rules.min}`;
+        return t('createEventForm.errors.min', { field: t('createEventForm.' + name), min: rules.min });
       }
       if (rules.max !== undefined && Number(value) > rules.max) {
-        return `${name.charAt(0).toUpperCase() + name.slice(1)} must be no more than ${rules.max}`;
+        return t('createEventForm.errors.max', { field: t('createEventForm.' + name), max: rules.max });
       }
     }
 
@@ -129,81 +129,59 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
   // Complex validation functions
   const validateDateRange = () => {
     if (!eventData.startDate || !eventData.endDate) return null;
-    
     const startDate = new Date(eventData.startDate);
     const endDate = new Date(eventData.endDate);
-    
     if (endDate < startDate) {
-      return "End date cannot be before start date";
+      return t('createEventForm.errors.endDateBeforeStart');
     }
-    
     return null;
   };
 
   const validateTimeRange = () => {
     if (!eventData.timeFrom || !eventData.timeTo) return null;
-    
-    // If end date is specified and different from start date, allow any time order
     if (eventData.endDate && eventData.startDate !== eventData.endDate) {
-      // For cross-day events, only check minimum duration
       const startDateTime = new Date(`${eventData.startDate}T${eventData.timeFrom}`);
       const endDateTime = new Date(`${eventData.endDate}T${eventData.timeTo}`);
       const timeDiff = endDateTime.getTime() - startDateTime.getTime();
       const minDuration = 30 * 60 * 1000; // 30 minutes
-      
       if (timeDiff < minDuration) {
-        return "Event must be at least 30 minutes long";
+        return t('createEventForm.errors.minDuration');
       }
       return null;
     }
-    
-    // For same-day events, check time order
     const startTime = new Date(`2000-01-01T${eventData.timeFrom}`);
     const endTime = new Date(`2000-01-01T${eventData.timeTo}`);
-    
     if (endTime <= startTime) {
-      return "End time must be after start time for same-day events";
+      return t('createEventForm.errors.endTimeAfterStart');
     }
-    
-    // Check if time difference is at least 30 minutes
     const timeDiff = endTime.getTime() - startTime.getTime();
-    const minDuration = 30 * 60 * 1000; // 30 minutes in milliseconds
-    
+    const minDuration = 30 * 60 * 1000;
     if (timeDiff < minDuration) {
-      return "Event must be at least 30 minutes long";
+      return t('createEventForm.errors.minDuration');
     }
-    
     return null;
   };
 
   const validateFutureDate = () => {
     if (!eventData.startDate) return null;
-    
     const startDate = new Date(eventData.startDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
     if (startDate < today) {
-      return "Start date cannot be in the past";
+      return t('createEventForm.errors.startDateInPast');
     }
-    
     return null;
   };
 
   const validateImageFile = () => {
     if (!imageFile) return null;
-    
-    // File size validation (5MB)
     if (imageFile.size > 5 * 1024 * 1024) {
-      return "Image file size must be less than 5MB";
+      return t('createEventForm.errors.imageSize');
     }
-    
-    // File type validation
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(imageFile.type)) {
-      return "Image must be JPEG, PNG, GIF, or WebP format";
+      return t('createEventForm.errors.imageType');
     }
-    
     return null;
   };
 
@@ -375,12 +353,12 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     
     // Final validation before submission
     if (!validateForm()) {
-      toast.error('Please fix the validation errors before submitting');
+      toast.error(t('createEventForm.toasts.validationError'));
       return;
     }
 
     if (isSubmitting) {
-      toast.error('Please wait, form is being submitted...');
+      toast.error(t('createEventForm.toasts.submitting'));
       return;
     }
 
@@ -389,7 +367,7 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
     try {
       const user = auth.currentUser;
       if (!user) {
-        toast.error('You must be logged in to create an event');
+        toast.error(t('createEventForm.toasts.notLoggedIn'));
         return;
       }
 
@@ -459,17 +437,17 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
         console.log('Updating existing event...');
         await updateDoc(doc(db, "events", initialData.id), newEvent);
         console.log('Event updated successfully');
-        toast.success('Event updated successfully');
+        toast.success(t('createEventForm.toasts.updated'));
       } else {
         console.log('Creating new event...');
         const docRef = await addDoc(collection(db, "events"), newEvent);
         console.log('Event created successfully with ID:', docRef.id);
-      toast.success('Event created successfully');
+      toast.success(t('createEventForm.toasts.created'));
       }
       onClose();
     } catch (error) {
       console.error('Error creating/updating event:', error);
-      toast.error('Failed to create/update event');
+      toast.error(t('createEventForm.toasts.failed'));
     } finally {
       setIsSubmitting(false);
     }

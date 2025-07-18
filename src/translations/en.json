@@ -21,7 +21,32 @@
     "notAvailable": "Not Available",
     "ok": "OK",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "volunteerAreas": {
+      "high-tech": "High-Tech"
+    },
+    "days": {
+      "monday": "Monday"
+    },
+    "roles": {
+      "retiree": "Retiree"
+    },
+    "interests": {
+      "קריאת-ספרי-בטיחות": "Safety Book Reading",
+      "תרבות": "Culture",
+      "טיולים": "Trips",
+      "לימודים": "Studies",
+      "מוזיקה": "Music",
+      "טיולים-רגליים": "Hiking"
+    },
+    "volunteerFrequency": {
+      "פעם-בחודש": "Once a month"
+    }
   },
   "auth": {
     "errors": {
@@ -1054,9 +1079,13 @@
         "englishPlaceholder": "e.g., Trip",
         "hebrewTranslation": "Hebrew Translation",
         "hebrewPlaceholder": "e.g., טיול",
-        "arabicTranslation": "Arabic Translation (Optional)",
-        "arabicPlaceholder": "e.g., رحلة",
-        "categoryColor": "Category Color"
+        "categoryColor": "Category Color",
+        "requiredAsterisk": "*",
+        "warm": "Warm",
+        "cool": "Cool",
+        "nature": "Nature",
+        "neutral": "Neutral",
+        "customColor": "Custom Color"
       },
       "details": {
         "categoryId": "Category ID",
@@ -1076,13 +1105,32 @@
         "message": "Found {{count}} orphaned events (events with non-existent categories).\n\nThese events will be deleted:\n\n{{eventList}}\n\nClick OK to delete all orphaned events, or Cancel to abort."
       },
       "addCategoryModal": {
-        "title": "Add New Category",
-        "adding": "Adding...",
-        "addCategory": "Add Category",
-        "failedToAddCategory": "Failed to add category. Please try again."
-
-      }
-    }
+        "eyedropperNotSupported": "Eyedropper API not supported in this browser.",
+        "eyedropperFailed": "Eyedropper cancelled or failed.",
+        "copied": "Copied!",
+        "contrastWarning": "Warning: This color may have poor contrast on light backgrounds.",
+        "selectColor": "Select color",
+        "suggestedFor": "Suggested color",
+        "smartSuggestion": "Smart suggestion",
+        "customColor": "Custom Color",
+        "pickColorFromScreen": "Pick color from screen",
+        "eyedropperIcon": "🖌️",
+        "hexPlaceholder": "#RRGGBB",
+        "englishRequired": "English translation is required",
+        "hebrewRequired": "Hebrew translation is required",
+        "colorRequired": "Please select a color"
+      },
+      "noMatchingCategories": "No matching categories found",
+      "noCategories": "No categories available",
+      "noCategoriesFound": "No categories found matching '{{search}}'. Try adjusting your search terms.",
+      "getStarted": "Get started by adding your first category.",
+      "clearSearch": "Clear Search"
+    },
+    "noMatchingCategories": "No matching categories found",
+    "noCategories": "No categories available",
+    "noCategoriesFound": "No categories found matching '{{search}}'. Try adjusting your search terms.",
+    "getStarted": "Get started by adding your first category.",
+    "clearSearch": "Clear Search"
   },
   "dashboard": {
     "welcome": "Welcome",
@@ -1284,7 +1332,40 @@
       }
     },
     "notifications": "Notifications",
-    "calendar": "Calendar",
+    "calendar": {
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "days": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "toast": {
+        "failedToLoadEvents": "Failed to load events"
+      },
+      "day": {
+        "hourLabel": "{{hour}}",
+        "noEvents": "No events scheduled for this day",
+        "addPrompt": "Click \"Create Event\" to add an activity",
+        "addEvent": "Add Event"
+      }
+    },
     "main": {
       "welcome": "Welcome, {{userName}} 👋",
       "communityToday": "Here's what's happening in your community today",
@@ -1511,6 +1592,9 @@
       "notSpecified": "Not specified",
       "table": {
         "title": "Title",
+        "name":"Name",
+        "interests":"Interests",
+        "matchScore":"Match score",
         "location": "Location",
         "field": "Field",
         "timing": "Timing",
@@ -1571,6 +1655,23 @@
         "noVoluntaryRequests": "No voluntary requests found",
         "noVoluntaryRequestsMessage": "Try creating a new voluntary request to get started.",
         "createNewRequest": "Create New Request"
+      },
+      "notes": {
+        "jobRequestCreated": "Job request created"
+      },
+      "toasts": {
+        "createSuccess": "Voluntary request created successfully",
+        "createFailed": "Failed to create voluntary request",
+        "updateSuccess": "Voluntary request updated successfully",
+        "updateFailed": "Failed to update voluntary request",
+        "deleteSuccess": "Voluntary request deleted successfully",
+        "deleteFailed": "Failed to delete voluntary request",
+        "matchSuccess": "Matching algorithm re-run successfully",
+        "matchFailed": "Failed to re-run matching algorithm",
+        "statusUpdateSuccess": "Status updated successfully",
+        "statusUpdateFailed": "Failed to update status",
+        "dataLoadFailed": "Failed to load data",
+        "seniorInvited": "Senior invited successfully"
       }
     }
   },
@@ -1610,7 +1711,31 @@
     "toast": {
       "missingInfo": "Unable to send message. Admin or user information is missing.",
       "sendFailed": "Failed to send the message."
+    },
+    "search": {
+      "title": "Find Retirees in Your Settlement",
+      "noSettlement": "No settlement assigned. Please contact your administrator.",
+      "interests": "Interests",
+      "selectInterests": "Select interests",
+      "jobTitle": "Job Title",
+      "selectJobs": "Select job titles",
+      "results": "Matching Retirees",
+      "noResults": "No retirees found matching your criteria.",
+      "age": "Age",
+      "gender": "Gender",
+      "viewProfile": "View Profile",
+      "prompt": "Please select at least one interest or job title to search for retirees."
     }
+  },
+  "interests": {
+    "Reading": "Reading",
+    "Traveling": "Traveling",
+    "Gardening": "Gardening"
+  },
+  "jobs": {
+    "Teacher": "Teacher",
+    "Engineer": "Engineer",
+    "Nurse": "Nurse"
   },
   
   "calendar": {
@@ -1719,7 +1844,9 @@
       "approve": "Approve",
       "reject": "Reject",
       "noParticipants": "No participants yet",
-      "joinedCount": "{{count}} participant{{count, plural, one {} other {s}}} have joined."
+      "joinedCount": "{{count}} participant{{count, plural, one {} other {s}}} have joined.",
+      "deleteConfirm": "Are you sure you want to delete this event? This cannot be undone.",
+      "deleteFailed": "Failed to delete event."
     },
     "adminEventDetails": {
       "confirmDelete": "Confirm Delete",
@@ -1729,6 +1856,12 @@
     },
     "toast": {
       "failedToLoadEvents": "Failed to load events"
+    },
+    "day": {
+      "hourLabel": "{{hour}}",
+      "noEvents": "No events scheduled for this day",
+      "addPrompt": "Click \"Create Event\" to add an activity",
+      "addEvent": "Add Event"
     }
   },
   "service": {
@@ -2197,29 +2330,29 @@
   },
   "eventDetails": {
     "status": {
-        "pending": "Pending",
-        "confirmed": "Confirmed",
-        "cancelled": "Cancelled"
+      "pending": "Pending",
+      "active": "Active",
+      "completed": "Completed",
+      "confirmed": "Confirmed"
     },
-    "creator": "Creator",
-    "noParticipants": "No participants yet.",
-    "participants": "Participants",
-    "date": "Date",
-    "time": "Time",
-    "from": "From",
-    "to": "To",
-    "location": "Location",
-    "description": "Description",
-    "noDescription": "No description provided.",
-    "notSpecified": "Not specified",
     "createdByMe": "Created by me",
+    "creator": "Creator",
     "editEvent": "Edit Event",
     "deleteEvent": "Delete Event",
     "joinEvent": "Join Event",
     "leaveEvent": "Leave Event",
     "processing": "Processing...",
-    "loading": "Loading upcoming details...",
-    "mySettlement": "My Settlement"
+    "noParticipants": "No participants yet.",
+    "noDescription": "No description provided.",
+    "participants": "Participants",
+    "participant": "participant",
+    "date": "Date",
+    "time": "Time",
+    "from": "From",
+    "to": "To",
+    "notSpecified": "Not specified",
+    "location": "Location",
+    "description": "Description"
   },
   "viewProfile": {
     "profileHeader": {
@@ -2236,7 +2369,7 @@
       "maritalStatus": "Marital Status",
       "education": "Education",
       "nativeLanguage": "Native Language",
-      "originCountry": "Origin Country"
+      "originCountry": "Country of Origin"
     },
     "credentials": {
       "title": "Credentials",
@@ -2244,7 +2377,7 @@
       "email": "Email"
     },
     "workBackground": {
-      "title": "Work Background",
+      "title": "Professional Background",
       "jobTitle": "Job Title",
       "industry": "Industry",
       "yearsOfExperience": "Years of Experience",
@@ -2263,8 +2396,8 @@
     "volunteering": {
       "title": "Volunteering & Community",
       "currentActivities": "Current Activities",
-      "notParticipatingReason": "Not Participating Reason",
-      "isVolunteer": "Is Volunteer",
+      "notParticipatingReason": "Reason for Not Participating",
+      "isVolunteer": "Volunteer",
       "volunteerAreas": "Volunteer Areas",
       "volunteerFrequency": "Volunteer Frequency",
       "volunteerHours": "Volunteer Hours",
@@ -2280,7 +2413,7 @@
       "communityProfessionalBackground": "Community Professional Background"
     },
     "systemInfo": {
-      "title": "System Info",
+      "title": "System Information",
       "role": "Role",
       "joined": "Joined",
       "lastLogin": "Last Login"
@@ -2317,7 +2450,31 @@
     "cancelButton": "Cancel",
     "submitButtonCreate": "Create Event",
     "submitButtonUpdate": "Update Event",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "errors": {
+      "required": "{{field}} is required.",
+      "minLength": "{{field}} must be at least {{min}} characters.",
+      "maxLength": "{{field}} must be no more than {{max}} characters.",
+      "min": "{{field}} must be at least {{min}}.",
+      "max": "{{field}} must be no more than {{max}}.",
+      "endDateBeforeStart": "End date cannot be before start date.",
+      "minDuration": "Event must be at least 30 minutes long.",
+      "endTimeAfterStart": "End time must be after start time for same-day events.",
+      "startDateInPast": "Start date cannot be in the past.",
+      "imageSize": "Image file size must be less than 5MB.",
+      "imageType": "Image must be JPEG, PNG, GIF, or WebP format."
+    },
+    "capacity": "Number of participants",
+    "timeTo": "End time",
+    "timeFrom": "Start time",
+    "toasts": {
+      "validationError": "Please fix the validation errors before submitting.",
+      "submitting": "Please wait, form is being submitted...",
+      "notLoggedIn": "You must be logged in to create an event.",
+      "created": "Event created successfully.",
+      "updated": "Event updated successfully.",
+      "failed": "Failed to create/update event."
+    }
   },
   "serviceRequests": {
     "title": "Service Requests",
@@ -2560,5 +2717,32 @@
     "YE": "Yemen",
     "ZM": "Zambia",
     "ZW": "Zimbabwe"
+  },
+  "matchDetails": {
+    "loading": "Loading match details...",
+    "failedToLoad": "Failed to load match details",
+    "error": "Error",
+    "close": "Close",
+    "noDetails": "No Match Details Found",
+    "title": "Match Details",
+    "jobRequest": "Job Request",
+    "titleLabel": "Title",
+    "location": "Location",
+    "volunteerField": "Volunteer Field",
+    "professionalBackground": "Professional Background",
+    "timing": "Timing",
+    "description": "Description",
+    "senior": "Senior",
+    "name": "Name",
+    "unknown": "Unknown",
+    "interests": "Interests",
+    "notSpecified": "Not specified",
+    "availability": "Availability",
+    "scoreBreakdown": "Match Score Breakdown",
+    "locationMatch": "Location Match",
+    "interestsMatch": "Interests Match",
+    "backgroundMatch": "Background Match",
+    "availabilityMatch": "Availability Match",
+    "totalScore": "Total Match Score"
   }
 }
