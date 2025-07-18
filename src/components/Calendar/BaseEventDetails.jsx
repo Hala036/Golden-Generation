@@ -7,11 +7,18 @@ import { format } from 'date-fns';
 import CreateEventForm from './CreateEventForm';
 import { useTranslation } from 'react-i18next';
 
-const getInitials = (username = '') => {
-  if (!username) return '?';
-  const parts = username.split(' ');
-  if (parts.length === 1) return username[0].toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
+const getInitials = (user) => {
+  // Try to use first and last name for initials
+  const firstName = user?.firstName || '';
+  const lastName = user?.lastName || '';
+  if (firstName && lastName) return (firstName[0] + lastName[0]).toUpperCase();
+  if (firstName) return firstName[0].toUpperCase();
+  if (user?.username) {
+    const parts = user.username.split(' ');
+    if (parts.length === 1) return user.username[0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return '?';
 };
 
 const BaseEventDetails = ({ 
@@ -43,8 +50,14 @@ const BaseEventDetails = ({
       const userFetches = participantsList.map(async (p) => {
         const userDoc = await getDoc(doc(db, 'users', p.uid));
         const userData = userDoc.exists() ? userDoc.data() : {};
+        // Try to get full name from idVerification
+        const idv = userData.idVerification || {};
+        const firstName = idv.firstName || '';
+        const lastName = idv.lastName || '';
         return {
           uid: p.uid,
+          firstName,
+          lastName,
           username: userData.credentials?.username || userData.username || p.uid,
           status: p.status || 'confirmed',
           isCreator: event.createdBy === p.uid,
@@ -222,10 +235,16 @@ const BaseEventDetails = ({
                     {participantUsers.length > 0 ? participantUsers.map(p => (
                       <li key={p.uid} className="flex items-center gap-2 bg-white p-2 rounded-md shadow-sm hover:bg-blue-50 transition group">
                         <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center font-bold text-blue-700 text-sm mr-2">
-                          {getInitials(p.username)}
+                          {getInitials(p)}
                         </div>
                         <span className="font-medium text-gray-700">
-                          {p.username}{p.uid === currentUser?.uid ? ` (${t("eventDetails.createdByMe")})` : ''}
+                          {/* Prefer full name, fallback to username or uid */}
+                          {p.firstName && p.lastName
+                            ? `${p.firstName} ${p.lastName}`
+                            : p.firstName
+                            ? p.firstName
+                            : p.username || p.uid}
+                          {p.uid === currentUser?.uid ? ` (${t("eventDetails.createdByMe")})` : ''}
                         </span>
                         {p.isCreator && (
                           <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300" title={t("eventDetails.creator")}>
