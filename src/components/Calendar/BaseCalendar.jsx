@@ -122,6 +122,31 @@ const BaseCalendar = ({
     return false;
   };
 
+  // Helper to check if a date is within an event's date range
+  const isDateInEventRange = (event, year, month, day) => {
+    // Accepts event with startDate and endDate in DD-MM-YYYY or YYYY-MM-DD
+    const parseDate = (str) => {
+      if (!str) return null;
+      const parts = str.split('-');
+      if (parts.length !== 3) return null;
+      if (parts[0].length === 4) {
+        // YYYY-MM-DD
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      } else {
+        // DD-MM-YYYY
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      }
+    };
+    const start = parseDate(event.startDate || event.date);
+    const end = parseDate(event.endDate || event.startDate || event.date);
+    const current = new Date(year, month, day);
+    if (!start || !end) return false;
+    start.setHours(0,0,0,0);
+    end.setHours(0,0,0,0);
+    current.setHours(0,0,0,0);
+    return current >= start && current <= end;
+  };
+
   // Analytics functions
   const getAnalyticsData = () => {
     const allEvents = getFilteredEvents(null, filter, searchTerm, additionalFiltersObj);
@@ -239,18 +264,21 @@ const BaseCalendar = ({
   }, [currentDate, events, filter, searchTerm, getFilteredEvents, additionalFiltersObj, showPastEvents]);
 
   const dayEvents = useMemo(() => {
-    return days.map((day) =>
-      getFilteredEvents(
-        day ? new Date(currentDate.getFullYear(), currentDate.getMonth(), day) : null,
+    return days.map((day, index) => {
+      if (!day) return [];
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      return getFilteredEvents(
+        null, // Don't filter by date here
         filter,
         searchTerm,
         additionalFiltersObj
-      )
+      ).filter(event => isDateInEventRange(event, year, month, day))
       .filter(event => {
         const result = showPastEvents || !isPastEvent(event);
         return result;
-      })
-    );
+      });
+    });
   }, [days, events, filter, searchTerm, getFilteredEvents, currentDate, additionalFiltersObj, showPastEvents]);
 
   // For week view
