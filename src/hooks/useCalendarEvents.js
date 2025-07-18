@@ -154,13 +154,15 @@ export const useCalendarEvents = (userRole) => {
         return true;
       }
       
-      // Retiree: see their own events and open/approved events
-      if (event.status === 'pending') {
-        // Only show if created by this retiree
-        return event.createdBy === auth.currentUser?.uid;
+      // Retiree: see only their own events and events they joined
+      if (userRole === 'retiree') {
+        return (
+          event.createdBy === auth.currentUser?.uid ||
+          event.participants?.includes(auth.currentUser?.uid)
+        );
       }
       
-      // Show open events if joined, created, or open to all
+      // Default: show open/approved events if joined, created, or open to all
       return (
         event.participants?.includes(auth.currentUser?.uid) ||
         event.createdBy === auth.currentUser?.uid ||
