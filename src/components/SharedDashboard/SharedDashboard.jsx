@@ -206,7 +206,7 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
 
         {/* Scrollable Content */}
         <div className="bg-white rounded-lg shadow-sm p-2 overflow-y-auto flex-1 mt-13">
-          {componentsById[selected] || <div>{t('dashboard.main.noComponent')}</div>}
+          {componentsById[selected] || <div>{t('auth.dashboard.main.noComponent')}</div>}
 
         </div>
 

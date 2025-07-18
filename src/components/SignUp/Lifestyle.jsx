@@ -5,6 +5,7 @@ import { Users, Star, Check } from 'lucide-react';
 import { useEffect } from 'react';
 import i18n from 'i18next';
 import interestsList from '../../data/interests.json';
+import interestTranslations from '../../data/interestTranslations.json';
 
 const Lifestyle = ({ onComplete, editMode, data }) => {
   const { t } = useLanguage();
@@ -113,6 +114,22 @@ const Lifestyle = ({ onComplete, editMode, data }) => {
     </div>
   );
 
+  // Helper to get translated interest label
+  const getInterestLabel = (interest) => {
+    // If language is Hebrew, show Hebrew, else show English
+    const lang = i18n.language || 'en';
+    if (lang === 'he') {
+      // Try to get Hebrew translation
+      return (interestTranslations[interest] && interestTranslations[interest][0]) || interest;
+    } else {
+      // Try to get English translation (reverse lookup)
+      for (const [en, heArr] of Object.entries(interestTranslations)) {
+        if (heArr.includes(interest) && en !== interest) return en;
+      }
+      return interest;
+    }
+  };
+
   // Card for interests selection
   const SelectionCard = ({ interest, isSelected, onClick }) => (
     <div
@@ -128,8 +145,8 @@ const Lifestyle = ({ onComplete, editMode, data }) => {
       role="button"
       aria-pressed={isSelected}
     >
-      <span className="text-2xl mb-1">{interestEmojis[interest]}</span>
-      <span className={`text-sm font-semibold text-center ${isSelected ? 'text-gray-900' : 'text-gray-600'}`}>{interest}</span>
+      <span className="text-2xl mb-1">{interestEmojis[t(`auth.lifestyle.${interest}`)]}</span>
+      <span className={`text-sm font-semibold text-center ${isSelected ? 'text-gray-900' : 'text-gray-600'}`}>{getInterestLabel(interest)}</span>
       {isSelected && (
         <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center">
           <Check size={16} />

@@ -113,7 +113,7 @@ const Jobs = () => {
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("Failed to load data. Please try again.");
-        toast.error("Failed to load data");
+        toast.error(t('admin.jobs.toasts.dataLoadFailed'));
       } finally {
         setLoading(false);
       }
@@ -159,10 +159,10 @@ const Jobs = () => {
 
       if (editMode) {
         await updateJobRequest(editId, jobRequestData);
-        toast.success("Voluntary request updated successfully");
+        toast.success(t("admin.jobs.toasts.updateSuccess"));
       } else {
         await createJobRequest(jobRequestData);
-        toast.success("Voluntary request created successfully");
+        toast.success(t("admin.jobs.toasts.createSuccess"));
       }
 
       resetForm();
@@ -170,7 +170,7 @@ const Jobs = () => {
       setJobRequests(updatedJobRequests);
     } catch (err) {
       console.error("Error submitting form:", err);
-      toast.error(editMode ? "Failed to update voluntary request" : "Failed to create voluntary request");
+      toast.error(editMode ? t("admin.jobs.toasts.updateFailed") : t("admin.jobs.toasts.createFailed"));
     } finally {
       setLoading(false);
     }
@@ -178,17 +178,17 @@ const Jobs = () => {
 
   // Handle job request deletion
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this voluntary request?")) {
+    if (window.confirm(t("admin.jobs.deleteConfirmation"))) {
       try {
         setLoading(true);
         await deleteJobRequest(id);
-        toast.success("Voluntary request deleted successfully");
+        toast.success(t("admin.jobs.deleteSuccess"));
 
         const updatedJobRequests = await getJobRequests();
         setJobRequests(updatedJobRequests);
       } catch (err) {
         console.error("Error deleting voluntary request:", err);
-        toast.error("Failed to delete voluntary request");
+        toast.error(t("admin.jobs.deleteFailed"));
       } finally {
         setLoading(false);
       }
@@ -219,13 +219,13 @@ const Jobs = () => {
         status: newStatus,
         statusNotes: `Status manually changed to ${newStatus}`
       });
-      toast.success(`Status updated to ${newStatus}`);
+      toast.success(t('admin.jobs.toasts.statusUpdateSuccess', { status: t('admin.jobs.status.' + newStatus.toLowerCase().replace(/ /g, '')) }));
 
       const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
     } catch (err) {
       console.error("Error updating status:", err);
-      toast.error("Failed to update status");
+      toast.error(t("admin.jobs.toasts.statusUpdateFailed"));
     } finally {
       setLoading(false);
     }
@@ -247,7 +247,7 @@ const Jobs = () => {
         createdBy: auth.currentUser.uid // Admin who invited
       });
 
-      toast.success("Senior invited successfully");
+      toast.success(t('admin.jobs.toasts.seniorInvited'));
 
       const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
@@ -269,7 +269,7 @@ const Jobs = () => {
     try {
       setLoading(true);
       await matchSeniorsToJobRequest(jobRequestId);
-      toast.success("Matching algorithm re-run successfully");
+      toast.success(t("admin.jobs.toasts.matchSuccess"));
 
       const updatedJobRequests = await getJobRequests();
       setJobRequests(updatedJobRequests);
@@ -280,7 +280,7 @@ const Jobs = () => {
       }
     } catch (err) {
       console.error("Error re-running matching algorithm:", err);
-      toast.error("Failed to re-run matching algorithm");
+      toast.error(t("admin.jobs.toasts.matchFailed"));
     } finally {
       setLoading(false);
     }
@@ -628,7 +628,7 @@ const Jobs = () => {
                     onClick={() => handleRerunMatching(selectedJobRequest.id)}
                     className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm py-1 px-2 sm:px-3 rounded"
                   >
-                    {t("admin.jobs.reRunMatching")}
+                    {t("admin.jobs.actions.rematch")}
                   </button>
                 </div>
                 {/* Responsive: Table for md+, cards for mobile */}
@@ -639,11 +639,11 @@ const Jobs = () => {
                         <thead>
                           <tr className="bg-gray-100">
                             <th className="py-2 px-2 border-b text-left">{t("admin.jobs.table.name")}</th>
-                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.location")}</th>
-                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.professionalBackground")}</th>
+                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.table.location")}</th>
+                            <th className="py-2 px-2 border-b text-left">{t("admin.jobs.table.professionalBackground")}</th>
                             <th className="py-2 px-2 border-b text-left">{t("admin.jobs.table.interests")}</th>
                             <th className="py-2 px-2 border-b text-center">{t("admin.jobs.table.matchScore")}</th>
-                            <th className="py-2 px-2 border-b text-center">{t("admin.jobs.status.title")}</th>
+                            <th className="py-2 px-2 border-b text-center">{t("admin.jobs.table.status")}</th>
                             <th className="py-2 px-2 border-b text-center">{t("admin.jobs.table.actions")}</th>
                           </tr>
                         </thead>
@@ -743,7 +743,6 @@ const Jobs = () => {
                 </div>
               </div>
               <div className="mt-4 sm:mt-6">
-                <h4 className="text-base sm:text-lg font-semibold mb-2">Assigned Seniors</h4>
                 {/* Responsive: Table for md+, cards for mobile */}
                 <div className="hidden md:block">
                   {selectedJobRequest.assignedSeniors && selectedJobRequest.assignedSeniors.length > 0 ? (
@@ -834,7 +833,7 @@ const Jobs = () => {
                   onClick={closeMatchDetails}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded"
                 >
-                  Close
+                  {t('admin.jobs.close')}
                 </button>
               </div>
             </div>
@@ -889,43 +888,43 @@ const Jobs = () => {
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.title')}
                     </th>
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.location')}
                     </th>
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.field')}
                     </th>
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.timing')}
                     </th>
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.status')}
                     </th>
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.created')}
                     </th>
                     <th 
                       className={`py-2 px-4 border-b ${
                         document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                    }`}>
+                      }`}>
                       {t('admin.jobs.table.actions')}
                     </th>
                   </tr>
@@ -949,7 +948,7 @@ const Jobs = () => {
                               : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {jobRequest.status}
+                          {jobRequest.status ? t('admin.jobs.status.' + jobRequest.status.toLowerCase().replace(/ /g, '')) : ''}
                         </span>
                       </td>
                       <td className="py-2 px-4 border-b text-sm text-gray-500">
@@ -1030,7 +1029,7 @@ const Jobs = () => {
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {jobRequest.status}
+                        {jobRequest.status ? t('admin.jobs.status.' + jobRequest.status.toLowerCase().replace(/ /g, '')) : ''}
                       </span>
                     </div>
                     <p className="text-gray-700 text-sm line-clamp-3 mb-1 w-full break-words">{jobRequest.description}</p>

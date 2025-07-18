@@ -165,8 +165,8 @@ const RetireeSearch = () => {
                     </label>
                     <Select
                       isMulti
-                      options={interestsList.map(i => ({ value: i, label: i }))}
-                      value={selectedInterests.map(i => ({ value: i, label: i }))}
+                      options={interestsList.map(i => ({ value: i, label: t(`lifestyle.${i}`, i) }))}
+                      value={selectedInterests.map(i => ({ value: i, label: t(`lifestyle.${i}`, i) }))}
                       onChange={opts => setSelectedInterests(opts ? opts.map(o => o.value) : [])}
                       placeholder={t("retiree.search.selectInterests", "Select interests")}
                       classNamePrefix="react-select"
@@ -182,8 +182,8 @@ const RetireeSearch = () => {
                     </label>
                     <Select
                       isMulti
-                      options={jobsList.map(i => ({ value: i, label: i }))}
-                      value={selectedJobs.map(i => ({ value: i, label: i }))}
+                      options={jobsList.map(i => ({ value: i, label: t(`workBackground.jobs.${i}`, i) }))}
+                      value={selectedJobs.map(i => ({ value: i, label: t(`workBackground.jobs.${i}`, i) }))}
                       onChange={opts => setSelectedJobs(opts ? opts.map(o => o.value) : [])}
                       placeholder={t("retiree.search.selectJobs", "Select job titles")}
                       classNamePrefix="react-select"
@@ -204,7 +204,7 @@ const RetireeSearch = () => {
                 </h2>
                 {filteredRetirees.length === 0 ? (
                   <div className="text-center py-8 md:py-12 text-gray-500">
-                    <div className="text-4xl md:text-6xl mb-2">👥</div>
+                    <div className="text-4xl md:text-6xl mb-2" aria-label={t("retiree.search.noResultsIconLabel", "No results icon")}>👥</div>
                     <p className="text-base md:text-lg">{t("retiree.search.noResults", "No retirees found matching your criteria.")}</p>
                   </div>
                 ) : (
@@ -233,7 +233,7 @@ const RetireeSearch = () => {
                               ? "bg-yellow-100 text-yellow-800 border border-yellow-300" 
                               : "bg-gray-100 text-gray-700"
                           }`}>
-                            {isMatch ? '⭐ ' : ''}{interest}
+                            {isMatch ? t("retiree.search.star", "⭐ ") : ''}{t(`interests.${interest.toLowerCase().replace(/\s+/g, '-')}`, interest)}
                           </span>
                         );
                       });
@@ -248,16 +248,16 @@ const RetireeSearch = () => {
                               </h3>
                               <div className="text-sm md:text-base text-gray-600 space-y-1">
                                 <div>{t("retiree.search.age", "Age")}: {r.idVerification?.age || t("common.notAvailable", "N/A")}</div>
-                                <div>{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender || t("common.notAvailable", "N/A")}</div>
+                                <div>{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender ? t(`gender.${r.idVerification?.gender.toLowerCase().replace(/\s+/g, '-')}`, r.idVerification?.gender) : t("common.notAvailable", "N/A")}</div>
                               </div>
                             </div>
                           </div>
                           
                           <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-                            <div className={`text-sm md:text-base ${isJobMatch ? "font-medium" : ""}`}>
+                            <div className={`text-sm md:text-base ${isJobMatch ? "font-medium" : ""}`}> 
                               <span className="text-gray-600">{t("retiree.search.jobTitle", "Job Title")}: </span>
                               <span className={isJobMatch ? "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full" : "text-gray-900"}>
-                                {isJobMatch ? '⭐ ' : ''}{retireeJob || t("common.notAvailable", "N/A")}
+                                {isJobMatch ? t("retiree.search.star", "⭐ ") : ''}{retireeJob ? t(`jobs.${retireeJob.toLowerCase().replace(/\s+/g, '-')}`, retireeJob) : t("common.notAvailable", "N/A")}
                               </span>
                             </div>
                             
@@ -286,7 +286,7 @@ const RetireeSearch = () => {
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 text-center text-gray-500">
-                <div className="text-4xl md:text-6xl mb-2">🔍</div>
+                <div className="text-4xl md:text-6xl mb-2" aria-label={t("retiree.search.searchIconLabel", "Search icon")}>🔍</div>
                 <p className="text-base md:text-lg">{t("retiree.search.prompt", "Please select at least one interest or job title to search for retirees.")}</p>
               </div>
             )}

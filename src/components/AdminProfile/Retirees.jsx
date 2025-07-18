@@ -183,7 +183,7 @@ const Retirees = () => {
     "idVerification.gender": {
       label: t("admin.retirees.fields.idVerification.gender"),
       type: "select",
-      options: ["Male", "Female", "Other"],
+      options: [t("common.gender.male"), t("common.gender.female"), t("common.gender.other")],
       path: ["idVerification", "gender"]
     },
     "idVerification.settlement": {
@@ -1182,7 +1182,7 @@ const Retirees = () => {
                     <span className="font-semibold text-gray-700">{t("admin.retirees.age")}:</span> {retiree.idVerification?.age || t("common.notAvailable")}
                   </div>
                   <div>
-                    <span className="font-semibold text-gray-700">{t("admin.retirees.gender")}:</span> {retiree.idVerification?.gender || t("common.notAvailable")}
+                    <span className="font-semibold text-gray-700">{t("admin.retirees.gender")}:</span> {retiree.idVerification?.gender ? t('common.gender.' + retiree.idVerification.gender.toLowerCase()) : t("common.notAvailable")}
                   </div>
                   <div>
                     <span className="font-semibold text-gray-700">{t("admin.retirees.settlement")}:</span> {retiree.idVerification?.settlement || t("common.notAvailable")}
@@ -1248,7 +1248,7 @@ const Retirees = () => {
                       {retiree.idVerification?.firstName} {retiree.idVerification?.lastName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.age || "N/A"}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender || "N/A"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.gender ? t('common.gender.' + retiree.idVerification.gender.toLowerCase()) : "N/A"}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{retiree.idVerification?.settlement || "N/A"}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {retiree.workBackground?.customJobInfo?.originalSelection?.jobTitle || "N/A"}
