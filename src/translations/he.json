@@ -1099,9 +1099,7 @@
         "title": "הוסף קטגוריה חדשה",
         "adding": "מוסיף...",
         "addCategory": "הוסף קטגוריה",
-        "failedToAddCategory": "נכשל בהוספת הקטגוריה. אנא נסה שוב."
-      },
-      "addCategoryModal": {
+        "failedToAddCategory": "נכשל בהוספת הקטגוריה. אנא נסה שוב.",
         "eyedropperNotSupported": "ממשק בחירת צבע לא נתמך בדפדפן זה.",
         "eyedropperFailed": "בחירת הצבע בוטלה או נכשלה.",
         "copied": "הועתק!",
@@ -1699,6 +1697,12 @@
     "welcomeBack": "ברוך שובך, {{name}} ({{role}})",
     "adminName": "המנהל שרה",
     "searchEvents": "חפש אירועים...",
+    "day": {
+      "hourLabel": "{{hour}}",
+      "noEvents": "אין אירועים מתוכננים ליום זה",
+      "addPrompt": "לחץ על \"צור אירוע\" כדי להוסיף פעילות",
+      "addEvent": "הוסף אירוע"
+    },
     "filter": {
       "allEvents": "כל האירועים",
       "createdByMe": "נוצרו על ידי",
@@ -2639,37 +2643,6 @@
     "YE": "תימן",
     "ZM": "זמביה",
     "ZW": "זימבבואה"
-  },
-  "calendar": {
-    "months": {
-      "january": "ינואר",
-      "february": "פברואר",
-      "march": "מרץ",
-      "april": "אפריל",
-      "may": "מאי",
-      "june": "יוני",
-      "july": "יולי",
-      "august": "אוגוסט",
-      "september": "ספטמבר",
-      "october": "אוקטובר",
-      "november": "נובמבר",
-      "december": "דצמבר"
-    },
-    "days": {
-      "sun": "א׳",
-      "mon": "ב׳",
-      "tue": "ג׳",
-      "wed": "ד׳",
-      "thu": "ה׳",
-      "fri": "ו׳",
-      "sat": "ש׳"
-    },
-    "day": {
-      "hourLabel": "{{hour}}",
-      "noEvents": "אין אירועים מתוכננים ליום זה",
-      "addPrompt": "לחץ על \"צור אירוע\" כדי להוסיף פעילות",
-      "addEvent": "הוסף אירוע"
-    }
   },
   "matchDetails": {
     "loading": "טוען פרטי התאמה...",
