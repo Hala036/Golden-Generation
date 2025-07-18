@@ -24,6 +24,42 @@ const ViewProfileDashboard = () => {
   const retireeIdNumber = retireeData?.idVerification?.idNumber;
   const retireeId = retireeData?.id;
 
+  // Function to get the full name (first and last name)
+  const getFullName = (userData) => {
+    if (!userData) return "User";
+    
+    const firstName = userData.idVerification?.firstName || '';
+    const lastName = userData.idVerification?.lastName || '';
+    
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (userData.credentials?.username) {
+      return userData.credentials.username;
+    }
+    
+    return "User";
+  };
+
+  // Function to get display name for profile pic
+  const getDisplayName = (userData) => {
+    if (!userData) return "User";
+    
+    const firstName = userData.idVerification?.firstName || '';
+    const lastName = userData.idVerification?.lastName || '';
+    
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (userData.credentials?.username) {
+      return userData.credentials.username;
+    }
+    
+    return "User";
+  };
+
   // Redirect to a fallback page if retireeIdNumber is not available
   useEffect(() => {
     if (!retireeIdNumber) {
@@ -74,15 +110,29 @@ const ViewProfileDashboard = () => {
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
               <DefaultProfilePic 
-                name={retireeData.credentials?.username || "User"}
+                name={getDisplayName(retireeData)}
                 size={80}
                 fontSize="2rem"
                 // bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
               />
             </div>
-            <span className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center">
-              {retireeData.credentials?.username || "User"}
-            </span>
+            <button
+              onClick={() => {
+                if (retireeData) {
+                  navigate('/view-profile', { 
+                    state: { 
+                      retireeData: { 
+                        id: retireeData.id || retireeData.uid,
+                        ...retireeData 
+                      } 
+                    } 
+                  });
+                }
+              }}
+              className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center hover:text-blue-600 hover:underline cursor-pointer transition-colors"
+            >
+              {getFullName(retireeData)}
+            </button>
           </div>
         )}
 

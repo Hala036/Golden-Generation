@@ -139,9 +139,23 @@ const Dashboard = ({ customIcons = [], customButtons = [], componentsById, selec
                 bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
               />
             </div>
-            <span className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center">
+            <button
+              onClick={() => {
+                if (fullUserData) {
+                  navigate('/view-profile', { 
+                    state: { 
+                      retireeData: { 
+                        id: fullUserData.id || auth.currentUser?.uid,
+                        ...fullUserData 
+                      } 
+                    } 
+                  });
+                }
+              }}
+              className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center hover:text-blue-600 hover:underline cursor-pointer transition-colors"
+            >
               {getFullName(fullUserData)}
-            </span>
+            </button>
           </div>
         )}
 
