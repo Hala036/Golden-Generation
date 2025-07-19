@@ -133,12 +133,29 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
       try {
         const activeEventsQuery = query(
           collection(db, "events"),
-          where("status", "==", "active") // Query for active events
+          where("status", "==", "active")
         );
-
         const querySnapshot = await getDocs(activeEventsQuery);
-
-        setActiveEventsCount(querySnapshot.size); // Set the count of active events
+    
+        // Today's date as a comparable value
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
+        // Helper to parse "DD-MM-YYYY" to Date
+        const parseDate = (str) => {
+          const [day, month, year] = str.split("-");
+          return new Date(`${year}-${month}-${day}`);
+        };
+    
+        // Filter events by endDate
+        const filteredEvents = querySnapshot.docs.filter(doc => {
+          const endDateStr = doc.data().endDate;
+          if (!endDateStr) return false;
+          const endDate = parseDate(endDateStr);
+          return endDate >= today;
+        });
+    
+        setActiveEventsCount(filteredEvents.length);
       } catch (error) {
         console.error("Error fetching active events count:", error);
       }
@@ -148,11 +165,21 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     const fetchVolunteerMatchesCount = async () => {
       try {
         const uid = user?.uid || null;
-        const volunteerMatchesQuery = query(
-          collection(db, "jobRequests"),
-          where("status", "==", "Active"), // Query for active job requests
-          where("createdBy", "==", uid) // Filter by current user's UID
-        );
+        const role = userRole?.toLowerCase() || 'unknown';
+        let volunteerMatchesQuery;
+        if (role === 'admin') {
+          volunteerMatchesQuery = query(
+            collection(db, "jobRequests"),
+            where("status", "==", "Active"), // Query for active job requests
+            where("createdBy", "==", uid) // Filter by current user's UID
+          );
+        }
+        else {
+          volunteerMatchesQuery = query(
+            collection(db, "jobRequests"),
+            where("status", "==", "Active") // Query for active job requests
+          );
+        }
 
         const querySnapshot = await getDocs(volunteerMatchesQuery);
 
@@ -649,7 +676,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         <div className="lg:col-span-1 flex flex-col w-full min-w-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 w-full">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 md:mb-4 flex items-center">
-              <FaClock className="mr-2 text-blue-500" />
+              <FaClock className="mr-2 ml-2 text-blue-500" />
               {t('dashboard.main.recentActivityFeed')}
             </h2>
             <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full">
@@ -688,7 +715,7 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
         <div className="lg:col-span-1 flex flex-col w-full min-w-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6 flex flex-col w-full min-w-0">
             <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-1 md:p-3 flex items-center min-w-0">
-              <FaBell className="mr-2 text-red-500 flex-shrink-0" />
+              <FaBell className="mr-2 ml-2 text-red-500 flex-shrink-0" />
               {t('dashboard.main.alertsAndNotifications')}
             </h2>
             <div className="space-y-2 md:space-y-4 max-h-56 md:max-h-80 overflow-y-auto w-full min-w-0">

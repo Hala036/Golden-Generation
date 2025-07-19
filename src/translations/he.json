@@ -1119,9 +1119,7 @@
         "title": "הוסף קטגוריה חדשה",
         "adding": "מוסיף...",
         "addCategory": "הוסף קטגוריה",
-        "failedToAddCategory": "נכשל בהוספת הקטגוריה. אנא נסה שוב."
-      },
-      "addCategoryModal": {
+        "failedToAddCategory": "נכשל בהוספת הקטגוריה. אנא נסה שוב.",
         "eyedropperNotSupported": "ממשק בחירת צבע לא נתמך בדפדפן זה.",
         "eyedropperFailed": "בחירת הצבע בוטלה או נכשלה.",
         "copied": "הועתק!",
@@ -1692,18 +1690,18 @@
       "sendFailed": "נכשל בשליחת ההודעה."
     },
     "search": {
-      "title": "חיפוש גמלאים ביישוב שלך",
+      "title": "חיפוש ותיקים ביישוב שלך",
       "noSettlement": "לא משויך יישוב. אנא פנה למנהל המערכת.",
       "interests": "תחומי עניין",
       "selectInterests": "בחר תחומי עניין",
       "jobTitle": "מקצוע",
       "selectJobs": "בחר מקצועות",
-      "results": "גמלאים תואמים",
-      "noResults": "לא נמצאו גמלאים התואמים לקריטריונים שלך.",
+      "results": "ותיקים תואמים",
+      "noResults": "לא נמצאו ותיקים התואמים לקריטריונים שלך.",
       "age": "גיל",
       "gender": "מגדר",
       "viewProfile": "צפה בפרופיל",
-      "prompt": "אנא בחר לפחות תחום עניין אחד או מקצוע אחד כדי לחפש גמלאים."
+      "prompt": "אנא בחר לפחות תחום עניין אחד או מקצוע אחד כדי לחפש ותיקים."
     }
   },
   "interests": {
@@ -1721,6 +1719,12 @@
     "welcomeBack": "ברוך שובך, {{name}} ({{role}})",
     "adminName": "המנהל שרה",
     "searchEvents": "חפש אירועים...",
+    "day": {
+      "hourLabel": "{{hour}}",
+      "noEvents": "אין אירועים מתוכננים ליום זה",
+      "addPrompt": "לחץ על \"צור אירוע\" כדי להוסיף פעילות",
+      "addEvent": "הוסף אירוע"
+    },
     "filter": {
       "allEvents": "כל האירועים",
       "createdByMe": "נוצרו על ידי",
@@ -2666,37 +2670,6 @@
     "ZM": "זמביה",
     "ZW": "זימבבואה"
   },
-  "calendar": {
-    "months": {
-      "january": "ינואר",
-      "february": "פברואר",
-      "march": "מרץ",
-      "april": "אפריל",
-      "may": "מאי",
-      "june": "יוני",
-      "july": "יולי",
-      "august": "אוגוסט",
-      "september": "ספטמבר",
-      "october": "אוקטובר",
-      "november": "נובמבר",
-      "december": "דצמבר"
-    },
-    "days": {
-      "sun": "א׳",
-      "mon": "ב׳",
-      "tue": "ג׳",
-      "wed": "ד׳",
-      "thu": "ה׳",
-      "fri": "ו׳",
-      "sat": "ש׳"
-    },
-    "day": {
-      "hourLabel": "{{hour}}",
-      "noEvents": "אין אירועים מתוכננים ליום זה",
-      "addPrompt": "לחץ על \"צור אירוע\" כדי להוסיף פעילות",
-      "addEvent": "הוסף אירוע"
-    }
-  },
   "matchDetails": {
     "loading": "טוען פרטי התאמה...",
     "failedToLoad": "נכשל בטעינת פרטי ההתאמה",
@@ -2711,7 +2684,7 @@
     "professionalBackground": "רקע מקצועי",
     "timing": "תזמון",
     "description": "תיאור",
-    "senior": "גמלאי",
+    "senior": "ותיק",
     "name": "שם",
     "unknown": "לא ידוע",
     "interests": "תחומי עניין",
@@ -2739,6 +2712,21 @@
     "englishRequired": "נדרש תרגום לאנגלית",
     "hebrewRequired": "נדרש תרגום לעברית",
     "colorRequired": "אנא בחר צבע"
+  },
+  "pendingEvents": {
+    "title": "אירועים ממתינים",
+    "allTitle": "כל האירועים הממתינים",
+    "empty": "אין אירועים ממתינים לבדיקה.",
+    "eventTitle": "כותרת",
+    "location": "מיקום",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "accept": "אישור",
+    "reject": "דחייה",
+    "approveSuccess": "האירוע אושר בהצלחה!",
+    "approveError": "אירעה שגיאה באישור האירוע.",
+    "rejectSuccess": "האירוע נדחה בהצלחה!",
+    "rejectError": "אירעה שגיאה בדחיית האירוע.",
+    "fetchError": "אירעה שגיאה בקבלת האירועים הממתינים."
   }
-  
 }

@@ -3,10 +3,10 @@ import { db, auth } from "../../firebase";
 import { collection, query, where, getDocs, getDoc, updateDoc, doc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { triggerNotification } from "../SharedDashboard/TriggerNotifications";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../context/LanguageContext";
 
 const PendingEvents = () => {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const [pendingEvents, setPendingEvents] = useState([]);
   const [adminSettlement, setAdminSettlement] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -17,16 +17,14 @@ const PendingEvents = () => {
       try {
         const user = auth.currentUser;
         if (!user) {
-          console.error("No user logged in");
+          console.error(t("pendingEvents.fetchError"));
           return;
         }
-        
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (!userDoc.exists()) {
-          console.error("User document not found");
+          console.error(t("pendingEvents.fetchError"));
           return;
         }
-        
         const userData = userDoc.data();
         setUserRole(userData.role);
         
@@ -38,15 +36,13 @@ const PendingEvents = () => {
         
         // Try different possible locations for settlement
         const settlement = userData.idVerification?.settlement || 
-                         userData.settlement || 
-                         userData.credentials?.settlement;
-        
+                           userData.settlement || 
+                           userData.credentials?.settlement;
         setAdminSettlement(settlement || "");
       } catch (error) {
-        console.error("Error fetching admin settlement:", error);
+        console.error(t("pendingEvents.fetchError"), error);
       }
     };
-
     fetchAdminSettlement();
   }, []);
 
@@ -72,39 +68,32 @@ const PendingEvents = () => {
         }));
         setPendingEvents(events);
       } catch (error) {
-        console.error("Error fetching pending events:", error);
-        toast.error("Failed to fetch pending events.");
+        console.error(t("pendingEvents.fetchError"), error);
+        toast.error(t("pendingEvents.fetchError"));
       } finally {
         setLoading(false);
       }
     };
-
-    if (adminSettlement) {
-      fetchPendingEvents();
-    }
+    fetchPendingEvents();
   }, [adminSettlement]);
 
   const handleApprove = async (eventId) => {
     try {
       const eventDoc = await getDoc(doc(db, "events", eventId));
       const eventData = eventDoc.data();
-
       await updateDoc(doc(db, "events", eventId), { status: "active", color: "yellow" });
-
-      // Trigger notification for approval
       await triggerNotification({
-        message: `Your event "${eventData.title}" has been approved.`,
+        message: t("pendingEvents.approveSuccess"),
         target: [eventData.createdBy],
         link: `/events/${eventId}`,
         createdBy: auth.currentUser.uid,
         type: "alert"
       });
-
-      toast.success("Event approved successfully!");
+      toast.success(t("pendingEvents.approveSuccess"));
       setPendingEvents((prev) => prev.filter((event) => event.id !== eventId));
     } catch (error) {
-      console.error("Error approving event:", error);
-      toast.error("Failed to approve event.");
+      console.error(t("pendingEvents.approveError"), error);
+      toast.error(t("pendingEvents.approveError"));
     }
   };
 
@@ -112,23 +101,19 @@ const PendingEvents = () => {
     try {
       const eventDoc = await getDoc(doc(db, "events", eventId));
       const eventData = eventDoc.data();
-
       await updateDoc(doc(db, "events", eventId), { status: "rejected", color: "red" });
-
-      // Trigger notification for rejection
       await triggerNotification({
-        message: `Your event "${eventData.title}" has been rejected.`,
+        message: t("pendingEvents.rejectSuccess"),
         target: [eventData.createdBy],
         link: `/events/${eventId}`,
         createdBy: auth.currentUser.uid,
         type: "alert"
       });
-
-      toast.success("Event rejected successfully!");
+      toast.success(t("pendingEvents.rejectSuccess"));
       setPendingEvents((prev) => prev.filter((event) => event.id !== eventId));
     } catch (error) {
-      console.error("Error rejecting event:", error);
-      toast.error("Failed to reject event.");
+      console.error(t("pendingEvents.rejectError"), error);
+      toast.error(t("pendingEvents.rejectError"));
     }
   };
 
@@ -157,11 +142,11 @@ const PendingEvents = () => {
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-sm">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        {userRole === 'superadmin' ? 'All Pending Events' : 'Pending Events'}
+        {userRole === 'superadmin' ? t("pendingEvents.allTitle") : t("pendingEvents.title")}
       </h2>
       {pendingEvents.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500 text-lg">No pending events to review.</p>
+          <p className="text-gray-500 text-lg">{t("pendingEvents.empty")}</p>
         </div>
       ) : (
         <ul className="space-y-4">
@@ -215,7 +200,6 @@ const PendingEvents = () => {
               </div>
               
               <div className="flex space-x-4 mt-4">
-                {/* Accept Button */}
                 <button
                   onClick={() => handleApprove(event.id)}
                   className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2"
@@ -223,10 +207,8 @@ const PendingEvents = () => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
-                  Approve
+                  {t("pendingEvents.accept")}
                 </button>
-
-                {/* Reject Button */}
                 <button
                   onClick={() => handleReject(event.id)}
                   className="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2"
@@ -234,7 +216,7 @@ const PendingEvents = () => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
-                  Reject
+                  {t("pendingEvents.reject")}
                 </button>
               </div>
             </li>

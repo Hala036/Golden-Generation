@@ -4,23 +4,63 @@ import { collection, query, where, getDocs, doc, getDoc } from "firebase/firesto
 import { db } from "../../firebase";
 import { getAuth } from "firebase/auth";
 import Select from "react-select";
-import interestsList from '../../data/interests.json';
-import jobsList from '../../data/jobs.json';
 import interestTranslations from '../../data/interestTranslations.json';
 import jobTitleTranslations from '../../data/jobTitleTranslations.json';
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from '../../context/LanguageContext';
+
+// Build master list of English keys for interests and jobs from translation maps
+const interestEnglishKeys = Object.keys(interestTranslations).filter(key => /[a-zA-Z]/.test(key));
+const jobEnglishKeys = Object.keys(jobTitleTranslations).filter(key => /[a-zA-Z]/.test(key));
+
+const getTranslated = (val, translationsMap, language) => {
+  if (!val) return val;
+  if (language === 'he') {
+    return translationsMap[val] && translationsMap[val][0] ? translationsMap[val][0] : val;
+  } else {
+    // Try to find the English key for a Hebrew value
+    const found = Object.entries(translationsMap).find(([en, arr]) => arr.includes(val));
+    return found ? found[0] : val;
+  }
+};
+
+const getEnglishKey = (val, translationsMap) => {
+  // If val is an English key, return it
+  if (Object.keys(translationsMap).some(k => k === val && /[a-zA-Z]/.test(k))) {
+    return val;
+  }
+  // Otherwise, search for the English key whose array includes val
+  const found = Object.entries(translationsMap).find(([en, arr]) =>
+    /[a-zA-Z]/.test(en) && arr.includes(val)
+  );
+  return found ? found[0] : val;
+};
 
 const RetireeSearch = () => {
-  const { t } = useTranslation();
+  const { t, i18 } = useTranslation();
+  const { language } = useLanguage();
   const [retirees, setRetirees] = useState([]);
   const [filteredRetirees, setFilteredRetirees] = useState([]);
   const [mySettlement, setMySettlement] = useState(null);
   const [myUid, setMyUid] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedInterests, setSelectedInterests] = useState([]);
-  const [selectedJobs, setSelectedJobs] = useState([]);
-  const [searchMade, setSearchMade] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState([]); // English keys
+  const [selectedJobs, setSelectedJobs] = useState([]); // English keys
   const navigate = useNavigate();
+
+  // Prepare dropdown options in the current language, using English keys as values
+  const interestOptions = interestEnglishKeys.map(key => ({
+    value: key,
+    label: language === 'he'
+      ? (interestTranslations[key] && interestTranslations[key][0]) || key
+      : key
+  }));
+  const jobOptions = jobEnglishKeys.map(key => ({
+    value: key,
+    label: language === 'he'
+      ? (jobTitleTranslations[key] && jobTitleTranslations[key][0]) || key
+      : key
+  }));
 
   // Fetch current retiree's settlement
   useEffect(() => {
@@ -71,36 +111,24 @@ const RetireeSearch = () => {
   // Filtering logic
   useEffect(() => {
     let filtered = retirees;
-    const normalize = s => (s || "").toString().toLowerCase().trim();
-    // Helper to get all translations for a value (including itself)
-    const getAllTranslations = (val, translationsMap) => {
-      const normVal = normalize(val);
-      const translations = translationsMap[val] || translationsMap[normVal] || [];
-      return [val, ...translations];
-    };
-    // Interests: cross-language matching
+    // Interests: cross-language matching using English keys
     if (selectedInterests.length > 0) {
-      const selectedInterestsAll = selectedInterests.flatMap(i => getAllTranslations(i, interestTranslations)).map(normalize);
       filtered = filtered.filter(r => {
-        const interests = (r.lifestyle?.interests || []).map(normalize);
-        return selectedInterestsAll.some(i => interests.includes(i));
+        const retireeInterests = (r.lifestyle?.interests || []).map(val => getEnglishKey(val, interestTranslations));
+        // Compare normalized retiree interests to normalized selected interests
+        return retireeInterests.some(ri => selectedInterests.includes(getEnglishKey(ri, interestTranslations)));
       });
     }
-    // Job Titles: cross-language matching
+    // Job Titles: cross-language matching using English keys
     if (selectedJobs.length > 0) {
-      const selectedJobsAll = selectedJobs.flatMap(j => getAllTranslations(j, jobTitleTranslations)).map(normalize);
       filtered = filtered.filter(r => {
-        const job = normalize(r.workBackground?.customJobInfo?.originalSelection?.jobTitle);
-        return selectedJobsAll.includes(job);
+        const retireeJob = getEnglishKey(r.workBackground?.customJobInfo?.originalSelection?.jobTitle, jobTitleTranslations);
+        // Compare normalized retiree job to normalized selected jobs
+        return selectedJobs.some(sj => retireeJob === getEnglishKey(sj, jobTitleTranslations));
       });
     }
     setFilteredRetirees(filtered);
   }, [retirees, selectedInterests, selectedJobs]);
-
-  // Update searchMade when filters change
-  useEffect(() => {
-    setSearchMade(selectedInterests.length > 0 || selectedJobs.length > 0);
-  }, [selectedInterests, selectedJobs]);
 
   // Custom styles for react-select to be more mobile-friendly
   const customSelectStyles = {
@@ -143,7 +171,6 @@ const RetireeSearch = () => {
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-gray-900 text-center">
           {t("retiree.search.title", "Find Retirees in Your Settlement")}
         </h1>
-        
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
@@ -165,8 +192,8 @@ const RetireeSearch = () => {
                     </label>
                     <Select
                       isMulti
-                      options={interestsList.map(i => ({ value: i, label: t(`lifestyle.${i}`, i) }))}
-                      value={selectedInterests.map(i => ({ value: i, label: t(`lifestyle.${i}`, i) }))}
+                      options={interestOptions}
+                      value={selectedInterests.map(i => ({ value: i, label: language === 'he' ? (interestTranslations[i] && interestTranslations[i][0]) || i : i }))}
                       onChange={opts => setSelectedInterests(opts ? opts.map(o => o.value) : [])}
                       placeholder={t("retiree.search.selectInterests", "Select interests")}
                       classNamePrefix="react-select"
@@ -175,15 +202,14 @@ const RetireeSearch = () => {
                       menuPosition="fixed"
                     />
                   </div>
-                  
                   <div className="md:flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("retiree.search.jobTitle", "Job Title")}
                     </label>
                     <Select
                       isMulti
-                      options={jobsList.map(i => ({ value: i, label: t(`workBackground.jobs.${i}`, i) }))}
-                      value={selectedJobs.map(i => ({ value: i, label: t(`workBackground.jobs.${i}`, i) }))}
+                      options={jobOptions}
+                      value={selectedJobs.map(i => ({ value: i, label: language === 'he' ? (jobTitleTranslations[i] && jobTitleTranslations[i][0]) || i : i }))}
                       onChange={opts => setSelectedJobs(opts ? opts.map(o => o.value) : [])}
                       placeholder={t("retiree.search.selectJobs", "Select job titles")}
                       classNamePrefix="react-select"
@@ -197,99 +223,77 @@ const RetireeSearch = () => {
             </div>
 
             {/* Results Section */}
-            {searchMade ? (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
-                <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6 text-gray-900">
-                  {t("retiree.search.results", "Matching Retirees")}
-                </h2>
-                {filteredRetirees.length === 0 ? (
-                  <div className="text-center py-8 md:py-12 text-gray-500">
-                    <div className="text-4xl md:text-6xl mb-2" aria-label={t("retiree.search.noResultsIconLabel", "No results icon")}>👥</div>
-                    <p className="text-base md:text-lg">{t("retiree.search.noResults", "No retirees found matching your criteria.")}</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                    {filteredRetirees.map(r => {
-                      // Normalize helper
-                      const normalize = s => (s || "").toString().toLowerCase().trim();
-                      // Get all translations for a value (including itself)
-                      const getAllTranslations = (val, translationsMap) => {
-                        const normVal = normalize(val);
-                        const translations = translationsMap[val] || translationsMap[normVal] || [];
-                        return [val, ...translations];
-                      };
-                      // Prepare sets for highlighting
-                      const selectedInterestsAll = selectedInterests.flatMap(i => getAllTranslations(i, interestTranslations)).map(normalize);
-                      const selectedJobsAll = selectedJobs.flatMap(j => getAllTranslations(j, jobTitleTranslations)).map(normalize);
-                      // Retiree's data
-                      const retireeInterests = (r.lifestyle?.interests || []);
-                      const retireeJob = r.workBackground?.customJobInfo?.originalSelection?.jobTitle || "";
-                      // Highlight logic
-                      const highlightedInterests = retireeInterests.map((interest, index) => {
-                        const isMatch = selectedInterestsAll.includes(normalize(interest));
-                        return (
-                          <span key={index} className={`inline-block mr-2 mb-1 px-2 py-1 rounded-full text-xs md:text-sm ${
-                            isMatch 
-                              ? "bg-yellow-100 text-yellow-800 border border-yellow-300" 
-                              : "bg-gray-100 text-gray-700"
-                          }`}>
-                            {isMatch ? t("retiree.search.star", "⭐ ") : ''}{t(`interests.${interest.toLowerCase().replace(/\s+/g, '-')}`, interest)}
-                          </span>
-                        );
-                      });
-                      const isJobMatch = selectedJobsAll.includes(normalize(retireeJob));
-                      
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-6 text-gray-900">
+                {t("retiree.search.results", "Matching Retirees")}
+              </h2>
+              {filteredRetirees.length === 0 ? (
+                <div className="text-center py-8 md:py-12 text-gray-500">
+                  <div className="text-4xl md:text-6xl mb-2">👥</div>
+                  <p className="text-base md:text-lg">{t("retiree.search.noResults", "No retirees found matching your criteria.")}</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  {filteredRetirees.map(r => {
+                    // Retiree's data
+                    const retireeInterests = (r.lifestyle?.interests || []).map(val => getEnglishKey(val, interestTranslations));
+                    const retireeJob = getEnglishKey(r.workBackground?.customJobInfo?.originalSelection?.jobTitle, jobTitleTranslations);
+                    // Highlight logic
+                    const highlightedInterests = retireeInterests.map((interest, index) => {
+                      const isMatch = selectedInterests.includes(interest);
                       return (
-                        <div key={r.id} className="bg-gray-50 rounded-lg p-4 md:p-6 border border-gray-200 h-fit">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-lg md:text-xl text-gray-900 mb-1">
-                                {r.idVerification?.firstName} {r.idVerification?.lastName}
-                              </h3>
-                              <div className="text-sm md:text-base text-gray-600 space-y-1">
-                                <div>{t("retiree.search.age", "Age")}: {r.idVerification?.age || t("common.notAvailable", "N/A")}</div>
-                                <div>{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender ? t(`gender.${r.idVerification?.gender.toLowerCase().replace(/\s+/g, '-')}`, r.idVerification?.gender) : t("common.notAvailable", "N/A")}</div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-                            <div className={`text-sm md:text-base ${isJobMatch ? "font-medium" : ""}`}> 
-                              <span className="text-gray-600">{t("retiree.search.jobTitle", "Job Title")}: </span>
-                              <span className={isJobMatch ? "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full" : "text-gray-900"}>
-                                {isJobMatch ? t("retiree.search.star", "⭐ ") : ''}{retireeJob ? t(`jobs.${retireeJob.toLowerCase().replace(/\s+/g, '-')}`, retireeJob) : t("common.notAvailable", "N/A")}
-                              </span>
-                            </div>
-                            
-                            <div className="text-sm md:text-base">
-                              <span className="text-gray-600 block mb-2">{t("retiree.search.interests", "Interests")}:</span>
-                              <div className="flex flex-wrap gap-1">
-                                {highlightedInterests.length > 0 ? highlightedInterests : (
-                                  <span className="text-gray-500 text-xs md:text-sm">{t("common.notAvailable", "N/A")}</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <button
-                            className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm md:text-base"
-                            onClick={() => navigate('/view-profile', { state: { retireeData: r } })}
-                            aria-label={t('retiree.search.viewProfile', 'View Profile')}
-                          >
-                            {t('retiree.search.viewProfile', 'View Profile')}
-                          </button>
-                        </div>
+                        <span key={index} className={`inline-block mr-2 mb-1 px-2 py-1 rounded-full text-xs md:text-sm ${
+                          isMatch 
+                            ? "bg-yellow-100 text-yellow-800 border border-yellow-300" 
+                            : "bg-gray-100 text-gray-700"
+                        }`}>
+                          {isMatch ? '⭐ ' : ''}{language === 'he' ? (interestTranslations[interest] && interestTranslations[interest][0]) || interest : interest}
+                        </span>
                       );
-                    })}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 text-center text-gray-500">
-                <div className="text-4xl md:text-6xl mb-2" aria-label={t("retiree.search.searchIconLabel", "Search icon")}>🔍</div>
-                <p className="text-base md:text-lg">{t("retiree.search.prompt", "Please select at least one interest or job title to search for retirees.")}</p>
-              </div>
-            )}
+                    });
+                    const isJobMatch = selectedJobs.includes(retireeJob);
+                    return (
+                      <div key={r.id} className="bg-gray-50 rounded-lg p-4 md:p-6 border border-gray-200 h-fit">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg md:text-xl text-gray-900 mb-1">
+                              {r.idVerification?.firstName} {r.idVerification?.lastName}
+                            </h3>
+                            <div className="text-sm md:text-base text-gray-600 space-y-1">
+                              <div>{t("retiree.search.age", "Age")}: {r.idVerification?.age || t("common.notAvailable", "N/A")}</div>
+                              <div>{t("retiree.search.gender", "Gender")}: {r.idVerification?.gender || t("common.notAvailable", "N/A")}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
+                          <div className={`text-sm md:text-base ${isJobMatch ? "font-medium" : ""}`}> 
+                            <span className="text-gray-600">{t("retiree.search.jobTitle", "Job Title")}: </span>
+                            <span className={isJobMatch ? "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full" : "text-gray-900"}>
+                              {isJobMatch ? '⭐ ' : ''}{language === 'he' ? (jobTitleTranslations[retireeJob] && jobTitleTranslations[retireeJob][0]) || retireeJob : retireeJob || t("common.notAvailable", "N/A")}
+                            </span>
+                          </div>
+                          <div className="text-sm md:text-base">
+                            <span className="text-gray-600 block mb-2">{t("retiree.search.interests", "Interests")}:</span>
+                            <div className="flex flex-wrap gap-1">
+                              {highlightedInterests.length > 0 ? highlightedInterests : (
+                                <span className="text-gray-500 text-xs md:text-sm">{t("common.notAvailable", "N/A")}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm md:text-base"
+                          onClick={() => navigate('/view-profile', { state: { retireeData: r } })}
+                          aria-label={t('retiree.search.viewProfile', 'View Profile')}
+                        >
+                          {t('retiree.search.viewProfile', 'View Profile')}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>
