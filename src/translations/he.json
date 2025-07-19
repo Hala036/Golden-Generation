@@ -28,13 +28,20 @@
       "other": "אחר"
     }
   },
+  "volunteerFrequency": {
+    "פעם-בחודש": "פעם בחודש",
+    "פעם-בשבועיים": "פעם בשבועיים",
+    "פעם-בשבוע": "פעם בשבוע",
+    "פעמיים-בשבוע": "פעמיים בשבוע",
+    "חד-פעמי": "חד פעמי"
+  },
   "auth": {
     "errors": {
       "notLoggedIn": "אתה לא מחובר"
     },
     "login": {
       "title": "כניסה למערכת כ",
-      "mainTitle": "תור הזהב",
+      "mainTitle": "דור הזהב",
       "subTitle": "ניהול ותקים מתנדבים בקהילה",
       "email": "כתובת אימייל",
       "password": "סיסמה",
@@ -66,7 +73,7 @@
       }
     },
     "signup": {
-      "logo": "תור הזהב",
+      "logo": "דור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
       "continue": "המשך",
@@ -171,6 +178,8 @@
         "subtitle": "ספר לנו על הניסיון המקצועי שלך",
         "expectedRetirementDateLabel": "תאריך פרישה צפוי",
         "retirementDateLabel":"מתי פרשת?",
+        "expectToRetire": "האם אתה מצפה לפרוש לגמרי?",
+        "dontKnow": "לא יודע",
         "selectSpecialty": "בחר את תחום ההתמחות שלך",
         "specialty": "תחום התמחות",
       "categories": {
@@ -193,9 +202,19 @@
             "full": "מלאה"
           }
         },
+        "employmentType": {
+          "label": "בעבודה היית שכיר או עצמאי?",
+          "options": {
+            "employee": "שכיר",
+            "selfEmployed": "עצמאי",
+            "both": "גם וגם"
+          }
+        },
         "currentEmployment": {
           "label": "האם אתה עובד כיום?",
-          "yes": "כן",
+          "yes": "כן, אני עובד",
+          "partially": "עובד חלקית",
+          "notWorking": "לא עובד",
           "dischargeDate": "תאריך שחרור צפוי"
         },
         "lastJobs": {
@@ -484,9 +503,9 @@
       "volunteerAreas": "תחומי התנדבות",
       "frequency": "תדירות",
       "selectFrequency": "בחר תדירות",
-      "preferredHours": "שעות מועדפות",
+      "preferredHours": "שעות פעילות",
       "selectHours": "בחר שעות",
-      "availableDays": "ימים זמינים",
+      "availableDays": "ימים פעילות",
       "additionalVolunteering": "התנדבות נוספת",
       "additionalVolunteeringDescription": "האם תרצה להתנדב בתחומים נוספים?",
       "yesIdLikeToVolunteerAdditionally": "כן, אני רוצה להתנדב בנוסף",
@@ -515,6 +534,7 @@
       "onceTwoWeeks": "פעם בשבועיים",
       "onceWeek": "פעם בשבוע",
       "twiceWeek": "פעמיים בשבוע",
+      "oneTime": "חד פעמי",
       "morning": "בוקר",
       "noon": "צהריים",
       "evening": "ערב",
@@ -646,7 +666,7 @@
         },
         "announcements": {
           "welcome": {
-            "title": "ברוכים הבאים לתור הזהב!",
+            "title": "ברוכים הבאים לדור הזהב!",
             "content": "אנחנו שמחים לקבל אתכם על הסיפון."
           },
           "darkMode": {
@@ -851,7 +871,7 @@
         "expand": "הרחב סרגל צד"
       },
       "topbar": {
-          "title": "תור הזהב"
+          "title": "דור הזהב"
 
       },
       "main": {
@@ -862,7 +882,7 @@
       }
     },
     "forgotPassword": {
-      "logo": "תור הזהב",
+      "logo": "דור הזהב",
       "title": "איפוס סיסמה",
       "emailPlaceholder": "הזן את כתובת האימייל שלך",
       "sending": "שולח...",
@@ -1260,6 +1280,7 @@
       "backToEvents": "חזור לאירועים",
       "join": "הצטרף לאירוע",
       "leave": "עזוב אירוע",
+      "joined": "הצטרף",
       "moreDetails": "מידע נוסף",
       "participants": "משתתפים",
       "noParticipants": "עדיין אין משתתפים",
@@ -1271,6 +1292,7 @@
       "myEvents": "האירועים שלי",
       "allCategories": "כל הקטגוריות",
       "myEventsOnly": "האירועים שלי בלבד",
+      "pendingApproval": "ממתינים לאישור",
       "trip": "טיול",
       "vacation": "חופשה",
       "workshop": "סדנה",
@@ -1290,7 +1312,7 @@
       "arabic": "ערבית"
     },
     "header": {
-            "title": "תור הזהב",
+            "title": "דור הזהב",
             "logout": "התנתק"
 
     },
@@ -1784,7 +1806,8 @@
         "pending": "ממתין",
         "active": "פעיל",
         "completed": "הושלם",
-        "confirmed": "מאושר"
+        "confirmed": "מאושר",
+        "rejected": "נדחה"
       },
       "createdByMe": "נוצר על ידי",
       "creator": "יוצר האירוע",
@@ -1892,6 +1915,7 @@
   "sidebar": {
     "home": "דף הבית",
     "upcomingEvents": "אירועים קרובים",
+    "pendingEventRequests": "בקשות אירועים ממתינות",
     "categoryManagement": "ניהול קטגוריות",
     "adminManagement": "ניהול מנהלים",
     "retirees": "ותיקים",
@@ -1918,8 +1942,8 @@
       "current": "התנדבות נוכחית",
       "areas": "תחומי התנדבות",
       "frequency": "תדירות",
-      "hours": "שעות מועדפות",
-      "days": "ימים זמינים"
+      "hours": "שעות פעילות",
+      "days": "ימים פעילות"
     },
     "label": {
       "timing": "שעה:",
@@ -1954,7 +1978,8 @@
       "onceMonth": "פעם בחודש",
       "onceTwoWeeks": "פעם בשבועיים",
       "onceWeek": "פעם בשבוע",
-      "twiceWeek": "פעמיים בשבוע"
+      "twiceWeek": "פעמיים בשבוע",
+      "oneTime": "חד פעמי"
     },
     "time": {
       "morning": "שעות בוקר",
@@ -2214,6 +2239,7 @@
     "mySettlement": "היישוב שלי"
   },
   "viewProfile": {
+    "editProfile": "ערוך פרופיל",
     "profileHeader": {
       "age": "גיל",
       "gender": "מגדר",

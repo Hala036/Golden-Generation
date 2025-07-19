@@ -21,6 +21,13 @@
       "retry": "إعادة المحاولة",
       "processing": "جاري المعالجة..."
     },
+    "volunteerFrequency": {
+      "פעם-בחודש": "مرة في الشهر",
+      "פעם-בשבועיים": "مرة كل أسبوعين",
+      "פעם-בשבוע": "مرة في الأسبوع",
+      "פעמיים-בשבוע": "مرتين في الأسبوع",
+      "חד-פעמי": "مرة واحدة"
+    },
     "auth": {
       "login": {
         "title": "الدخول إلى حسابك",
@@ -163,6 +170,10 @@
       "workBackground": {
         "title": "الخبرة العملية",
         "subtitle": "أخبرنا عن خبرتك المهنية",
+        "expectedRetirementDateLabel": "تاريخ التقاعد المتوقع",
+        "retirementDateLabel": "متى تقاعدت؟",
+        "expectToRetire": "هل تتوقع التقاعد الكامل؟",
+        "dontKnow": "لا أعرف",
         "retirementStatus": {
           "label": "حالة التقاعد",
           "options": {
@@ -173,7 +184,9 @@
         },
         "currentEmployment": {
           "label": "هل تعمل حالياً؟",
-          "yes": "نعم",
+          "yes": "نعم، أنا أعمل",
+          "partially": "أعمل جزئياً",
+          "notWorking": "لا أعمل",
           "dischargeDate": "تاريخ التسريح المتوقع"
         },
         "lastJobs": {
@@ -323,7 +336,8 @@
               "onceMonth": "مرة في الشهر",
               "onceTwoWeeks": "مرة كل أسبوعين",
               "onceWeek": "مرة في الأسبوع",
-              "twiceWeek": "مرتين في الأسبوع"
+              "twiceWeek": "مرتين في الأسبوع",
+              "oneTime": "مرة واحدة"
             }
           },
           "hours": {
@@ -510,7 +524,8 @@
           "fix": "يرجى تصحيح الأخطاء قبل المتابعة",
           "success": "تم التحقق من البيانات بنجاح"
         }
-      }
+      },
+      "expectedDischargeDate": "تاريخ التسريح المتوقع"
     },
     "dashboard": {
       "welcome": "مرحبًا",
@@ -553,7 +568,8 @@
         "noParticipants": "لا يوجد مشاركون"
       },
       "filter": {
-        "allCategories": "جميع الفئات"
+        "allCategories": "جميع الفئات",
+        "pendingApproval": "في انتظار الموافقة"
       },
       "search": {
         "searchCategories": "البحث حسب الفئات",
@@ -609,6 +625,7 @@
           "pending": "قيد الانتظار",
           "confirmed": "مؤكد",
           "completed": "مكتمل",
+          "rejected": "مرفوض",
           "other": "آخر"
         },
         "approve": "موافقة",
@@ -786,6 +803,91 @@
         "title": "خطأ في التحليلات",
         "message": "فشل في تحميل بيانات التحليلات. يرجى المحاولة مرة أخرى.",
         "retry": "إعادة المحاولة"
+      }
+    },
+    "sidebar": {
+      "home": "الصفحة الرئيسية",
+      "upcomingEvents": "الأحداث القادمة",
+      "pendingEventRequests": "طلبات الأحداث المعلقة",
+      "categoryManagement": "إدارة الفئات",
+      "adminManagement": "إدارة المسؤولين",
+      "retirees": "المتقاعدون",
+      "volunteerRequests": "طلبات المتطوعين",
+      "serviceRequests": "طلبات الخدمة",
+      "management": "الإدارة",
+      "analytics": "التحليلات",
+      "addSettlements": "إضافة مستوطنات",
+      "settingsSection": "الإعدادات",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج",
+      "collapse": "طي الشريط الجانبي",
+      "expand": "توسيع الشريط الجانبي",
+      "updatePastEvents": "تحديث الأحداث السابقة"
+    },
+    "viewProfile": {
+      "editProfile": "تعديل الملف الشخصي",
+      "profileHeader": {
+        "age": "العمر",
+        "gender": "الجنس",
+        "settlement": "المستوطنة"
+      },
+      "personalInfo": {
+        "title": "المعلومات الشخصية",
+        "idNumber": "رقم الهوية",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "address": "العنوان",
+        "maritalStatus": "الحالة الاجتماعية",
+        "education": "التعليم",
+        "nativeLanguage": "اللغة الأم",
+        "originCountry": "بلد المنشأ"
+      },
+      "credentials": {
+        "title": "بيانات الاعتماد",
+        "username": "اسم المستخدم",
+        "email": "البريد الإلكتروني"
+      },
+      "workBackground": {
+        "title": "الخلفية المهنية",
+        "jobTitle": "المسمى الوظيفي",
+        "industry": "الصناعة",
+        "yearsOfExperience": "سنوات الخبرة",
+        "retired": "متقاعد",
+        "professionalBackground": "الخلفية المهنية"
+      },
+      "lifestyle": {
+        "title": "نمط الحياة",
+        "hobbies": "الهوايات",
+        "interests": "الاهتمامات",
+        "languagesSpoken": "اللغات المنطوقة",
+        "computerAbility": "القدرة على استخدام الكمبيوتر",
+        "sportActivityLevel": "مستوى النشاط الرياضي",
+        "weeklyScheduleOccupancy": "شغل الجدول الأسبوعي"
+      },
+      "volunteering": {
+        "title": "التطوع ومجتمع المحاربين القدامى",
+        "currentActivities": "الأنشطة الحالية",
+        "notParticipatingReason": "سبب عدم المشاركة",
+        "isVolunteer": "متطوع",
+        "volunteerAreas": "مجالات التطوع",
+        "volunteerFrequency": "تكرار التطوع",
+        "volunteerHours": "ساعات التطوع",
+        "volunteerDays": "أيام التطوع",
+        "additionalVolunteering": "تطوع إضافي",
+        "additionalVolunteerFields": "مجالات التطوع الإضافية",
+        "additionalVolunteerFrequency": "تكرار التطوع الإضافي",
+        "additionalVolunteerHours": "ساعات التطوع الإضافية",
+        "additionalVolunteerDays": "أيام التطوع الإضافية",
+        "needsConsultation": "يحتاج استشارة",
+        "consultationFields": "مجالات الاستشارة",
+        "communitySettlement": "مستوطنة المجتمع",
+        "communityProfessionalBackground": "الخلفية المهنية للمجتمع"
+      },
+      "systemInfo": {
+        "title": "معلومات النظام",
+        "role": "الدور",
+        "joined": "تاريخ الانضمام",
+        "lastLogin": "آخر تسجيل دخول"
       }
     }
   } 

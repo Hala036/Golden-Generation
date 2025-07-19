@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaUser, FaComments, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaUser, FaComments, FaArrowLeft, FaArrowRight, FaEdit } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -10,6 +10,7 @@ import ProfileDetails from "./ProfileDetails";
 import Messages from "../SharedDashboard/Messages";
 import DefaultProfilePic from '../DefaultProfilePic';
 import { useTranslation } from 'react-i18next';
+import { auth } from "../../firebase";
 
 const ViewProfileDashboard = () => {
   const { t } = useTranslation();
@@ -23,18 +24,68 @@ const ViewProfileDashboard = () => {
   const retireeData = location.state?.retireeData;
   const retireeIdNumber = retireeData?.idVerification?.idNumber;
   const retireeId = retireeData?.id;
+  const currentUserId = auth.currentUser?.uid;
+  const userRole = retireeData?.role;
 
-  // Redirect to a fallback page if retireeIdNumber is not available
+  // Check if user is viewing their own profile
+  const isOwnProfile = retireeId === currentUserId;
+
+  // Function to get the full name (first and last name)
+  const getFullName = (userData) => {
+    if (!userData) return "User";
+    
+    const firstName = userData.idVerification?.firstName || '';
+    const lastName = userData.idVerification?.lastName || '';
+    
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (userData.credentials?.username) {
+      return userData.credentials.username;
+    }
+    
+    return "User";
+  };
+
+  // Function to get display name for profile pic
+  const getDisplayName = (userData) => {
+    if (!userData) return "User";
+    
+    const firstName = userData.idVerification?.firstName || '';
+    const lastName = userData.idVerification?.lastName || '';
+    
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (userData.credentials?.username) {
+      return userData.credentials.username;
+    }
+    
+    return "User";
+  };
+
+  // Handle edit profile click
+  const handleEditProfile = () => {
+    if (isOwnProfile) {
+      navigate('/edit-signup-data');
+    }
+  };
+
+  // Redirect to a fallback page if retireeIdNumber is not available (only for retirees)
   useEffect(() => {
-    if (!retireeIdNumber) {
+    // Only check for ID number if the user is a retiree
+    if (userRole === 'retiree' && !retireeIdNumber) {
       toast.error("No retiree ID number available.");
       navigate("/dashboard");
     }
-  }, [retireeIdNumber, navigate]);
+  }, [retireeIdNumber, navigate, userRole]);
 
   const icons = [
     { id: "profile", label: t('admin.retirees.profile'), icon: <FaUser /> },
-    { id: "messages", label: t('admin.retirees.sendMessage'), icon: <FaComments /> }
+    // Only show messages option if not viewing own profile
+    ...(isOwnProfile ? [] : [{ id: "messages", label: t('admin.retirees.sendMessage'), icon: <FaComments /> }])
   ];
 
   const handleTabSelect = (id) => {
@@ -70,19 +121,48 @@ const ViewProfileDashboard = () => {
 
         {/* Profile Section */}
         {isSidebarExpanded && (
-
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
               <DefaultProfilePic 
-                name={retireeData.credentials?.username || "User"}
+                name={getDisplayName(retireeData)}
                 size={80}
                 fontSize="2rem"
                 // bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
               />
             </div>
-            <span className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center">
-              {retireeData.credentials?.username || "User"}
-            </span>
+            <div className="flex items-center gap-2 mt-3 md:mt-0">
+              <button
+                onClick={() => {
+                  if (retireeData) {
+                    navigate('/view-profile', { 
+                      state: { 
+                        retireeData: { 
+                          id: retireeData.id || retireeData.uid,
+                          ...retireeData 
+                        } 
+                      } 
+                    });
+                  }
+                }}
+                className={`text-sm md:text-lg font-semibold text-center transition-colors ${
+                  isOwnProfile 
+                    ? 'hover:text-blue-600 hover:underline cursor-pointer text-blue-700' 
+                    : 'hover:text-blue-600 hover:underline cursor-pointer'
+                }`}
+              >
+                {getFullName(retireeData)}
+              </button>
+              {/* Show edit button only for own profile */}
+              {isOwnProfile && (
+                <button
+                  onClick={handleEditProfile}
+                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors border border-transparent hover:border-blue-200"
+                  title={t('viewProfile.editProfile')}
+                >
+                  <FaEdit className="text-sm" />
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -109,20 +189,6 @@ const ViewProfileDashboard = () => {
 
         {/* Bottom Section (Pinned) */}
         <div className="border-t border-gray-200 bg-gray-100 p-2 md:p-4">
-          {/* Custom Buttons *
-          {customButtons.map(({ id, label, onClick, icon }) => (
-            <button
-              key={id}
-              onClick={() => setSelected(id)}
-            className={`flex items-center ${
-              isSidebarExpanded ? "space-x-1 md:space-x-2" : "justify-center"
-            } text-gray-600 hover:text-gray-800 w-full py-1 md:py-2`}
-            >
-              <span className="text-xl">{icon}</span>
-              {isSidebarExpanded && <span className="text-sm">{label}</span>}
-            </button>
-          ))}
-
           {/* back to profile Button */}
           <button
             onClick={handleBackToProfile}
@@ -164,7 +230,7 @@ const ViewProfileDashboard = () => {
         </div>
 
         {/* Scrollable Content */}
-      <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative overflow-y-auto mt-8 md:mt-12">
+        <div className="flex-1 flex flex-col h-screen box-border p-2 md:p-4 relative overflow-y-auto mt-8 md:mt-12">
           {selected === "profile" && <ProfileDetails retireeData={retireeData} />}
           {selected === "messages" && (
             <Messages />

@@ -166,24 +166,38 @@ const AdminHomepage = React.memo(({ setSelected, setShowNotificationsPopup }) =>
     const fetchPendingEventRequestsCount = async () => {
       try {
         let pendingEventsQuery;
-        if (userSettlement) {
+        
+        if (userRole === 'superadmin') {
+          // Superadmin: count all pending events
           pendingEventsQuery = query(
             collection(db, "events"),
-            where("status", "==", "pending"), // Query for pending events
+            where("status", "==", "pending")
+          );
+        } else if (userRole === 'admin' && userSettlement) {
+          // Admin: count pending events from their settlement
+          pendingEventsQuery = query(
+            collection(db, "events"),
+            where("status", "==", "pending"),
             where("settlement", "==", userSettlement)
           );
-        } else {
-          // For admin users without settlement, get all pending events
+        } else if (userRole === 'retiree') {
+          // Retiree: count only their own pending events
           pendingEventsQuery = query(
             collection(db, "events"),
-            where("status", "==", "pending") // Query for pending events
+            where("status", "==", "pending"),
+            where("createdBy", "==", user.uid)
           );
+        } else {
+          // Default: no pending events to count
+          setPendingEventsCount(0);
+          return;
         }
+        
         const querySnapshot = await getDocs(pendingEventsQuery);
         setPendingEventsCount(querySnapshot.size);
       } catch (error) {
         console.error("Error fetching pending event requests count:", error);
-        return 0; // Return 0 in case of error
+        setPendingEventsCount(0); // Set to 0 in case of error
       }
     };
 
