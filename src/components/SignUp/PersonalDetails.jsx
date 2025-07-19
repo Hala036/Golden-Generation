@@ -428,7 +428,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['phoneNumber', 'streetName', 'houseNumber', 'floorNumber', 'postalCode', 'arrivalDate', 'originCountry']; // Now phoneNumber is required
+    const requiredFields = ['phoneNumber', 'streetName', 'houseNumber', 'arrivalDate', 'originCountry']; // Removed floorNumber and postalCode
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
         let fieldKey = '';
@@ -714,7 +714,6 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 error={errors.floorNumber}
                 getFieldIcon={() => getFieldIcon('floorNumber')}
                 inputMode="text"
-                required={true}
                 t={t}
               />
               <FormField
@@ -729,7 +728,6 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 error={errors.postalCode}
                 getFieldIcon={() => getFieldIcon('postalCode')}
                 inputMode="text"
-                required={true}
                 t={t}
               />
             </div>
