@@ -290,7 +290,10 @@ const WorkBackground = ({ onComplete }) => {
       ...formData,
       retirementStatus: status,
       retirementDate: '',
-      expectedRetirementDate: ''
+      expectedRetirementDate: '',
+      expectToRetire: '',
+      dischargeDate: '',
+      currentlyWorking: status === 'not_retired'
     });
   };
 
@@ -637,15 +640,15 @@ const WorkBackground = ({ onComplete }) => {
             <div className="flex items-center mb-6">
               <Star className="text-yellow-500 mr-3" />
               <h2 className="text-2xl font-bold text-gray-800">
-                {t('auth.signup.retirementStatus')}
+                {t('auth.signup.areYouWorkingToday')}
               </h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { value: 'not_retired', label: t('auth.signup.workBackground.retirementStatus.options.notRetired'), icon: '💼' },
+                { value: 'full', label: t('auth.signup.workBackground.retirementStatus.options.full'), icon: '🏖️' },
                 { value: 'partially', label: t('auth.signup.workBackground.retirementStatus.options.partially'), icon: '🔄' },
-                { value: 'fully', label: t('auth.signup.workBackground.retirementStatus.options.full'), icon: '🏖️' }
+                { value: 'not_retired', label: t('auth.signup.workBackground.retirementStatus.options.notRetired'), icon: '💼' }
               ].map((status) => (
                 <SelectionCard
                   key={status.value}
@@ -660,8 +663,68 @@ const WorkBackground = ({ onComplete }) => {
               ))}
             </div>
 
-            {/* Retirement Date Field */}
-            {(formData.retirementStatus === 'partially' || formData.retirementStatus === 'fully') && (
+            {/* Expected Retirement Question for Full and Partially Retired */}
+            {(formData.retirementStatus === 'partially' || formData.retirementStatus === 'full') && (
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('auth.signup.workBackground.expectToRetire') || 'Do you expect to fully retire?'}
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="expectToRetire"
+                        value="yes"
+                        checked={formData.expectToRetire === 'yes'}
+                        onChange={(e) => setFormData({ ...formData, expectToRetire: e.target.value })}
+                        className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300"
+                      />
+                      <span className="text-gray-700">{t('common.yes') || 'Yes'}</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="expectToRetire"
+                        value="no"
+                        checked={formData.expectToRetire === 'no'}
+                        onChange={(e) => setFormData({ ...formData, expectToRetire: e.target.value })}
+                        className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300"
+                      />
+                      <span className="text-gray-700">{t('common.no') || 'No'}</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="expectToRetire"
+                        value="unknown"
+                        checked={formData.expectToRetire === 'unknown'}
+                        onChange={(e) => setFormData({ ...formData, expectToRetire: e.target.value })}
+                        className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300"
+                      />
+                      <span className="text-gray-700">{t('auth.signup.workBackground.dontKnow') || "Don't know"}</span>
+                    </label>
+                  </div>
+                </div>
+                
+                {formData.expectToRetire === 'yes' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('auth.signup.workBackground.expectedRetirementDateLabel') || 'Expected retirement date'}
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.expectedRetirementDate}
+                      onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Retirement Date Field for Not Retired */}
+            {formData.retirementStatus === 'not_retired' && (
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {t('auth.signup.workBackground.retirementDateLabel') || 'When did you retire?'}
@@ -675,62 +738,36 @@ const WorkBackground = ({ onComplete }) => {
                 />
               </div>
             )}
-
-            {/* Expected Retirement Date Field */}
-            {formData.retirementStatus === 'not_retired' && (
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('auth.signup.workBackground.expectedRetirementDateLabel') || 'Expected retirement date (optional)'}
-                </label>
-                <input
-                  type="date"
-                  value={formData.expectedRetirementDate}
-                  onChange={(e) => setFormData({ ...formData, expectedRetirementDate: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                />
-              </div>
-            )}
           </div>
 
-          {/* Current Employment */}
-          {formData.retirementStatus !== 'fully' && (
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
-              <div className="flex items-center mb-6">
-                <Star className="text-yellow-500 mr-3" />
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {t('auth.signup.areYouWorkingToday')}
-                </h2>
-              </div>
-              
-              <div className="mb-6">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.currentlyWorking}
-                  onChange={(e) => setFormData({ ...formData, currentlyWorking: e.target.checked })}
-                    className="mr-3 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                />
-                  <span className="text-gray-700">
-                    {t('auth.signup.workBackground.currentEmployment.yes')}
-                  </span>
-              </label>
-              </div>
-
-              {formData.currentlyWorking && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('auth.signup.expectedDischargeDate')}
-                  </label>
-                <input
-                  type="date"
-                  value={formData.dischargeDate}
-                  onChange={(e) => setFormData({ ...formData, dischargeDate: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                />
-                </div>
-              )}
+          {/* Employment Type */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center mb-6">
+              <Star className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.signup.workBackground.employmentType.label')}
+              </h2>
             </div>
-          )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { value: 'employee', label: t('auth.signup.workBackground.employmentType.options.employee'), icon: '👔' },
+                { value: 'selfEmployed', label: t('auth.signup.workBackground.employmentType.options.selfEmployed'), icon: '💼' },
+                { value: 'both', label: t('auth.signup.workBackground.employmentType.options.both'), icon: '🔄' }
+              ].map((type) => (
+                <SelectionCard
+                  key={type.value}
+                  isSelected={formData.employmentType === type.value}
+                  onClick={() => setFormData({ ...formData, employmentType: type.value })}
+                >
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">{type.icon}</div>
+                    <div className="font-semibold text-gray-800">{type.label}</div>
+                  </div>
+                </SelectionCard>
+              ))}
+            </div>
+          </div>
 
           {/* Job Selection */}
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">

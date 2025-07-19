@@ -40,6 +40,7 @@ const Volunteer = () => {
     t('volunteer.frequency.onceTwoWeeks'),
     t('volunteer.frequency.onceWeek'),
     t('volunteer.frequency.twiceWeek'),
+    t('volunteer.frequency.oneTime'),
   ];
 
   const timeOptions = [

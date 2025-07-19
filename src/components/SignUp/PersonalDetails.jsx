@@ -428,20 +428,37 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
 
   const validateForm = useCallback(() => {
     const newErrors = {};
-    const requiredFields = ['phoneNumber', 'streetName', 'houseNumber', 'floorNumber', 'postalCode', 'arrivalDate', 'originCountry']; // Now phoneNumber is required
+    const requiredFields = ['phoneNumber', 'streetName', 'houseNumber']; // Always required fields
+    
+    // Check always required fields
     requiredFields.forEach(field => {
       if (!formData[field]?.trim()) {
         let fieldKey = '';
         switch (field) {
           case 'streetName': fieldKey = 'auth.signup.personalDetails.errors.streetNameRequired'; break;
           case 'houseNumber': fieldKey = 'auth.signup.personalDetails.errors.houseNumberRequired'; break;
-          case 'arrivalDate': fieldKey = 'auth.signup.personalDetails.errors.arrivalDateRequired'; break;
-          case 'originCountry': fieldKey = 'auth.signup.personalDetails.errors.originCountryRequired'; break;
           default: fieldKey = 'auth.signup.personalDetails.errors.required';
         }
         newErrors[field] = t(fieldKey);
       }
     });
+
+    // Conditional validation for arrival date and country of origin
+    // They are only required if at least one of them is filled
+    const hasArrivalDate = formData.arrivalDate?.trim();
+    const hasOriginCountry = formData.originCountry?.trim();
+    
+    if (hasArrivalDate || hasOriginCountry) {
+      // If either field is filled, both become required
+      if (!hasArrivalDate) {
+        newErrors.arrivalDate = t('auth.signup.personalDetails.errors.arrivalDateRequired');
+      }
+      if (!hasOriginCountry) {
+        newErrors.originCountry = t('auth.signup.personalDetails.errors.originCountryRequired');
+      }
+    }
+    // If both are empty, that's valid - no errors added
+
     // Add format validation for house number
     if (formData.houseNumber && !/^\d{1,4}[A-Z]?$/.test(formData.houseNumber.trim())) {
       newErrors.houseNumber = t('auth.signup.personalDetails.errors.houseNumberFormat');
@@ -714,7 +731,6 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 error={errors.floorNumber}
                 getFieldIcon={() => getFieldIcon('floorNumber')}
                 inputMode="text"
-                required={true}
                 t={t}
               />
               <FormField
@@ -729,7 +745,6 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                 error={errors.postalCode}
                 getFieldIcon={() => getFieldIcon('postalCode')}
                 inputMode="text"
-                required={true}
                 t={t}
               />
             </div>
@@ -801,7 +816,6 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   name="arrivalDate"
                   id="personalDetails-arrivalDate"
                   type="date"
-                  required={true}
                   autoComplete="bday"
                   value={formData.arrivalDate}
                   onChange={handleInputChange}
@@ -814,7 +828,6 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
                   name="originCountry"
                   id="personalDetails-originCountry"
                   type="select"
-                  required={true}
                   autoComplete="country"
                   options={countries}
                   value={formData.originCountry}
@@ -1036,7 +1049,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

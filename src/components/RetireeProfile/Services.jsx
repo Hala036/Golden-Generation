@@ -27,7 +27,7 @@ const Services = () => {
   ];
 
   const timingOptions = [
-    t('service.timing.onceMonth'), t('service.timing.onceTwoWeeks'), t('service.timing.onceWeek'), t('service.timing.twiceWeek'), t('service.timing.weekends'), t('service.timing.flexible'),
+    t('service.timing.onceMonth'), t('service.timing.onceTwoWeeks'), t('service.timing.onceWeek'), t('service.timing.twiceWeek'), t('service.timing.weekends'), t('service.timing.flexible'), t('service.timing.oneTime'),
   ];
 
   const timeOptions = [t('service.time.morning'), t('service.time.noon'), t('service.time.evening')];

@@ -1,7 +1,7 @@
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags, FaSync } from 'react-icons/fa';
+import { FaHome, FaCalendarCheck, FaUser, FaBriefcase, FaHandsHelping, FaChartBar, FaCog, FaMapMarkerAlt, FaPlus, FaUserShield, FaTags, FaClock } from 'react-icons/fa';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { toast } from "react-hot-toast";
 
@@ -29,31 +29,10 @@ const RetireeDashboard = () => {
   console.debug('[SuperAdminDashboard] mounted');
   console.debug('[SuperAdminDashboard] selected:', selected);
 
-  // Function to manually update past events
-  const handleUpdatePastEvents = async () => {
-    try {
-      const functions = getFunctions();
-      const manualUpdatePastEvents = httpsCallable(functions, 'manualUpdatePastEvents');
-      
-      toast.loading('Updating past events...');
-      const result = await manualUpdatePastEvents();
-      
-      toast.dismiss();
-      if (result.data.success) {
-        toast.success(`Successfully updated ${result.data.updatedCount} past events to completed status`);
-      } else {
-        toast.error('Failed to update past events');
-      }
-    } catch (error) {
-      toast.dismiss();
-      console.error('Error updating past events:', error);
-      toast.error('Error updating past events: ' + error.message);
-    }
-  };
-
   const customIcons = [
     { id: "main", label: t("sidebar.home"), icon: <FaHome /> },
     { id: "upcoming", label: t("sidebar.upcomingEvents"), icon: <FaCalendarCheck /> },
+    { id: "eventRequests", label: t("sidebar.pendingEventRequests"), icon: <FaClock /> },
     { id: "categoryManagement", label: t("sidebar.categoryManagement"), icon: <FaTags /> },
     { id: "addSettlements", label: t("sidebar.addSettlements"), icon: <FaPlus /> },
     { id: "admins", label: t("sidebar.adminManagement"), icon: <FaUserShield /> },
@@ -62,17 +41,6 @@ const RetireeDashboard = () => {
     { id: "service", label: t("sidebar.serviceRequests"), icon: <FaHandsHelping /> },
     { id: "analysis", label: t("sidebar.analytics"), icon: <FaChartBar /> },
     { id: "settings", label: t("sidebar.settings"), icon: <FaCog /> },
-  ];
-
-
-  const customButtons = [
-    {
-      id: "updatePastEvents",
-      label: t("sidebar.updatePastEvents"),
-      icon: <FaSync />,
-      onClick: handleUpdatePastEvents,
-      className: "bg-blue-500 hover:bg-blue-600 text-white"
-    }
   ];
 
   const componentsById = {
@@ -100,7 +68,6 @@ const RetireeDashboard = () => {
   return (
     <Dashboard
       customIcons={customIcons}
-      customButtons={customButtons}
       componentsById={componentsById}
       selected={selected}
       setSelected={setSelected}

@@ -45,7 +45,11 @@
       "טיולים-רגליים": "Hiking"
     },
     "volunteerFrequency": {
-      "פעם-בחודש": "Once a month"
+      "פעם-בחודש": "Once a month",
+      "פעם-בשבועיים": "Once every two weeks",
+      "פעם-בשבוע": "Once a week",
+      "פעמיים-בשבוע": "Twice a week",
+      "חד-פעמי": "One time"
     }
   },
   "auth": {
@@ -192,6 +196,8 @@
       "subtitle": "Tell us about your professional experience",
       "expectedRetirementDateLabel": "Expected retirement date",
       "retirementDateLabel":"When did you retire?",
+      "expectToRetire": "Do you expect to fully retire?",
+      "dontKnow": "Don't know",
       "selectSpecialty":"Select your specialty",
       "specialty":"Specialty",
 
@@ -213,9 +219,19 @@
           "full": "Full"
         }
       },
+      "employmentType": {
+        "label": "Were you an employee or self-employed?",
+        "options": {
+          "employee": "Employee",
+          "selfEmployed": "Self-employed",
+          "both": "Both"
+        }
+      },
       "currentEmployment": {
         "label": "Are you working today?",
-        "yes": "Yes",
+        "yes": "Yes, I am working",
+        "partially": "Working partially",
+        "notWorking": "Not working",
         "dischargeDate": "Expected discharge date"
       },
       "lastJobs": {
@@ -503,9 +519,9 @@
       "volunteerAreas": "Volunteer Areas",
       "frequency": "Frequency",
       "selectFrequency": "Select frequency",
-      "preferredHours": "Preferred Hours",
+      "preferredHours": "Activity Hours",
       "selectHours": "Select hours",
-      "availableDays": "Available Days",
+      "availableDays": "Activity Days",
       "additionalVolunteering": "Additional Volunteering",
       "additionalVolunteeringDescription": "Would you like to volunteer in additional areas?",
       "yesIdLikeToVolunteerAdditionally": "Yes, I'd like to volunteer additionally",
@@ -534,6 +550,7 @@
       "onceTwoWeeks": "Once every two weeks",
       "onceWeek": "Once a week",
       "twiceWeek": "Twice a week",
+      "oneTime": "One time",
       "morning": "Morning",
       "noon": "Noon",
       "evening": "Evening",
@@ -1839,6 +1856,7 @@
         "pending": "Pending",
         "confirmed": "Confirmed",
         "completed": "Completed",
+        "rejected": "Rejected",
         "other": "Other"
       },
       "approve": "Approve",
@@ -1939,6 +1957,7 @@
   "sidebar": {
     "home": "Home Page",
     "upcomingEvents": "Upcoming Events",
+    "pendingEventRequests": "Pending Event Requests",
     "categoryManagement": "Category Management",
     "adminManagement": "Admin Management",
     "adninManagement": "Admin Management",
@@ -1966,8 +1985,8 @@
       "current": "Current Volunteering",
       "areas": "Volunteer Areas",
       "frequency": "Frequency",
-      "hours": "Preferred Hours",
-      "days": "Available Days"
+      "hours": "Activity Hours",
+      "days": "Activity Days"
     },
     "label": {
       "timing": "Timing:",
@@ -2002,7 +2021,8 @@
       "onceMonth": "Once a month",
       "onceTwoWeeks": "Once every two weeks",
       "onceWeek": "Once a week",
-      "twiceWeek": "Twice a week"
+      "twiceWeek": "Twice a week",
+      "oneTime": "One time"
     },
     "time": {
       "morning": "Morning hours",
@@ -2355,6 +2375,7 @@
     "description": "Description"
   },
   "viewProfile": {
+    "editProfile": "Edit Profile",
     "profileHeader": {
       "age": "Age",
       "gender": "Gender",

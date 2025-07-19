@@ -1,11 +1,13 @@
 import React from "react";
-import { FaUser, FaEnvelope, FaPhone, FaBirthdayCake, FaTransgender, FaIdCard, FaMapMarkerAlt, FaHome, FaBook, FaGraduationCap, FaGlobe, FaBriefcase, FaStar, FaCheck, FaClock, FaCalendarAlt, FaUsers, FaHeart, FaLanguage, FaLaptop, FaInfoCircle } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaBirthdayCake, FaTransgender, FaIdCard, FaMapMarkerAlt, FaHome, FaBook, FaGraduationCap, FaGlobe, FaBriefcase, FaStar, FaCheck, FaClock, FaCalendarAlt, FaUsers, FaHeart, FaLanguage, FaLaptop, FaInfoCircle, FaEdit } from "react-icons/fa";
 import { MdWork, MdVolunteerActivism } from "react-icons/md";
 import { GiSkills, GiPartyPopper } from "react-icons/gi";
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import profile from "../../assets/profile.jpeg";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../context/LanguageContext';
+import { auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 // Emoji mappings (should match your sign up logic)
 const interestEmojis = {
@@ -51,6 +53,10 @@ const ListRow = ({ icon, label, items, emojiMap }) => (
 const ProfileDetails = ({ retireeData }) => {
   const { t } = useTranslation();
   const { language, changeLanguage } = useLanguage();
+  const navigate = useNavigate();
+  const currentUserId = auth.currentUser?.uid;
+  const isOwnProfile = retireeData?.id === currentUserId;
+  
   console.log('language:', language);
   if (!retireeData) return <div>{t('common.loading')}</div>;
 
@@ -60,6 +66,12 @@ const ProfileDetails = ({ retireeData }) => {
   const work = retireeData.workBackground || {};
   const lifestyle = retireeData.lifestyle || {};
   const veterans = retireeData.veteransCommunity || {};
+
+  const handleEditProfile = () => {
+    if (isOwnProfile) {
+      navigate('/edit-signup-data');
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -71,7 +83,21 @@ const ProfileDetails = ({ retireeData }) => {
           className="w-28 h-28 rounded-full object-cover mb-4 sm:mb-0 sm:mr-6 border-4 border-yellow-200"
         />
         <div className="text-center sm:text-left">
-          <h2   className={`text-2xl sm:text-3xl font-bold mb-1 ${language === 'he' ? 'text-right' : 'text-left'}`}>{idv.firstName} {idv.lastName}</h2>
+          <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+            <h2 className={`text-2xl sm:text-3xl font-bold ${language === 'he' ? 'text-right' : 'text-left'}`}>
+              {idv.firstName} {idv.lastName}
+            </h2>
+            {/* Show edit button only for own profile */}
+            {isOwnProfile && (
+              <button
+                onClick={handleEditProfile}
+                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors border border-transparent hover:border-blue-200"
+                title={t('viewProfile.editProfile')}
+              >
+                <FaEdit className="text-sm" />
+              </button>
+            )}
+          </div>
           <div className="flex flex-wrap justify-center sm:justify-start text-gray-600">
             <InfoRow icon={<FaBirthdayCake />} label={t('viewProfile.profileHeader.age')} value={idv.age} />
             <InfoRow icon={<FaTransgender />} label={t('viewProfile.profileHeader.gender')} value={idv.gender ? t(`gender.${idv.gender.toLowerCase().replace(/\s+/g, '-')}`, idv.gender) : undefined} />

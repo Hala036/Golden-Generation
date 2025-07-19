@@ -85,6 +85,7 @@ const Jobs = () => {
     t("service.timing.twiceWeek"),
     t("service.timing.weekends"),
     t("service.timing.flexible"),
+    t("service.timing.oneTime"),
   ];
   const timeOptions = [
     t("service.time.morning"),
