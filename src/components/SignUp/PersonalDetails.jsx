@@ -1049,7 +1049,7 @@ const PersonalDetails = memo(({ onComplete, editMode = false, data }) => {
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

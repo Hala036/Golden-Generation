@@ -100,7 +100,7 @@ const Credentials = ({ onComplete }) => {
     if (emailError) newErrors.email = emailError;
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
   };
 
   const handleSubmit = async (e) => {
@@ -114,15 +114,15 @@ const Credentials = ({ onComplete }) => {
     toast.loading(t('auth.credentials.validation.processing'), { id: 'credentials-check' });
 
     try {
-      const [formIsValid, usernameAvailable] = await Promise.all([
+      const [validationResult, usernameAvailable] = await Promise.all([
         validateForm(),
         checkUsernameFinal(credentialsData.username)
       ]);
 
-      if (!formIsValid) {
+      if (!validationResult.isValid) {
         toast.error(t('auth.credentials.validation.fix'), { id: 'credentials-check' });
         // Focus the first error field
-        const firstErrorField = Object.keys(newErrors)[0];
+        const firstErrorField = Object.keys(validationResult.errors)[0];
         if (firstErrorField) {
           const element = document.querySelector(`[name="${firstErrorField}"]`);
           if (element) {
