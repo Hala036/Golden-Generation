@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaUser, FaComments, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaUser, FaComments, FaArrowLeft, FaArrowRight, FaEdit } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -66,6 +66,13 @@ const ViewProfileDashboard = () => {
     return "User";
   };
 
+  // Handle edit profile click
+  const handleEditProfile = () => {
+    if (isOwnProfile) {
+      navigate('/edit-signup-data');
+    }
+  };
+
   // Redirect to a fallback page if retireeIdNumber is not available (only for retirees)
   useEffect(() => {
     // Only check for ID number if the user is a retiree
@@ -114,7 +121,6 @@ const ViewProfileDashboard = () => {
 
         {/* Profile Section */}
         {isSidebarExpanded && (
-
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col items-center">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2">
               <DefaultProfilePic 
@@ -124,23 +130,39 @@ const ViewProfileDashboard = () => {
                 // bgColor={defaultColors[userRole?.toLowerCase()] || defaultColors.default}
               />
             </div>
-            <button
-              onClick={() => {
-                if (retireeData) {
-                  navigate('/view-profile', { 
-                    state: { 
-                      retireeData: { 
-                        id: retireeData.id || retireeData.uid,
-                        ...retireeData 
+            <div className="flex items-center gap-2 mt-3 md:mt-0">
+              <button
+                onClick={() => {
+                  if (retireeData) {
+                    navigate('/view-profile', { 
+                      state: { 
+                        retireeData: { 
+                          id: retireeData.id || retireeData.uid,
+                          ...retireeData 
+                        } 
                       } 
-                    } 
-                  });
-                }
-              }}
-              className="text-sm mt-3 md:mt-0 md:text-lg font-semibold text-center hover:text-blue-600 hover:underline cursor-pointer transition-colors"
-            >
-              {getFullName(retireeData)}
-            </button>
+                    });
+                  }
+                }}
+                className={`text-sm md:text-lg font-semibold text-center transition-colors ${
+                  isOwnProfile 
+                    ? 'hover:text-blue-600 hover:underline cursor-pointer text-blue-700' 
+                    : 'hover:text-blue-600 hover:underline cursor-pointer'
+                }`}
+              >
+                {getFullName(retireeData)}
+              </button>
+              {/* Show edit button only for own profile */}
+              {isOwnProfile && (
+                <button
+                  onClick={handleEditProfile}
+                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors border border-transparent hover:border-blue-200"
+                  title={t('viewProfile.editProfile')}
+                >
+                  <FaEdit className="text-sm" />
+                </button>
+              )}
+            </div>
           </div>
         )}
 

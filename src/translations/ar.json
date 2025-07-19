@@ -816,5 +816,71 @@
       "collapse": "طي الشريط الجانبي",
       "expand": "توسيع الشريط الجانبي",
       "updatePastEvents": "تحديث الأحداث السابقة"
+    },
+    "viewProfile": {
+      "editProfile": "تعديل الملف الشخصي",
+      "profileHeader": {
+        "age": "العمر",
+        "gender": "الجنس",
+        "settlement": "المستوطنة"
+      },
+      "personalInfo": {
+        "title": "المعلومات الشخصية",
+        "idNumber": "رقم الهوية",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "address": "العنوان",
+        "maritalStatus": "الحالة الاجتماعية",
+        "education": "التعليم",
+        "nativeLanguage": "اللغة الأم",
+        "originCountry": "بلد المنشأ"
+      },
+      "credentials": {
+        "title": "بيانات الاعتماد",
+        "username": "اسم المستخدم",
+        "email": "البريد الإلكتروني"
+      },
+      "workBackground": {
+        "title": "الخلفية المهنية",
+        "jobTitle": "المسمى الوظيفي",
+        "industry": "الصناعة",
+        "yearsOfExperience": "سنوات الخبرة",
+        "retired": "متقاعد",
+        "professionalBackground": "الخلفية المهنية"
+      },
+      "lifestyle": {
+        "title": "نمط الحياة",
+        "hobbies": "الهوايات",
+        "interests": "الاهتمامات",
+        "languagesSpoken": "اللغات المنطوقة",
+        "computerAbility": "القدرة على استخدام الكمبيوتر",
+        "sportActivityLevel": "مستوى النشاط الرياضي",
+        "weeklyScheduleOccupancy": "شغل الجدول الأسبوعي"
+      },
+      "volunteering": {
+        "title": "التطوع ومجتمع المحاربين القدامى",
+        "currentActivities": "الأنشطة الحالية",
+        "notParticipatingReason": "سبب عدم المشاركة",
+        "isVolunteer": "متطوع",
+        "volunteerAreas": "مجالات التطوع",
+        "volunteerFrequency": "تكرار التطوع",
+        "volunteerHours": "ساعات التطوع",
+        "volunteerDays": "أيام التطوع",
+        "additionalVolunteering": "تطوع إضافي",
+        "additionalVolunteerFields": "مجالات التطوع الإضافية",
+        "additionalVolunteerFrequency": "تكرار التطوع الإضافي",
+        "additionalVolunteerHours": "ساعات التطوع الإضافية",
+        "additionalVolunteerDays": "أيام التطوع الإضافية",
+        "needsConsultation": "يحتاج استشارة",
+        "consultationFields": "مجالات الاستشارة",
+        "communitySettlement": "مستوطنة المجتمع",
+        "communityProfessionalBackground": "الخلفية المهنية للمجتمع"
+      },
+      "systemInfo": {
+        "title": "معلومات النظام",
+        "role": "الدور",
+        "joined": "تاريخ الانضمام",
+        "lastLogin": "آخر تسجيل دخول"
+      }
     }
   } 
