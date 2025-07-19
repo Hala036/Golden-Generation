@@ -85,6 +85,43 @@ const Cards = ({ setSelected }) => {
   const [settlementFilter, setSettlementFilter] = useState('all');
   const [userSettlement, setUserSettlement] = useState('');
 
+  const getStatusDisplayText = (status) => {
+    const translationKey = `eventDetails.status.${status}`;
+    const translated = t(translationKey);
+    
+    // If the translation returns the same key, it means the translation wasn't found
+    if (translated === translationKey) {
+      // Fallback to appropriate language based on current language setting
+      
+      switch (status) {
+        case 'rejected':
+          return language === 'he' ? 'נדחה' : 
+                 language === 'ar' ? 'مرفوض' : 
+                 'Rejected';
+        case 'pending':
+          return language === 'he' ? 'ממתין' : 
+                 language === 'ar' ? 'قيد الانتظار' : 
+                 'Pending';
+        case 'active':
+          return language === 'he' ? 'פעיל' : 
+                 language === 'ar' ? 'نشط' : 
+                 'Active';
+        case 'completed':
+          return language === 'he' ? 'הושלם' : 
+                 language === 'ar' ? 'مكتمل' : 
+                 'Completed';
+        case 'confirmed':
+          return language === 'he' ? 'מאושר' : 
+                 language === 'ar' ? 'مؤكد' : 
+                 'Confirmed';
+        default:
+          return status.charAt(0).toUpperCase() + status.slice(1);
+      }
+    }
+    
+    return translated;
+  };
+
   // Get current user and fetch their role
   useEffect(() => {
     const fetchUserAndRole = async () => {
@@ -572,7 +609,7 @@ const Cards = ({ setSelected }) => {
                       <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs shadow">{categoryName}</span>
                       {/* Status indicator */}
                       <span className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold shadow ${statusColor}`}>
-                        {t(`eventDetails.status.${event.status}`)}
+                        {getStatusDisplayText(event.status)}
                       </span>
                       {/* Gradient overlay */}
                       <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>

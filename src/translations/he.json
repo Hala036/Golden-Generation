@@ -1786,7 +1786,8 @@
         "pending": "ממתין",
         "active": "פעיל",
         "completed": "הושלם",
-        "confirmed": "מאושר"
+        "confirmed": "מאושר",
+        "rejected": "נדחה"
       },
       "createdByMe": "נוצר על ידי",
       "creator": "יוצר האירוע",

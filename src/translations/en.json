@@ -1839,6 +1839,7 @@
         "pending": "Pending",
         "confirmed": "Confirmed",
         "completed": "Completed",
+        "rejected": "Rejected",
         "other": "Other"
       },
       "approve": "Approve",

@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import CreateEventForm from './CreateEventForm';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 const getInitials = (user) => {
   // Try to use first and last name for initials
@@ -165,13 +166,51 @@ const BaseEventDetails = ({
     }
   };
 
+  const getStatusDisplayText = (status) => {
+    const translationKey = `eventDetails.status.${status}`;
+    const translated = t(translationKey);
+    
+    // If the translation returns the same key, it means the translation wasn't found
+    if (translated === translationKey) {
+      // Fallback to appropriate language based on current language setting
+      const { language } = useLanguage();
+      
+      switch (status) {
+        case 'rejected':
+          return language === 'he' ? 'נדחה' : 
+                 language === 'ar' ? 'مرفوض' : 
+                 'Rejected';
+        case 'pending':
+          return language === 'he' ? 'ממתין' : 
+                 language === 'ar' ? 'قيد الانتظار' : 
+                 'Pending';
+        case 'active':
+          return language === 'he' ? 'פעיל' : 
+                 language === 'ar' ? 'نشط' : 
+                 'Active';
+        case 'completed':
+          return language === 'he' ? 'הושלם' : 
+                 language === 'ar' ? 'مكتمل' : 
+                 'Completed';
+        case 'confirmed':
+          return language === 'he' ? 'מאושר' : 
+                 language === 'ar' ? 'مؤكد' : 
+                 'Confirmed';
+        default:
+          return status.charAt(0).toUpperCase() + status.slice(1);
+      }
+    }
+    
+    return translated;
+  };
+
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
       <div className="bg-white p-6 rounded-2xl shadow-xl max-w-3xl w-full max-h-[95vh] flex flex-col focus:outline-none" tabIndex={0}>
         {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 text-xs font-bold rounded-full capitalize ${statusColor} mr-2`} aria-label={`Status: ${event.status}`}>{t('eventDetails.status.' + event.status)}</span>
+            <span className={`px-3 py-1 text-xs font-bold rounded-full capitalize ${statusColor} mr-2`} aria-label={`Status: ${event.status}`}>{getStatusDisplayText(event.status)}</span>
             {isCreator && (
               <span className="flex items-center px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800 border border-blue-300 mr-2 relative group cursor-pointer" tabIndex={0} aria-label="You are the creator of this event">
                 <FaStar className="mr-1 text-yellow-400" />
@@ -294,7 +333,7 @@ const BaseEventDetails = ({
                           p.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                           'bg-gray-200 text-gray-700'
                         }`}>
-                          {t(`eventDetails.status.${p.status}`)}
+                          {getStatusDisplayText(p.status)}
                         </span>
                       </li>
                     )) : (

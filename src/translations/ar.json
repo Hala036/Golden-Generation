@@ -610,6 +610,7 @@
           "pending": "قيد الانتظار",
           "confirmed": "مؤكد",
           "completed": "مكتمل",
+          "rejected": "مرفوض",
           "other": "آخر"
         },
         "approve": "موافقة",
