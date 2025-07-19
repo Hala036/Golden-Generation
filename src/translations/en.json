@@ -2747,6 +2747,7 @@
   },
   "pendingEvents": {
     "title": "Pending Events",
+    "allTitle": "All Pending Events",
     "empty": "No pending events to review.",
     "eventTitle": "Title",
     "location": "Location",
