@@ -266,7 +266,6 @@ const RetireeSearch = () => {
                           </div>
                         </div>
                         <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-                          wiwiwi
                           <div className={`text-sm md:text-base ${isJobMatch ? "font-medium" : ""}`}> 
                             <span className="text-gray-600">{t("retiree.search.jobTitle", "Job Title")}: </span>
                             <span className={isJobMatch ? "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full" : "text-gray-900"}>
