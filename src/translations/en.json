@@ -503,9 +503,9 @@
       "volunteerAreas": "Volunteer Areas",
       "frequency": "Frequency",
       "selectFrequency": "Select frequency",
-      "preferredHours": "Preferred Hours",
+      "preferredHours": "Activity Hours",
       "selectHours": "Select hours",
-      "availableDays": "Available Days",
+      "availableDays": "Activity Days",
       "additionalVolunteering": "Additional Volunteering",
       "additionalVolunteeringDescription": "Would you like to volunteer in additional areas?",
       "yesIdLikeToVolunteerAdditionally": "Yes, I'd like to volunteer additionally",
@@ -1968,8 +1968,8 @@
       "current": "Current Volunteering",
       "areas": "Volunteer Areas",
       "frequency": "Frequency",
-      "hours": "Preferred Hours",
-      "days": "Available Days"
+      "hours": "Activity Hours",
+      "days": "Activity Days"
     },
     "label": {
       "timing": "Timing:",

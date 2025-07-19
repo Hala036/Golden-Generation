@@ -484,9 +484,9 @@
       "volunteerAreas": "תחומי התנדבות",
       "frequency": "תדירות",
       "selectFrequency": "בחר תדירות",
-      "preferredHours": "שעות מועדפות",
+      "preferredHours": "שעות פעילות",
       "selectHours": "בחר שעות",
-      "availableDays": "ימים זמינים",
+      "availableDays": "ימים פעילות",
       "additionalVolunteering": "התנדבות נוספת",
       "additionalVolunteeringDescription": "האם תרצה להתנדב בתחומים נוספים?",
       "yesIdLikeToVolunteerAdditionally": "כן, אני רוצה להתנדב בנוסף",
@@ -1922,8 +1922,8 @@
       "current": "התנדבות נוכחית",
       "areas": "תחומי התנדבות",
       "frequency": "תדירות",
-      "hours": "שעות מועדפות",
-      "days": "ימים זמינים"
+      "hours": "שעות פעילות",
+      "days": "ימים פעילות"
     },
     "label": {
       "timing": "שעה:",
