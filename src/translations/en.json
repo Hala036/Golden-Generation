@@ -219,6 +219,14 @@
           "full": "Full"
         }
       },
+      "employmentType": {
+        "label": "Were you an employee or self-employed?",
+        "options": {
+          "employee": "Employee",
+          "selfEmployed": "Self-employed",
+          "both": "Both"
+        }
+      },
       "currentEmployment": {
         "label": "Are you working today?",
         "yes": "Yes, I am working",

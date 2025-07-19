@@ -740,6 +740,35 @@ const WorkBackground = ({ onComplete }) => {
             )}
           </div>
 
+          {/* Employment Type */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
+            <div className="flex items-center mb-6">
+              <Star className="text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {t('auth.signup.workBackground.employmentType.label')}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { value: 'employee', label: t('auth.signup.workBackground.employmentType.options.employee'), icon: '👔' },
+                { value: 'selfEmployed', label: t('auth.signup.workBackground.employmentType.options.selfEmployed'), icon: '💼' },
+                { value: 'both', label: t('auth.signup.workBackground.employmentType.options.both'), icon: '🔄' }
+              ].map((type) => (
+                <SelectionCard
+                  key={type.value}
+                  isSelected={formData.employmentType === type.value}
+                  onClick={() => setFormData({ ...formData, employmentType: type.value })}
+                >
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">{type.icon}</div>
+                    <div className="font-semibold text-gray-800">{type.label}</div>
+                  </div>
+                </SelectionCard>
+              ))}
+            </div>
+          </div>
+
           {/* Job Selection */}
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 backdrop-blur-sm">
             <div className="flex items-center mb-6">
