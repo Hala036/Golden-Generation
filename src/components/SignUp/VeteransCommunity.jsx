@@ -67,7 +67,8 @@ const VeteransCommunity = ({ onComplete, editMode, data }) => {
     t('auth.veteransCommunity.onceMonth'),
     t('auth.veteransCommunity.onceTwoWeeks'),
     t('auth.veteransCommunity.onceWeek'),
-    t('auth.veteransCommunity.twiceWeek')
+    t('auth.veteransCommunity.twiceWeek'),
+    t('auth.veteransCommunity.oneTime'),
   ];
 
   const timeOptions = [

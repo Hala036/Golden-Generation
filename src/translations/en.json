@@ -45,7 +45,11 @@
       "טיולים-רגליים": "Hiking"
     },
     "volunteerFrequency": {
-      "פעם-בחודש": "Once a month"
+      "פעם-בחודש": "Once a month",
+      "פעם-בשבועיים": "Once every two weeks",
+      "פעם-בשבוע": "Once a week",
+      "פעמיים-בשבוע": "Twice a week",
+      "חד-פעמי": "One time"
     }
   },
   "auth": {
