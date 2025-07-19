@@ -515,6 +515,7 @@
       "onceTwoWeeks": "פעם בשבועיים",
       "onceWeek": "פעם בשבוע",
       "twiceWeek": "פעמיים בשבוע",
+      "oneTime": "חד פעמי",
       "morning": "בוקר",
       "noon": "צהריים",
       "evening": "ערב",
@@ -1958,7 +1959,8 @@
       "onceMonth": "פעם בחודש",
       "onceTwoWeeks": "פעם בשבועיים",
       "onceWeek": "פעם בשבוע",
-      "twiceWeek": "פעמיים בשבוע"
+      "twiceWeek": "פעמיים בשבוע",
+      "oneTime": "חד פעמי"
     },
     "time": {
       "morning": "שעות בוקר",

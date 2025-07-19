@@ -323,7 +323,8 @@
               "onceMonth": "مرة في الشهر",
               "onceTwoWeeks": "مرة كل أسبوعين",
               "onceWeek": "مرة في الأسبوع",
-              "twiceWeek": "مرتين في الأسبوع"
+              "twiceWeek": "مرتين في الأسبوع",
+              "oneTime": "مرة واحدة"
             }
           },
           "hours": {

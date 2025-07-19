@@ -534,6 +534,7 @@
       "onceTwoWeeks": "Once every two weeks",
       "onceWeek": "Once a week",
       "twiceWeek": "Twice a week",
+      "oneTime": "One time",
       "morning": "Morning",
       "noon": "Noon",
       "evening": "Evening",
@@ -2004,7 +2005,8 @@
       "onceMonth": "Once a month",
       "onceTwoWeeks": "Once every two weeks",
       "onceWeek": "Once a week",
-      "twiceWeek": "Twice a week"
+      "twiceWeek": "Twice a week",
+      "oneTime": "One time"
     },
     "time": {
       "morning": "Morning hours",
