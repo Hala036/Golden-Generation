@@ -7,7 +7,7 @@
   "בישול": ["cooking"],
   "trips": ["טיולים"],
   "טיולים": ["trips"],
-  "Photography": ["צילום"],
+  "photography": ["צילום"],
   "צילום": ["Photography"],
   "sport": ["ספורט"],
   "ספורט": ["sport"],
