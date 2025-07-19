@@ -196,6 +196,8 @@
       "subtitle": "Tell us about your professional experience",
       "expectedRetirementDateLabel": "Expected retirement date",
       "retirementDateLabel":"When did you retire?",
+      "expectToRetire": "Do you expect to fully retire?",
+      "dontKnow": "Don't know",
       "selectSpecialty":"Select your specialty",
       "specialty":"Specialty",
 
@@ -219,7 +221,9 @@
       },
       "currentEmployment": {
         "label": "Are you working today?",
-        "yes": "Yes",
+        "yes": "Yes, I am working",
+        "partially": "Working partially",
+        "notWorking": "Not working",
         "dischargeDate": "Expected discharge date"
       },
       "lastJobs": {

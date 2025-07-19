@@ -178,6 +178,8 @@
         "subtitle": "ספר לנו על הניסיון המקצועי שלך",
         "expectedRetirementDateLabel": "תאריך פרישה צפוי",
         "retirementDateLabel":"מתי פרשת?",
+        "expectToRetire": "האם אתה מצפה לפרוש לגמרי?",
+        "dontKnow": "לא יודע",
         "selectSpecialty": "בחר את תחום ההתמחות שלך",
         "specialty": "תחום התמחות",
       "categories": {
@@ -202,7 +204,9 @@
         },
         "currentEmployment": {
           "label": "האם אתה עובד כיום?",
-          "yes": "כן",
+          "yes": "כן, אני עובד",
+          "partially": "עובד חלקית",
+          "notWorking": "לא עובד",
           "dischargeDate": "תאריך שחרור צפוי"
         },
         "lastJobs": {

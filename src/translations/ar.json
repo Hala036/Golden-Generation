@@ -170,6 +170,10 @@
       "workBackground": {
         "title": "الخبرة العملية",
         "subtitle": "أخبرنا عن خبرتك المهنية",
+        "expectedRetirementDateLabel": "تاريخ التقاعد المتوقع",
+        "retirementDateLabel": "متى تقاعدت؟",
+        "expectToRetire": "هل تتوقع التقاعد الكامل؟",
+        "dontKnow": "لا أعرف",
         "retirementStatus": {
           "label": "حالة التقاعد",
           "options": {
@@ -180,7 +184,9 @@
         },
         "currentEmployment": {
           "label": "هل تعمل حالياً؟",
-          "yes": "نعم",
+          "yes": "نعم، أنا أعمل",
+          "partially": "أعمل جزئياً",
+          "notWorking": "لا أعمل",
           "dischargeDate": "تاريخ التسريح المتوقع"
         },
         "lastJobs": {
@@ -518,7 +524,8 @@
           "fix": "يرجى تصحيح الأخطاء قبل المتابعة",
           "success": "تم التحقق من البيانات بنجاح"
         }
-      }
+      },
+      "expectedDischargeDate": "تاريخ التسريح المتوقع"
     },
     "dashboard": {
       "welcome": "مرحبًا",

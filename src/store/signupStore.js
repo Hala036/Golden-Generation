@@ -52,13 +52,20 @@ const useSignupStore = create(
       // Form data for last 3 pages
       workData: {
         retirementStatus: '',
+        retirementDate: '',
+        expectedRetirementDate: '',
+        expectToRetire: '',
         employmentDate: '',
         employmentType: '',
         lastJobs: [],
-        academicDegrees: '',
+        academicDegrees: [],
+        otherAcademicDegree: '',
         currentlyWorking: false,
         dischargeDate: '',
-        subspecialty: ''
+        category: '',
+        jobTitle: '',
+        subspecialty: '',
+        otherJob: ''
       },
 
       lifestyleData: {
@@ -169,13 +176,20 @@ const useSignupStore = create(
           },
           workData: {
             retirementStatus: '',
+            retirementDate: '',
+            expectedRetirementDate: '',
+            expectToRetire: '',
             employmentDate: '',
             employmentType: '',
             lastJobs: [],
-            academicDegrees: '',
+            academicDegrees: [],
+            otherAcademicDegree: '',
             currentlyWorking: false,
             dischargeDate: '',
-            subspecialty: ''
+            category: '',
+            jobTitle: '',
+            subspecialty: '',
+            otherJob: ''
           },
           lifestyleData: {
             computerAbility: 0,
