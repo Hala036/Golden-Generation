@@ -394,7 +394,22 @@ const SettingsCards = () => {
     }
   };
 
-  // Move settingsOptions array here, after all handler functions
+  const user = auth.currentUser;
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      if (!user) return;
+      try {
+        const userDoc = await getUserData(user.uid);
+        setUserRole(userDoc?.role || null);
+      } catch (err) {
+        setUserRole(null);
+      }
+    };
+    fetchRole();
+  }, [user]);
+
   const settingsOptions = [
     {
       label: t('auth.dashboard.settings.options.editProfile'),
@@ -444,12 +459,15 @@ const SettingsCards = () => {
       icon: <FiTrash2 className={`text-2xl ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />,
       onClick: () => setShowDeleteAccount(true),
     },
-    {
-      label: t('auth.dashboard.settings.options.editUserInfo'),
-      description: t('auth.dashboard.settings.options.editUserInfoDesc'),
-      icon: <FiSettings className="text-2xl" />,
-      onClick: () => navigate("/edit-signup-data"),
-    },
+    // Only show for retiree
+    ...(userRole === "retiree"
+      ? [{
+          label: t('auth.dashboard.settings.options.editUserInfo'),
+          description: t('auth.dashboard.settings.options.editUserInfoDesc'),
+          icon: <FiSettings className="text-2xl" />,
+          onClick: () => navigate("/edit-signup-data"),
+        }]
+      : [])
   ];
 
   return (
