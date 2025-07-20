@@ -9,7 +9,7 @@ import {
   matchSeniorsToJobRequest,
   inviteSeniorToJobRequest
 } from "../../jobRequestsService";
-import { getAvailableSettlements, auth } from "../../firebase";
+import { getAvailableSettlements, auth, getUserData } from "../../firebase";
 import MatchDetails from "./MatchDetails";
 import StatusHistory from "./StatusHistory";
 import { triggerNotification } from "../../components/SharedDashboard/TriggerNotifications"; // Import triggerNotification function
@@ -23,6 +23,7 @@ import VoluntaryRequestForm from './VoluntaryRequestForm';
 
 const Jobs = () => {
   const { user, userData } = useAuth(); // Access user (firebase) and userData (profile)
+  const userId = auth.currentUser?.uid; // Get current user ID
   const { t } = useLanguage(); // Add translation hook
 
   // State for job requests
@@ -108,9 +109,18 @@ const Jobs = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const data = await getUserData(userId); // Fetch user data to get role and other info
+        const role = data?.role || 'user'; // Default to 'user' if role is not set
+
         setLoading(true);
-        const fetchedJobRequests = await getJobRequests(); // No filters
-        setJobRequests(fetchedJobRequests);
+        const fetchedJobRequests = await getJobRequests();
+        if (role === 'admin') {
+          const userJobRequests = fetchedJobRequests.filter(job => job.createdBy === userId);
+          setJobRequests(userJobRequests);
+        }
+        else if (role === 'superadmin') {
+          setJobRequests(fetchedJobRequests);
+        }
 
         const fetchedSettlements = await getAvailableSettlements();
         setSettlements(fetchedSettlements);
