@@ -9,6 +9,7 @@ import VeteransCommunity from "./VeteransCommunity";
 import { auth, db } from "../../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import useSignupStore from '../../store/signupStore';
+import { useLanguage } from "../../context/LanguageContext";
 
 const SECTIONS = [
   { key: "idVerification", label: "ID Verification", component: IDVerification },
@@ -70,6 +71,7 @@ const EditSignUpData = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const sectionPrefilled = useRef({});
+  const { language } = useLanguage();
   // Zustand store selectors
   const {
     idVerificationData,
@@ -233,8 +235,9 @@ const EditSignUpData = () => {
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-yellow-50 via-white to-blue-50">
-      {/* Sidebar on the left (fixed) */}
-      <div className="w-72 min-w-60 max-w-80 border-r bg-white/90 p-8 flex flex-col gap-4 shadow-2xl z-20 fixed left-0 top-0 h-full">
+      {/* Sidebar on the left (fixed for EN, right for HE) */}
+      <div className={`w-72 min-w-60 max-w-80 border-r bg-white/90 p-8 flex flex-col gap-4 shadow-2xl z-20 fixed top-0 h-full
+        ${language === "he" ? "right-0 border-l border-r-0" : "left-0 border-r"}`}>
         {/* Removed sidebar title */}
         {SECTIONS.map((section, idx) => (
           <button
@@ -263,7 +266,7 @@ const EditSignUpData = () => {
         </button>
       </div>
       {/* Main Area */}
-      <div className="flex-1 flex justify-center items-center py-12 px-4 ml-72">
+      <div className={`flex-1 flex justify-center items-center py-12 px-4 ${language === "he" ? "mr-72" : "ml-72"}`}>
         <div className="w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl p-10 border border-gray-100">
           <h2 className="text-3xl font-extrabold mb-6 text-center text-yellow-600 drop-shadow-sm">
             {/* Hebrew translation for section title */}
