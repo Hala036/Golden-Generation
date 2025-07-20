@@ -25,8 +25,8 @@ Many retirees face challenges with:
 - Skill Sharing: No platform to share valuable life experiences
 ________________________________________
 User Roles & Permissions
-Feature	Retiree	Admin	Super Admin
-Profile Management	✅ View & Edit Own	✅ View All in Settlement	✅ View All System-wide
+Feature | Retiree | Admin | Super Admin
+Profile Management	✅ | View & Edit Own	✅ | View All in Settlement |	✅ View All System-wide
 Event Participation	✅ Join Events	✅ Create/Edit Events	✅ Create/Edit All Events
 Event Creation	❌	✅ Settlement Events	✅ All Events
 Volunteer Registration	✅ Register as Volunteer	✅ Assign Volunteers	✅ Assign All Volunteers
