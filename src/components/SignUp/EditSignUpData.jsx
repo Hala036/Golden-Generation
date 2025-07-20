@@ -10,6 +10,7 @@ import { auth, db } from "../../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import useSignupStore from '../../store/signupStore';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from "../../context/LanguageContext";
 
 const SECTIONS = [
   { key: "idVerification", label: "ID Verification", component: IDVerification },
