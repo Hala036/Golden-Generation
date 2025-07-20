@@ -1,7 +1,7 @@
 Golden Generation - User Manual
 Time Banking Platform for Community Engagement
 ________________________________________
-Table of Contents
+**Table of Contents**
 1. Introduction
 2. User Roles & Permissions
 3. Getting Started
@@ -14,7 +14,7 @@ Table of Contents
 10. Troubleshooting & FAQ
 11. Glossary
 ________________________________________
-Introduction
+**Introduction**
 What is Golden Generation ?
 Golden Generation is a web-based time banking platform designed to strengthen community bonds and support retirees through mutual assistance and social engagement. The platform enables community members to exchange services, participate in events, and build meaningful connections.
 The Problem We Solve
@@ -24,68 +24,70 @@ Many retirees face challenges with:
 - Community Engagement: Lack of structured activities and events 
 - Skill Sharing: No platform to share valuable life experiences
 ________________________________________
-User Roles & Permissions
+**User Roles & Permissions**
 Feature | Retiree | Admin | Super Admin
 |-------|---------|-------|------------|
 Profile Management	| ✅ View & Edit Own	| ✅ View All in Settlement | ✅ View All System-wide
 Event Participation	| ✅ Join Events	| ✅ Create/Edit Events | ✅ Create/Edit All Events
 Event Creation | ☑️ Creates Event with Admin Approval | ✅ Settlement Events | ✅ All Events
 Volunteer Registration | ✅ Register as Volunteer | ✅ Assign Volunteers | ✅ Assign All Volunteers
-Service Requests | ✅ Submit Requests | ✅ Manage Settlement Requests	|   ✅ Manage All Requests
+Service Requests | ✅ Submit Requests | ✅ Manage Settlement Requests	| ✅ Manage All Requests
 User Management	| ❌ | ✅ View Settlement Users | ✅ Manage All Users
 Settlement Management | ❌ |	❌ |	✅ Add/Remove Settlements
 Analytics |	❌ |	✅ Settlement Analytics | ✅ System-wide Analytics
-System Settings |	❌ |	❌ |	✅ Configure Platform
+System Settings | ❌ |	❌ |	✅ Configure Platform
 ________________________________________
-Getting Started
-Creating Your Account
-Step 1: Access the Platform
-1. Open your web browser (Chrome, Firefox, Safari, or Edge)
-2. Navigate to the Golden Generation website
-3. Click the "Sign Up" button
+**Getting Started**
+
+*Creating Your Account*
+
+- Step 1: Access the Platform
+    1. Open your web browser (Chrome, Firefox, Safari, or Edge)
+    2. Navigate to the Golden Generation website
+    3. Click the "Sign Up" button
 [INSERT SCREENSHOT: Login page with Sign Up button highlighted]
-Step 2: Choose Your Settlement
-1. Select your settlement from the dropdown menu
-2. If your settlement is not listed, contact your community administrator
-3. Click "Continue"
+- Step 2: Choose Your Settlement
+    1. Select your settlement from the dropdown menu
+    2. If your settlement is not listed, contact your community administrator
+    3. Click "Continue"
 [INSERT SCREENSHOT: Settlement selection screen]
-Step 3: Create Your Credentials
-1. Enter your email address
-2. Choose a username (this will be visible to other community members)
-3. Create a strong password (minimum 8 characters with uppercase, lowercase, and number)
-4. Click "Continue"
-[INSERT SCREENSHOT: Credentials form]
-Step 4: Personal Information
-1. Fill in your contact information (phone number, address)
-2. Select your marital status
-3. Choose your native language and Hebrew proficiency level
-4. Indicate if you're a new immigrant and provide arrival details
-5. Click "Continue"
+- Step 3: Create Your Credentials
+    1. Enter your email address
+    2. Choose a username (this will be visible to other community members)
+    3. Create a strong password (minimum 8 characters with uppercase, lowercase, and number)
+    4. Click "Continue"
+- Step 4: Personal Information
+    1. Fill in your contact information (phone number, address)
+    2. Select your marital status
+    3. Choose your native language and Hebrew proficiency level
+    4. Indicate if you're a new immigrant and provide arrival details
+    5. Click "Continue"
 [INSERT SCREENSHOT: Personal details form]
-Step 5: Work Background
-1. Select your professional background from the categories
-2. Choose your retirement status
-3. Add any academic degrees or certifications
-4. Click "Continue"
+-Step 5: Work Background
+    1. Select your professional background from the categories
+    2. Choose your retirement status
+    3. Add any academic degrees or certifications
+    4. Click "Continue"
 [INSERT SCREENSHOT: Work background form]
-Step 6: Lifestyle & Interests
-1. Select your hobbies and interests
-2. Indicate if you have a car or carry a weapon
-3. Add any health conditions (optional)
-4. Click "Continue"
+- Step 6: Lifestyle & Interests
+    1. Select your hobbies and interests
+    2. Indicate if you have a car or carry a weapon
+    3. Add any health conditions (optional)
+    4. Click "Continue"
 [INSERT SCREENSHOT: Lifestyle form]
-Step 7: Veterans Community
-1. Indicate your military service history
-2. Add any relevant community service experience
-3. Click "Complete Registration"
+- Step 7: Veterans Community
+    1. Indicate your military service history
+    2. Add any relevant community service experience
+    3. Click "Complete Registration"
 [INSERT SCREENSHOT: Veterans community form]
-Logging In
-1. Go to the Golden Generation 2 website
+
+*Logging In*    
+1. Go to the Golden Generation website
 2. Enter your email address and password
 3. Click "Sign In"
 4. You'll be redirected to your personalized dashboard
 ________________________________________
-Retiree Guide
+**Retiree Guide**
 Dashboard Overview
 Your dashboard is your central hub for all community activities. It includes: 
 - Upcoming Events: Events you can join
