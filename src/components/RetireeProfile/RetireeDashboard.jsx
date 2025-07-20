@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { FaHeadset, FaCalendarAlt, FaCog, FaHandsHelping, FaCalendarCheck, FaSearch } from "react-icons/fa";
+import { FaHeadset, FaStar, FaCog, FaHandsHelping, FaCalendarCheck, FaSearch } from "react-icons/fa";
 import Dashboard from '../SharedDashboard/SharedDashboard';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,7 @@ const RetireeDashboard = () => {
 
   const customIcons = [
     { id: "upcoming", label: t('dashboard.events.upcomingEvents'), icon: <FaCalendarCheck /> },
-    { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaCalendarAlt /> },
+    { id: "volunteer", label: t('dashboard.volunteer'), icon: <FaStar /> },
     { id: "service", label: t('dashboard.service'), icon: <FaHandsHelping /> },
     { id: "searchRetirees", label: t('sidebar.searchRetirees', 'Find Retirees'), icon: <FaSearch /> },
     { id: "settings", label: t('dashboard.settings.title'), icon: <FaCog /> },

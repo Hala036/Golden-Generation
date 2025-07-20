@@ -14,7 +14,7 @@ ________________________________________
 10. Troubleshooting & FAQ
 11. Glossary
 ________________________________________
-**Introduction**
+### **Introduction**
 What is Golden Generation ?
 Golden Generation is a web-based time banking platform designed to strengthen community bonds and support retirees through mutual assistance and social engagement. The platform enables community members to exchange services, participate in events, and build meaningful connections.
 The Problem We Solve
@@ -24,7 +24,7 @@ Many retirees face challenges with:
 - Community Engagement: Lack of structured activities and events 
 - Skill Sharing: No platform to share valuable life experiences
 ________________________________________
-**User Roles & Permissions**
+### **User Roles & Permissions**
 Feature | Retiree | Admin | Super Admin
 |-------|---------|-------|------------|
 Profile Management	| ✅ View & Edit Own	| ✅ View All in Settlement | ✅ View All System-wide
@@ -37,7 +37,7 @@ Settlement Management | ❌ |	❌ |	✅ Add/Remove Settlements
 Analytics |	❌ |	✅ Settlement Analytics | ✅ System-wide Analytics
 System Settings | ❌ |	❌ |	✅ Configure Platform
 ________________________________________
-**Getting Started**
+### **Getting Started**
 
 *Creating Your Account*
 
@@ -87,8 +87,10 @@ ________________________________________
 3. Click "Sign In"
 4. You'll be redirected to your personalized dashboard
 ________________________________________
-**Retiree Guide**
-Dashboard Overview
+### **Retiree Guide**
+
+*Dashboard Overview*
+
 Your dashboard is your central hub for all community activities. It includes: 
 - Upcoming Events: Events you can join
 - Service Requests: Help you need or can provide
@@ -98,123 +100,131 @@ Your dashboard is your central hub for all community activities. It includes:
 - Settings: Manage your account
 [INSERT SCREENSHOT: Retiree dashboard overview]
 ________________________________________
-Managing Your Profile
-Editing Your Profile
+#### ***Managing Your Profile***
+
+*Editing Your Profile*
 1. Click on the "Settings" icon (usually a gear symbol).
-2. Select "Edit Profile" from the menu.
+2. Select "Edit Profile" or "Edit User Information" from the menu.
 3. Update any information you'd like to change, such as your name, contact details, or interests.
 4. Click "Save Changes" to update your profile.
-Adding or Changing Your Profile Picture
+
+*Adding or Changing Your Profile Picture*
 1. In your profile settings, click "Change Photo".
 2. Select an image from your device (JPG, PNG, GIF, or WebP format, up to 5MB).
 3. Crop the image if needed.
 4. Click "Save".
 ________________________________________
-Event Management and Calendar (for Retirees)
-The Event Management and Calendar module lets you: 
+#### ***Event Management and Calendar (for Retirees)***
+
+*The Event Management and Calendar module lets you:* 
 - View upcoming events in your community 
 - Create new events (with manager approval) 
 - Join or leave events
 - See your personal schedule in a color-coded calendar
-1. Viewing Events
-• Go to "Upcoming Events" or open your Calendar from the icon.
-• Events are color-coded by category (e.g., Sports, Health, Education).
-• Use filters to find events by category, date, or location.
-• Click on any event to see full details: title, image, description, location, date, time, and participant list (if you are the creator).
-2. Creating a New Event
-As a retiree, you can suggest new events for your community. These will be reviewed by a manager before being published.
-Step-by-Step: Creating an Event
+
+**1. Viewing Events**
+- Go to "Upcoming Events" or open your Calendar from the icon.
+- Events are color-coded by category (e.g., Sports, Health, Education).
+- Use filters to find events by category, date, or location.
+- Click on any event to see full details: title, image, description, location, date, time, and participant list (if you are the creator).
+
+**2. Creating a New Event**
+
+*As a retiree, you can suggest new events for your community. These will be reviewed by a manager before being published.
+Step-by-Step: Creating an Event*
 1. Click "Create Event" in your dashboard or click a date in the calendar and select "Create Event."
 2. Fill in the event details:
-– Title: Enter a clear event name (3–100 characters).
-– Category: Choose from the list (e.g., Sports, Health, Education). If you don't see a suitable category, ask your manager to add one.
-– Start and End Date: Select the event date(s). You can create single-day or multi-day events.
-– Start and End Time: Set the times (must be at least 30 minutes apart, and not in the past).
-– Location: Enter where the event will take place (physical address or online link).
-– Description: Add details about the event (up to 1000 characters).
-– Participant Limit: Set the maximum number of participants (1–1000).
-– Image: (Optional) Upload a photo (JPG/PNG/GIF/WebP, up to 5MB).
+    - Title: Enter a clear event name (3–100 characters).
+    - Category: Choose from the list (e.g., Sports, Health, Education). If you don't see a suitable category, ask your manager to add one.
+    - Start and End Date: Select the event date(s). You can create single-day or multi-day events.
+    - Start and End Time: Set the times (must be at least 30 minutes apart, and not in the past).
+    - Location: Enter where the event will take place (physical address or online link).
+    - Description: Add details about the event (up to 1000 characters).
+    - Participant Limit: Set the maximum number of participants (1–1000).
+    - Image: (Optional) Upload a photo (JPG/PNG/GIF/WebP, up to 5MB).
+
 3. Review your information. The system will check that:
-– The event is not in the past.
-– The end time is after the start time.
-– The duration is at least 30 minutes.
+    - The event is not in the past.
+    - The end time is after the start time.
+    - The duration is at least 30 minutes.
 4. Click "Create Event".
-Note: Events you create will be set to Pending Approval. A manager will review and approve or reject your event. You'll receive a notification when a decision is made.
+    Note: Events you create will be set to Pending Approval. A manager will review and approve or reject your event. You'll receive a notification when a decision is made.
 ________________________________________
-3. Managing Your Events
-• Edit or Delete: You can edit or delete only the events you created, as long as they are not yet approved or have not started.
-• View Participants: If you created the event, you can see who has joined.
-• Join/Leave: For any event, you can click "Join" to participate or "Leave" to cancel your registration.
+**3. Managing Your Events**
+    - Edit or Delete: You can edit or delete only the events you created, as long as they are not yet approved or have not started.
+    - View Participants: If you created the event, you can see who has joined.
+    - Join/Leave: For any event, you can click "Join" to participate or "Leave" to cancel your registration.
 ________________________________________
-4. Calendar Features
-• Views: Switch between Month, Week, or Day views.
-• Navigation: Use arrows or the date picker to move between dates.
-• Color Coding: Each event category has its own color for easy identification.
-• Quick Create: Click any date in the calendar to open the event creation form.
+**4. Calendar Features**
+- Views: Switch between Month, Week, or Day views.
+- Navigation: Use arrows or the date picker to move between dates.
+- Color Coding: Each event category has its own color for easy identification.
+- Quick Create: Click any date in the calendar to open the event creation form.
 ________________________________________
-5. Event Approval System
-• Events created by retirees are pending until approved by a manager.
-• Managers see a list of pending events and can approve or reject them.
-• You will be notified automatically when your event is approved or rejected.
+**5. Event Approval System**
+- Events created by retirees are pending until approved by a manager.
+- Managers see a list of pending events and can approve or reject them.
+- You will be notified automatically when your event is approved or rejected.
 ________________________________________
-6. Permissions and Roles
+**6. Permissions and Roles**
 User Role	What You Can Do
 Retiree (You)	Create events (pending approval), edit/delete your own events, join/leave events
 Manager/Admin	Approve/reject events, edit/delete any event, view all participants, manage categories
 System Admin	All manager permissions, plus manage associations and advanced settings
-• Editing/Deleting: You can only edit or delete events you created.
-• Joining/Leaving: You can join or leave any event that is open for registration.
-• Category Management: Only managers can create new categories or assign custom colors.
+- Editing/Deleting: You can only edit or delete events you created.
+- Joining/Leaving: You can join or leave any event that is open for registration.
+- Category Management: Only managers can create new categories or assign custom colors.
 ________________________________________
-7. Example Event Categories
-• Sports
-• Health
-• Education
-• Technology
-• Social
-• Arts
-• Volunteering
-All categories are available in Hebrew and English (Arabic optional).
+**7. Example Event Categories**
+- Sports
+- Health
+- Education
+- Technology
+- Social
+- Arts
+- Volunteering
+All categories are available in Hebrew and English.
 ________________________________________
-8. Tips
-• Check your calendar regularly for new events and updates.
-• Join early: Some events have limited spots.
-• Contact your manager if you want a new event category or have questions about event approval.
+**8. Tips**
+- Check your calendar regularly for new events and updates.
+- Join early: Some events have limited spots.
+- Contact your manager if you want a new event category or have questions about event approval.
 ________________________________________
-Requesting Help
-Submitting a Service Request
+#### **Requesting Help**
+
+*Submitting a Service Request*
 1. Click "Request Help" in your dashboard.
 2. Select the type of service you need:
-– Home Maintenance: Gardening, repairs, cleaning
-– Transportation: Rides to appointments, shopping
-– Technology Help: Computer assistance, phone setup
-– Social Support: Companionship, conversation
-– Other: Specify your need
+    - Home Maintenance: Gardening, repairs, cleaning
+    - Transportation: Rides to appointments, shopping
+    - Technology Help: Computer assistance, phone setup
+    - Social Support: Companionship, conversation
+    - Other: Specify your need
 3. Fill in the details:
-– Title: Brief description of what you need
-– Description: Detailed explanation
-– Preferred Date/Time: When you need the help
-– Duration: How long the task will take
-– Location: Where the help is needed
+    - Title: Brief description of what you need
+    - Description: Detailed explanation
+    - Preferred Date/Time: When you need the help
+    - Duration: How long the task will take
+    - Location: Where the help is needed
 4. Click "Submit Request".
 [INSERT SCREENSHOT: Service request form]
 Tracking Your Requests
 1. Go to "My Requests" in your dashboard.
 2. View the status of your requests:
-– Pending: Waiting for volunteer assignment
-– Assigned: A volunteer has been assigned
-– In Progress: Help is being provided
-– Completed: Service has been finished
+    - Pending: Waiting for volunteer assignment
+    - Assigned: A volunteer has been assigned
+    - In Progress: Help is being provided
+    - Completed: Service has been finished
 ________________________________________
-Volunteering Your Time
-Registering as a Volunteer
+#### **Volunteering Your Time**
+*Registering as a Volunteer*
 1. Click "Volunteer" in your dashboard.
 2. Select the areas where you can help:
-– Home Maintenance: Gardening, repairs, cleaning
-– Transportation: Providing rides
-– Technology Support: Computer help, phone assistance
-– Social Support: Companionship, conversation
-– Teaching: Sharing skills and knowledge
+- Home Maintenance: Gardening, repairs, cleaning
+- Transportation: Providing rides
+- Technology Support: Computer help, phone assistance
+- Social Support: Companionship, conversation
+- Teaching: Sharing skills and knowledge
 3. Add your availability schedule.
 4. Click "Save Volunteer Profile".
 [INSERT SCREENSHOT: Volunteer registration form]
@@ -225,38 +235,37 @@ Responding to Service Requests
 4. Click "I Can Help" to volunteer.
 5. Coordinate with the requester to arrange details.
 ________________________________________
-Using the Chat System
-Sending Messages or Starting a Phone Call
+#### **Using the Chat System**
+*Sending Messages or Starting a Phone Call*
 1. Click "Messages" in the sidebar.
 2. Click "New Message".
 3. Select the recipient(s) (only members of your settlement).
 4. Type your message.
 5. Click "Send".
-– Your message will be pending approval from the other user.
+    - Your message will be pending approval from the other user.
 6. To start a phone call, click the phone icon in the chat window.
 Receiving Messages
-• New messages appear in your inbox.
-• You'll see a notification badge on the Messages icon.
-• Click on a message to approve/decline, read, and reply.
-[INSERT SCREENSHOT: Messages interface]
+    - New messages appear in your inbox.
+    - You'll see a notification badge on the Messages icon.
+    - Click on a message to approve/decline, read, and reply.
+    [INSERT SCREENSHOT: Messages interface]
 ________________________________________
-Using Accessibility Tools
-Font Size Adjustment
+#### **Using Accessibility Tools**
+*Font Size Adjustment*
 1. Click the "Settings" icon (gear symbol).
 2. Select "Accessibility".
 3. Choose your preferred font size:
-– Small: Default size
-– Medium: 20% larger
-– Large: 40% larger
-– Extra Large: 60% larger
+- Small: Default size
+- Medium: 20% larger
+- Large: 40% larger
+- Extra Large: 60% larger
 Language Selection
 1. Click the language selector in the top-right corner.
 2. Choose your preferred language:
-– English
-– עברית (Hebrew)
-– العربية (Arabic)
+- English
+- עברית (Hebrew)
 ________________________________________
-Settings
+#### **Settings**
 The Settings menu allows you to personalize your experience and manage your account:
 - Edit Profile: Update your personal information, contact details, and profile picture.
 - Accessibility: Adjust font size, enable high-contrast mode.
@@ -287,14 +296,14 @@ Creating Events
 Basic Event Creation
 1. Click "Create Event" in your dashboard.
 2. Fill in the event details:
-– Title: Clear, descriptive name (3–100 characters)
-– Description: Detailed information about the event (up to 1000 characters)
-– Category: Select an appropriate category or add a new one
-– Starting and Ending Date: Choose the event date
-– Starting and Ending Time: Set start and end times (minimum 30 minutes)
-– Location: Venue or meeting point
-– Maximum Participants: Set a limit if needed (1–1000 participants)
-– Image: Upload a JPG, PNG, GIF, or WebP image (up to 5MB)
+- Title: Clear, descriptive name (3–100 characters)
+- Description: Detailed information about the event (up to 1000 characters)
+- Category: Select an appropriate category or add a new one
+- Starting and Ending Date: Choose the event date
+- Starting and Ending Time: Set start and end times (minimum 30 minutes)
+- Location: Venue or meeting point
+- Maximum Participants: Set a limit if needed (1–1000 participants)
+- Image: Upload a JPG, PNG, GIF, or WebP image (up to 5MB)
 3. Click "Create Event" to publish.
 [INSERT SCREENSHOT: Event creation form]
 Advanced Event Settings
@@ -358,20 +367,20 @@ Analytics and Reporting
 Settlement Analytics
 1. Go to "Analytics" in your dashboard.
 2. View key metrics:
-– Active Users: Number of engaged members
-– Event Participation: Attendance rates
-– Service Requests: Types and completion rates
-– Time Credits: Total earned and spent
+- Active Users: Number of engaged members
+- Event Participation: Attendance rates
+- Service Requests: Types and completion rates
+- Time Credits: Total earned and spent
 [INSERT SCREENSHOT: Analytics dashboard]
 ________________________________________
 Filtering and Searching
 Event Search
 1. Use the search bar to find specific events.
 2. Apply filters:
-– Date Range: Past or future events
-– Category: Filter by event type
-– Location: Specific venues
-– Created by Me: Events you created
+- Date Range: Past or future events
+- Category: Filter by event type
+- Location: Specific venues
+- Created by Me: Events you created
 User Search
 1. Search for users by name or username.
 2. Filter by activity level or volunteer status.
@@ -381,11 +390,11 @@ Volunteering Your Time
 Registering as a Volunteer
 1. Click "Volunteer" in your dashboard.
 2. Select the areas where you can help:
-– Home Maintenance: Gardening, repairs, cleaning
-– Transportation: Providing rides
-– Technology Support: Computer help, phone assistance
-– Social Support: Companionship, conversation
-– Teaching: Sharing skills and knowledge
+- Home Maintenance: Gardening, repairs, cleaning
+- Transportation: Providing rides
+- Technology Support: Computer help, phone assistance
+- Social Support: Companionship, conversation
+- Teaching: Sharing skills and knowledge
 3. Add your availability schedule.
 4. Click "Save Volunteer Profile."
 [INSERT SCREENSHOT: Volunteer registration form]
@@ -414,16 +423,15 @@ Font Size Adjustment
 1. Click the "Settings" icon (gear symbol).
 2. Select "Accessibility."
 3. Choose your preferred font size:
-– Small: Default size
-– Medium: 20% larger
-– Large: 40% larger
-– Extra Large: 60% larger
+- Small: Default size
+- Medium: 20% larger
+- Large: 40% larger
+- Extra Large: 60% larger
 Language Selection
 1. Click the language selector in the top-right corner.
 2. Choose your preferred language:
-– English
-– עברית (Hebrew)
-– العربية (Arabic)
+- English
+- עברית (Hebrew)
 ________________________________________
 Super Admin Guide
 Super Admin Dashboard Overview
@@ -439,11 +447,11 @@ ________________________________________
 1.1. Adding or Editing a Settlement
 1. Go to "Settlement Management".
 2. To add or edit a settlement:
-– Search for an existing settlement by name.
-– Click "Add/Edit" to add or edit a settlement manually.
-– Or click "Upload" to upload a new settlements CSV file (e.g., settlements_list.csv) for bulk updates.
+- Search for an existing settlement by name.
+- Click "Add/Edit" to add or edit a settlement manually.
+- Or click "Upload" to upload a new settlements CSV file (e.g., settlements_list.csv) for bulk updates.
 • Press "Replace all" to override the entire list with the uploaded file.
-– Assign a new Admin:
+- Assign a new Admin:
 - Enter the manager's email, username, and phone number.
 - The system will:
 • Create the user in Firebase Auth with a temporary password.
@@ -482,9 +490,9 @@ ________________________________________
 • User Count: See the number of seniors, active managers, and available communities.
 • Real-Time Reports: Automatic updates, action history, and immediate display of changes.
 • Global Analytics: View platform-wide statistics, including:
-– Total registered users
-– Active settlements
-– System-wide event participation
+- Total registered users
+- Active settlements
+- System-wide event participation
 ________________________________________
 5. Security and Privacy
 • Access Permissions: Only Super Admins can access these features. Identity verification is required for sensitive actions.
@@ -508,17 +516,16 @@ Visual Accessibility
 Font Size Adjustment
 1. Click "Settings" → "Accessibility"
 2. Choose your preferred font size:
-– Small: Default size (16px)
-– Medium: 20% larger (19px)
-– Large: 40% larger (22px)
-– Extra Large: 60% larger (26px)
+- Small: Default size (16px)
+- Medium: 20% larger (19px)
+- Large: 40% larger (22px)
+- Extra Large: 60% larger (26px)
 Language Support
 Changing Language
 1. Click the language selector in the top-right corner
 2. Choose your preferred language:
-– English: Default language
-– עברית: Hebrew with right-to-left support
-– العربية: Arabic with right-to-left support
+- English: Default language
+- עברית: Hebrew with right-to-left support
 Right-to-Left (RTL) Support
 • Automatic Detection: Interface adjusts automatically
 • Text Direction: Text flows correctly for Hebrew and Arabic
