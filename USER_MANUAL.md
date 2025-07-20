@@ -26,15 +26,16 @@ Many retirees face challenges with:
 ________________________________________
 User Roles & Permissions
 Feature | Retiree | Admin | Super Admin
-Profile Management	✅ | View & Edit Own	✅ | View All in Settlement |	✅ View All System-wide
-Event Participation	✅ Join Events	✅ Create/Edit Events	✅ Create/Edit All Events
-Event Creation	❌	✅ Settlement Events	✅ All Events
-Volunteer Registration	✅ Register as Volunteer	✅ Assign Volunteers	✅ Assign All Volunteers
-Service Requests	✅ Submit Requests	✅ Manage Settlement Requests	✅ Manage All Requests
-User Management	❌	✅ View Settlement Users	✅ Manage All Users
-Settlement Management	❌	❌	✅ Add/Remove Settlements
-Analytics	❌	✅ Settlement Analytics	✅ System-wide Analytics
-System Settings	❌	❌	✅ Configure Platform
+|-------|---------|-------|------------|
+Profile Management	| ✅ View & Edit Own	| ✅ View All in Settlement | ✅ View All System-wide
+Event Participation	| ✅ Join Events	| ✅ Create/Edit Events | ✅ Create/Edit All Events
+Event Creation | ☑️ Creates Event with Admin Approval | ✅ Settlement Events | ✅ All Events
+Volunteer Registration | ✅ Register as Volunteer | ✅ Assign Volunteers | ✅ Assign All Volunteers
+Service Requests | ✅ Submit Requests | ✅ Manage Settlement Requests	|   ✅ Manage All Requests
+User Management	| ❌ | ✅ View Settlement Users | ✅ Manage All Users
+Settlement Management | ❌ |	❌ |	✅ Add/Remove Settlements
+Analytics |	❌ |	✅ Settlement Analytics | ✅ System-wide Analytics
+System Settings |	❌ |	❌ |	✅ Configure Platform
 ________________________________________
 Getting Started
 Creating Your Account
