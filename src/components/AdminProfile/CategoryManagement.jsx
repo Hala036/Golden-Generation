@@ -556,7 +556,7 @@ const CategoryManagement = () => {
           </h3>
           <p className="text-gray-500 mb-4">
             {searchQuery 
-              ? t('auth.categoryManagement.noCategoriesFound', { search: searchQuery })
+              ? i18n.t('auth.categoryManagement.noCategoriesFound', { search: searchQuery })
               : t('auth.categoryManagement.getStarted')
             }
           </p>
@@ -746,10 +746,10 @@ const CategoryManagement = () => {
                 className={`border px-3 py-2 rounded-md w-full ${translationErrors.en ? 'border-red-500' : 'border-gray-300'}`}
                 value={formData.translations.en}
                 onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, en: e.target.value }
-                  });
+                  setFormData(prev => ({
+                    ...prev,
+                    translations: { ...prev.translations, en: e.target.value }
+                  }));
                   if (translationErrors.en) setTranslationErrors(prev => ({ ...prev, en: "" }));
                 }}
                 placeholder={t("auth.categoryManagement.form.englishPlaceholder")}
@@ -769,10 +769,10 @@ const CategoryManagement = () => {
                 className={`border px-3 py-2 rounded-md w-full ${translationErrors.he ? 'border-red-500' : 'border-gray-300'}`}
                 value={formData.translations.he}
                 onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, he: e.target.value }
-                  });
+                  setFormData(prev => ({
+                    ...prev,
+                    translations: { ...prev.translations, he: e.target.value }
+                  }));
                   if (translationErrors.he) setTranslationErrors(prev => ({ ...prev, he: "" }));
                 }}
                 placeholder={t("auth.categoryManagement.form.hebrewPlaceholder")}
