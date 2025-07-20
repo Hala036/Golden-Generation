@@ -4,6 +4,7 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  setDoc,
   query,
   where,
   serverTimestamp,
@@ -14,6 +15,62 @@ import { db } from "./firebase";
 // Collection references
 const jobRequestsCollection = collection(db, "jobRequests");
 const usersCollection = collection(db, "users");
+const configCollection = collection(db, "config");
+
+// Default score weights
+const DEFAULT_WEIGHTS = {
+  locationScore: 20,
+  interestsScore: 15,
+  backgroundScore: 15,
+  daysScore: 10,
+  hoursScore: 10,
+  frequencyScore: 10,
+  areasScore: 10,
+  degreesScore: 10
+};
+
+/**
+ * Get global score weights from Firebase config
+ * @returns {Promise<Object>} - Global score weights
+ */
+export const getGlobalScoreWeights = async () => {
+  try {
+    const configRef = doc(configCollection, "scoreWeights");
+    const configDoc = await getDoc(configRef);
+    
+    if (configDoc.exists()) {
+      const data = configDoc.data();
+      return data.weights || DEFAULT_WEIGHTS;
+    }
+    
+    // If no config exists, return default weights
+    return DEFAULT_WEIGHTS;
+  } catch (error) {
+    console.error("Error fetching global score weights:", error);
+    return DEFAULT_WEIGHTS;
+  }
+};
+
+/**
+ * Save global score weights to Firebase config
+ * @param {Object} weights - Score weights to save
+ * @returns {Promise<void>}
+ */
+export const saveGlobalScoreWeights = async (weights) => {
+  try {
+    const configRef = doc(configCollection, "scoreWeights");
+    await setDoc(configRef, {
+      weights,
+      updatedAt: serverTimestamp(),
+      updatedBy: "admin" // You can modify this to include actual admin user info
+    }, { merge: true });
+    
+    console.log("Global score weights saved successfully");
+  } catch (error) {
+    console.error("Error saving global score weights:", error);
+    throw error;
+  }
+};
 
 /**
  * Match seniors to a job request based on criteria
@@ -46,7 +103,7 @@ export const performSeniorMatching = async (jobRequestId) => {
       const senior = seniorDoc.data();
       const seniorId = seniorDoc.id;
 
-      // Calculate match score based on correct nested fields
+      // Calculate match score based on static max values
       const scoreDetails = calculateMatchScore(jobRequest, senior);
       const totalScore = scoreDetails.totalScore;
 
@@ -98,106 +155,106 @@ export const performSeniorMatching = async (jobRequestId) => {
  * @returns {Object} - Score details and total score
  */
 export const calculateMatchScore = (jobRequest, senior) => {
+  // Static max values
+  const MAX_LOCATION = 40;
+  const MAX_INTERESTS = 15;
+  const MAX_BACKGROUND = 25;
+  const MAX_AVAILABILITY = 10;
+
   const scoreDetails = {
     locationScore: 0,
     interestsScore: 0,
     backgroundScore: 0,
-    availabilityScore: 0,
+    daysScore: 0,
+    hoursScore: 0,
     frequencyScore: 0,
-    timingScore: 0,
     totalScore: 0
   };
 
-  // Location match (40%)
+  // Location match
   const seniorLocation = senior.personalDetails?.settlement || "";
-  console.log("Comparing location:", { seniorLocation, jobLocation: jobRequest.location });
   if (seniorLocation && seniorLocation === jobRequest.location) {
-    scoreDetails.locationScore = 40;
+    scoreDetails.locationScore = MAX_LOCATION;
   }
 
-  // Interests match (25%)
+  // Interests match (3 points per overlap, max 15)
   const seniorInterests = senior.lifestyle?.interests || [];
-  const jobRequestInterests = Array.isArray(jobRequest.volunteerField) ? jobRequest.volunteerField : [jobRequest.volunteerField];
-  console.log("Comparing interests:", { seniorInterests, jobRequestInterests });
-  if (seniorInterests.length > 0 && jobRequestInterests.length > 0) {
-    const overlap = seniorInterests.filter(interest => jobRequestInterests.includes(interest));
-    if (overlap.length > 0) {
-      scoreDetails.interestsScore = Math.min(25, overlap.length * 10); // Max 25, 10 points per overlapping interest
-    }
+  const jobInterests = Array.isArray(jobRequest.interests) ? jobRequest.interests : [];
+  if (seniorInterests.length > 0 && jobInterests.length > 0) {
+    const overlap = seniorInterests.filter(interest => jobInterests.includes(interest));
+    scoreDetails.interestsScore = Math.min(MAX_INTERESTS, overlap.length * 3);
   }
 
-  // Professional background match (25%)
-  const seniorBackground = senior.workBackground?.selectedJob || senior.workBackground?.category || "";
-  const jobBackground = jobRequest.professionalBackground || "";
-  console.log("Comparing background:", { seniorBackground, jobBackground });
-  if (seniorBackground && jobBackground) {
-    if (seniorBackground === jobBackground) {
-      scoreDetails.backgroundScore = 25;
-    } else if (
-      typeof seniorBackground === "string" &&
-      typeof jobBackground === "string" &&
-      (seniorBackground.toLowerCase().includes(jobBackground.toLowerCase()) ||
-        jobBackground.toLowerCase().includes(seniorBackground.toLowerCase()))
-    ) {
-      scoreDetails.backgroundScore = 15;
+  // Professional background match (full for exact, half for partial, max 25)
+  const retireeCustomJobInfo = senior.workBackground?.customJobInfo || {};
+  const retireeOriginal = retireeCustomJobInfo.originalSelection || {};
+  const retireeJobFields = [
+    retireeOriginal.category,
+    retireeOriginal.jobTitle,
+    retireeOriginal.subspecialty,
+    retireeCustomJobInfo.customJobTitle,
+    senior.workBackground?.jobTitle,
+    senior.workBackground?.subspecialty,
+    senior.workBackground?.otherJob
+  ].filter(Boolean);
+  const requestJobFields = [
+    jobRequest.jobCategory,
+    jobRequest.jobTitle,
+    jobRequest.jobSubspecialty,
+    jobRequest.customJob
+  ].filter(Boolean);
+  let bestJobScore = 0;
+  for (const retireeField of retireeJobFields) {
+    for (const requestField of requestJobFields) {
+      if (retireeField && requestField) {
+        if (retireeField === requestField) {
+          bestJobScore = Math.max(bestJobScore, MAX_BACKGROUND);
+        } else if (
+          typeof retireeField === "string" &&
+          typeof requestField === "string" &&
+          (retireeField.toLowerCase().includes(requestField.toLowerCase()) ||
+            requestField.toLowerCase().includes(retireeField.toLowerCase()))
+        ) {
+          bestJobScore = Math.max(bestJobScore, Math.floor(MAX_BACKGROUND * 0.5));
+        }
+      }
     }
   }
+  scoreDetails.backgroundScore = bestJobScore;
 
-  // Availability match (days) (10%)
-  const jobDays = Array.isArray(jobRequest.days) ? jobRequest.days : [];
-  const seniorDays = Array.isArray(senior.volunteerDays) && senior.volunteerDays.length > 0
-    ? senior.volunteerDays
-    : (Array.isArray(senior.additionalVolunteerDays) ? senior.additionalVolunteerDays : []);
-  console.log("Comparing days:", { seniorDays, jobDays });
-  if (jobDays.length && seniorDays.length) {
+  // Availability (sum of days, hours, frequency, max 10)
+  const seniorDays = Array.isArray(senior.volunteerDays) ? senior.volunteerDays : [];
+  const jobDays = Array.isArray(jobRequest.volunteerDays) ? jobRequest.volunteerDays : [];
+  if (seniorDays.length && jobDays.length) {
     const overlap = jobDays.filter(day => seniorDays.includes(day));
-    if (overlap.length === jobDays.length) {
-      scoreDetails.availabilityScore = 10;
-    } else if (overlap.length > 0) {
-      scoreDetails.availabilityScore = 5;
-    }
+    scoreDetails.daysScore = Math.min(3, overlap.length * 1); // up to 3
+  }
+  const seniorHours = Array.isArray(senior.volunteerHours) ? senior.volunteerHours : [];
+  const jobHours = Array.isArray(jobRequest.volunteerHours) ? jobRequest.volunteerHours : [];
+  if (seniorHours.length && jobHours.length) {
+    const overlap = jobHours.filter(hour => seniorHours.includes(hour));
+    scoreDetails.hoursScore = Math.min(4, overlap.length * 2); // up to 4
+  }
+  const seniorFrequency = Array.isArray(senior.volunteerFrequency) ? senior.volunteerFrequency : (senior.volunteerFrequency ? [senior.volunteerFrequency] : []);
+  const jobFrequency = Array.isArray(jobRequest.volunteerFrequency) ? jobRequest.volunteerFrequency : [];
+  if (seniorFrequency.length && jobFrequency.length) {
+    const overlap = jobFrequency.filter(f => seniorFrequency.includes(f));
+    scoreDetails.frequencyScore = Math.min(3, overlap.length * 1); // up to 3
   }
 
-  // Frequency match (10%)
-  const seniorFrequency = senior.volunteerFrequency || senior.additionalVolunteerFrequency || "";
-  const jobFrequency = jobRequest.frequency || "";
-  console.log("Comparing frequency:", { seniorFrequency, jobFrequency });
-  if (seniorFrequency && jobFrequency && seniorFrequency === jobFrequency) {
-    scoreDetails.frequencyScore = 10;
-  } else if (
-    seniorFrequency &&
-    jobFrequency &&
-    typeof seniorFrequency === "string" &&
-    typeof jobFrequency === "string" &&
-    seniorFrequency.toLowerCase().includes(jobFrequency.toLowerCase())
-  ) {
-    scoreDetails.frequencyScore = 5;
-  }
-
-  // Timing match (10%)
-  const seniorTiming = senior.volunteerHours || senior.additionalVolunteerHours || "";
-  const jobTiming = jobRequest.timing || "";
-  console.log("Comparing timing:", { seniorTiming, jobTiming });
-  if (seniorTiming && jobTiming && seniorTiming === jobTiming) {
-    scoreDetails.timingScore = 10;
-  } else if (
-    seniorTiming &&
-    jobTiming &&
-    typeof seniorTiming === "string" &&
-    typeof jobTiming === "string" &&
-    seniorTiming.toLowerCase().includes(jobTiming.toLowerCase())
-  ) {
-    scoreDetails.timingScore = 5;
-  }
-
-  // Calculate total score
-  scoreDetails.totalScore =
+  // Total score (sum of all fields, no scaling)
+  const rawTotal =
     scoreDetails.locationScore +
     scoreDetails.interestsScore +
     scoreDetails.backgroundScore +
-    scoreDetails.availabilityScore +
-    scoreDetails.frequencyScore +
-    scoreDetails.timingScore;
+    scoreDetails.daysScore +
+    scoreDetails.hoursScore +
+    scoreDetails.frequencyScore;
+  scoreDetails.totalScore = rawTotal;
+
+  // Scaled total score out of 100
+  const totalMax = 40 + 15 + 25 + 10; // 90
+  scoreDetails.scaledTotalScore = Math.round((rawTotal / totalMax) * 100);
 
   return scoreDetails;
 };
@@ -220,13 +277,15 @@ export const getDetailedMatch = async (jobRequestId, seniorId) => {
     const jobRequest = jobRequestDoc.data();
     const senior = seniorDoc.data();
 
-    // Calculate match score
-    const scoreDetails = calculateMatchScore(jobRequest, senior);
+    // Get global weights and calculate match score
+    const globalWeights = await getGlobalScoreWeights();
+    const scoreDetails = await calculateMatchScore(jobRequest, senior);
 
     return {
       jobRequest,
       senior,
-      scoreDetails
+      scoreDetails,
+      globalWeights // Include weights for reference
     };
   } catch (error) {
     console.error("Error getting detailed match:", error);
@@ -234,3 +293,32 @@ export const getDetailedMatch = async (jobRequestId, seniorId) => {
   }
 };
 
+/**
+ * Save manual field weights for a specific match (jobRequestId + seniorId)
+ * @param {string} jobRequestId
+ * @param {string} seniorId
+ * @param {object} weights - { locationScore, interestsScore, backgroundScore, availabilityScore }
+ * @returns {Promise<void>}
+ */
+export const saveManualWeights = async (jobRequestId, seniorId, weights) => {
+  const jobRequestRef = doc(jobRequestsCollection, jobRequestId);
+  // Store under a nested field: manualWeights.seniorId = weights
+  await updateDoc(jobRequestRef, {
+    [`manualWeights.${seniorId}`]: weights,
+    updatedAt: serverTimestamp()
+  });
+};
+
+/**
+ * Get manual field weights for a specific match (jobRequestId + seniorId)
+ * @param {string} jobRequestId
+ * @param {string} seniorId
+ * @returns {Promise<object|null>} - weights or null if not set
+ */
+export const getManualWeights = async (jobRequestId, seniorId) => {
+  const jobRequestRef = doc(jobRequestsCollection, jobRequestId);
+  const jobRequestDoc = await getDoc(jobRequestRef);
+  if (!jobRequestDoc.exists()) return null;
+  const data = jobRequestDoc.data();
+  return data.manualWeights && data.manualWeights[seniorId] ? data.manualWeights[seniorId] : null;
+};

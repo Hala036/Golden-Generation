@@ -18,9 +18,11 @@ import EmptyState from "../EmptyState"; // Import EmptyState component
 import { useLanguage } from "../../context/LanguageContext"; // Import useLanguage
 import Skeleton from 'react-loading-skeleton'; // Import Skeleton
 import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
+import Select from 'react-select';
+import VoluntaryRequestForm from './VoluntaryRequestForm';
 
 const Jobs = () => {
-  const { currentUser } = useAuth(); // Access currentUser from useAuth
+  const { user, userData } = useAuth(); // Access user (firebase) and userData (profile)
   const { t } = useLanguage(); // Add translation hook
 
   // State for job requests
@@ -36,7 +38,8 @@ const Jobs = () => {
     location: "",
     volunteerField: "",
     professionalBackground: "",
-    timing: ""
+    frequency: [], // now array
+    timing: [] // now array
   });
 
   // State for editing
@@ -125,44 +128,51 @@ const Jobs = () => {
 
   // Handle form input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    if (e && e.target) {
+      const { name, value } = e.target;
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    } else if (e && e.name && Array.isArray(e.value)) {
+      setFormData({
+        ...formData,
+        [e.name]: e.value
+      });
+    }
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (jobRequestData) => {
+    if (!user || !user.uid) {
+      toast.error(t('admin.jobs.toasts.dataLoadFailed'));
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const jobRequestData = {
-        ...formData,
-        volunteerDays: formData.days || [], // Add volunteerDays
-        volunteerHours: formData.timing || "", // Add volunteerHours
-        volunteerFrequency: formData.frequency || "", // Add volunteerFrequency
-        createdBy: currentUser.uid, // Admin ID
-        createdAt: new Date(), // Timestamp
-        status: "Active", // Default status
+      const finalJobRequestData = {
+        ...jobRequestData,
+        createdBy: user.uid,
+        createdAt: new Date(),
+        status: "Active",
         statusHistory: [
           {
             status: "Active",
             timestamp: new Date(),
-            changedBy: currentUser.uid,
+            changedBy: user.uid,
             notes: "Job request created",
           },
         ],
-        assignedSeniors: [], // Initialize empty array
+        assignedSeniors: [],
       };
 
       if (editMode) {
-        await updateJobRequest(editId, jobRequestData);
+        await updateJobRequest(editId, finalJobRequestData);
         toast.success(t("admin.jobs.toasts.updateSuccess"));
       } else {
-        await createJobRequest(jobRequestData);
+        await createJobRequest(finalJobRequestData);
         toast.success(t("admin.jobs.toasts.createSuccess"));
       }
 
@@ -202,9 +212,16 @@ const Jobs = () => {
       title: jobRequest.title,
       description: jobRequest.description,
       location: jobRequest.location,
-      volunteerField: jobRequest.volunteerField,
-      professionalBackground: jobRequest.professionalBackground || "",
-      timing: jobRequest.timing
+      jobCategory: jobRequest.jobCategory || '',
+      jobTitle: jobRequest.jobTitle || '',
+      jobSubspecialty: jobRequest.jobSubspecialty || '',
+      customJob: jobRequest.customJob || '',
+      interests: jobRequest.interests || [],
+      volunteerDays: jobRequest.volunteerDays || [],
+      volunteerHours: jobRequest.volunteerHours || [],
+      volunteerFrequency: jobRequest.volunteerFrequency || [],
+      volunteerAreas: jobRequest.volunteerAreas || [],
+      academicDegrees: jobRequest.academicDegrees || [],
     });
     setEditMode(true);
     setEditId(jobRequest.id);
@@ -295,7 +312,8 @@ const Jobs = () => {
       location: "",
       volunteerField: "",
       professionalBackground: "",
-      timing: ""
+      frequency: [],
+      timing: []
     });
     setEditMode(false);
     setEditId(null);
@@ -442,146 +460,15 @@ const Jobs = () => {
       {/* Create/Edit Job Request Form */}
       {showForm && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/10 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-[95vw] max-w-md sm:max-w-lg mx-auto">
-            <h3 className="text-xl font-bold mb-4">
-              {editMode ? t("admin.jobs.editRequest") : t("admin.jobs.createRequest")}
-            </h3>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.title")}
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                    placeholder={t("admin.jobs.placeholders.title")}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.location")}
-                  </label>
-                  <select
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                    required
-                  >
-                    <option value="">{t("admin.jobs.placeholders.location")}</option>
-                    {settlements.map((settlement) => (
-                      <option key={settlement.id} value={settlement.name}>
-                        {settlement.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.volunteerField")}
-                  </label>
-                  <select
-                    name="volunteerField"
-                    value={formData.volunteerField}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                    required
-                  >
-                    <option value="">{t("admin.jobs.placeholders.volunteerField")}</option>
-                    {volunteerFields.map((field, index) => (
-                      <option key={index} value={field}>
-                        {field}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.professionalBackground")}
-                  </label>
-                  <input
-                    type="text"
-                    name="professionalBackground"
-                    value={formData.professionalBackground}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                    placeholder={t("admin.jobs.placeholders.professionalBackground")}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.frequency")}
-                  </label>
-                  <select
-                    name="frequency"
-                    value={formData.frequency || ""}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="">{t("admin.jobs.placeholders.frequency")}</option>
-                    {timingOptions.map((option, index) => (
-                      <option key={index} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.timing")}
-                  </label>
-                  <select
-                    name="timing"
-                    value={formData.timing}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="">{t("admin.jobs.placeholders.timing")}</option>
-                    {timeOptions.map((option, index) => (
-                      <option key={index} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t("admin.jobs.fields.description")}
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                    rows="3"
-                    placeholder={t("admin.jobs.placeholders.description")}
-                    required
-                  ></textarea>
-                </div>
-              </div>
-              <div className="space-x-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
-                >
-                  {t("admin.jobs.cancel")}
-                </button>
-                <button
-                  type="submit"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
-                  disabled={loading}
-                >
-                  {loading ? t("admin.jobs.saving") : editMode ? t("admin.jobs.updateRequest") : t("admin.jobs.createRequest")}
-                </button>
-              </div>
-            </form>
-          </div>
+          <VoluntaryRequestForm
+            editMode={editMode}
+            initialData={formData}
+            settlements={settlements}
+            onSubmit={handleSubmit}
+            onCancel={resetForm}
+            loading={loading}
+            t={t}
+          />
         </div>
       )}
       {showMatchDetails && selectedJobRequest && (
@@ -616,7 +503,7 @@ const Jobs = () => {
                   <strong>{t("admin.jobs.professionalBackground")}:</strong> {selectedJobRequest.professionalBackground || t("admin.jobs.notSpecified")}
                 </p>
                 <p className="text-gray-600 text-sm">
-                  <strong>{t("admin.jobs.timing")}:</strong> {selectedJobRequest.timing}
+                  <strong>{t("admin.jobs.timing")}:</strong> {Array.isArray(selectedJobRequest.timing) ? selectedJobRequest.timing.join(', ') : selectedJobRequest.timing}
                 </p>
                 <p className="text-gray-600 text-sm col-span-1 sm:col-span-2">
                   <strong>{t("admin.jobs.description")}:</strong> {selectedJobRequest.description}
@@ -886,77 +773,39 @@ const Jobs = () => {
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.title')}
-                    </th>
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.location')}
-                    </th>
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.field')}
-                    </th>
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.timing')}
-                    </th>
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.status')}
-                    </th>
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.created')}
-                    </th>
-                    <th 
-                      className={`py-2 px-4 border-b ${
-                        document.documentElement.dir === 'rtl' ? 'text-right' : 'text-left'
-                      }`}>
-                      {t('admin.jobs.table.actions')}
-                    </th>
+                    <th className="py-2 px-4 border-b text-right w-48">{t('admin.jobs.table.title', 'כותרת')}</th>
+                    <th className="py-2 px-4 border-b text-right w-40">{t('admin.jobs.table.location', 'מיקום')}</th>
+                    <th className="py-2 px-4 border-b text-right w-56">{t('admin.jobs.table.field', 'תחום התנדבות')}</th>
+                    <th className="py-2 px-4 border-b text-right w-32">{t('admin.jobs.table.status', 'סטטוס')}</th>
+                    <th className="py-2 px-4 border-b text-right w-40">{t('admin.jobs.table.created', 'נוצר בתאריך')}</th>
+                    <th className="py-2 px-4 border-b text-right w-40">{t('admin.jobs.table.actions', 'פעולות')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {jobRequests.map((jobRequest) => (
                     <tr key={jobRequest.id} className="hover:bg-gray-50">
-                      <td className="py-2 px-4 border-b font-semibold">{jobRequest.title}</td>
-                      <td className="py-2 px-4 border-b">{jobRequest.location}</td>
-                      <td className="py-2 px-4 border-b">{jobRequest.volunteerField}</td>
-                      <td className="py-2 px-4 border-b">{jobRequest.timing}</td>
-                      <td className="py-2 px-4 border-b">
-                        <span
-                          className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
-                            jobRequest.status === "Active"
-                              ? "bg-green-100 text-green-800"
-                              : jobRequest.status === "In Progress"
-                              ? "bg-blue-100 text-blue-800"
-                              : jobRequest.status === "Fulfilled"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
+                      <td className="py-2 px-4 border-b text-right w-48">{jobRequest.title}</td>
+                      <td className="py-2 px-4 border-b text-right w-40">{jobRequest.location}</td>
+                      <td className="py-2 px-4 border-b text-right w-56">{jobRequest.jobTitle || jobRequest.customJob || ''}</td>
+                      <td className="py-2 px-4 border-b text-right w-32">
+                        <span className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
+                          jobRequest.status === "Active"
+                            ? "bg-green-100 text-green-800"
+                            : jobRequest.status === "In Progress"
+                            ? "bg-blue-100 text-blue-800"
+                            : jobRequest.status === "Fulfilled"
+                            ? "bg-purple-100 text-purple-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}>
                           {jobRequest.status ? t('admin.jobs.status.' + jobRequest.status.toLowerCase().replace(/ /g, '')) : ''}
                         </span>
                       </td>
-                      <td className="py-2 px-4 border-b text-sm text-gray-500">
+                      <td className="py-2 px-4 border-b text-right w-40 text-sm text-gray-500">
                         {jobRequest.createdAt ? new Date(jobRequest.createdAt.seconds * 1000).toLocaleString() : "N/A"}
                       </td>
-                      <td className="py-2 px-4 border-b">
-                        <div className="flex flex-wrap gap-2">
+                      <td className="py-2 px-4 border-b text-right w-40">
+                        {/* Actions (edit, delete, match, etc.) */}
+                        <div className="flex flex-wrap gap-2 justify-end">
                           <button
                             className="text-gray-500 hover:text-gray-700"
                             onClick={() => handleEdit(jobRequest)}
@@ -1016,7 +865,7 @@ const Jobs = () => {
                           <span>•</span>
                           <span>{jobRequest.volunteerField}</span>
                           <span>•</span>
-                          <span>{jobRequest.timing}</span>
+                          <span>{Array.isArray(jobRequest.timing) ? jobRequest.timing.join(', ') : jobRequest.timing}</span>
                         </div>
                       </div>
                       <span
