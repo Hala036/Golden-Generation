@@ -2728,5 +2728,19 @@
     "rejectSuccess": "האירוע נדחה בהצלחה!",
     "rejectError": "אירעה שגיאה בדחיית האירוע.",
     "fetchError": "אירעה שגיאה בקבלת האירועים הממתינים."
-  }
+  },
+  "signupSidebar": {
+    "idVerification": "אימות זהות",
+    "credentials": "פרטי התחברות",
+    "personalDetails": "פרטים אישיים",
+    "workBackground": "רקע תעסוקתי",
+    "lifestyle": "אורח חיים",
+    "veteransCommunity": "קהילת ותיקים",
+    "back": "חזרה"
+  },
+  "editSection": "עריכת {{section}}",
+  "continue": "המשך",
+  "saveChanges": "שמור שינויים",
+  "saving": "שומר...",
+  "credentialsPasswordNote": "השאר את שדות הסיסמה ריקים כדי לשמור על הסיסמה הנוכחית שלך ללא שינוי."
 }

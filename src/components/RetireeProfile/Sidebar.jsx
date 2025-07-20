@@ -18,7 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ activeKey = "home", onNavigate }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'he';
   const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
   const [showOverlay, setShowOverlay] = useState(false);
   const navigate = useNavigate();
@@ -62,13 +63,14 @@ const Sidebar = ({ activeKey = "home", onNavigate }) => {
             aria-label="Close sidebar overlay"
           />
           <div
-            className="fixed top-0 left-0 h-full w-56 bg-white shadow-lg p-4 transition-all duration-300 z-50 md:hidden"
+            className={`fixed top-0 ${isRTL ? 'right-0' : 'left-0'} h-full w-56 bg-white shadow-lg p-4 transition-all duration-300 z-50 md:hidden`}
+            dir={isRTL ? 'rtl' : 'ltr'}
           >
-            <nav className="flex flex-col gap-2 mt-8">
+            <nav className={`flex flex-col gap-2 mt-8 ${isRTL ? 'items-end text-right' : 'items-start text-left'}`}>
               {navItems.map((section, idx) => (
                 <React.Fragment key={idx}>
                   {section.section && (
-                    <div className="text-xs text-gray-400 pl-2 mb-1 mt-4 uppercase tracking-wider">{section.section}</div>
+                    <div className={`text-xs text-gray-400 ${isRTL ? 'pr-2' : 'pl-2'} mb-1 mt-4 uppercase tracking-wider`}>{section.section}</div>
                   )}
                   {section.items.map(item => (
                     <SidebarItem
@@ -96,20 +98,21 @@ const Sidebar = ({ activeKey = "home", onNavigate }) => {
       )}
       {/* Sidebar for desktop/tablet */}
       <div
-        className={`fixed top-16 left-0 h-full bg-white shadow-lg p-4 transition-all duration-300 z-50 w-56 hidden md:block`}
+        className={`fixed top-16 ${isRTL ? 'right-0' : 'left-0'} h-full bg-white shadow-lg p-4 transition-all duration-300 z-50 w-56 hidden md:block`}
+        dir={isRTL ? 'rtl' : 'ltr'}
       >
         <button
-          className="absolute top-4 right-[-12px] bg-gray-800 text-white rounded-full p-1 focus:outline-none hidden md:block"
+          className={`absolute top-4 ${isRTL ? 'left-[-12px]' : 'right-[-12px]'} bg-gray-800 text-white rounded-full p-1 focus:outline-none hidden md:block`}
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? t('sidebar.collapse') : t('sidebar.expand')}
         >
           ☰
         </button>
-        <nav className="flex flex-col gap-2 mt-8">
+        <nav className={`flex flex-col gap-2 mt-8 ${isRTL ? 'items-end text-right' : 'items-start text-left'}`}>
           {navItems.map((section, idx) => (
             <React.Fragment key={idx}>
               {section.section && (
-                <div className="text-xs text-gray-400 pl-2 mb-1 mt-4 uppercase tracking-wider">{section.section}</div>
+                <div className={`text-xs text-gray-400 ${isRTL ? 'pr-2' : 'pl-2'} mb-1 mt-4 uppercase tracking-wider`}>{section.section}</div>
               )}
               {section.items.map(item => (
                 <SidebarItem
