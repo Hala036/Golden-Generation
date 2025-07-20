@@ -452,7 +452,8 @@
       "fileProcessingError": "Error processing file. Please try again.",
       "dataExtractedSuccess": "Data extracted successfully!",
       "dataExtractedFail": "Could not extract data from image. Please try again.",
-      "ocrProcessingError": "Error processing image. Please try again or fill the form manually."
+      "ocrProcessingError": "Error processing image. Please try again or fill the form manually.",
+      "credentialsPasswordNote": "Leave the password fields empty to keep your current password unchanged."
     },
     "lifestyle": {
       "title": "Lifestyle",
@@ -2781,5 +2782,18 @@
     "rejectSuccess": "Event rejected successfully!",
     "rejectError": "Failed to reject event.",
     "fetchError": "Failed to fetch pending events."
-  }
+  },
+  "signupSidebar": {
+    "idVerification": "ID Verification",
+    "credentials": "Account Credentials",
+    "personalDetails": "Personal Details",
+    "workBackground": "Work Background",
+    "lifestyle": "Lifestyle",
+    "veteransCommunity": "Veterans Community",
+    "back": "Back"
+  },
+  "editSection": "Edit {{section}}",
+  "continue": "Continue",
+  "saveChanges": "Save Changes",
+  "saving": "Saving..."
 }
