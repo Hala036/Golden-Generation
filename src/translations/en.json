@@ -90,6 +90,8 @@
       }
     },
     "signup": {
+      "welcomeMessage": "Welcome to the Golden Generation community ",
+      "welcomeSubmessage": "Please fill in your details to get started.",
       "logo": "Golden Generation",
       "createAccount": "Create Your Account",
       "back": "Back",

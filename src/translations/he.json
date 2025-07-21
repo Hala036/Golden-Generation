@@ -73,6 +73,8 @@
       }
     },
     "signup": {
+      "welcomeMessage": "ברוך הבא לקהילת דור הזהב",
+      "welcomeSubmessage": "אנא מלא את הפרטים שלך כדי להתחיל.",
       "logo": "דור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
