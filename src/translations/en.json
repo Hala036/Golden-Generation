@@ -90,6 +90,8 @@
       }
     },
     "signup": {
+      "welcomeMessage": "Welcome to the Golden Generation community ",
+      "welcomeSubmessage": "Please fill in your details to get started.",
       "logo": "Golden Generation",
       "createAccount": "Create Your Account",
       "back": "Back",
@@ -1963,6 +1965,7 @@
     "adminManagement": "Admin Management",
     "adninManagement": "Admin Management",
     "retirees": "Retirees",
+    "searchRetirees": "Search Retirees",
     "volunteerRequests": "Volunteer Requests",
     "serviceRequests": "Service Requests",
     "management": "Management",
@@ -2090,6 +2093,9 @@
     "addRetiree": "Add Retiree",
     "noVolunteers": "No Volunteers",
     "noVolunteersMessage": "No volunteers have been registered yet.",
+    "noVoluntaryRequests": "No Voluntary Requests",
+    "noVoluntaryRequestsMessage": "No voluntary requests have been created yet.",
+    "createNewRequest": "Create Voluntary Request",
     "addVolunteer": "Add Volunteer",
     "noAnalytics": "No Analytics Data",
     "noAnalyticsMessage": "No analytics data available yet. Data will appear here once events and activities are created.",

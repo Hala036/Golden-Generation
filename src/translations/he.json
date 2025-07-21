@@ -73,6 +73,8 @@
       }
     },
     "signup": {
+      "welcomeMessage": "ברוך הבא לקהילת דור הזהב",
+      "welcomeSubmessage": "אנא מלא את הפרטים שלך כדי להתחיל.",
       "logo": "דור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
@@ -1923,6 +1925,7 @@
     "categoryManagement": "ניהול קטגוריות",
     "adminManagement": "ניהול מנהלים",
     "retirees": "ותיקים",
+    "searchRetirees": "חפש ותיקים",
     "volunteerRequests": "בקשות מתנדבים",
     "serviceRequests": "בקשות שירות",
     "management": "ניהול",
@@ -2050,6 +2053,9 @@
     "addRetiree": "הוסף ותיק",
     "noVolunteers": "אין מתנדבים",
     "noVolunteersMessage": "עדיין לא נרשמו מתנדבים.",
+    "noVoluntaryRequests": "אין בקשות התנדבות",
+    "noVoluntaryRequestsMessage": "עדיין לא נוצרו בקשות התנדבות.",
+    "createNewRequest": "צור בקשת התנדבות",
     "addVolunteer": "הוסף מתנדב",
     "noAnalytics": "אין נתוני אנליטיקה",
     "noAnalyticsMessage": "עדיין אין נתוני אנליטיקה זמינים. נתונים יופיעו כאן לאחר יצירת אירועים ופעילויות.",

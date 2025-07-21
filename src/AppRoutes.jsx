@@ -35,7 +35,7 @@ const AppRoutes = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {!isDashboard && !isViewProfile && !isSignUp && (
-        <div className="fixed top-2 right-2 z-50">
+        <div className={`fixed top-2 z-50 ${language === "he" ? "left-2" : "right-2"}`}>
           <LanguageSwitcher />
         </div>
       )}

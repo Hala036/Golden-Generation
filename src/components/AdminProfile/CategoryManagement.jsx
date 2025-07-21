@@ -6,6 +6,8 @@ import { useLanguage } from "../../context/LanguageContext";
 import { FaEdit, FaTrash, FaPlus, FaEye, FaSearch } from "react-icons/fa";
 import i18n from "i18next";
 import { HexColorPicker } from "react-colorful";
+import AddCategoryModal from "./AddCategoryModal";
+import EditCategoryModal from "./EditCategoryModal";
 
 const CategoryManagement = () => {
   const { language, t } = useLanguage();
@@ -556,7 +558,7 @@ const CategoryManagement = () => {
           </h3>
           <p className="text-gray-500 mb-4">
             {searchQuery 
-              ? t('auth.categoryManagement.noCategoriesFound', { search: searchQuery })
+              ? i18n.t('auth.categoryManagement.noCategoriesFound', { search: searchQuery })
               : t('auth.categoryManagement.getStarted')
             }
           </p>
@@ -727,434 +729,61 @@ const CategoryManagement = () => {
       )}
 
       {/* Add Category Modal */}
-      <Modal
-        isOpen={showAddModal}
+      <AddCategoryModal
+        open={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title={t("auth.categoryManagement.modals.addTitle")}
-        onSubmit={handleAddCategory}
-        submitText={t("auth.categoryManagement.addCategory")}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column - Form Fields */}
-          <div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.englishTranslation")} <span className="text-red-500">{t("auth.categoryManagement.form.requiredAsterisk")}</span>
-              </label>
-              <input
-                type="text"
-                className={`border px-3 py-2 rounded-md w-full ${translationErrors.en ? 'border-red-500' : 'border-gray-300'}`}
-                value={formData.translations.en}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, en: e.target.value }
-                  });
-                  if (translationErrors.en) setTranslationErrors(prev => ({ ...prev, en: "" }));
-                }}
-                placeholder={t("auth.categoryManagement.form.englishPlaceholder")}
-                required
-              />
-              {translationErrors.en && (
-                <p className="text-red-500 text-xs mt-1">{translationErrors.en}</p>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.hebrewTranslation")} <span className="text-red-500">{t("auth.categoryManagement.form.requiredAsterisk")}</span>
-              </label>
-              <input
-                type="text"
-                className={`border px-3 py-2 rounded-md w-full ${translationErrors.he ? 'border-red-500' : 'border-gray-300'}`}
-                value={formData.translations.he}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, he: e.target.value }
-                  });
-                  if (translationErrors.he) setTranslationErrors(prev => ({ ...prev, he: "" }));
-                }}
-                placeholder={t("auth.categoryManagement.form.hebrewPlaceholder")}
-                required
-              />
-              {translationErrors.he && (
-                <p className="text-red-500 text-xs mt-1">{translationErrors.he}</p>
-              )}
-            </div>
-            
-            {/* <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.arabicTranslation")}
-              </label>
-              <input
-                type="text"
-                className="border px-3 py-2 rounded-md w-full border-gray-300"
-                value={formData.translations.ar}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, ar: e.target.value }
-                  })
-                }
-                placeholder={t("auth.categoryManagement.form.arabicPlaceholder")}
-              />
-            </div> */}
-          </div>
-
-          {/* Right Column - Color Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("auth.categoryManagement.form.categoryColor")} <span className="text-red-500">{t("auth.categoryManagement.form.requiredAsterisk")}</span>
-            </label>
-            
-            {/* Color Preview */}
-            {formData.translations.en && formData.color && (
-              <div className="mb-2 p-3 rounded-lg shadow-md flex items-center gap-4" style={{ backgroundColor: formData.color }}>
-                <span className="text-white font-semibold">{formData.translations.en}</span>
-                <div className="flex flex-col ml-4">
-                  <span className="text-xs text-white font-bold">{colorNames[formData.color] || "Custom"}</span>
-                  <span
-                    className="text-xs text-white underline cursor-pointer select-all"
-                    title="Click to copy"
-                    onClick={() => {navigator.clipboard.writeText(formData.color); toast.success('Copied!')}}
-                  >
-                    {formData.color}
-                  </span>
-                </div>
-              </div>
-            )}
-            {/* Contrast warning */}
-            {formData.color && getContrastRatio(formData.color) === "Poor" && (
-              <div className="mb-2 text-xs text-red-600 font-semibold">Warning: This color may have poor contrast on light backgrounds.</div>
-            )}
-            {/* Color Categories */}
-            <div className="mb-4">
-              <div className="flex gap-2 mb-3">
-                {Object.keys(colorCategories).map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => setSelectedColorCategory(category)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      selectedColorCategory === category
-                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {t(`auth.categoryManagement.form.${category.toLowerCase()}`)}
-                  </button>
-                ))}
-              </div>
-              {/* Color Palette Grid */}
-              <div className="grid grid-cols-5 gap-2 mb-3">
-                {colorCategories[selectedColorCategory].map((colorOption) => (
-                  <button
-                    key={colorOption}
-                    type="button"
-                    className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-110 relative ${
-                      formData.color === colorOption ? 'border-gray-800 scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                    style={{ backgroundColor: colorOption }}
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, color: colorOption }));
-                      if (colorError) setColorError("");
-                    }}
-                    title={`Select ${colorNames[colorOption] || colorOption}`}
-                  >
-                    {formData.color === colorOption && (
-                      <span className="absolute top-1 right-1 text-white text-lg font-bold pointer-events-none" style={{textShadow: '0 0 2px #000'}}>✓</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* Quick Suggestions */}
-            {formData.translations.en && (
-              <div className="mb-4">
-                <p className="text-xs text-gray-600 mb-2">Suggested for "{formData.translations.en}":</p>
-                <div className="flex gap-2">
-                  {(() => {
-                    const suggestedColor = getColorSuggestion(formData.translations.en);
-                    if (suggestedColor && suggestedColor !== formData.color) {
-                      return (
-                        <button
-                          type="button"
-                          className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-all"
-                          style={{ backgroundColor: suggestedColor }}
-                          onClick={() => {
-                            setFormData(prev => ({ ...prev, color: suggestedColor }));
-                            if (colorError) setColorError("");
-                          }}
-                          title="Smart suggestion"
-                        />
-                      );
-                    }
-                    return null;
-                  })()}
-                </div>
-              </div>
-            )}
-            {/* Custom Color Picker */}
-            <div className="mb-4 flex flex-col gap-2">
-              <label className="block text-xs text-gray-600 mb-2">{t("auth.categoryManagement.form.customColor")}</label>
-              <div className="flex items-center gap-2">
-                <HexColorPicker
-                  color={formData.color || "#CCCCCC"}
-                  onChange={(newColor) => {
-                    setFormData(prev => ({ ...prev, color: newColor }));
-                    setHexInput(newColor);
-                    if (colorError) setColorError("");
-                  }}
-                  style={{ width: '100%', maxWidth: '180px', height: '150px', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
-                />
-                <button
-                  type="button"
-                  onClick={handleEyedropper}
-                  title={window.EyeDropper ? "Pick color from screen" : "Eyedropper not supported"}
-                  className="ml-2 p-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100 shadow text-xl flex items-center justify-center"
-                  style={{ height: '40px', width: '40px' }}
-                >
-                  <span role="img" aria-label="Eyedropper">🖌️</span>
-                </button>
-              </div>
-              {/* Hex input field */}
-              <input
-                type="text"
-                className="border px-2 py-1 rounded-md w-32 mt-2 text-sm"
-                value={hexInput}
-                onChange={e => {
-                  let val = e.target.value;
-                  if (!val.startsWith("#")) val = "#" + val;
-                  setHexInput(val);
-                  // Only update color if valid hex
-                  if (/^#[0-9A-Fa-f]{6}$/.test(val)) setFormData(prev => ({ ...prev, color: val }));
-                }}
-                maxLength={7}
-                placeholder="#RRGGBB"
-              />
-              {colorError && (
-                <p className="text-red-500 text-xs mt-1">{colorError}</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </Modal>
+        translations={formData.translations}
+        setTranslations={translations =>
+          setFormData(prev => ({ ...prev, translations }))
+        }
+        color={formData.color}
+        setColor={color =>
+          setFormData(prev => ({ ...prev, color }))
+        }
+        loading={loading}
+        setLoading={setLoading}
+        colorError={colorError}
+        setColorError={setColorError}
+        translationErrors={translationErrors}
+        setTranslationErrors={setTranslationErrors}
+        selectedColorCategory={selectedColorCategory}
+        setSelectedColorCategory={setSelectedColorCategory}
+        hexInput={hexInput}
+        setHexInput={setHexInput}
+        handleAddCategory={handleAddCategory}
+        colorNames={colorNames}
+        colorCategories={colorCategories}
+        getColorSuggestion={getColorSuggestion}
+        getContrastRatio={getContrastRatio}
+      />
 
       {/* Edit Category Modal */}
-      <Modal
-        isOpen={showEditModal}
+      <EditCategoryModal
+        open={showEditModal}
         onClose={() => setShowEditModal(false)}
-        title={t("auth.categoryManagement.modals.editTitle")}
-        onSubmit={handleEditCategory}
-        submitText={t("auth.categoryManagement.modals.updateCategory")}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column - Form Fields */}
-          <div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.englishTranslation")} <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                className={`border px-3 py-2 rounded-md w-full ${translationErrors.en ? 'border-red-500' : 'border-gray-300'}`}
-                value={formData.translations.en}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, en: e.target.value }
-                  });
-                  if (translationErrors.en) setTranslationErrors(prev => ({ ...prev, en: "" }));
-                }}
-                placeholder={t("auth.categoryManagement.form.englishPlaceholder")}
-                required
-              />
-              {translationErrors.en && (
-                <p className="text-red-500 text-xs mt-1">{translationErrors.en}</p>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.hebrewTranslation")} <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                className={`border px-3 py-2 rounded-md w-full ${translationErrors.he ? 'border-red-500' : 'border-gray-300'}`}
-                value={formData.translations.he}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, he: e.target.value }
-                  });
-                  if (translationErrors.he) setTranslationErrors(prev => ({ ...prev, he: "" }));
-                }}
-                placeholder={t("auth.categoryManagement.form.hebrewPlaceholder")}
-                required
-              />
-              {translationErrors.he && (
-                <p className="text-red-500 text-xs mt-1">{translationErrors.he}</p>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("auth.categoryManagement.form.arabicTranslation")}
-              </label>
-              <input
-                type="text"
-                className="border px-3 py-2 rounded-md w-full border-gray-300"
-                value={formData.translations.ar}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    translations: { ...formData.translations, ar: e.target.value }
-                  })
-                }
-                placeholder={t("auth.categoryManagement.form.arabicPlaceholder")}
-              />
-            </div>
-          </div>
-
-          {/* Right Column - Color Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("auth.categoryManagement.form.categoryColor")} <span className="text-red-500">*</span>
-            </label>
-            
-            {/* Color Preview */}
-            {formData.translations.en && formData.color && (
-              <div className="mb-2 p-3 rounded-lg shadow-md flex items-center gap-4" style={{ backgroundColor: formData.color }}>
-                <span className="text-white font-semibold">{formData.translations.en}</span>
-                <div className="flex flex-col ml-4">
-                  <span className="text-xs text-white font-bold">{colorNames[formData.color] || "Custom"}</span>
-                  <span
-                    className="text-xs text-white underline cursor-pointer select-all"
-                    title="Click to copy"
-                    onClick={() => {navigator.clipboard.writeText(formData.color); toast.success('Copied!')}}
-                  >
-                    {formData.color}
-                  </span>
-                </div>
-              </div>
-            )}
-            {/* Contrast warning */}
-            {formData.color && getContrastRatio(formData.color) === "Poor" && (
-              <div className="mb-2 text-xs text-red-600 font-semibold">Warning: This color may have poor contrast on light backgrounds.</div>
-            )}
-            {/* Color Categories */}
-            <div className="mb-4">
-              <div className="flex gap-2 mb-3">
-                {Object.keys(colorCategories).map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => setSelectedColorCategory(category)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      selectedColorCategory === category
-                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-              {/* Color Palette Grid */}
-              <div className="grid grid-cols-5 gap-2 mb-3">
-                {colorCategories[selectedColorCategory].map((colorOption) => (
-                  <button
-                    key={colorOption}
-                    type="button"
-                    className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-110 relative ${
-                      formData.color === colorOption ? 'border-gray-800 scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                    style={{ backgroundColor: colorOption }}
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, color: colorOption }));
-                      if (colorError) setColorError("");
-                    }}
-                    title={`Select ${colorNames[colorOption] || colorOption}`}
-                  >
-                    {formData.color === colorOption && (
-                      <span className="absolute top-1 right-1 text-white text-lg font-bold pointer-events-none" style={{textShadow: '0 0 2px #000'}}>✓</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* Quick Suggestions */}
-            {formData.translations.en && (
-              <div className="mb-4">
-                <p className="text-xs text-gray-600 mb-2">Suggested for "{formData.translations.en}":</p>
-                <div className="flex gap-2">
-                  {(() => {
-                    const suggestedColor = getColorSuggestion(formData.translations.en);
-                    if (suggestedColor && suggestedColor !== formData.color) {
-                      return (
-                        <button
-                          type="button"
-                          className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-all"
-                          style={{ backgroundColor: suggestedColor }}
-                          onClick={() => {
-                            setFormData(prev => ({ ...prev, color: suggestedColor }));
-                            if (colorError) setColorError("");
-                          }}
-                          title="Smart suggestion"
-                        />
-                      );
-                    }
-                    return null;
-                  })()}
-                </div>
-              </div>
-            )}
-            {/* Custom Color Picker */}
-            <div className="mb-4 flex flex-col gap-2">
-              <label className="block text-xs text-gray-600 mb-2">{t("auth.categoryManagement.form.customColor")}</label>
-              <div className="flex items-center gap-2">
-                <HexColorPicker
-                  color={formData.color || "#CCCCCC"}
-                  onChange={(newColor) => {
-                    setFormData(prev => ({ ...prev, color: newColor }));
-                    setHexInput(newColor);
-                    if (colorError) setColorError("");
-                  }}
-                  style={{ width: '100%', maxWidth: '180px', height: '150px', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
-                />
-                <button
-                  type="button"
-                  onClick={handleEyedropper}
-                  title={window.EyeDropper ? "Pick color from screen" : "Eyedropper not supported"}
-                  className="ml-2 p-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100 shadow text-xl flex items-center justify-center"
-                  style={{ height: '40px', width: '40px' }}
-                >
-                  <span role="img" aria-label="Eyedropper">🖌️</span>
-                </button>
-              </div>
-              {/* Hex input field */}
-              <input
-                type="text"
-                className="border px-2 py-1 rounded-md w-32 mt-2 text-sm"
-                value={hexInput}
-                onChange={e => {
-                  let val = e.target.value;
-                  if (!val.startsWith("#")) val = "#" + val;
-                  setHexInput(val);
-                  // Only update color if valid hex
-                  if (/^#[0-9A-Fa-f]{6}$/.test(val)) setFormData(prev => ({ ...prev, color: val }));
-                }}
-                maxLength={7}
-                placeholder="#RRGGBB"
-              />
-              {colorError && (
-                <p className="text-red-500 text-xs mt-1">{colorError}</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </Modal>
+        translations={formData.translations}
+        setTranslations={translations =>
+          setFormData(prev => ({ ...prev, translations }))
+        }
+        color={formData.color}
+        setColor={color =>
+          setFormData(prev => ({ ...prev, color }))
+        }
+        colorError={colorError}
+        setColorError={setColorError}
+        translationErrors={translationErrors}
+        setTranslationErrors={setTranslationErrors}
+        selectedColorCategory={selectedColorCategory}
+        setSelectedColorCategory={setSelectedColorCategory}
+        hexInput={hexInput}
+        setHexInput={setHexInput}
+        colorNames={colorNames}
+        colorCategories={colorCategories}
+        getColorSuggestion={getColorSuggestion}
+        getContrastRatio={getContrastRatio}
+        loading={loading}
+        handleEditCategory={handleEditCategory}
+      />
 
       {/* View Category Modal */}
       <Modal
@@ -1215,4 +844,4 @@ const CategoryManagement = () => {
   );
 };
 
-export default CategoryManagement; 
+export default CategoryManagement;
