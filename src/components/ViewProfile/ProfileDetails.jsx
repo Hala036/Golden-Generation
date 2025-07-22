@@ -85,7 +85,7 @@ const ProfileDetails = ({ retireeData }) => {
         <div className="text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
             <h2 className={`text-2xl sm:text-3xl font-bold ${language === 'he' ? 'text-right' : 'text-left'}`}>
-              {idv.firstName} {idv.lastName}
+              {creds.username}
             </h2>
             {/* Show edit button only for own profile */}
             {isOwnProfile && (
