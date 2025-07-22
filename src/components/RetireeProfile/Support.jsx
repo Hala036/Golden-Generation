@@ -64,8 +64,6 @@ const Support = () => {
         setAdminInfo({
           uid: adminDoc.id, // Use document ID as UID
           username: adminDoc.credentials?.username || t("retiree.admin.defaultUsername"),
-          firstname: adminDoc.credentials?.firstName || t("retiree.admin.defaultFirstName"),
-          lastname: adminDoc.credentials?.lastName || t("retiree.admin.defaultLastName"),
           email: adminDoc.credentials?.email || t("retiree.admin.defaultEmail"),
           phone: adminDoc.credentials?.phone || t("retiree.admin.defaultPhone"),
         });
@@ -173,7 +171,6 @@ const Support = () => {
         {adminInfo ? (
           <div className="text-gray-600">
             <p><strong>{t("retiree.admin.username")}:</strong> {adminInfo.username}</p>
-            <p><strong>{t("retiree.admin.name")}:</strong> {adminInfo.firstname} {adminInfo.lastname}</p>
             <p><strong>{t("retiree.admin.email")}:</strong> {adminInfo.email}</p>
             <p><strong>{t("retiree.admin.phone")}:</strong> {adminInfo.phone}</p>
           </div>
