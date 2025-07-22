@@ -1125,6 +1125,8 @@
         "message": "Found {{count}} orphaned events (events with non-existent categories).\n\nThese events will be deleted:\n\n{{eventList}}\n\nClick OK to delete all orphaned events, or Cancel to abort."
       },
       "addCategoryModal": {
+        "title": "Add New Category",
+        "addCategory": "Add Category",
         "eyedropperNotSupported": "Eyedropper API not supported in this browser.",
         "eyedropperFailed": "Eyedropper cancelled or failed.",
         "copied": "Copied!",
