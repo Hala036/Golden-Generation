@@ -21,7 +21,6 @@ class AnalyticsService {
         throw new Error(result.data.error || 'Failed to fetch system analytics');
       }
     } catch (error) {
-      console.error('Error fetching system analytics:', error);
       throw error;
     }
   }
@@ -38,7 +37,6 @@ class AnalyticsService {
         throw new Error(result.data.error || 'Failed to fetch real-time metrics');
       }
     } catch (error) {
-      console.error('Error fetching real-time metrics:', error);
       throw error;
     }
   }
@@ -55,7 +53,6 @@ class AnalyticsService {
         throw new Error(result.data.error || 'Failed to fetch user behavior analytics');
       }
     } catch (error) {
-      console.error('Error fetching user behavior analytics:', error);
       throw error;
     }
   }
@@ -72,7 +69,6 @@ class AnalyticsService {
         throw new Error(result.data.error || 'Failed to fetch predictive analytics');
       }
     } catch (error) {
-      console.error('Error fetching predictive analytics:', error);
       throw error;
     }
   }
@@ -89,7 +85,6 @@ class AnalyticsService {
         throw new Error(result.data.error || 'Failed to export analytics report');
       }
     } catch (error) {
-      console.error('Error exporting analytics report:', error);
       throw error;
     }
   }
@@ -129,7 +124,6 @@ class AnalyticsService {
 
       return { success: true, filename };
     } catch (error) {
-      console.error('Error downloading report:', error);
       throw error;
     }
   }
@@ -186,7 +180,6 @@ class AnalyticsService {
         timestamp: new Date().toISOString()
       };
     } catch (error) {
-      console.error('Error fetching analytics summary:', error);
       throw error;
     }
   }
@@ -198,7 +191,6 @@ class AnalyticsService {
         const metrics = await this.getRealTimeMetrics();
         callback(metrics);
       } catch (error) {
-        console.error('Error in real-time update:', error);
       }
     }, interval);
 
@@ -217,7 +209,6 @@ class AnalyticsService {
         return acc;
       }, {});
     } catch (error) {
-      console.error('Error fetching time series analytics:', error);
       throw error;
     }
   }
@@ -237,7 +228,6 @@ class AnalyticsService {
 
       return settlementData;
     } catch (error) {
-      console.error('Error fetching settlement analytics:', error);
       throw error;
     }
   }
@@ -256,7 +246,6 @@ class AnalyticsService {
         timestamp: new Date().toISOString()
       };
     } catch (error) {
-      console.error('Error fetching comparative analytics:', error);
       throw error;
     }
   }

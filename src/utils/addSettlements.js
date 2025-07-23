@@ -25,7 +25,6 @@ export const uploadSettlementsFromCSV = async () => {
       }
     });
   } catch (err) {
-    console.error('❌ Failed to fetch CSV:', err);
     alert('❌ Failed to load the CSV file.');
   }
 };
