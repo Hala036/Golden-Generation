@@ -130,8 +130,6 @@ function useCallSignaling({ currentUser }) {
       where('status', 'in', ['calling', 'ringing', 'active'])
     );
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      // DEBUG LOG
-      console.log('[CallContext] useCallSignaling listener fired:', { currentUser, docs: snapshot.docs.map(doc => doc.data()) });
       if (!snapshot.empty) {
         const callDoc = snapshot.docs[0];
         const data = callDoc.data();
@@ -239,8 +237,6 @@ export const CallProvider = ({ children }) => {
   // --- ADDED: initiateCall function to create Firestore call doc ---
   const initiateCall = async (calleeUser) => {
     if (!currentUser || !calleeUser) {
-      // DEBUG LOG
-      console.error('[CallContext] initiateCall: missing user', { currentUser, calleeUser });
       if (!currentUser) toast.error('No current user in call context!');
       if (!calleeUser) toast.error('No callee user provided!');
       return;
@@ -264,8 +260,6 @@ export const CallProvider = ({ children }) => {
       acceptedAt: null,
       endedAt: null,
     };
-    // DEBUG LOG
-    console.log('[CallContext] initiateCall: creating call doc', { currentUser, calleeUser, callDoc });
     await addDoc(collection(db, 'calls'), callDoc);
   };
   // --- END ADDED ---

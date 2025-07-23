@@ -18,7 +18,6 @@ export default defineConfig({
         rewrite: (path) => path,
         configure: (proxy) => {
           proxy.on('error', (err) => {
-            console.warn('Proxy error:', err);
           });
           proxy.on('proxyRes', (proxyRes) => {
             proxyRes.headers['Cache-Control'] = 'no-store';
