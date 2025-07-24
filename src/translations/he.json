@@ -74,7 +74,6 @@
     },
     "signup": {
       "welcomeMessage": "ברוך הבא לקהילת דור הזהב",
-      "welcomeSubmessage": "אנא מלא את הפרטים שלך כדי להתחיל.",
       "logo": "דור הזהב",
       "createAccount": "צור את חשבונך",
       "back": "חזור",
@@ -451,7 +450,6 @@
       "valueDisplay": "רמה: {{value}}",
       "interestsLabel": "תחומי עניין (בחר את כל המתאימים)",
       "safetyReadBooks": "קריאת ספרי בטיחות",
-      "culture": "תרבות",
       "cooking": "בישול",
       "trips": "טיולים",
       "photography": "צילום",

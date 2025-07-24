@@ -25,7 +25,7 @@ const Lifestyle = ({ onComplete, editMode, data }) => {
   // Use interestsList for the options
 
   const interestEmojis = {
-    [t('auth.lifestyle.safetyReadBooks')]: '📚',
+    [t('auth.lifestyle.reading')]: '📚',
     [t('auth.lifestyle.culture')]: '🎭',
     [t('auth.lifestyle.cooking')]: '🍳',
     [t('auth.lifestyle.trips')]: '✈️',
