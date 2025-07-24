@@ -91,7 +91,6 @@
     },
     "signup": {
       "welcomeMessage": "Welcome to the Golden Generation community ",
-      "welcomeSubmessage": "Please fill in your details to get started.",
       "logo": "Golden Generation",
       "createAccount": "Create Your Account",
       "back": "Back",
@@ -505,11 +504,12 @@
     "veteransCommunity": {
       "title": "Veterans Community",
       "description": "Join our vibrant community and make a difference. Tell us about your interests and how you'd like to contribute.",
-          "cooking": "Cooking",
-          "trips": "Trips",
-          "choir": "Choir",
+      "cooking": "Cooking",
+      "sport": "Sport",
+      "trips": "Trips",
+      "choir": "Choir",
       "torahClasses": "Torah Classes",
-          "lectures": "Lectures",
+      "lectures": "Lectures",
       "exercise": "Exercise",
       "currentActivities": "Current Activities",
       "currentActivitiesDescription": "What activities are you currently participating in?",
@@ -1126,6 +1126,7 @@
       },
       "addCategoryModal": {
         "title": "Add New Category",
+        "adding": "Adding...",
         "addCategory": "Add Category",
         "eyedropperNotSupported": "Eyedropper API not supported in this browser.",
         "eyedropperFailed": "Eyedropper cancelled or failed.",

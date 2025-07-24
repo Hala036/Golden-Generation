@@ -778,9 +778,10 @@ const CreateEventForm = ({ onClose, userRole: propUserRole, initialData = null, 
 
       {/* Add Category Modal */}
       {showAddCategoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-[60]">
+        <div className="fixed inset-0 backdrop-blur-sm black/5 flex items-center justify-center z-[60]">
           <div className="bg-white p-3 md:p-6 rounded-lg max-w-lg w-full relative">
             <AddCategoryModal
+              open={showAddCategoryModal}
               onClose={() => setShowAddCategoryModal(false)}
             />
           </div>
