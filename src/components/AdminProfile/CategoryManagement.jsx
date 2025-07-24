@@ -732,29 +732,6 @@ const CategoryManagement = () => {
       <AddCategoryModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
-        translations={formData.translations}
-        setTranslations={translations =>
-          setFormData(prev => ({ ...prev, translations }))
-        }
-        color={formData.color}
-        setColor={color =>
-          setFormData(prev => ({ ...prev, color }))
-        }
-        loading={loading}
-        setLoading={setLoading}
-        colorError={colorError}
-        setColorError={setColorError}
-        translationErrors={translationErrors}
-        setTranslationErrors={setTranslationErrors}
-        selectedColorCategory={selectedColorCategory}
-        setSelectedColorCategory={setSelectedColorCategory}
-        hexInput={hexInput}
-        setHexInput={setHexInput}
-        handleAddCategory={handleAddCategory}
-        colorNames={colorNames}
-        colorCategories={colorCategories}
-        getColorSuggestion={getColorSuggestion}
-        getContrastRatio={getContrastRatio}
       />
 
       {/* Edit Category Modal */}

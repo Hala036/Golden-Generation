@@ -1126,6 +1126,7 @@
       },
       "addCategoryModal": {
         "title": "Add New Category",
+        "adding": "Adding...",
         "addCategory": "Add Category",
         "eyedropperNotSupported": "Eyedropper API not supported in this browser.",
         "eyedropperFailed": "Eyedropper cancelled or failed.",

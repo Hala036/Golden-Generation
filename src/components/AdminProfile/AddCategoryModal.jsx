@@ -8,38 +8,19 @@ import { db } from "../../firebase";
 const AddCategoryModal = ({
   open,
   onClose,
-  translations,
-  setTranslations,
-  loading,
-  setLoading,
-  color,
-  setColor,
-  colorError,
-  setColorError,
-  translationErrors,
-  setTranslationErrors,
-  selectedColorCategory,
-  setSelectedColorCategory,
-  hexInput,
-  setHexInput,
-  // handleAddCategory,
-  // colorNames,
-  // colorCategories,
-  // getColorSuggestion,
-  // getContrastRatio,
 }) => {
   const { t } = useLanguage();
-  // const [translations, setTranslations] = useState({
-  //   en: "",
-  //   he: "",
-  //   ar: ""
-  // });
-  // const [color, setColor] = useState(""); // Remove default color to make it required
-  // const [loading, setLoading] = useState(false);
-  // const [colorError, setColorError] = useState("");
-  // const [translationErrors, setTranslationErrors] = useState({ en: "", he: "" });
-  // const [selectedColorCategory, setSelectedColorCategory] = useState("Warm");
-  // const [hexInput, setHexInput] = useState("");
+  const [color, setColor] = useState(""); // Remove default color to make it required
+  const [loading, setLoading] = useState(false);
+  const [colorError, setColorError] = useState("");
+  const [translationErrors, setTranslationErrors] = useState({ en: "", he: "" });
+  const [selectedColorCategory, setSelectedColorCategory] = useState("Warm");
+  const [hexInput, setHexInput] = useState("");
+  const [translations, setTranslations] = useState({ en: "", he: "", ar: "" });
+  const [formData, setFormData] = useState({
+    translations: { en: "", he: "", ar: "" },
+    color: "#CCCCCC"
+  });
 
   // Predefined color palette
   const predefinedColors = [
@@ -78,6 +59,20 @@ const AddCategoryModal = ({
     "#16A34A": "Forest Green",
     "#15803D": "Dark Green"
   };
+
+  const AddCategoryModal = ({ open, onClose, onCategoryAdded }) => {
+    const [translations, setTranslations] = useState({ en: "", he: "", ar: "" });
+    // ...other local state...
+
+    // When category is added:
+    if (onCategoryAdded) onCategoryAdded();
+    onClose();
+  };
+  
+    useEffect(() => {
+      setHexInput(formData.color || "#CCCCCC");
+    }, [formData.color]);
+  
 
   // Smart color suggestions
   const getColorSuggestion = (categoryName) => {
